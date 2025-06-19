@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
 import { getClassNameFactory } from "../../../../lib";
-import { IframeConfig, UiState } from "../../../../types";
+import { IframeConfig, Plugin, UiState } from "../../../../types";
 import { usePropsContext } from "../..";
 import styles from "./styles.module.css";
 import { useInjectGlobalCss } from "../../../../lib/use-inject-css";
@@ -12,19 +12,19 @@ import { usePreviewModeHotkeys } from "../../../../lib/use-preview-mode-hotkeys"
 import { DragDropContext } from "../../../DragDropContext";
 import { Header } from "../Header";
 import { SidebarSection } from "../../../SidebarSection";
-import { Components } from "../Components";
-import { Outline } from "../Outline";
 import { Canvas } from "../Canvas";
 import { Fields } from "../Fields";
 import { useSidebarResize } from "../../../../lib/use-sidebar-resize";
 import { FrameProvider } from "../../../../lib/frame-context";
 import { Sidebar } from "../Sidebar";
 import { useDeleteHotkeys } from "../../../../lib/use-delete-hotkeys";
-import { Nav } from "../Nav";
-import { Hammer, Heading1, Layers } from "lucide-react";
+import { MenuItem, Nav } from "../Nav";
+import { ToyBrick } from "lucide-react";
+import { blocksPlugin, outlinePlugin } from "../../../../bundle";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
+const getPluginTabClassName = getClassNameFactory("PuckPluginTab", styles);
 
 const FieldSideBar = () => {
   const title = useAppStore((s) =>
@@ -41,11 +41,22 @@ const FieldSideBar = () => {
   );
 };
 
+const PluginTab = ({
+  children,
+  visible,
+}: {
+  children: ReactNode;
+  visible: boolean;
+}) => {
+  return <div className={getPluginTabClassName({ visible })}>{children}</div>;
+};
+
 export const Layout = ({ children }: { children: ReactNode }) => {
   const {
     iframe: _iframe,
     dnd,
     initialHistory: _initialHistory,
+    plugins,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -149,7 +160,45 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
   }
 
-  const [view, setView] = useState<"blocks" | "outline" | "headings">("blocks");
+  const [view, setView] = useState<"blocks" | "outline" | string>();
+
+  const pluginItems = useMemo(() => {
+    const details: Record<string, MenuItem & { render: () => ReactElement }> =
+      {};
+
+    const defaultPlugins: Plugin[] = [blocksPlugin(), outlinePlugin()];
+
+    const combinedPlugins = [...defaultPlugins, ...(plugins ?? [])];
+
+    combinedPlugins?.forEach((plugin) => {
+      if (plugin.name && plugin.render) {
+        if (details[plugin.name]) {
+          // Delete existing plugins with this name to enable user sorting
+          delete details[plugin.name];
+        }
+
+        details[plugin.name] = {
+          label: plugin.label ?? plugin.name,
+          icon: plugin.icon ?? <ToyBrick />,
+          onClick: () => {
+            setView(plugin.name!);
+          },
+          isActive: view === plugin.name,
+          render: plugin.render,
+        };
+      }
+    });
+
+    return details;
+  }, [plugins, view]);
+
+  useEffect(() => {
+    if (!view) {
+      const names = Object.keys(pluginItems);
+
+      setView(names[0]);
+    }
+  }, [pluginItems, view]);
 
   return (
     <div className={`Puck ${getClassName()}`}>
@@ -174,32 +223,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                       slim
                       navigation={{
                         main: {
-                          items: {
-                            build: {
-                              label: "Blocks",
-                              icon: <Hammer />,
-                              onClick: () => {
-                                setView("blocks");
-                              },
-                              isActive: view === "blocks",
-                            },
-                            outline: {
-                              label: "Outline",
-                              icon: <Layers />,
-                              onClick: () => {
-                                setView("outline");
-                              },
-                              isActive: view === "outline",
-                            },
-                            headings: {
-                              label: "Headings",
-                              icon: <Heading1 />,
-                              onClick: () => {
-                                setView("headings");
-                              },
-                              isActive: view === "headings",
-                            },
-                          },
+                          items: pluginItems,
                         },
                       }}
                     />
@@ -211,11 +235,12 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                     onResize={setLeftWidth}
                     onResizeEnd={handleLeftSidebarResizeEnd}
                   >
-                    {leftSideBarVisible && (
-                      <>
-                        {view === "blocks" && <Components />}
-                        {view === "outline" && <Outline />}
-                      </>
+                    {Object.entries(pluginItems).map(
+                      ([id, { render: Render }]) => (
+                        <PluginTab key={id} visible={view === id}>
+                          <Render />
+                        </PluginTab>
+                      )
                     )}
                   </Sidebar>
                   <Canvas />

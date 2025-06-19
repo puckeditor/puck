@@ -2,6 +2,10 @@ import { useComponentList } from "../../../../lib/use-component-list";
 import { useAppStore } from "../../../../store";
 import { ComponentList } from "../../../ComponentList";
 import { useMemo } from "react";
+import styles from "./styles.module.css";
+import { getClassNameFactory } from "../../../../lib";
+
+const getClassName = getClassNameFactory("Components", styles);
 
 export const Components = () => {
   const overrides = useAppStore((s) => s.overrides);
@@ -19,8 +23,10 @@ export const Components = () => {
   }, [overrides]);
 
   return (
-    <Wrapper>
-      {componentList ? componentList : <ComponentList id="all" />}
-    </Wrapper>
+    <div className={getClassName()}>
+      <Wrapper>
+        {componentList ? componentList : <ComponentList id="all" />}
+      </Wrapper>
+    </div>
   );
 };
