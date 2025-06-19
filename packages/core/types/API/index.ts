@@ -1,3 +1,4 @@
+import { ReactElement, ReactNode } from "react";
 import { PuckAction } from "../../reducer";
 import { WithDeepSlots } from "../Internal";
 import { DefaultComponentProps } from "../Props";
@@ -28,6 +29,10 @@ export type OnAction<UserData extends Data = Data> = (
 ) => void;
 
 export type Plugin<UserConfig extends Config = Config> = {
+  name?: string;
+  label?: string;
+  icon?: ReactNode;
+  render?: () => ReactElement;
   overrides?: Partial<Overrides<UserConfig>>;
   fieldTransforms?: FieldTransforms<UserConfig>;
 };

@@ -127,3 +127,12 @@
   border-right: 1px solid var(--puck-color-grey-09);
   background-color: var(--puck-color-grey-12);
 }
+
+.PuckPluginTab {
+  display: none;
+  height: 100%;
+}
+
+.PuckPluginTab--visible {
+  display: block;
+}
