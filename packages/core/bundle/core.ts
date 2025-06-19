@@ -30,3 +30,5 @@ export {
   type UsePuckData,
   type PuckApi,
 } from "../lib/use-puck";
+
+export * from "../lib/default-plugins";
