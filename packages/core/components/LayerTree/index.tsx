@@ -5,9 +5,9 @@ import { ComponentConfig } from "../../types";
 import { ItemSelector } from "../../lib/data/get-item";
 import { scrollIntoView } from "../../lib/scroll-into-view";
 import { ChevronDown, LayoutGrid, Layers, Type } from "lucide-react";
-import { rootDroppableId } from "../../lib/root-droppable-id";
+import { rootAreaId, rootDroppableId } from "../../lib/root-droppable-id";
 import { useCallback, useContext } from "react";
-import { dropZoneContext, ZoneStoreContext } from "../DropZone/context";
+import { ZoneStoreContext } from "../DropZone/context";
 import { getFrame } from "../../lib/get-frame";
 import { onScrollEnd } from "../../lib/on-scroll-end";
 import { useAppStore } from "../../store";
@@ -26,8 +26,6 @@ const Layer = ({
   itemId: string;
   zoneCompound: string;
 }) => {
-  const ctx = useContext(dropZoneContext);
-
   const config = useAppStore((s) => s.config);
   const itemSelector = useAppStore((s) => s.state.ui.itemSelector);
   const dispatch = useAppStore((s) => s.dispatch);
@@ -48,7 +46,6 @@ const Layer = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const nodeData = useAppStore((s) => s.state.indexes.nodes[itemId]);
 
-  // const zonesForItem = findZonesForArea(data, itemId);
   const zonesForItem = useAppStore(
     useShallow((s) =>
       Object.keys(s.state.indexes.zones).filter(
@@ -56,6 +53,7 @@ const Layer = ({
       )
     )
   );
+
   const containsZone = zonesForItem.length > 0;
 
   const zoneStore = useContext(ZoneStoreContext);
@@ -169,7 +167,23 @@ export const LayerTree = ({
   label?: string;
   zoneCompound: string;
 }) => {
-  const label = _label ?? zoneCompound.split(":")[1];
+  // Use slot label if provided
+  const label = useAppStore((s) => {
+    if (_label) return _label;
+
+    if (zoneCompound === rootDroppableId) return;
+
+    const [componentId, slotId] = zoneCompound.split(":");
+
+    const componentType = s.state.indexes.nodes[componentId]?.data.type;
+
+    const configForComponent =
+      componentType && componentType !== rootAreaId
+        ? s.config.components[componentType]
+        : s.config.root;
+
+    return configForComponent?.fields?.[slotId]?.label ?? slotId;
+  });
 
   const contentIds = useAppStore(
     useShallow((s) =>
