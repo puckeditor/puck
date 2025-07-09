@@ -39,9 +39,7 @@ export const ObjectField = ({
 
             const subPath = `${localName}.${subName}`;
 
-            const subReadOnly = readOnly
-              ? readOnly
-              : readOnlyFields[subPath];
+            const subReadOnly = readOnly ? readOnly : readOnlyFields[subPath];
 
             const label = subField.label || subName;
 
