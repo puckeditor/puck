@@ -111,7 +111,7 @@ const migrations: Migration[] = [
     const unmigratedZonesGrouped: Record<string, Record<string, Content>> = {};
 
     Object.keys(updated.data.zones ?? {}).forEach((zoneCompound) => {
-      const [zoneId, propName] = zoneCompound.split(":");
+      const [componentId, propName] = zoneCompound.split(":");
       const content = updated.data.zones?.[zoneCompound];
 
       if (!content) {
