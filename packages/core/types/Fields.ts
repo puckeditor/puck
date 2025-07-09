@@ -141,11 +141,14 @@ export type Field<Props extends any = any> =
   | SlotField;
 
 export type Fields<
-  ComponentProps extends DefaultComponentProps = DefaultComponentProps
+  ComponentProps extends DefaultComponentProps = DefaultComponentProps,
+  UserField extends {} = {}
 > = {
-  [PropName in keyof Omit<ComponentProps, "editMode">]: Field<
-    ComponentProps[PropName]
-  >;
+  [PropName in keyof Omit<ComponentProps, "editMode">]: UserField extends {
+    type: string;
+  }
+    ? Field<ComponentProps[PropName]> | UserField
+    : Field<ComponentProps[PropName]>;
 };
 
 export type FieldProps<F = Field<any>, ValueType = any> = {
