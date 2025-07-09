@@ -37,12 +37,11 @@ export const ObjectField = ({
           {Object.keys(field.objectFields!).map((subName) => {
             const subField = field.objectFields![subName];
 
-            const subPath = `${name}.${subName}`;
-            const localSubPath = `${localName || name}.${subName}`;
+            const subPath = `${localName}.${subName}`;
 
             const subReadOnly = readOnly
               ? readOnly
-              : readOnlyFields[localSubPath];
+              : readOnlyFields[subPath];
 
             const label = subField.label || subName;
 
