@@ -94,11 +94,11 @@ Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zo
 
 ## Args
 
-| Param                                 | Example                                       | Type                                               | Status   |
-| ------------------------------------- | --------------------------------------------- | -------------------------------------------------- | -------- |
-| [`data`](#data)                       | `{ content: [{type: "Heading", props: {} }]}` | [Data](/docs/api-reference/data-model/data)        | Required |
-| [`config`](#config)                   | `{ components: {} }`                          | [Config](/docs/api-reference/configuration/config) | -        |
-| [`migrationOptions`](#migrationoptions) | `{ migrateDynamicZonesForComponent: {} }`            | [MigrationOptions](#migrationoptions-type)        | -        |
+| Param                                   | Example                                       | Type                                               | Status   |
+| --------------------------------------- | --------------------------------------------- | -------------------------------------------------- | -------- |
+| [`data`](#data)                         | `{ content: [{type: "Heading", props: {} }]}` | [Data](/docs/api-reference/data-model/data)        | Required |
+| [`config`](#config)                     | `{ components: {} }`                          | [Config](/docs/api-reference/configuration/config) | -        |
+| [`migrationOptions`](#migrationoptions) | `{ migrateDynamicZonesForComponent: {} }`     | [MigrationOptions](#migrationoptions-type)         | -        |
 
 ### `data`
 
@@ -117,6 +117,7 @@ Options to customise how data is migrated.
 An object mapping component names to custom migration functions. Used during the [DropZones to slots migration](#dropzones-to-slots) to handle complex zone migration scenarios where automatic migration isn't possible.
 
 Each migration function receives:
+
 - `props`: The current component props
 - `zones`: A record of zone names to their content
 
