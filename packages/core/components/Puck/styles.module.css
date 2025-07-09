@@ -19,6 +19,13 @@
 .Puck {
   --puck-space-px: 16px;
   font-family: var(--puck-font-family);
+  overflow-x: hidden;
+}
+
+@media (min-width: 766px) {
+  .Puck {
+    overflow-x: auto;
+  }
 }
 
 .Puck-portal {
@@ -102,69 +109,6 @@
 @media (min-width: 1598px) {
   .PuckLayout .PuckLayout-inner {
     --puck-side-bar-width: 320px;
-  }
-}
-
-.PuckLayout-header {
-  background: var(--puck-color-white);
-  border-bottom: 1px solid var(--puck-color-grey-09);
-  color: var(--puck-color-black);
-  grid-area: header;
-  position: relative;
-  max-width: 100vw;
-}
-
-.PuckLayout-headerInner {
-  align-items: end;
-  display: grid;
-  gap: var(--puck-space-px);
-  grid-template-areas: "left middle right";
-  grid-template-columns: 1fr auto 1fr;
-  grid-template-rows: auto;
-  padding: var(--puck-space-px);
-}
-
-.PuckLayout-headerToggle {
-  color: var(--puck-color-grey-05);
-  display: flex;
-  margin-inline-start: -4px;
-  padding-top: 2px;
-}
-
-.PuckLayout--rightSideBarVisible .PuckLayout-rightSideBarToggle,
-.PuckLayout--leftSideBarVisible .PuckLayout-leftSideBarToggle {
-  color: var(--puck-color-black);
-}
-
-.PuckLayout-headerTitle {
-  align-self: center;
-}
-
-.PuckLayout-headerPath {
-  font-family: var(--puck-font-family-monospaced);
-  font-size: var(--puck-font-size-xxs);
-  font-weight: normal;
-  word-break: break-all;
-}
-
-.PuckLayout-headerTools {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-}
-
-.PuckLayout-menuButton {
-  color: var(--puck-color-grey-05);
-  margin-inline-start: -4px;
-}
-
-.PuckLayout--menuOpen .PuckLayout-menuButton {
-  color: var(--puck-color-black);
-}
-
-@media (min-width: 638px) {
-  .PuckLayout-menuButton {
-    display: none;
   }
 }
 

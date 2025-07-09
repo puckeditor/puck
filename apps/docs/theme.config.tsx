@@ -105,8 +105,11 @@ const theme: DocsThemeConfig = {
       <div className="flex w-full flex-col items-center sm:items-start">
         <p className="mt-6 text-xs">
           MIT © {new Date().getFullYear()}{" "}
-          <a style={{ textDecoration: "underline" }} href="https://measured.co">
-            Measured Corporation Ltd.
+          <a
+            style={{ textDecoration: "underline" }}
+            href="https://github.com/measuredco/puck/graphs/contributors"
+          >
+            The Puck Contributors
           </a>
         </p>
       </div>

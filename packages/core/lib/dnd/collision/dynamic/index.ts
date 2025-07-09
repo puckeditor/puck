@@ -14,14 +14,6 @@ import { closestCorners } from "@dnd-kit/collision";
 import { DragAxis, Direction } from "../../../../types";
 import { collisionStore } from "./store";
 
-export type CollisionMap = Record<
-  string,
-  {
-    direction: Direction;
-    [key: string]: any;
-  }
->;
-
 let flushNext: UniqueIdentifier = "";
 
 /**
@@ -64,17 +56,7 @@ export const createDynamicCollisionDetector = (
 
     const interval = trackMovementInterval(position.current, dragAxis);
 
-    dragOperation.data = {
-      ...dragOperation.data,
-      direction: interval.direction,
-    };
-
-    const collisionMap = (dragOperation.data.collisionMap ||
-      {}) as CollisionMap;
-
-    dragOperation.data.collisionMap = collisionMap;
-
-    collisionMap[droppable.id] = {
+    const data = {
       direction: interval.direction,
     };
 
@@ -100,6 +82,7 @@ export const createDynamicCollisionDetector = (
         return {
           ...collision,
           priority: CollisionPriority.Highest,
+          data,
         };
       }
     }
@@ -128,7 +111,7 @@ export const createDynamicCollisionDetector = (
 
       flushNext = "";
 
-      return { ...collision, id: shouldFlushId ? "flush" : collision.id };
+      return { ...collision, id: shouldFlushId ? "flush" : collision.id, data };
     }
 
     if (fallbackEnabled && dragOperation.source?.id !== droppable.id) {
@@ -152,9 +135,7 @@ export const createDynamicCollisionDetector = (
             y: dragShape.center.y - (droppable.shape?.center.y || 0),
           });
 
-          collisionMap[droppable.id] = {
-            direction,
-          };
+          data.direction = direction;
 
           // Fallback collision exists for an intersecting item
           // In this scenario, we trigger a "void" fallback transaction,
@@ -176,6 +157,7 @@ export const createDynamicCollisionDetector = (
             return {
               ...fallbackCollision,
               priority: CollisionPriority.Low,
+              data,
             };
           }
 
@@ -187,14 +169,16 @@ export const createDynamicCollisionDetector = (
             direction || ""
           );
 
-          return { ...fallbackCollision, priority: CollisionPriority.Lowest };
+          return {
+            ...fallbackCollision,
+            priority: CollisionPriority.Lowest,
+            data,
+          };
         }
       }
     }
 
     collisionDebug(dragCenter, dropCenter, droppable.id.toString(), "hotpink");
-
-    delete collisionMap[droppable.id];
 
     return null;
   }) as CollisionDetector;

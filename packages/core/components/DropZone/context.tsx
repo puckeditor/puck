@@ -3,42 +3,26 @@ import {
   ReactNode,
   createContext,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
-import { Config, Data } from "../../types";
-import { ItemSelector } from "../../lib/get-item";
-
 import type { Draggable } from "@dnd-kit/dom";
-import { useAppContext } from "../Puck/context";
+import { useAppStore } from "../../store";
 import { createStore, StoreApi } from "zustand";
 
 export type PathData = Record<string, { path: string[]; label: string }>;
 
-export type DropZoneContext<UserConfig extends Config = Config> = {
-  data: Data;
-  config: UserConfig;
-  componentState?: Record<string, any>;
-  itemSelector?: ItemSelector | null;
-  setItemSelector?: (newIndex: ItemSelector | null) => void;
+export type DropZoneContext = {
   areaId?: string;
   zoneCompound?: string;
   index?: number;
-  hoveringComponent?: string | null;
-  setHoveringComponent?: (id: string | null) => void;
-  registerZoneArea?: (areaId: string) => void;
-  areasWithZones?: Record<string, boolean>;
   registerZone?: (zoneCompound: string) => void;
   unregisterZone?: (zoneCompound: string) => void;
-  activeZones?: Record<string, boolean>;
-  pathData?: PathData;
-  registerPath?: (id: string, selector: ItemSelector, label: string) => void;
-  unregisterPath?: (id: string) => void;
   mode?: "edit" | "render";
   depth: number;
   registerLocalZone?: (zone: string, active: boolean) => void; // A zone as it pertains to the current area
   unregisterLocalZone?: (zone: string) => void;
-  path: string[];
 } | null;
 
 export const dropZoneContext = createContext<DropZoneContext>(null);
@@ -56,8 +40,10 @@ export type ZoneStore = {
   areaDepthIndex: Record<string, boolean>;
   nextZoneDepthIndex: Record<string, boolean>;
   nextAreaDepthIndex: Record<string, boolean>;
+  enabledIndex: Record<string, boolean>;
   previewIndex: Record<string, Preview>;
   draggedItem?: Draggable | null;
+  hoveringComponent: string | null;
 };
 
 export const ZoneStoreContext = createContext<StoreApi<ZoneStore>>(
@@ -68,6 +54,8 @@ export const ZoneStoreContext = createContext<StoreApi<ZoneStore>>(
     nextAreaDepthIndex: {},
     draggedItem: null,
     previewIndex: {},
+    enabledIndex: {},
+    hoveringComponent: null,
   }))
 );
 
@@ -89,72 +77,36 @@ export const DropZoneProvider = ({
   children: ReactNode;
   value: DropZoneContext;
 }) => {
-  // Hovering component may match area, but areas must always contain zones
-  const [hoveringComponent, setHoveringComponent] = useState<string | null>();
-
-  const [areasWithZones, setAreasWithZones] = useState<Record<string, boolean>>(
-    {}
-  );
-
-  const [activeZones, setActiveZones] = useState<Record<string, boolean>>({});
-
-  const { dispatch } = useAppContext();
-
-  const registerZoneArea = useCallback(
-    (area: string) => {
-      setAreasWithZones((latest) => ({ ...latest, [area]: true }));
-    },
-    [setAreasWithZones]
-  );
+  const dispatch = useAppStore((s) => s.dispatch);
 
   const registerZone = useCallback(
     (zoneCompound: string) => {
-      if (!dispatch) {
-        return;
-      }
-
       dispatch({
         type: "registerZone",
         zone: zoneCompound,
       });
-
-      setActiveZones((latest) => ({ ...latest, [zoneCompound]: true }));
     },
-    [setActiveZones, dispatch]
+    [dispatch]
   );
 
   const unregisterZone = useCallback(
     (zoneCompound: string) => {
-      if (!dispatch) {
-        return;
-      }
-
       dispatch({
         type: "unregisterZone",
         zone: zoneCompound,
       });
-
-      setActiveZones((latest) => ({
-        ...latest,
-        [zoneCompound]: false,
-      }));
     },
-    [setActiveZones, dispatch]
+    [dispatch]
   );
 
   const memoValue = useMemo(
     () =>
       ({
-        hoveringComponent,
-        setHoveringComponent,
-        registerZoneArea,
-        areasWithZones,
         registerZone,
         unregisterZone,
-        activeZones,
         ...value,
       } as DropZoneContext),
-    [value, hoveringComponent, areasWithZones, activeZones]
+    [value]
   );
 
   return (

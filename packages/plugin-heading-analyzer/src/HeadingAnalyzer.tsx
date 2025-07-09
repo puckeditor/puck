@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from "react";
 
 import styles from "./HeadingAnalyzer.module.css";
 
-import { usePuck } from "@measured/puck";
+import { createUsePuck } from "@measured/puck";
 import { Plugin } from "@/core/types";
 import { SidebarSection } from "@/core/components/SidebarSection";
 import { OutlineList } from "@/core/components/OutlineList";
@@ -32,6 +32,10 @@ const getOutline = ({ frame }: { frame?: Element | Document } = {}) => {
   }[] = [];
 
   headings.forEach((item, i) => {
+    if (item.closest("[data-dnd-dragging]")) {
+      return;
+    }
+
     _outline.push({
       rank: parseInt(item.tagName.split("H")[1]),
       text: item.textContent!,
@@ -95,29 +99,56 @@ function buildHierarchy(frame: Element | Document): Block[] {
   return root.children;
 }
 
+const usePuck = createUsePuck();
+
 export const HeadingAnalyzer = () => {
-  const { appState } = usePuck();
+  const data = usePuck((s) => s.appState.data);
   const [hierarchy, setHierarchy] = useState<Block[]>([]);
 
   // Re-render when content changes
   useEffect(() => {
     const frame = getFrame();
-    const entry = frame?.querySelector(`[data-puck-entry]`);
 
-    if (!entry) return;
+    let entry = frame?.querySelector(`[data-puck-entry]`);
 
-    setHierarchy(buildHierarchy(entry));
-
-    const observer = new MutationObserver(() => {
-      setHierarchy(buildHierarchy(entry));
+    const createHierarchy = () => {
+      setHierarchy(buildHierarchy(entry!));
+    };
+    const entryObserver = new MutationObserver(() => {
+      createHierarchy();
     });
 
-    observer.observe(entry, { subtree: true, childList: true });
+    const frameObserver = new MutationObserver(() => {
+      entry = frame?.querySelector(`[data-puck-entry]`);
+
+      if (entry) {
+        registerEntryObserver();
+        frameObserver.disconnect();
+      }
+    });
+
+    const registerEntryObserver = () => {
+      if (!entry) return;
+      entryObserver.observe(entry, { subtree: true, childList: true });
+    };
+
+    const registerFrameObserver = () => {
+      if (!frame) return;
+      frameObserver.observe(frame, { subtree: true, childList: true });
+    };
+
+    if (entry) {
+      createHierarchy();
+      registerEntryObserver();
+    } else {
+      registerFrameObserver();
+    }
 
     return () => {
-      observer.disconnect();
+      entryObserver.disconnect();
+      frameObserver.disconnect();
     };
-  }, [appState.data]);
+  }, [data]);
 
   return (
     <div className={getClassName()}>

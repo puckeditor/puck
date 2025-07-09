@@ -4,7 +4,7 @@ title: <Render>
 
 # \<Render\>
 
-Render a [`Data`](/docs/api-reference/data) object for a given [`Config`](/docs/api-reference/configuration/config).
+Render a [`Data`](/docs/api-reference/data-model/data) object for a given [`Config`](/docs/api-reference/configuration/config).
 
 ```tsx copy showLineNumbers
 import { Render } from "@measured/puck";
@@ -16,10 +16,11 @@ export function Example() {
 
 ## Props
 
-| Param               | Example                      | Type                                 | Status   |
-| ------------------- | ---------------------------- | ------------------------------------ | -------- |
-| [`config`](#config) | `config: { components: {} }` | [Config](/docs/api-reference/config) | Required |
-| [`data`](#data)     | `data: {}`                   | [Data](/docs/api-reference/data)     | Required |
+| Param                   | Example                      | Type                                        | Status   |
+| ----------------------- | ---------------------------- | ------------------------------------------- | -------- |
+| [`config`](#config)     | `config: { components: {} }` | [Config](/docs/api-reference/config)        | Required |
+| [`data`](#data)         | `data: {}`                   | [Data](/docs/api-reference/data-model/data) | Required |
+| [`metadata`](#metadata) | `metadata: {}`               | [Metadata](/docs/api-reference/metadata)    | -        |
 
 ## Required props
 
@@ -53,7 +54,7 @@ export function Example() {
 
 ### `data`
 
-The data to render against the provided config. See the [`Data` docs](/docs/api-reference/data) for a full reference.
+The data to render against the provided config. See the [`Data` docs](/docs/api-reference/data-model/data) for a full reference.
 
 ```tsx {4-12} copy
 export function Example() {
@@ -67,6 +68,28 @@ export function Example() {
           },
         ],
         root: {},
+      }}
+      // ...
+    />
+  );
+}
+```
+
+### `metadata`
+
+An object containing additional data provided to each component's [`render`](/docs/api-reference/configuration/component-config#renderprops) and [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) functions.
+
+```tsx {4,8} copy
+export function Example() {
+  return (
+    <Render
+      metadata={{ title: "Hello, world" }}
+      config={{
+        HeadingBlock: {
+          render: ({ puck }) => {
+            return <h1>{puck.metadata.title}</h1>; // "Hello, world"
+          },
+        },
       }}
       // ...
     />

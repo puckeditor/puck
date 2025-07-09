@@ -1,0 +1,113 @@
+import { Callout } from "nextra/components";
+
+# UI overrides
+
+<Callout>
+  The overrides API is highly experimental and is likely to experience breaking
+  changes.
+</Callout>
+
+Overrides allow you to change how Puck renders its default interface. It can be used with or without [composition](/docs/extending-puck/composition).
+
+There are many different overrides available. See the [`overrides` API reference](/docs/api-reference/overrides) for the full list.
+
+## Implementing an override
+
+Use the [`overrides` prop](/docs/api-reference/components/puck#overrides) to implement an override:
+
+```tsx showLineNumbers copy {7-12}
+import { Puck } from "@measured/puck";
+
+export function Editor() {
+  return (
+    <Puck
+      // ...
+      overrides={{
+        // Render a custom element for each item in the component list
+        componentItem: ({ name }) => (
+          <div style={{ backgroundColor: "hotpink" }}>{name}</div>
+        ),
+      }}
+    />
+  );
+}
+```
+
+## Examples
+
+### Custom publish button
+
+A common use case is to override the Puck header. You can either use the [`header` override](/docs/api-reference/overrides/header) to change the entire header, or use the [`headerActions` override](/docs/api-reference/overrides/header-actions) to inject new controls into the header and change the publish button.
+
+Here's an example that also leverage the [internal Puck API](/docs/extending-puck/internal-puck-api) to replace the default publish button with a custom one:
+
+```tsx showLineNumbers copy {10-30}
+import { Puck, createUsePuck } from "@measured/puck";
+
+const usePuck = createUsePuck();
+
+const save = () => {};
+
+export function Editor() {
+  return (
+    <Puck
+      // ...
+      overrides={{
+        headerActions: ({ children }) => {
+          const appState = usePuck((s) => s.appState);
+
+          return (
+            <>
+              <button
+                onClick={() => {
+                  save(appState.data);
+                }}
+              >
+                Save
+              </button>
+
+              {/* Render default header actions, such as the default Button */}
+              {/*{children}*/}
+            </>
+          );
+        },
+      }}
+    />
+  );
+}
+```
+
+### Custom field type
+
+An advanced use case is overriding all fields of a certain type by specifying the [`fieldTypes` override](/docs/api-reference/overrides/field-types).
+
+```tsx showLineNumbers copy {8-18}
+import { Puck } from "@measured/puck";
+
+export function Editor() {
+  return (
+    <Puck
+      // ...
+      overrides={{
+        fieldTypes: {
+          // Override all text fields with a custom input
+          text: ({ name, onChange, value }) => (
+            <input
+              defaultValue={value}
+              name={name}
+              onChange={(e) => onChange(e.currentTarget.value)}
+              style={{ border: "1px solid black", padding: 4 }}
+            />
+          ),
+        },
+      }}
+    />
+  );
+}
+```
+
+## Further reading
+
+- [`overrides` API reference](/docs/api-reference/overrides)
+- [Composition](/docs/extending-puck/composition)
+- [Internal Puck API](/docs/extending-puck/internal-puck-api)

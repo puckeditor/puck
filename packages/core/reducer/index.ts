@@ -1,17 +1,31 @@
 import { Reducer } from "react";
-import { AppState, Config, Data } from "../types";
-import { reduceData } from "./data";
-import { PuckAction, SetAction } from "./actions";
-import { reduceUi } from "./state";
+import { AppState, Data } from "../types";
+import { PuckAction } from "./actions";
 import type { OnAction } from "../types";
+import { AppStore } from "../store";
+import { PrivateAppState } from "../types/Internal";
+import { setAction } from "./actions/set";
+import { insertAction } from "./actions/insert";
+import { replaceAction } from "./actions/replace";
+import { replaceRootAction } from "./actions/replace-root";
+import { duplicateAction } from "./actions/duplicate";
+import { reorderAction } from "./actions/reorder";
+import { moveAction } from "./actions/move";
+import { removeAction } from "./actions/remove";
+import {
+  registerZoneAction,
+  unregisterZoneAction,
+} from "./actions/register-zone";
+import { setDataAction } from "./actions/set-data";
+import { setUiAction } from "./actions/set-ui";
+import { makeStatePublic } from "../lib/data/make-state-public";
 
 export * from "./actions";
-export * from "./data";
 
 export type ActionType = "insert" | "reorder";
 
 export type StateReducer<UserData extends Data = Data> = Reducer<
-  AppState<UserData>,
+  PrivateAppState<UserData>,
   PuckAction
 >;
 
@@ -21,9 +35,9 @@ function storeInterceptor<UserData extends Data = Data>(
   onAction?: OnAction<UserData>
 ) {
   return (
-    state: AppState<UserData>,
+    state: PrivateAppState<UserData>,
     action: PuckAction
-  ): AppState<UserData> => {
+  ): PrivateAppState<UserData> => {
     const newAppState = reducer(state, action);
 
     const isValidType = ![
@@ -42,48 +56,72 @@ function storeInterceptor<UserData extends Data = Data>(
       if (record) record(newAppState);
     }
 
-    onAction?.(action, newAppState, state);
+    onAction?.(action, makeStatePublic(newAppState), makeStatePublic(state));
 
     return newAppState;
   };
 }
 
-export const setAction = <UserData extends Data>(
-  state: AppState<UserData>,
-  action: SetAction<UserData>
-): AppState<UserData> => {
-  if (typeof action.state === "object") {
-    return {
-      ...state,
-      ...action.state,
-    };
-  }
-
-  return { ...state, ...action.state(state) };
-};
-
-export function createReducer<
-  UserConfig extends Config,
-  UserData extends Data
->({
-  config,
+export function createReducer<UserData extends Data>({
   record,
   onAction,
+  appStore,
 }: {
-  config: UserConfig;
   record?: (appState: AppState<UserData>) => void;
   onAction?: OnAction<UserData>;
+  appStore: AppStore;
 }): StateReducer<UserData> {
   return storeInterceptor(
     (state, action) => {
-      const data = reduceData(state.data, action, config);
-      const ui = reduceUi(state.ui, action);
-
       if (action.type === "set") {
-        return setAction<UserData>(state, action as SetAction<UserData>);
+        return setAction(state, action, appStore) as PrivateAppState<UserData>;
       }
 
-      return { data, ui };
+      if (action.type === "insert") {
+        return insertAction(state, action, appStore);
+      }
+
+      if (action.type === "replace") {
+        return replaceAction(state, action, appStore);
+      }
+
+      if (action.type === "replaceRoot") {
+        return replaceRootAction(state, action, appStore);
+      }
+
+      if (action.type === "duplicate") {
+        return duplicateAction(state, action, appStore);
+      }
+
+      if (action.type === "reorder") {
+        return reorderAction(state, action, appStore);
+      }
+
+      if (action.type === "move") {
+        return moveAction(state, action, appStore);
+      }
+
+      if (action.type === "remove") {
+        return removeAction(state, action, appStore);
+      }
+
+      if (action.type === "registerZone") {
+        return registerZoneAction(state, action);
+      }
+
+      if (action.type === "unregisterZone") {
+        return unregisterZoneAction(state, action);
+      }
+
+      if (action.type === "setData") {
+        return setDataAction(state, action, appStore);
+      }
+
+      if (action.type === "setUi") {
+        return setUiAction(state, action);
+      }
+
+      return state;
     },
     record,
     onAction

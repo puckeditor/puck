@@ -1,5 +1,5 @@
 import { ConfigPreview } from "@/docs/components/Preview";
-import { AutoField, FieldLabel } from "@/core/components/AutoField";
+import { AutoField, FieldLabel } from "@/puck";
 
 # Custom Fields
 
@@ -190,7 +190,7 @@ const config = {
 
 ## Updating the UI state
 
-The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) can also be used to modify the [Puck UI state](/docs/api-reference/app-state#ui) at the same time as updating the field value:
+The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) can also be used to modify the [Puck UI state](/docs/api-reference/data-model/app-state#ui) at the same time as updating the field value:
 
 ```tsx copy showLineNumbers {14,15}
 const config = {

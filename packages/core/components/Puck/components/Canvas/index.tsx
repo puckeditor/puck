@@ -7,24 +7,48 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAppContext } from "../../context";
+import { useAppStore } from "../../../../store";
 import { ViewportControls } from "../../../ViewportControls";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
 import { Preview } from "../Preview";
 import { getZoomConfig } from "../../../../lib/get-zoom-config";
-import { AppState, UiState } from "../../../../types";
+import { UiState } from "../../../../types";
 import { Loader } from "../../../Loader";
+import { useShallow } from "zustand/react/shallow";
 
 const getClassName = getClassNameFactory("PuckCanvas", styles);
 
 const ZOOM_ON_CHANGE = true;
 
 export const Canvas = () => {
-  const { status, iframe } = useAppContext();
-  const { dispatch, state, overrides, setUi, zoomConfig, setZoomConfig } =
-    useAppContext();
-  const { ui } = state;
+  const {
+    dispatch,
+    overrides,
+    setUi,
+    zoomConfig,
+    setZoomConfig,
+    status,
+    iframe,
+  } = useAppStore(
+    useShallow((s) => ({
+      dispatch: s.dispatch,
+      overrides: s.overrides,
+      setUi: s.setUi,
+      zoomConfig: s.zoomConfig,
+      setZoomConfig: s.setZoomConfig,
+      status: s.status,
+      iframe: s.iframe,
+    }))
+  );
+  const { leftSideBarVisible, rightSideBarVisible, viewports } = useAppStore(
+    useShallow((s) => ({
+      leftSideBarVisible: s.state.ui.leftSideBarVisible,
+      rightSideBarVisible: s.state.ui.rightSideBarVisible,
+      viewports: s.state.ui.viewports,
+    }))
+  );
+
   const frameRef = useRef<HTMLDivElement>(null);
 
   const [showTransition, setShowTransition] = useState(false);
@@ -57,27 +81,31 @@ export const Canvas = () => {
   }, [frameRef]);
 
   const resetAutoZoom = useCallback(
-    (ui: AppState["ui"] = state.ui) => {
+    (newViewports: UiState["viewports"] = viewports) => {
       if (frameRef.current) {
         setZoomConfig(
-          getZoomConfig(ui.viewports.current, frameRef.current, zoomConfig.zoom)
+          getZoomConfig(
+            newViewports?.current,
+            frameRef.current,
+            zoomConfig.zoom
+          )
         );
       }
     },
-    [frameRef, zoomConfig, state.ui]
+    [frameRef, zoomConfig, viewports]
   );
 
   // Auto zoom
   useEffect(() => {
     setShowTransition(false);
-    resetAutoZoom();
-  }, [frameRef, ui.leftSideBarVisible, ui.rightSideBarVisible]);
+    resetAutoZoom(viewports);
+  }, [frameRef, leftSideBarVisible, rightSideBarVisible]);
 
   // Constrain height
   useEffect(() => {
     const { height: frameHeight } = getFrameDimensions();
 
-    if (ui.viewports.current.height === "auto") {
+    if (viewports.current.height === "auto") {
       setZoomConfig({
         ...zoomConfig,
         rootHeight: frameHeight / zoomConfig.zoom,
@@ -89,9 +117,9 @@ export const Canvas = () => {
   useEffect(() => {
     if (ZOOM_ON_CHANGE) {
       setShowTransition(true);
-      resetAutoZoom(ui);
+      resetAutoZoom(viewports);
     }
-  }, [ui.viewports.current.width]);
+  }, [viewports.current.width]);
 
   // Resize based on window size
   useEffect(() => {
@@ -129,7 +157,7 @@ export const Canvas = () => {
         })
       }
     >
-      {ui.viewports.controlsVisible && iframe.enabled && (
+      {viewports.controlsVisible && iframe.enabled && (
         <div className={getClassName("controls")}>
           <ViewportControls
             autoZoom={zoomConfig.autoZoom}
@@ -143,16 +171,15 @@ export const Canvas = () => {
                 zoom: zoomConfig.zoom,
               };
 
-              const newUi: UiState = {
-                ...ui,
-                viewports: { ...ui.viewports, current: uiViewport },
+              const newUi: Partial<UiState> = {
+                viewports: { ...viewports, current: uiViewport },
                 itemSelector: null,
               };
 
               setUi(newUi);
 
               if (ZOOM_ON_CHANGE) {
-                resetAutoZoom(newUi);
+                resetAutoZoom({ ...viewports, current: uiViewport });
               }
             }}
             onZoom={(zoom) => {
@@ -167,7 +194,7 @@ export const Canvas = () => {
         <div
           className={getClassName("root")}
           style={{
-            width: iframe.enabled ? ui.viewports.current.width : "100%",
+            width: iframe.enabled ? viewports.current.width : "100%",
             height: zoomConfig.rootHeight,
             transform: iframe.enabled ? `scale(${zoomConfig.zoom})` : undefined,
             transition: showTransition

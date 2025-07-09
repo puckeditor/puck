@@ -4,7 +4,7 @@
 
 Puck follows semantic versioning. Major releases may introduce breaking changes for your Data payload.
 
-Puck provides the [`migrate`](/docs/api-reference/functions/migrate) helper method to help migrate legacy data payloads to the latest data model, transforming any deprecated properties to their latest counterparts as described by the [Data API reference](/docs/api-reference/data).
+Puck provides the [`migrate`](/docs/api-reference/functions/migrate) helper method to help migrate legacy data payloads to the latest data model, transforming any deprecated properties to their latest counterparts as described by the [Data API reference](/docs/api-reference/data-model/data).
 
 ```tsx
 import { migrate } from "@measured/puck";
@@ -14,7 +14,7 @@ migrate(legacyData);
 
 ## Breaking changes to props
 
-Renaming or removing the props passed to your components are considered breaking changes. Any existing [Data](/docs/api-reference/data) payloads that reference these props will be unable to render.
+Renaming or removing the props passed to your components are considered breaking changes. Any existing [Data](/docs/api-reference/data-model/data) payloads that reference these props will be unable to render.
 
 There are two strategies for dealing with this:
 
@@ -33,7 +33,7 @@ const config = {
 
 ### Implementing a prop migration
 
-It will often be preferrable to update the underlying [Data](/docs/api-reference/data) payload. Puck provides the [`transformProps`](/docs/api-reference/functions/transform-props) utility method to conveniently transform the props for a given component throughout the payload.
+It will often be preferrable to update the underlying [Data](/docs/api-reference/data-model/data) payload. Puck provides the [`transformProps`](/docs/api-reference/functions/transform-props) utility method to conveniently transform the props for a given component throughout the payload.
 
 ```tsx copy showLineNumbers {15-18}
 import { transformProps } from "@measured/puck";
@@ -79,6 +79,6 @@ export const MyPage = ({ data, config }) => (
 
 ## Further reading
 
-- [`Data` API reference](/docs/api-reference/data)
+- [`Data` API reference](/docs/api-reference/data-model/data)
 - [`migrate` API reference](/docs/api-reference/functions/migrate)
 - [`transformProps` API reference](/docs/api-reference/functions/transform-props)

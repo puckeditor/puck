@@ -1,7 +1,7 @@
 {
   "name": "@measured/puck-field-contentful",
-  "version": "0.18.2",
-  "author": "Measured Corporation Ltd <hello@measured.co>",
+  "version": "0.19.1",
+  "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
   "bugs": "https://github.com/measuredco/puck/issues",
   "homepage": "https://puckeditor.com",
@@ -22,7 +22,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@measured/puck": "^0.18.2",
+    "@measured/puck": "^0.19.1",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "contentful": "^10.8.6",

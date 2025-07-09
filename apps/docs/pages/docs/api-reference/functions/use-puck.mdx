@@ -4,236 +4,44 @@ title: usePuck
 
 # usePuck
 
-A hook for building custom components that can interact with Puck.
+A hook for accessing the [`PuckApi`](/docs/api-reference/puck-api) as part of your React render lifecycle.. The best way to access `usePuck` is via the `createUsePuck()` factory.
 
-```tsx copy /usePuck/1 {4}
-import { Puck, usePuck } from "@measured/puck";
+```tsx copy
+import { createUsePuck } from "@measured/puck";
 
-const JSONRenderer = () => {
-  const { appState } = usePuck();
+const usePuck = createUsePuck();
 
-  return <div>{JSON.stringify(appState.data)}</div>;
+const Example = () => {
+  const type = usePuck((s) => s.selectedItem?.type || "Nothing");
+
+  return <h2>{type} selected</h2>;
 };
-
-export function Editor() {
-  return (
-    <Puck>
-      <JSONRenderer />
-    </Puck>
-  );
-}
 ```
 
-**Components using the `usePuck` hook must be rendered within the [`<Puck>`](/docs/api-reference/components/puck) context as [`children`](/docs/api-reference/components/puck#children), [`overrides`](/docs/api-reference/components/puck#overrides) or [`plugins`](/docs/api-reference/components/puck#plugins).**
+You can also access `usePuck` as a direct export, but you won't be able to use [selectors](#selectordata), resulting in unwanted re-renders and degraded performance.
+
+## Args
+
+| Param                             | Example                      | Type     |
+| --------------------------------- | ---------------------------- | -------- |
+| [`selector(data)`](#selectordata) | `(s: PuckApi) => s.appState` | Function |
+
+### `selector(data)`
+
+A selector function that describes what `usePuck` returns. Receives [`PuckApi`](/docs/api-reference/puck-api) and returns anything. Be as granular as possible to minimize re-renders.
+
+```tsx
+// Good: only re-render when the `selectedItem` changes
+const selectedItem = usePuck((s) => s.selectedItem);
+
+// Bad: re-render when anything changes
+const { selectedItem } = usePuck();
+const { selectedItem } = usePuck((s) => s);
+
+// Bad: selector creates a new object reference, causing an infinite comparison loop
+const { selectedItem } = usePuck((s) => ({ ...s.selectedItem }));
+```
 
 ## Returns
 
-| Param                                             | Example                                          | Type                                                |
-| ------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------- |
-| [`appState`](#appstate)                           | `{ data: {}, ui: {} }`                           | [AppState](/docs/api-reference/app-state)           |
-| [`dispatch`](#dispatchaction)                     | `(action: PuckAction) => void`                   | Function                                            |
-| [`getPermissions`](#getpermissionsparams)         | `() => ({ delete: true  })`                      | Function                                            |
-| [`history`](#history)                             | `{}`                                             | Object                                              |
-| [`refreshPermissions`](#refreshpermissionsparams) | `() => void`                                     | Function                                            |
-| [`selectedItem`](#selecteditem)                   | `{ type: "Heading", props: {id: "my-heading"} }` | [ComponentData](/docs/api-reference/data#content-1) |
-
-### `appState`
-
-The current [application state](/docs/api-reference/app-state) for this Puck instance.
-
-```tsx
-console.log(appState.data);
-// { content: [], root: {}, zones: {} }
-```
-
-### `dispatch(action)`
-
-Execute an [action](/docs/api-reference/actions) to mutate the Puck [application state](/docs/api-reference/app-state).
-
-```tsx
-dispatch({
-  type: "setUi",
-  ui: {
-    leftSideBarVisible: false,
-  },
-});
-```
-
-### `getPermissions(params)`
-
-Get global, component or resolved dynamic [permissions](/docs/api-reference/permissions).
-
-```tsx
-getPermissions();
-// { delete: true, edit: true }
-```
-
-#### Params
-
-| Param  | Example                                           | Type    |
-| ------ | ------------------------------------------------- | ------- |
-| `item` | `{ type: "HeadingBlock", props: { id: "1234" } }` | Object  |
-| `root` | `false`                                           | Boolean |
-| `type` | `"HeadingBlock"`                                  | String  |
-
-##### `item`
-
-Specify `item` to retrieve the permissions for a given component instance, resolving any dynamic permissions for that component, as set by the [`resolvePermissions` parameter](/docs/api-reference/configuration/component-config#resolvepermissionsdata-params).
-
-```tsx
-getPermissions({
-  item: { type: "HeadingBlock", props: { id: "Heading-1234" } }, // Get resolved permissions for Heading-1234
-});
-// { delete: false }
-```
-
-The `getPermissions` function will be redefined when after resolving dynamic permissions, so it's generally required to wrap it in a `useEffect` hook:
-
-```tsx
-const [myPermissions, setMyPermissions] = useState(getPermissions());
-
-useEffect(() => {
-  setMyPermissions(getPermissions());
-}, [getPermissions]);
-```
-
-##### `root`
-
-Specify `root` to retrieve the permissions for the `root`, as set by the [`permissions` parameter](/docs/api-reference/configuration/component-config#permissions).
-
-```tsx
-getPermissions({ root: true });
-// { delete: false }
-```
-
-##### `type`
-
-Specify `type` to retrieve the permissions for a given component type, as set by the [`permissions` parameter](/docs/api-reference/configuration/component-config#permissions).
-
-```tsx
-getPermissions({ type: "HeadingBlock" });
-// { delete: false }
-```
-
-### `history`
-
-The `history` API provides programmatic access to the undo/redo [AppState](/docs/api-reference/app-state) history.
-
-| Param                                 | Example                             | Type                           |
-| ------------------------------------- | ----------------------------------- | ------------------------------ |
-| [`back`](#historyback)                | `() => void`                        | Function                       |
-| [`forward`](#historyforward)          | `() => void`                        | Function                       |
-| [`hasPast`](#historyhaspast)          | `true`                              | Boolean                        |
-| [`hasFuture`](#historyhasfuture)      | `false`                             | Boolean                        |
-| [`histories`](#historyhistories)      | `[{ id: 'abc123', data: {} }]`      | [History](#history-params)\[\] |
-| [`index`](#historyindex)              | `5`                                 | Number                         |
-| [`setHistories`](#sethistories)       | `setHistories: (histories) => void` | Function                       |
-| [`setHistoryIndex`](#sethistoryindex) | `setHistoryIndex: (index) => void`  | Function                       |
-
-#### `history.back()`
-
-A function to move the app state back through the [histories](#historyhistories).
-
-#### `history.forward()`
-
-A function to move the app state forward through the [histories](#historyhistories).
-
-#### `history.hasPast`
-
-A boolean describing whether or not the present app state has past history items.
-
-#### `history.hasFuture`
-
-A boolean describing whether or not the present app state has future history items.
-
-#### `history.histories`
-
-An array describing the recorded history as `History` objects.
-
-##### `History` params
-
-| Param   | Example  | Type                                      |
-| ------- | -------- | ----------------------------------------- |
-| `state` | `{}`     | [AppState](/docs/api-reference/app-state) |
-| `id`    | `abc123` | String                                    |
-
-###### `state`
-
-The [app state](/docs/api-reference/app-state) payload for this history entry.
-
-###### `id`
-
-An optional ID for this history entry.
-
-#### `history.index`
-
-The index of the currently selected history in [`history.histories`](#historyhistories)
-
-#### `setHistories`
-
-A function to set the history state.
-
-```tsx
-const { setHistories } = usePuck();
-setHistories([]); // clears all history
-```
-
-#### `setHistoryIndex`
-
-A function to set current history index.
-
-```tsx
-const { setHistoryIndex } = usePuck();
-setHistoryIndex(2);
-```
-
-### `refreshPermissions(params)`
-
-Force the permissions to refresh, running all [`resolvePermissions` functions](/docs/api-reference/configuration/component-config#resolvepermissionsdata-params) and skipping the cache.
-
-```tsx
-resolvePermissions(); // Refresh all permissions
-```
-
-#### Params
-
-| Param  | Example                                           | Type    |
-| ------ | ------------------------------------------------- | ------- |
-| `item` | `{ type: "HeadingBlock", props: { id: "1234" } }` | Object  |
-| `root` | `false`                                           | Boolean |
-| `type` | `"HeadingBlock"`                                  | String  |
-
-##### `item`
-
-Specify `item` to refresh the permissions for a given component instance only.
-
-```tsx
-refreshPermissions({
-  item: { type: "HeadingBlock", props: { id: "Heading-1234" } }, // Force refresh the resolved permissions for Heading-1234
-});
-```
-
-##### `root`
-
-Specify `root` to refresh the permissions for the `root` only.
-
-```tsx
-refreshPermissions({ root: true });
-```
-
-##### `type`
-
-Specify `type` to refresh the permissions for all components of a given component type.
-
-```tsx
-refreshPermissions({ type: "HeadingBlock" });
-```
-
-### `selectedItem`
-
-The currently selected item, as defined by `appState.ui.itemSelector`.
-
-```tsx
-console.log(selectedItem);
-// { type: "Heading", props: {id: "my-heading"} }
-```
+Whatever is returned by the [`selector`](#selectordata).

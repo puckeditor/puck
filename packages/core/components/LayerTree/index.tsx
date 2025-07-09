@@ -1,40 +1,181 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { ComponentConfig, Config, Data } from "../../types";
-import { ItemSelector, getItem } from "../../lib/get-item";
+import { ComponentConfig } from "../../types";
+import { ItemSelector } from "../../lib/data/get-item";
 import { scrollIntoView } from "../../lib/scroll-into-view";
 import { ChevronDown, LayoutGrid, Layers, Type } from "lucide-react";
 import { rootDroppableId } from "../../lib/root-droppable-id";
-import { useContext } from "react";
-import { dropZoneContext } from "../DropZone/context";
-import { findZonesForArea } from "../../lib/find-zones-for-area";
-import { getZoneId } from "../../lib/get-zone-id";
-import { isChildOfZone } from "../../lib/is-child-of-zone";
+import { useCallback, useContext } from "react";
+import { dropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { getFrame } from "../../lib/get-frame";
 import { onScrollEnd } from "../../lib/on-scroll-end";
+import { useAppStore } from "../../store";
+import { useShallow } from "zustand/react/shallow";
+import { useContextStore } from "../../lib/use-context-store";
 
 const getClassName = getClassNameFactory("LayerTree", styles);
 const getClassNameLayer = getClassNameFactory("Layer", styles);
 
-export const LayerTree = ({
-  data,
-  config,
-  zoneContent,
-  itemSelector,
-  setItemSelector,
-  zone,
-  label,
+const Layer = ({
+  index,
+  itemId,
+  zoneCompound,
 }: {
-  data: Data;
-  config: Config;
-  zoneContent: Data["content"];
-  itemSelector?: ItemSelector | null;
-  setItemSelector: (item: ItemSelector | null) => void;
-  zone?: string;
-  label?: string;
+  index: number;
+  itemId: string;
+  zoneCompound: string;
 }) => {
-  const zones = data.zones || {};
   const ctx = useContext(dropZoneContext);
+
+  const config = useAppStore((s) => s.config);
+  const itemSelector = useAppStore((s) => s.state.ui.itemSelector);
+  const dispatch = useAppStore((s) => s.dispatch);
+
+  const setItemSelector = useCallback(
+    (itemSelector: ItemSelector | null) => {
+      dispatch({ type: "setUi", ui: { itemSelector } });
+    },
+    [dispatch]
+  );
+
+  const selecedItemId = useAppStore((s) => s.selectedItem?.props.id);
+
+  const isSelected =
+    selecedItemId === itemId ||
+    (itemSelector && itemSelector.zone === rootDroppableId && !zoneCompound);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const nodeData = useAppStore((s) => s.state.indexes.nodes[itemId]);
+
+  // const zonesForItem = findZonesForArea(data, itemId);
+  const zonesForItem = useAppStore(
+    useShallow((s) =>
+      Object.keys(s.state.indexes.zones).filter(
+        (z) => z.split(":")[0] === itemId
+      )
+    )
+  );
+  const containsZone = zonesForItem.length > 0;
+
+  const zoneStore = useContext(ZoneStoreContext);
+  const isHovering = useContextStore(
+    ZoneStoreContext,
+    (s) => s.hoveringComponent === itemId
+  );
+
+  const childIsSelected = useAppStore((s) => {
+    const selectedData = s.state.indexes.nodes[s.selectedItem?.props.id];
+
+    return (
+      selectedData?.path.some((candidate) => {
+        const [candidateId] = candidate.split(":");
+
+        return candidateId === itemId;
+      }) ?? false
+    );
+  });
+
+  const componentConfig: ComponentConfig | undefined =
+    config.components[nodeData.data.type];
+  const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
+
+  return (
+    <li
+      className={getClassNameLayer({
+        isSelected,
+        isHovering,
+        containsZone,
+        childIsSelected,
+      })}
+    >
+      <div className={getClassNameLayer("inner")}>
+        <button
+          type="button"
+          className={getClassNameLayer("clickable")}
+          onClick={() => {
+            if (isSelected) {
+              setItemSelector(null);
+              return;
+            }
+
+            const frame = getFrame();
+
+            const el = frame?.querySelector(
+              `[data-puck-component="${itemId}"]`
+            );
+
+            if (!el) {
+              setItemSelector({
+                index,
+                zone: zoneCompound,
+              });
+              return;
+            }
+
+            scrollIntoView(el as HTMLElement);
+
+            onScrollEnd(frame, () => {
+              setItemSelector({
+                index,
+                zone: zoneCompound,
+              });
+            });
+          }}
+          onMouseEnter={(e) => {
+            e.stopPropagation();
+            zoneStore.setState({ hoveringComponent: itemId });
+          }}
+          onMouseLeave={(e) => {
+            e.stopPropagation();
+            zoneStore.setState({ hoveringComponent: null });
+          }}
+        >
+          {containsZone && (
+            <div
+              className={getClassNameLayer("chevron")}
+              title={isSelected ? "Collapse" : "Expand"}
+            >
+              <ChevronDown size="12" />
+            </div>
+          )}
+          <div className={getClassNameLayer("title")}>
+            <div className={getClassNameLayer("icon")}>
+              {nodeData.data.type === "Text" ||
+              nodeData.data.type === "Heading" ? (
+                <Type size="16" />
+              ) : (
+                <LayoutGrid size="16" />
+              )}
+            </div>
+            <div className={getClassNameLayer("name")}>{label}</div>
+          </div>
+        </button>
+      </div>
+      {containsZone &&
+        zonesForItem.map((subzone) => (
+          <div key={subzone} className={getClassNameLayer("zones")}>
+            <LayerTree zoneCompound={subzone} />
+          </div>
+        ))}
+    </li>
+  );
+};
+
+export const LayerTree = ({
+  label: _label,
+  zoneCompound,
+}: {
+  label?: string;
+  zoneCompound: string;
+}) => {
+  const label = _label ?? zoneCompound.split(":")[1];
+
+  const contentIds = useAppStore(
+    useShallow((s) =>
+      zoneCompound ? s.state.indexes.zones[zoneCompound]?.contentIds ?? [] : []
+    )
+  );
 
   return (
     <>
@@ -42,127 +183,22 @@ export const LayerTree = ({
         <div className={getClassName("zoneTitle")}>
           <div className={getClassName("zoneIcon")}>
             <Layers size="16" />
-          </div>{" "}
+          </div>
           {label}
         </div>
       )}
       <ul className={getClassName()}>
-        {zoneContent.length === 0 && (
+        {contentIds.length === 0 && (
           <div className={getClassName("helper")}>No items</div>
         )}
-        {zoneContent.map((item, i) => {
-          const isSelected =
-            itemSelector?.index === i &&
-            (itemSelector.zone === zone ||
-              (itemSelector.zone === rootDroppableId && !zone));
-
-          const zonesForItem = findZonesForArea(data, item.props.id);
-          const containsZone = Object.keys(zonesForItem).length > 0;
-
-          const { setHoveringComponent = () => {}, hoveringComponent } =
-            ctx || {};
-
-          const selectedItem =
-            itemSelector && data ? getItem(itemSelector, data) : null;
-
-          const isHovering = hoveringComponent === item.props.id;
-
-          const childIsSelected = isChildOfZone(item, selectedItem, ctx);
-
-          const componentConfig: ComponentConfig | undefined =
-            config.components[item.type];
-          const label = componentConfig?.["label"] ?? item.type.toString();
-
+        {contentIds.map((itemId, i) => {
           return (
-            <li
-              className={getClassNameLayer({
-                isSelected,
-                isHovering,
-                containsZone,
-                childIsSelected,
-              })}
-              key={`${item.props.id}_${i}`}
-            >
-              <div className={getClassNameLayer("inner")}>
-                <button
-                  type="button"
-                  className={getClassNameLayer("clickable")}
-                  onClick={() => {
-                    if (isSelected) {
-                      setItemSelector(null);
-                      return;
-                    }
-
-                    const id = zoneContent[i].props.id;
-
-                    const frame = getFrame();
-
-                    const el = frame?.querySelector(
-                      `[data-puck-component="${id}"]`
-                    );
-
-                    if (!el) {
-                      console.error(
-                        "Scroll failed. No element was found for",
-                        id
-                      );
-
-                      return;
-                    }
-
-                    scrollIntoView(el as HTMLElement);
-
-                    onScrollEnd(frame, () => {
-                      setItemSelector({
-                        index: i,
-                        zone,
-                      });
-                    });
-                  }}
-                  onMouseOver={(e) => {
-                    e.stopPropagation();
-                    setHoveringComponent(item.props.id);
-                  }}
-                  onMouseOut={(e) => {
-                    e.stopPropagation();
-                    setHoveringComponent(null);
-                  }}
-                >
-                  {containsZone && (
-                    <div
-                      className={getClassNameLayer("chevron")}
-                      title={isSelected ? "Collapse" : "Expand"}
-                    >
-                      <ChevronDown size="12" />
-                    </div>
-                  )}
-                  <div className={getClassNameLayer("title")}>
-                    <div className={getClassNameLayer("icon")}>
-                      {item.type === "Text" || item.type === "Heading" ? (
-                        <Type size="16" />
-                      ) : (
-                        <LayoutGrid size="16" />
-                      )}
-                    </div>
-                    <div className={getClassNameLayer("name")}>{label}</div>
-                  </div>
-                </button>
-              </div>
-              {containsZone &&
-                Object.keys(zonesForItem).map((zoneKey, idx) => (
-                  <div key={idx} className={getClassNameLayer("zones")}>
-                    <LayerTree
-                      config={config}
-                      data={data}
-                      zoneContent={zones[zoneKey]}
-                      setItemSelector={setItemSelector}
-                      itemSelector={itemSelector}
-                      zone={zoneKey}
-                      label={getZoneId(zoneKey)[1]}
-                    />
-                  </div>
-                ))}
-            </li>
+            <Layer
+              index={i}
+              itemId={itemId}
+              zoneCompound={zoneCompound}
+              key={itemId}
+            />
           );
         })}
       </ul>

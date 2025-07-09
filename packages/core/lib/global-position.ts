@@ -14,7 +14,7 @@ export class GlobalPosition {
     this.target = target;
     this.original = original;
 
-    this.frameEl = document.querySelector("iframe");
+    this.frameEl = document.querySelector("iframe#preview-frame");
 
     if (this.frameEl) {
       this.frameRect = this.frameEl.getBoundingClientRect();

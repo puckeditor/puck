@@ -40,7 +40,3 @@ By default, this recipe will have JavaScript enable on all routes - like a usual
 ## Disabling JavaScript
 
 This recipe can be adapted to disable JavaScript. See the [Remix docs](https://remix.run/docs/en/main/guides/disabling-javascript) for steps on how to do this.
-
-## License
-
-MIT © [Measured Co.](https://github.com/measuredco)

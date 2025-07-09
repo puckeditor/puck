@@ -4,7 +4,7 @@ title: migrate
 
 # migrate
 
-Migrate the [Data payload](/docs/api-reference/data) to the latest shape, automatically transforming deprecated data.
+Migrate the [Data payload](/docs/api-reference/data-model/data) to the latest shape, automatically transforming deprecated data.
 
 ```tsx copy showLineNumbers {7-10}
 import { migrate } from "@measured/puck";
@@ -12,6 +12,101 @@ import { migrate } from "@measured/puck";
 migrate(legacyData);
 ```
 
+## Migrations
+
+### Root data to props
+
+Migrates any props stored on root data to the `props` object.
+
+**Before**
+
+```json
+{
+  "root": {
+    "title": "Hello, world"
+  }
+}
+```
+
+**After**
+
+```json
+{
+  "root": {
+    "props": { "title": "Hello, world" }
+  }
+}
+```
+
+### DropZones to slots
+
+Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zones`](/docs/api-reference/data-model/data#zones) to inline [slots](/docs/api-reference/fields/slot). Requires slots to be provided via the [`config`](#config) arg, where the field name for the slot matches the `zone` prop of the DropZone. See the [DropZone to slots migration guide](/docs/guides/migrations/dropzones-to-slots) for more information.
+
+**Before**
+
+```json showLineNumbers {10-20}
+{
+  "content": [
+    {
+      "type": "Grid",
+      "props": {
+        "id": "Grid-12345"
+      }
+    }
+  ],
+  "zones": {
+    "Grid-12345:items": [
+      {
+        "type": "HeadingBlock",
+        "props": {
+          "id": "Heading-12345",
+          "title": "Hello, world"
+        }
+      }
+    ]
+  }
+}
+```
+
+**After**
+
+```json showLineNumbers {7-15}
+{
+  "content": [
+    {
+      "type": "Grid",
+      "props": {
+        "id": "Grid-12345",
+        "items": [
+          {
+            "type": "HeadingBlock",
+            "props": {
+              "id": "Heading-12345",
+              "title": "Hello, world"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+## Args
+
+| Param               | Example                                       | Type                                               | Status   |
+| ------------------- | --------------------------------------------- | -------------------------------------------------- | -------- |
+| [`data`](#data)     | `{ content: [{type: "Heading", props: {} }]}` | [Data](/docs/api-reference/data-model/data)        | Required |
+| [`config`](#config) | `{ components: {} }`                          | [Config](/docs/api-reference/configuration/config) | -        |
+
+### `data`
+
+The legacy data you want to transform.
+
+### `config`
+
+A [config](/docs/api-reference/configuration/config) object. Normally only required if using [slots](/docs/api-reference/fields/slot).
+
 ## Returns
 
-The updated [Data](/docs/api-reference/data) object.
+The updated [Data](/docs/api-reference/data-model/data) object.

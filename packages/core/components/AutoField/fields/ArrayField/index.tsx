@@ -4,12 +4,15 @@ import { Copy, List, Plus, Trash } from "lucide-react";
 import { AutoFieldPrivate, FieldPropsInternal } from "../..";
 import { IconButton } from "../../../IconButton";
 import { reorder, replace } from "../../../../lib";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DragIcon } from "../../../DragIcon";
 import { ArrayState, ItemWithId } from "../../../../types";
-import { useAppContext } from "../../../Puck/context";
+import { useAppStore, useAppStoreApi } from "../../../../store";
 import { Sortable, SortableProvider } from "../../../Sortable";
 import { NestedFieldProvider, useNestedFieldContext } from "../../context";
+import { walkField } from "../../../../lib/data/map-slots";
+import { populateIds } from "../../../../lib/data/populate-ids";
+import { defaultSlots } from "../../../../lib/data/default-slots";
 
 const getClassName = getClassNameFactory("ArrayField", styles);
 const getClassNameItem = getClassNameFactory("ArrayFieldItem", styles);
@@ -20,16 +23,18 @@ export const ArrayField = ({
   value: _value,
   name,
   label,
+  labelIcon,
   readOnly,
   id,
   Label = (props) => <div {...props} />,
 }: FieldPropsInternal) => {
-  const { state, setUi, selectedItem, getPermissions } = useAppContext();
+  const thisArrayState = useAppStore((s) => s.state.ui.arrayState[id]);
+  const setUi = useAppStore((s) => s.setUi);
   const { readOnlyFields, localName = name } = useNestedFieldContext();
 
   const value: object[] = _value;
 
-  const arrayState = state.ui.arrayState[id] || {
+  const arrayState = thisArrayState || {
     items: Array.from(value || []).map((item, idx) => {
       return {
         _originalIndex: idx,
@@ -42,11 +47,17 @@ export const ArrayField = ({
   const [localState, setLocalState] = useState({ arrayState, value });
 
   useEffect(() => {
-    setLocalState({ arrayState, value });
-  }, [value, state.ui.arrayState[id]]);
+    const _arrayState =
+      appStore.getState().state.ui.arrayState[id] ?? arrayState;
+
+    setLocalState({ arrayState: _arrayState, value });
+  }, [value]);
+
+  const appStore = useAppStoreApi();
 
   const mapArrayStateToUi = useCallback(
     (partialArrayState: Partial<ArrayState>) => {
+      const state = appStore.getState().state;
       return {
         arrayState: {
           ...state.ui.arrayState,
@@ -54,7 +65,7 @@ export const ArrayField = ({
         },
       };
     },
-    [arrayState]
+    [arrayState, appStore]
   );
 
   const getHighestIndex = useCallback(() => {
@@ -100,9 +111,36 @@ export const ArrayField = ({
     }
   }, []);
 
-  const [isDragging, setIsDragging] = useState(false);
+  const [draggedItem, setDraggedItem] = useState("");
+  const isDraggingAny = !!draggedItem;
 
-  const forceReadOnly = getPermissions({ item: selectedItem }).edit === false;
+  const canEdit = useAppStore(
+    (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
+  );
+
+  const forceReadOnly = !canEdit;
+
+  const valueRef = useRef<object[]>(value);
+
+  /**
+   * Walk the item and ensure all slotted items have unique IDs
+   */
+  const uniqifyItem = useCallback(
+    (val: any) => {
+      if (field.type !== "array" || !field.arrayFields) return;
+
+      const config = appStore.getState().config;
+
+      return walkField({
+        value: val,
+        fields: field.arrayFields,
+        map: (content) =>
+          content.map((item) => populateIds(item, config, true)),
+        config,
+      });
+    },
+    [appStore, field]
+  );
 
   if (field.type !== "array" || !field.arrayFields) {
     return null;
@@ -116,32 +154,48 @@ export const ArrayField = ({
   return (
     <Label
       label={label || name}
-      icon={<List size={16} />}
+      icon={labelIcon || <List size={16} />}
       el="div"
       readOnly={readOnly}
     >
       <SortableProvider
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={() => setIsDragging(false)}
+        onDragStart={(id) => setDraggedItem(id)}
+        onDragEnd={() => {
+          setDraggedItem("");
+
+          onChange(valueRef.current);
+        }}
         onMove={(move) => {
-          const newValue = reorder(value, move.source, move.target);
+          // A race condition means we can sometimes have the wrong source element
+          // so we double double check before proceeding
+          if (arrayState.items[move.source]._arrayId !== draggedItem) {
+            return;
+          }
+
+          const newValue = reorder(localState.value, move.source, move.target);
+
           const newArrayStateItems: ItemWithId[] = reorder(
             arrayState.items,
             move.source,
             move.target
           );
+
+          const state = appStore.getState().state;
+
           const newUi = {
             arrayState: {
               ...state.ui.arrayState,
               [id]: { ...arrayState, items: newArrayStateItems },
             },
           };
+
           setUi(newUi, false);
-          onChange(newValue, newUi);
           setLocalState({
             value: newValue,
             arrayState: { ...arrayState, items: newArrayStateItems },
           });
+
+          valueRef.current = newValue;
         }}
       >
         <div
@@ -149,209 +203,208 @@ export const ArrayField = ({
             hasItems: Array.isArray(value) && value.length > 0,
             addDisabled,
           })}
-          onClick={(e) => {
-            e.preventDefault();
-          }}
         >
-          <div className={getClassName("inner")} data-dnd-container>
-            {localState.arrayState.items.map((item, i) => {
-              const { _arrayId = `${id}-${i}`, _originalIndex = i } = item;
-              const data: any = Array.from(localState.value || [])[i] || {};
+          {localState.arrayState.items.length > 0 && (
+            <div className={getClassName("inner")} data-dnd-container>
+              {localState.arrayState.items.map((item, i) => {
+                const { _arrayId = `${id}-${i}`, _originalIndex = i } = item;
+                const data: any = Array.from(localState.value || [])[i] || {};
 
-              return (
-                <Sortable
-                  key={_arrayId}
-                  id={_arrayId}
-                  index={i}
-                  disabled={readOnly}
-                >
-                  {({ status, ref }) => (
-                    <div
-                      ref={ref}
-                      className={getClassNameItem({
-                        isExpanded: arrayState.openId === _arrayId,
-                        isDragging: status === "dragging",
-                        readOnly,
-                      })}
-                    >
+                return (
+                  <Sortable
+                    key={_arrayId}
+                    id={_arrayId}
+                    index={i}
+                    disabled={readOnly}
+                  >
+                    {({ isDragging, ref, handleRef }) => (
                       <div
-                        onClick={(e) => {
-                          if (isDragging) return;
-
-                          e.preventDefault();
-                          e.stopPropagation();
-
-                          if (arrayState.openId === _arrayId) {
-                            setUi(
-                              mapArrayStateToUi({
-                                openId: "",
-                              })
-                            );
-                          } else {
-                            setUi(
-                              mapArrayStateToUi({
-                                openId: _arrayId,
-                              })
-                            );
-                          }
-                        }}
-                        className={getClassNameItem("summary")}
+                        ref={ref}
+                        className={getClassNameItem({
+                          isExpanded: arrayState.openId === _arrayId,
+                          isDragging,
+                          readOnly,
+                        })}
                       >
-                        {field.getItemSummary
-                          ? field.getItemSummary(data, i)
-                          : `Item #${_originalIndex}`}
-                        <div className={getClassNameItem("rhs")}>
-                          {!readOnly && (
-                            <div className={getClassNameItem("actions")}>
-                              <div className={getClassNameItem("action")}>
-                                <IconButton
-                                  type="button"
-                                  disabled={!!addDisabled}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
+                        <div
+                          ref={handleRef}
+                          onClick={(e) => {
+                            if (isDragging) return;
 
-                                    const existingValue = [...(value || [])];
+                            e.preventDefault();
+                            e.stopPropagation();
 
-                                    existingValue.splice(
-                                      i,
-                                      0,
-                                      existingValue[i]
-                                    );
+                            if (arrayState.openId === _arrayId) {
+                              setUi(
+                                mapArrayStateToUi({
+                                  openId: "",
+                                })
+                              );
+                            } else {
+                              setUi(
+                                mapArrayStateToUi({
+                                  openId: _arrayId,
+                                })
+                              );
+                            }
+                          }}
+                          className={getClassNameItem("summary")}
+                        >
+                          {field.getItemSummary
+                            ? field.getItemSummary(data, i)
+                            : `Item #${_originalIndex}`}
+                          <div className={getClassNameItem("rhs")}>
+                            {!readOnly && (
+                              <div className={getClassNameItem("actions")}>
+                                <div className={getClassNameItem("action")}>
+                                  <IconButton
+                                    type="button"
+                                    disabled={!!addDisabled}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
 
-                                    onChange(
-                                      existingValue,
-                                      mapArrayStateToUi(
+                                      const existingValue = [...(value || [])];
+
+                                      const newItem = uniqifyItem(
+                                        existingValue[i]
+                                      );
+
+                                      existingValue.splice(i, 0, newItem);
+
+                                      const newUi = mapArrayStateToUi(
                                         regenerateArrayState(existingValue)
-                                      )
-                                    );
-                                  }}
-                                  title="Duplicate"
-                                >
-                                  <Copy size={16} />
-                                </IconButton>
+                                      );
+
+                                      setUi(newUi, false);
+                                      onChange(existingValue);
+                                    }}
+                                    title="Duplicate"
+                                  >
+                                    <Copy size={16} />
+                                  </IconButton>
+                                </div>
+                                <div className={getClassNameItem("action")}>
+                                  <IconButton
+                                    type="button"
+                                    disabled={
+                                      field.min !== undefined &&
+                                      field.min >=
+                                        localState.arrayState.items.length
+                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+
+                                      const existingValue = [...(value || [])];
+
+                                      const existingItems = [
+                                        ...(arrayState.items || []),
+                                      ];
+
+                                      existingValue.splice(i, 1);
+                                      existingItems.splice(i, 1);
+
+                                      setUi(
+                                        mapArrayStateToUi({
+                                          items: existingItems,
+                                        }),
+                                        false
+                                      );
+
+                                      onChange(existingValue);
+                                    }}
+                                    title="Delete"
+                                  >
+                                    <Trash size={16} />
+                                  </IconButton>
+                                </div>
                               </div>
-                              <div className={getClassNameItem("action")}>
-                                <IconButton
-                                  type="button"
-                                  disabled={
-                                    field.min !== undefined &&
-                                    field.min >=
-                                      localState.arrayState.items.length
-                                  }
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    const existingValue = [...(value || [])];
-
-                                    const existingItems = [
-                                      ...(arrayState.items || []),
-                                    ];
-
-                                    existingValue.splice(i, 1);
-                                    existingItems.splice(i, 1);
-
-                                    onChange(
-                                      existingValue,
-                                      mapArrayStateToUi({
-                                        items: existingItems,
-                                      })
-                                    );
-                                  }}
-                                  title="Delete"
-                                >
-                                  <Trash size={16} />
-                                </IconButton>
-                              </div>
+                            )}
+                            <div>
+                              <DragIcon />
                             </div>
-                          )}
-                          <div>
-                            <DragIcon />
                           </div>
                         </div>
+                        <div className={getClassNameItem("body")}>
+                          <fieldset className={getClassNameItem("fieldset")}>
+                            {Object.keys(field.arrayFields!).map((subName) => {
+                              const subField = field.arrayFields![subName];
+
+                              const indexName = `${name}[${i}]`;
+                              const subPath = `${indexName}.${subName}`;
+
+                              const localIndexName = `${localName}[${i}]`;
+                              const localWildcardName = `${localName}[*]`;
+                              const localSubPath = `${localIndexName}.${subName}`;
+                              const localWildcardSubPath = `${localWildcardName}.${subName}`;
+
+                              const subReadOnly = forceReadOnly
+                                ? forceReadOnly
+                                : typeof readOnlyFields[subPath] !== "undefined"
+                                ? readOnlyFields[localSubPath]
+                                : readOnlyFields[localWildcardSubPath];
+
+                              const label = subField.label || subName;
+
+                              return (
+                                <NestedFieldProvider
+                                  key={subPath}
+                                  name={localIndexName}
+                                  wildcardName={localWildcardName}
+                                  subName={subName}
+                                  readOnlyFields={readOnlyFields}
+                                >
+                                  <AutoFieldPrivate
+                                    name={subPath}
+                                    label={label}
+                                    id={`${_arrayId}_${subName}`}
+                                    readOnly={subReadOnly}
+                                    field={{
+                                      ...subField,
+                                      label, // May be used by custom fields
+                                    }}
+                                    value={data[subName]}
+                                    onChange={(val, ui) => {
+                                      onChange(
+                                        replace(value, i, {
+                                          ...data,
+                                          [subName]: val,
+                                        }),
+                                        ui
+                                      );
+                                    }}
+                                  />
+                                </NestedFieldProvider>
+                              );
+                            })}
+                          </fieldset>
+                        </div>
                       </div>
-                      <div className={getClassNameItem("body")}>
-                        <fieldset
-                          className={getClassNameItem("fieldset")}
-                          onPointerDownCapture={(e) => {
-                            e.stopPropagation();
-                          }}
-                        >
-                          {Object.keys(field.arrayFields!).map((subName) => {
-                            const subField = field.arrayFields![subName];
-
-                            const indexName = `${name}[${i}]`;
-                            const subPath = `${indexName}.${subName}`;
-
-                            const localIndexName = `${localName}[${i}]`;
-                            const localWildcardName = `${localName}[*]`;
-                            const localSubPath = `${localIndexName}.${subName}`;
-                            const localWildcardSubPath = `${localWildcardName}.${subName}`;
-
-                            const subReadOnly = forceReadOnly
-                              ? forceReadOnly
-                              : typeof readOnlyFields[subPath] !== "undefined"
-                              ? readOnlyFields[localSubPath]
-                              : readOnlyFields[localWildcardSubPath];
-
-                            const label = subField.label || subName;
-
-                            return (
-                              <NestedFieldProvider
-                                key={subPath}
-                                name={localIndexName}
-                                wildcardName={localWildcardName}
-                                subName={subName}
-                                readOnlyFields={readOnlyFields}
-                              >
-                                <AutoFieldPrivate
-                                  name={subPath}
-                                  label={label}
-                                  id={`${_arrayId}_${subName}`}
-                                  readOnly={subReadOnly}
-                                  field={{
-                                    ...subField,
-                                    label, // May be used by custom fields
-                                  }}
-                                  value={data[subName]}
-                                  onChange={(val, ui) => {
-                                    onChange(
-                                      replace(value, i, {
-                                        ...data,
-                                        [subName]: val,
-                                      }),
-                                      ui
-                                    );
-                                  }}
-                                />
-                              </NestedFieldProvider>
-                            );
-                          })}
-                        </fieldset>
-                      </div>
-                    </div>
-                  )}
-                </Sortable>
-              );
-            })}
-          </div>
+                    )}
+                  </Sortable>
+                );
+              })}
+            </div>
+          )}
 
           {!addDisabled && (
             <button
               type="button"
               className={getClassName("addButton")}
               onClick={() => {
-                if (isDragging) return;
+                if (isDraggingAny) return;
 
                 const existingValue = value || [];
 
-                const newValue = [
-                  ...existingValue,
-                  field.defaultItemProps || {},
-                ];
+                const newItem = defaultSlots(
+                  uniqifyItem(field.defaultItemProps ?? {}),
+                  field.arrayFields
+                );
+                const newValue = [...existingValue, newItem];
 
                 const newArrayState = regenerateArrayState(newValue);
 
-                onChange(newValue, mapArrayStateToUi(newArrayState));
+                setUi(mapArrayStateToUi(newArrayState), false);
+                onChange(newValue);
               }}
             >
               <Plus size={21} />

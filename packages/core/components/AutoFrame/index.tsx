@@ -4,7 +4,6 @@ import {
   RefObject,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import hash from "object-hash";
@@ -303,7 +302,8 @@ export type AutoFrameProps = {
   className: string;
   debug?: boolean;
   id?: string;
-  onStylesLoaded?: () => void;
+  onReady?: () => void;
+  onNotReady?: () => void;
   frameRef: RefObject<HTMLIFrameElement | null>;
 };
 
@@ -321,26 +321,37 @@ function AutoFrame({
   className,
   debug,
   id,
-  onStylesLoaded,
+  onReady = () => {},
+  onNotReady = () => {},
   frameRef,
   ...props
 }: AutoFrameProps) {
   const [loaded, setLoaded] = useState(false);
   const [ctx, setCtx] = useState<AutoFrameContext>({});
   const [mountTarget, setMountTarget] = useState<HTMLElement | null>();
+  const [stylesLoaded, setStylesLoaded] = useState(false);
 
   useEffect(() => {
     if (frameRef.current) {
+      const doc = frameRef.current.contentDocument;
+      const win = frameRef.current.contentWindow;
+
       setCtx({
-        document: frameRef.current.contentDocument || undefined,
-        window: frameRef.current.contentWindow || undefined,
+        document: doc || undefined,
+        window: win || undefined,
       });
 
       setMountTarget(
         frameRef.current.contentDocument?.getElementById("frame-root")
       );
+
+      if (doc && win && stylesLoaded) {
+        onReady();
+      } else {
+        onNotReady();
+      }
     }
-  }, [frameRef, loaded]);
+  }, [frameRef, loaded, stylesLoaded]);
 
   return (
     <iframe
@@ -355,7 +366,10 @@ function AutoFrame({
     >
       <autoFrameContext.Provider value={ctx}>
         {loaded && mountTarget && (
-          <CopyHostStyles debug={debug} onStylesLoaded={onStylesLoaded}>
+          <CopyHostStyles
+            debug={debug}
+            onStylesLoaded={() => setStylesLoaded(true)}
+          >
             {createPortal(children, mountTarget)}
           </CopyHostStyles>
         )}

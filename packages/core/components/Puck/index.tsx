@@ -1,10 +1,15 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
+  Context,
+  createContext,
+  PropsWithChildren,
   ReactElement,
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
-  useReducer,
+  useRef,
   useState,
 } from "react";
 
@@ -19,32 +24,25 @@ import type {
   UserGenerics,
   Config,
   Data,
+  Metadata,
 } from "../../types";
-import { Button } from "../Button";
 
 import { SidebarSection } from "../SidebarSection";
-import {
-  ChevronDown,
-  ChevronUp,
-  Globe,
-  PanelLeft,
-  PanelRight,
-} from "lucide-react";
-import { Heading } from "../Heading";
-import { IconButton } from "../IconButton/IconButton";
-import { getItem } from "../../lib/get-item";
-import { PuckAction, createReducer } from "../../reducer";
-import { flushZones } from "../../lib/flush-zones";
+
+import { PuckAction } from "../../reducer";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { AppProvider, defaultAppState } from "./context";
-import { MenuBar } from "../MenuBar";
+import {
+  createAppStore,
+  defaultAppState,
+  useAppStore,
+  appStoreContext,
+  AppStore,
+} from "../../store";
 import styles from "./styles.module.css";
 import { Fields } from "./components/Fields";
 import { Components } from "./components/Components";
 import { Preview } from "./components/Preview";
 import { Outline } from "./components/Outline";
-import { usePuckHistory } from "../../lib/use-puck-history";
-import { useHistoryStore } from "../../lib/use-history-store";
 import { Canvas } from "./components/Canvas";
 import { defaultViewports } from "../ViewportControls/default-viewports";
 import { Viewports } from "../../types";
@@ -53,33 +51,41 @@ import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
 import { DefaultOverride } from "../DefaultOverride";
 import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
+import { useRegisterHistorySlice } from "../../store/slices/history";
+import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
+import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
+import { getFrame } from "../../lib/get-frame";
+import {
+  UsePuckStoreContext,
+  useRegisterUsePuckStore,
+} from "../../lib/use-puck";
+import { walkAppState } from "../../lib/data/walk-app-state";
+import { PrivateAppState } from "../../types/Internal";
+import fdeq from "fast-deep-equal";
+import { Header } from "./components/Header";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
 
-export function Puck<
+const FieldSideBar = () => {
+  const title = useAppStore((s) =>
+    s.selectedItem
+      ? s.config.components[s.selectedItem.type]?.["label"] ??
+        s.selectedItem.type.toString()
+      : "Page"
+  );
+
+  return (
+    <SidebarSection noPadding noBorderTop showBreadcrumbs title={title}>
+      <Fields />
+    </SidebarSection>
+  );
+};
+
+type PuckProps<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
->({
-  children,
-  config,
-  data: initialData,
-  ui: initialUi,
-  onChange,
-  onPublish,
-  onAction,
-  permissions = {},
-  plugins,
-  overrides,
-  renderHeader,
-  renderHeaderActions,
-  headerTitle,
-  headerPath,
-  viewports = defaultViewports,
-  iframe: _iframe,
-  dnd,
-  initialHistory: _initialHistory,
-}: {
+> = {
   children?: ReactNode;
   config: UserConfig;
   data: Partial<G["UserData"] | Data>;
@@ -107,14 +113,51 @@ export function Puck<
     disableAutoScroll?: boolean;
   };
   initialHistory?: InitialHistory;
-}) {
-  const iframe: IframeConfig = {
-    enabled: true,
-    waitForStyles: true,
-    ..._iframe,
-  };
+  metadata?: Metadata;
+};
 
-  useInjectGlobalCss(iframe.enabled);
+const propsContext = createContext<Partial<PuckProps>>({});
+
+function PropsProvider<UserConfig extends Config = Config>(
+  props: PuckProps<UserConfig>
+) {
+  return (
+    <propsContext.Provider value={props as PuckProps}>
+      {props.children}
+    </propsContext.Provider>
+  );
+}
+
+export const usePropsContext = () =>
+  useContext<PuckProps>(propsContext as Context<PuckProps>);
+
+function PuckProvider<
+  UserConfig extends Config = Config,
+  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+>({ children }: PropsWithChildren) {
+  const {
+    config,
+    data: initialData,
+    ui: initialUi,
+    onChange,
+    permissions = {},
+    plugins,
+    overrides,
+    viewports = defaultViewports,
+    iframe: _iframe,
+    initialHistory: _initialHistory,
+    metadata,
+    onAction,
+  } = usePropsContext();
+
+  const iframe: IframeConfig = useMemo(
+    () => ({
+      enabled: true,
+      waitForStyles: true,
+      ..._iframe,
+    }),
+    [_iframe]
+  );
 
   const [generatedAppState] = useState<G["UserAppState"]>(() => {
     const initial = { ...defaultAppState.ui, ...initialUi };
@@ -181,7 +224,7 @@ export function Puck<
       ...rootProps,
     };
 
-    return {
+    const newAppState = {
       ...defaultAppState,
       data: {
         ...initialData,
@@ -210,79 +253,154 @@ export function Puck<
           : {},
       },
     } as G["UserAppState"];
+
+    return walkAppState(newAppState, config);
   });
 
   const { appendData = true } = _initialHistory || {};
 
-  const histories = [
-    ...(_initialHistory?.histories || []),
-    ...(appendData ? [{ state: generatedAppState }] : []),
-  ].map((history) => ({
-    ...history,
-    // Inject default data to enable partial history injections
-    state: { ...generatedAppState, ...history.state },
-  }));
-  const initialHistoryIndex = _initialHistory?.index || histories.length - 1;
-  const initialAppState = histories[initialHistoryIndex].state;
+  const [blendedHistories] = useState(
+    [
+      ...(_initialHistory?.histories || []),
+      ...(appendData ? [{ state: generatedAppState }] : []),
+    ].map((history) => {
+      // Inject default data to enable partial history injections
+      let newState = { ...generatedAppState, ...history.state };
 
-  const historyStore = useHistoryStore({
-    histories,
-    index: initialHistoryIndex,
-  });
+      // The history generally doesn't include the indexes, so calculate them for each state item
+      if (!(history.state as PrivateAppState).indexes) {
+        newState = walkAppState(newState, config);
+      }
 
-  const [reducer] = useState(() =>
-    createReducer<UserConfig, G["UserData"]>({
-      config,
-      record: historyStore.record,
-      onAction,
+      return {
+        ...history,
+        state: newState,
+      };
     })
   );
 
-  const [appState, dispatch] = useReducer(
-    reducer,
-    flushZones<G["UserData"]>(initialAppState) as G["UserAppState"]
-  );
+  const initialHistoryIndex =
+    _initialHistory?.index || blendedHistories.length - 1;
+  const initialAppState = blendedHistories[initialHistoryIndex].state;
 
-  const { data, ui } = appState;
-
-  const history = usePuckHistory({
-    dispatch,
-    initialAppState,
-    historyStore,
-    iframeEnabled: _iframe?.enabled ?? true,
+  // Load all plugins into the overrides
+  const loadedOverrides = useLoadedOverrides({
+    overrides: overrides,
+    plugins: plugins,
   });
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const generateAppStore = useCallback(
+    (state?: PrivateAppState) => {
+      return {
+        state,
+        config,
+        plugins: plugins || [],
+        overrides: loadedOverrides,
+        viewports,
+        iframe,
+        onAction,
+        metadata,
+      };
+    },
+    [
+      initialAppState,
+      config,
+      plugins,
+      loadedOverrides,
+      viewports,
+      iframe,
+      onAction,
+      metadata,
+    ]
+  );
 
-  const { itemSelector, leftSideBarVisible, rightSideBarVisible } = ui;
-
-  const selectedItem = itemSelector ? getItem(itemSelector, data) : null;
+  const [appStore] = useState(() =>
+    createAppStore(generateAppStore(initialAppState))
+  );
 
   useEffect(() => {
-    if (onChange) onChange(data as G["UserData"]);
-  }, [data]);
+    if (process.env.NODE_ENV !== "production") {
+      (window as any).__PUCK_INTERNAL_DO_NOT_USE = { appStore };
+    }
+  }, [appStore]);
 
-  // DEPRECATED
-  const rootProps = data.root.props || data.root;
+  useEffect(() => {
+    const state = appStore.getState().state;
 
-  const toggleSidebars = useCallback(
-    (sidebar: "left" | "right") => {
-      const widerViewport = window.matchMedia("(min-width: 638px)").matches;
-      const sideBarVisible =
-        sidebar === "left" ? leftSideBarVisible : rightSideBarVisible;
-      const oppositeSideBar =
-        sidebar === "left" ? "rightSideBarVisible" : "leftSideBarVisible";
+    appStore.setState({
+      ...generateAppStore(state),
+    });
+  }, [config, plugins, loadedOverrides, viewports, iframe, onAction, metadata]);
 
-      dispatch({
-        type: "setUi",
-        ui: {
-          [`${sidebar}SideBarVisible`]: !sideBarVisible,
-          ...(!widerViewport ? { [oppositeSideBar]: false } : {}),
-        },
-      });
-    },
-    [dispatch, leftSideBarVisible, rightSideBarVisible]
+  useRegisterHistorySlice(appStore, {
+    histories: blendedHistories,
+    index: initialHistoryIndex,
+    initialAppState,
+  });
+
+  const previousData = useRef<Data>(null);
+
+  useEffect(() => {
+    appStore.subscribe(
+      (s) => s.state.data,
+      (data) => {
+        if (onChange) {
+          if (fdeq(data, previousData.current)) return;
+
+          onChange(data as G["UserData"]);
+
+          previousData.current = data;
+        }
+      }
+    );
+  }, []);
+
+  useRegisterPermissionsSlice(appStore, permissions);
+
+  const uPuckStore = useRegisterUsePuckStore(appStore);
+
+  useEffect(() => {
+    const { resolveAndCommitData } = appStore.getState();
+
+    resolveAndCommitData();
+  }, []);
+
+  return (
+    <appStoreContext.Provider value={appStore}>
+      <UsePuckStoreContext.Provider value={uPuckStore}>
+        {children}
+      </UsePuckStoreContext.Provider>
+    </appStoreContext.Provider>
   );
+}
+
+function PuckLayout<
+  UserConfig extends Config = Config,
+  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+>({ children }: PropsWithChildren) {
+  const {
+    iframe: _iframe,
+    dnd,
+    initialHistory: _initialHistory,
+  } = usePropsContext();
+
+  const iframe: IframeConfig = useMemo(
+    () => ({
+      enabled: true,
+      waitForStyles: true,
+      ..._iframe,
+    }),
+    [_iframe]
+  );
+
+  useInjectGlobalCss(iframe.enabled);
+
+  const leftSideBarVisible = useAppStore((s) => s.state.ui.leftSideBarVisible);
+  const rightSideBarVisible = useAppStore(
+    (s) => s.state.ui.rightSideBarVisible
+  );
+
+  const dispatch = useAppStore((s) => s.dispatch);
 
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
@@ -314,66 +432,11 @@ export function Puck<
     };
   }, []);
 
-  // DEPRECATED
-  const defaultHeaderRender = useMemo((): Overrides["header"] => {
-    if (renderHeader) {
-      console.warn(
-        "`renderHeader` is deprecated. Please use `overrides.header` and the `usePuck` hook instead"
-      );
-
-      const RenderHeader = ({ actions, ...props }: any) => {
-        const Comp = renderHeader!;
-
-        return (
-          <Comp {...props} dispatch={dispatch} state={appState}>
-            {actions}
-          </Comp>
-        );
-      };
-
-      return RenderHeader;
-    }
-
-    return DefaultOverride;
-  }, [renderHeader]);
-
-  // DEPRECATED
-  const defaultHeaderActionsRender = useMemo((): Overrides["headerActions"] => {
-    if (renderHeaderActions) {
-      console.warn(
-        "`renderHeaderActions` is deprecated. Please use `overrides.headerActions` and the `usePuck` hook instead."
-      );
-
-      const RenderHeader = (props: any) => {
-        const Comp = renderHeaderActions!;
-
-        return <Comp {...props} dispatch={dispatch} state={appState}></Comp>;
-      };
-
-      return RenderHeader;
-    }
-
-    return DefaultOverride;
-  }, [renderHeader]);
-
-  // Load all plugins into the overrides
-  const loadedOverrides = useLoadedOverrides({
-    overrides: overrides,
-    plugins: plugins,
-  });
+  const overrides = useAppStore((s) => s.overrides);
 
   const CustomPuck = useMemo(
-    () => loadedOverrides.puck || DefaultOverride,
-    [loadedOverrides]
-  );
-
-  const CustomHeader = useMemo(
-    () => loadedOverrides.header || defaultHeaderRender,
-    [loadedOverrides]
-  );
-  const CustomHeaderActions = useMemo(
-    () => loadedOverrides.headerActions || defaultHeaderActionsRender,
-    [loadedOverrides]
+    () => overrides.puck || DefaultOverride,
+    [overrides]
   );
 
   const [mounted, setMounted] = useState(false);
@@ -382,174 +445,68 @@ export function Puck<
     setMounted(true);
   }, []);
 
-  const selectedComponentConfig =
-    selectedItem && config.components[selectedItem.type];
-  const selectedComponentLabel = selectedItem
-    ? selectedComponentConfig?.["label"] ?? selectedItem.type.toString()
-    : "";
+  const ready = useAppStore((s) => s.status === "READY");
 
-  usePreviewModeHotkeys(dispatch, iframe.enabled);
+  useMonitorHotkeys();
+
+  useEffect(() => {
+    if (ready && iframe.enabled) {
+      const frameDoc = getFrame();
+
+      if (frameDoc) {
+        return monitorHotkeys(frameDoc);
+      }
+    }
+  }, [ready, iframe.enabled]);
+
+  usePreviewModeHotkeys();
 
   return (
     <div className={`Puck ${getClassName()}`}>
-      <AppProvider
-        value={{
-          state: appState,
-          dispatch,
-          config,
-          plugins: plugins || [],
-          overrides: loadedOverrides,
-          history,
-          viewports,
-          iframe,
-          globalPermissions: {
-            delete: true,
-            drag: true,
-            duplicate: true,
-            insert: true,
-            edit: true,
-            ...permissions,
-          },
-          getPermissions: () => ({}),
-          refreshPermissions: () => null,
-        }}
-      >
-        <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
-          <CustomPuck>
-            {children || (
-              <div
-                className={getLayoutClassName({
-                  leftSideBarVisible,
-                  menuOpen,
-                  mounted,
-                  rightSideBarVisible,
-                })}
-              >
-                <div className={getLayoutClassName("inner")}>
-                  <CustomHeader
-                    actions={
-                      <>
-                        <CustomHeaderActions>
-                          <Button
-                            onClick={() => {
-                              onPublish && onPublish(data as G["UserData"]);
-                            }}
-                            icon={<Globe size="14px" />}
-                          >
-                            Publish
-                          </Button>
-                        </CustomHeaderActions>
-                      </>
-                    }
-                  >
-                    <header className={getLayoutClassName("header")}>
-                      <div className={getLayoutClassName("headerInner")}>
-                        <div className={getLayoutClassName("headerToggle")}>
-                          <div
-                            className={getLayoutClassName("leftSideBarToggle")}
-                          >
-                            <IconButton
-                              onClick={() => {
-                                toggleSidebars("left");
-                              }}
-                              title="Toggle left sidebar"
-                            >
-                              <PanelLeft focusable="false" />
-                            </IconButton>
-                          </div>
-                          <div
-                            className={getLayoutClassName("rightSideBarToggle")}
-                          >
-                            <IconButton
-                              onClick={() => {
-                                toggleSidebars("right");
-                              }}
-                              title="Toggle right sidebar"
-                            >
-                              <PanelRight focusable="false" />
-                            </IconButton>
-                          </div>
-                        </div>
-                        <div className={getLayoutClassName("headerTitle")}>
-                          <Heading rank="2" size="xs">
-                            {headerTitle || rootProps.title || "Page"}
-                            {headerPath && (
-                              <>
-                                {" "}
-                                <code
-                                  className={getLayoutClassName("headerPath")}
-                                >
-                                  {headerPath}
-                                </code>
-                              </>
-                            )}
-                          </Heading>
-                        </div>
-                        <div className={getLayoutClassName("headerTools")}>
-                          <div className={getLayoutClassName("menuButton")}>
-                            <IconButton
-                              onClick={() => {
-                                return setMenuOpen(!menuOpen);
-                              }}
-                              title="Toggle menu bar"
-                            >
-                              {menuOpen ? (
-                                <ChevronUp focusable="false" />
-                              ) : (
-                                <ChevronDown focusable="false" />
-                              )}
-                            </IconButton>
-                          </div>
-                          <MenuBar<G["UserData"]>
-                            appState={appState}
-                            dispatch={dispatch}
-                            onPublish={onPublish}
-                            menuOpen={menuOpen}
-                            renderHeaderActions={() => (
-                              <CustomHeaderActions>
-                                <Button
-                                  onClick={() => {
-                                    onPublish && onPublish(data);
-                                  }}
-                                  icon={<Globe size="14px" />}
-                                >
-                                  Publish
-                                </Button>
-                              </CustomHeaderActions>
-                            )}
-                            setMenuOpen={setMenuOpen}
-                          />
-                        </div>
-                      </div>
-                    </header>
-                  </CustomHeader>
-                  <div className={getLayoutClassName("leftSideBar")}>
-                    <SidebarSection title="Components" noBorderTop>
-                      <Components />
-                    </SidebarSection>
-                    <SidebarSection title="Outline">
-                      <Outline />
-                    </SidebarSection>
-                  </div>
-                  <Canvas />
-                  <div className={getLayoutClassName("rightSideBar")}>
-                    <SidebarSection
-                      noPadding
-                      noBorderTop
-                      showBreadcrumbs
-                      title={selectedItem ? selectedComponentLabel : "Page"}
-                    >
-                      <Fields />
-                    </SidebarSection>
-                  </div>
+      <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
+        <CustomPuck>
+          {children || (
+            <div
+              className={getLayoutClassName({
+                leftSideBarVisible,
+                mounted,
+                rightSideBarVisible,
+              })}
+            >
+              <div className={getLayoutClassName("inner")}>
+                <Header />
+                <div className={getLayoutClassName("leftSideBar")}>
+                  <SidebarSection title="Components" noBorderTop>
+                    <Components />
+                  </SidebarSection>
+                  <SidebarSection title="Outline">
+                    <Outline />
+                  </SidebarSection>
+                </div>
+                <Canvas />
+                <div className={getLayoutClassName("rightSideBar")}>
+                  <FieldSideBar />
                 </div>
               </div>
-            )}
-          </CustomPuck>
-        </DragDropContext>
-      </AppProvider>
+            </div>
+          )}
+        </CustomPuck>
+      </DragDropContext>
       <div id="puck-portal-root" className={getClassName("portal")} />
     </div>
+  );
+}
+
+export function Puck<
+  UserConfig extends Config = Config,
+  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+>(props: PuckProps<UserConfig>) {
+  return (
+    <PropsProvider {...props}>
+      <PuckProvider {...props}>
+        <PuckLayout {...props} />
+      </PuckProvider>
+    </PropsProvider>
   );
 }
 

@@ -1,0 +1,66 @@
+---
+title: ComponentData
+---
+
+# `ComponentData`
+
+An object representing an instance of a component.
+
+```json
+{
+  "type": "HeadingBlock",
+  "props": {
+    "id": "HeadingBlock-1234",
+    "title": "Hello, world"
+  }
+}
+```
+
+## Params
+
+| Param                   | Example                                         | Type   | Status   |
+| ----------------------- | ----------------------------------------------- | ------ | -------- |
+| [`type`](#type)         | `type: "HeadingBlock"`                          | String | Required |
+| [`props`](#props)       | `props: { id: "12345", title: "Hello, world" }` | Object | Required |
+| [`readOnly`](#readonly) | `readOnly: { title: true }`                     | Object | -        |
+
+### Required params
+
+#### `type`
+
+The type of the component, which tells Puck to run the [`render()`](/docs/api-reference/configuration/component-config#renderprops) method for the component of the [same key](/docs/api-reference/configuration/config#components).
+
+#### `props`
+
+The props stored based on the [`component config`](/docs/api-reference/configuration/component-config) that Puck will pass to the [`render()`](/docs/api-reference/configuration/component-config#renderprops) method for the component.
+
+```json {3-6} copy
+{
+  "type": "HeadingBlock",
+  "props": {
+    "id": "HeadingBlock-1234", // Auto-generated
+    "title": "Hello, world"
+  }
+}
+```
+
+Requires a unique `id` prop to be defined.
+
+### Optional params
+
+#### `readOnly`
+
+An object describing which fields are set to [read-only](/docs/api-reference/configuration/component-config#datareadonly-1).
+
+```json {7-9} copy
+{
+  "type": "HeadingBlock",
+  "props": {
+    "id": "HeadingBlock-1234",
+    "title": "Hello, world"
+  },
+  "readOnly": {
+    "title": true
+  }
+}
+```

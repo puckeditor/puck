@@ -4,9 +4,9 @@ title: transformProps
 
 # transformProps
 
-Transform component props stored in a [Data payload](/docs/api-reference/data). This convenience method can be used for [prop renames and other data migrations](/docs/integrating-puck/data-migration).
+Transform component props stored in a [Data payload](/docs/api-reference/data-model/data). This convenience method can be used for [prop renames and other data migrations](/docs/integrating-puck/data-migration).
 
-This method will modify all data in [`content`](/docs/api-reference/data#content) and [`zones`](/docs/api-reference/data#zones).
+This method will modify all data in [`content`](/docs/api-reference/data-model/data#content) and [`zones`](/docs/api-reference/data-model/data#zones).
 
 ```tsx copy showLineNumbers {7-10}
 import { transformProps } from "@measured/puck";
@@ -26,14 +26,15 @@ console.log(updatedData);
 
 ## Args
 
-| Param        | Example                                | Type                             |
-| ------------ | -------------------------------------- | -------------------------------- |
-| `data`       | `{}`                                   | [Data](/docs/api-reference/data) |
-| `transforms` | `{ HeadingBlock: (props) => (props) }` | Object                           |
+| Param                       | Example                                | Type                                               | Status   |
+| --------------------------- | -------------------------------------- | -------------------------------------------------- | -------- |
+| [`data`](#data)             | `{}`                                   | [Data](/docs/api-reference/data-model/data)        | Required |
+| [`transforms`](#transforms) | `{ HeadingBlock: (props) => (props) }` | Object                                             | Required |
+| [`config`](#config)         | `{ components: {} }`                   | [Config](/docs/api-reference/configuration/config) | -        |
 
 ### `data`
 
-The [Data payload](/docs/api-reference/data) to be transformed.
+The [Data payload](/docs/api-reference/data-model/data) to be transformed.
 
 ### `transforms`
 
@@ -41,9 +42,13 @@ An object describing the transform functions for each component defined in your 
 
 - `root` is a reserved property, and can be used to update the [`root` component](/docs/api-reference/configuration/config#root) props.
 
+### `config`
+
+A [config](/docs/api-reference/configuration/config) object. Normally only required if using [slots](/docs/api-reference/fields/slot).
+
 ## Returns
 
-The updated [Data](/docs/api-reference/data) object.
+The updated [Data](/docs/api-reference/data-model/data) object.
 
 ## Notes
 

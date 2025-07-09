@@ -3,7 +3,7 @@ import { Plugin } from "@dnd-kit/abstract";
 
 import type { Droppable } from "@dnd-kit/dom";
 
-import { effects } from "@dnd-kit/state";
+import { effects, untracked } from "@dnd-kit/state";
 import { throttle } from "../throttle";
 import { ComponentDndData } from "../../components/DraggableComponent";
 import { DropZoneDndData } from "../../components/DropZone";
@@ -13,6 +13,7 @@ import {
   BubbledPointerEvent,
   BubbledPointerEventType,
 } from "../bubble-pointer-event";
+import { rootAreaId, rootDroppableId } from "../root-droppable-id";
 
 type NestedDroppablePluginOptions = {
   onChange: (
@@ -62,6 +63,8 @@ const getZoneId = (candidate: Droppable | undefined) => {
   return id;
 };
 
+const BUFFER = 6;
+
 const getPointerCollisions = (
   position: GlobalPosition,
   manager: DragDropManager
@@ -100,6 +103,29 @@ const getPointerCollisions = (
       const element = elements[i];
 
       const dropzoneId = element.getAttribute("data-puck-dropzone");
+      const id = element.getAttribute("data-puck-dnd");
+      const isVoid = element.hasAttribute("data-puck-dnd-void");
+
+      // Only include this candidate if we're within a threshold of the bounding box
+      if (BUFFER && (dropzoneId || id) && !isVoid) {
+        const box = element.getBoundingClientRect();
+
+        const contractedBox = {
+          left: box.left + BUFFER,
+          right: box.right - BUFFER,
+          top: box.top + BUFFER,
+          bottom: box.bottom - BUFFER,
+        };
+
+        if (
+          position.frame.x < contractedBox.left ||
+          position.frame.x > contractedBox.right ||
+          position.frame.y > contractedBox.bottom ||
+          position.frame.y < contractedBox.top
+        ) {
+          continue;
+        }
+      }
 
       if (dropzoneId) {
         const droppable = manager.registry.droppables.get(dropzoneId);
@@ -108,8 +134,6 @@ const getPointerCollisions = (
           candidates.push(droppable);
         }
       }
-
-      const id = element.getAttribute("data-puck-dnd");
 
       if (id) {
         const droppable = manager.registry.droppables.get(id);
@@ -186,21 +210,31 @@ export const findDeepestCandidate = (
 
     filteredCandidates.reverse();
 
-    const zone = getZoneId(filteredCandidates[0]);
-    const area = filteredCandidates[0]?.data.areaId;
+    const primaryCandidate = filteredCandidates[0];
+    const primaryCandidateData = primaryCandidate.data as
+      | ComponentDndData
+      | DropZoneDndData;
+    const primaryCandidateIsComponent =
+      "containsActiveZone" in primaryCandidateData;
+    const zone = getZoneId(primaryCandidate);
+    const area =
+      primaryCandidateIsComponent && primaryCandidateData.containsActiveZone
+        ? filteredCandidates[0].id
+        : filteredCandidates[0]?.data.areaId;
 
     return { zone, area };
   }
+
   return {
-    zone: "default-zone",
-    area: null,
+    zone: rootDroppableId,
+    area: rootAreaId,
   };
 };
 
 export const createNestedDroppablePlugin = (
   { onChange }: NestedDroppablePluginOptions,
   id: string
-) =>
+): any =>
   class NestedDroppablePlugin extends Plugin<DragDropManager, {}> {
     constructor(manager: DragDropManager, options?: {}) {
       super(manager);
@@ -209,7 +243,7 @@ export const createNestedDroppablePlugin = (
         return;
       }
 
-      const cleanupEffect = effects(() => {
+      this.registerEffect(() => {
         const handleMove = (event: BubbledPointerEventType | PointerEvent) => {
           const target = (
             event instanceof BubbledPointerEvent // Necessary for Firefox
@@ -244,12 +278,13 @@ export const createNestedDroppablePlugin = (
           capture: true, // dndkit's PointerSensor prevents propagation during drag
         });
 
-        this.destroy = () => {
+        const cleanup = () => {
           document.body.removeEventListener("pointermove", handlePointerMove, {
             capture: true,
           });
-          cleanupEffect();
         };
+
+        return cleanup;
       });
     }
   };

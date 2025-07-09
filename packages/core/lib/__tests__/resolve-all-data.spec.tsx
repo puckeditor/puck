@@ -3,11 +3,15 @@ import { resolveAllData } from "../resolve-all-data";
 
 const item1 = {
   type: "ComponentWithResolveProps",
-  props: { id: "MyComponent-1", prop: "Original" },
+  props: { id: "MyComponent-1", prop: "Original", slot: [] },
+};
+const item3 = {
+  type: "ComponentWithoutResolveProps",
+  props: { id: "MyComponent-3", prop: "Original", slot: [] },
 };
 const item2 = {
   type: "ComponentWithoutResolveProps",
-  props: { id: "MyComponent-2", prop: "Original" },
+  props: { id: "MyComponent-2", prop: "Original", slot: [item3] },
 };
 
 const data: Data = {
@@ -46,6 +50,7 @@ describe("resolve-data", () => {
             "props": {
               "id": "MyComponent-1",
               "prop": "Resolved",
+              "slot": [],
             },
             "readOnly": {
               "prop": true,
@@ -55,8 +60,10 @@ describe("resolve-data", () => {
         ],
         "root": {
           "props": {
+            "id": "root",
             "title": "",
           },
+          "type": "root",
         },
         "zones": {
           "MyComponent-1:zone": [
@@ -64,6 +71,16 @@ describe("resolve-data", () => {
               "props": {
                 "id": "MyComponent-2",
                 "prop": "Original",
+                "slot": [
+                  {
+                    "props": {
+                      "id": "MyComponent-3",
+                      "prop": "Original",
+                      "slot": [],
+                    },
+                    "type": "ComponentWithoutResolveProps",
+                  },
+                ],
               },
               "type": "ComponentWithoutResolveProps",
             },

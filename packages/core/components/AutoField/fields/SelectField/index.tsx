@@ -11,6 +11,7 @@ export const SelectField = ({
   field,
   onChange,
   label,
+  labelIcon,
   Label,
   value,
   name,
@@ -30,7 +31,7 @@ export const SelectField = ({
   return (
     <Label
       label={label || name}
-      icon={<ChevronDown size={16} />}
+      icon={labelIcon || <ChevronDown size={16} />}
       readOnly={readOnly}
     >
       <select

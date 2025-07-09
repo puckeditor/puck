@@ -1,0 +1,11 @@
+.Template {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+}
+
+@media (min-width: 768px) {
+  .Template {
+    display: grid;
+  }
+}

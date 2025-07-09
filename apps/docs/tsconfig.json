@@ -3,6 +3,7 @@
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "paths": {
+      "@/puck": ["../../packages/core"],
       "@/core": ["../../packages/core"],
       "@/core/*": ["../../packages/core/*"],
       "@/plugin-heading-analyzer": ["../../packages/plugin-heading-analyzer"],

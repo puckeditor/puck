@@ -51,11 +51,11 @@ export function Editor() {
 }
 ```
 
-This which will disable all viewport functionality.
+This will disable all viewport functionality.
 
-## Controlling viewports with custom interfaces
+## Controlling viewports with compositional interfaces
 
-When implementing a [custom interface](/docs/extending-puck/custom-interfaces), the `viewports` API will have no effect. Instead, the viewport size can be controlled by the dimensions of the wrapping element that contains [`<Puck.Preview />`](/docs/api-reference/components/puck-preview).
+When implementing a [compositional interface](/docs/extending-puck/composition), the `viewports` API will have no effect. Instead, the viewport size can be controlled by the dimensions of the wrapping element that contains [`<Puck.Preview />`](/docs/api-reference/components/puck-preview).
 
 CSS transforms can be used to zoom the viewport without impacting drag-and-drop behaviour.
 

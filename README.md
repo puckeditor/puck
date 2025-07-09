@@ -3,9 +3,6 @@
 The visual editor for React.
 
 <p align="left">
-  <a aria-label="Measured logo" href="https://measured.co">
-    <img src="https://img.shields.io/badge/MADE%20BY%20Measured-000000.svg?style=for-the-badge&labelColor=000">
-  </a>
   <a aria-label="NPM version" href="https://www.npmjs.com/package/@measured/puck">
     <img alt="" src="https://img.shields.io/npm/v/@measured/puck.svg?style=for-the-badge&labelColor=000000">
   </a>
@@ -95,6 +92,7 @@ Available recipes include:
 
 - [**next**](https://github.com/measuredco/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
 - [**remix**](https://github.com/measuredco/puck/tree/main/recipes/remix): Remix Run v2 example, using dynamic routes at root-level
+- [**react-router**](https://github.com/measuredco/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
 
 ## Community
 
@@ -109,4 +107,4 @@ Or [book a discovery call](https://app.cal.com/chrisvxd/puck-enquiry/) for hands
 
 ## License
 
-MIT © [Measured Corporation Ltd](https://measured.co)
+MIT © [The Puck Contributors](https://github.com/measuredco/puck/graphs/contributors)

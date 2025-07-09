@@ -1,6 +1,6 @@
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { DragAxis } from "../../../types";
-import { useAppContext } from "../../Puck/context";
+import { useAppStore } from "../../../store";
 
 const GRID_DRAG_AXIS: DragAxis = "dynamic";
 const FLEX_ROW_DRAG_AXIS: DragAxis = "x";
@@ -10,7 +10,7 @@ export const useDragAxis = (
   ref: RefObject<HTMLElement | null>,
   collisionAxis?: DragAxis
 ): [DragAxis, () => void] => {
-  const { status } = useAppContext();
+  const status = useAppStore((s) => s.status);
 
   const [dragAxis, setDragAxis] = useState<DragAxis>(
     collisionAxis || DEFAULT_DRAG_AXIS

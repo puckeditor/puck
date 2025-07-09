@@ -1,3 +1,4 @@
+import { DefaultAllProps, WithDeepSlots } from "./Internal";
 import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 import { AsFieldProps, WithId } from "./Utils";
 
@@ -25,30 +26,52 @@ export type RootData<
 
 export type ComponentData<
   Props extends DefaultComponentProps = DefaultComponentProps,
+  Name = string,
+  AllProps extends Record<string, DefaultComponentProps> = Record<
+    string,
+    DefaultComponentProps
+  >
+> = {
+  type: Name;
+  props: WithDeepSlots<WithId<Props>, Content<AllProps>>;
+} & BaseData<Props>;
+
+export type ComponentDataOptionalId<
+  Props extends DefaultComponentProps = DefaultComponentProps,
   Name = string
 > = {
   type: Name;
-  props: WithId<Props>;
+  props: Props & {
+    id?: string;
+  };
 } & BaseData<Props>;
 
 // Backwards compatibility
 export type MappedItem = ComponentData;
 
 export type ComponentDataMap<
-  Props extends Record<string, DefaultComponentProps> = DefaultComponentProps
+  AllProps extends DefaultAllProps = DefaultAllProps
 > = {
-  [K in keyof Props]: ComponentData<Props[K], K extends string ? K : never>;
-}[keyof Props];
+  [K in keyof AllProps]: ComponentData<
+    AllProps[K],
+    K extends string ? K : never,
+    AllProps
+  >;
+}[keyof AllProps];
 
 export type Content<
-  PropsMap extends { [key: string]: any } = { [key: string]: any }
+  PropsMap extends { [key: string]: DefaultComponentProps } = {
+    [key: string]: DefaultComponentProps;
+  }
 > = ComponentDataMap<PropsMap>[];
 
 export type Data<
-  Props extends DefaultComponentProps = DefaultComponentProps,
+  AllProps extends DefaultAllProps = DefaultAllProps,
   RootProps extends DefaultComponentProps = DefaultRootFieldProps
 > = {
-  root: RootData<RootProps>;
-  content: Content<Props>;
-  zones?: Record<string, Content<Props>>;
+  root: WithDeepSlots<RootData<RootProps>, Content<AllProps>>;
+  content: Content<AllProps>;
+  zones?: Record<string, Content<AllProps>>;
 };
+
+export type Metadata = { [key: string]: any };

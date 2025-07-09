@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, useEffect, useState } from "react";
 import styles from "./Button.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";

@@ -30,7 +30,7 @@ const config = {
 
 The root `render` function will wrap all of the components. `children` is a node containing the nested components.
 
-If you don't render `children`, your components will not be rendered (unless you're defining [custom root DropZones](#)).
+If you don't render `children`, your components will not be rendered unless you define another [slot](/docs/api-reference/fields/slot).
 
 ### Example output
 
@@ -58,7 +58,7 @@ the example config will render HTML nodes like this:
   <!-- HeadingBlock render -->
   <h1>Hello, world</h1>
 
-  <!-- Remining nodes -->
+  <!-- Remaining nodes -->
 </div>
 ```
 
@@ -84,14 +84,14 @@ const config = {
 };
 ```
 
-We can override the default field configuration by providing custom [Fields](/docs/api-reference/fields) to the [`fields` parameter](/docs/api-reference/configuration/component-config#fields):
+You can override the default field configuration by providing custom [Fields](/docs/api-reference/fields) to the [`fields` parameter](/docs/api-reference/configuration/component-config#fields):
 
 ```tsx showLineNumbers copy {4-7} /description/2,3
 const config = {
   // ...
   root: {
     fields: {
-      title: { type: "text" }, // We need to redefine the `title` field if we want to retain it
+      title: { type: "text" }, // You need to redefine the `title` field if we want to retain it
       description: { type: "textarea" },
     },
     render: ({ children, title, description }) => {

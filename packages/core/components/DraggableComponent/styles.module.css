@@ -82,4 +82,5 @@
   display: flex;
   box-sizing: border-box;
   transform-origin: right top;
+  min-height: 36px;
 }

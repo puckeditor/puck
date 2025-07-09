@@ -1,88 +1,91 @@
-import { Content } from "../../../types";
 import { Preview } from "./../context";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRenderedCallback } from "../../../lib/dnd/use-rendered-callback";
-import { insert } from "../../../lib/insert";
+import { insert } from "../../../lib/data/insert";
 import { ZoneStoreContext } from "../context";
 import { useContextStore } from "../../../lib/use-context-store";
-import { useAppContext } from "../../Puck/context";
+import { useAppStore } from "../../../store";
 
-export const useContentWithPreview = (
-  content: Content,
+export const useContentIdsWithPreview = (
+  contentIds: string[],
   zoneCompound: string
-): [Content, Preview | undefined] => {
-  const { draggedItemId, preview, previewExists } = useContextStore(
+): [string[], Preview | undefined] => {
+  const zoneStore = useContext(ZoneStoreContext);
+  const preview = useContextStore(
     ZoneStoreContext,
-    (s) => {
-      return {
-        draggedItemId: s.draggedItem?.id,
-        preview: s.previewIndex[zoneCompound],
-        previewExists: Object.keys(s.previewIndex || {}).length > 0,
-      };
-    }
+    (s) => s.previewIndex[zoneCompound]
   );
 
-  // Refactor this once all state uses zustand
-  const {
-    state: {
-      ui: { isDragging },
-    },
-  } = useAppContext();
+  const isDragging = useAppStore((s) => s.state.ui.isDragging);
 
-  const [contentWithPreview, setContentWithPreview] = useState(content);
+  const [contentIdsWithPreview, setContentIdsWithPreview] =
+    useState(contentIds);
   const [localPreview, setLocalPreview] = useState<Preview | undefined>(
     preview
   );
 
   const updateContent = useRenderedCallback(
-    (content: Content, preview: Preview | undefined, isDragging: boolean) => {
+    (
+      contentIds: string[],
+      preview: Preview | undefined,
+      isDragging: boolean,
+      draggedItemId?: string,
+      previewExists?: boolean
+    ) => {
       // Preview is cleared but context hasn't yet caught up
       // This is necessary because Zustand clears the preview before the dispatcher finishes
-      // Refactor this once all state has moved to Zustand.
       if (isDragging && !previewExists) {
         return;
       }
 
       if (preview) {
         if (preview.type === "insert") {
-          setContentWithPreview(
+          setContentIdsWithPreview(
             insert(
-              content.filter((item) => item.props.id !== preview.props.id),
+              contentIds.filter((id) => id !== preview.props.id),
               preview.index,
-              {
-                type: "preview",
-                props: { id: preview.props.id },
-              }
+              preview.props.id
             )
           );
         } else {
-          setContentWithPreview(
+          setContentIdsWithPreview(
             insert(
-              content.filter((item) => item.props.id !== preview.props.id),
+              contentIds.filter((id) => id !== preview.props.id),
               preview.index,
-              {
-                type: preview.componentType,
-                props: preview.props,
-              }
+              preview.props.id
             )
           );
         }
       } else {
-        setContentWithPreview(
+        setContentIdsWithPreview(
           previewExists
-            ? content.filter((item) => item.props.id !== draggedItemId)
-            : content
+            ? contentIds.filter((id) => id !== draggedItemId)
+            : contentIds
         );
       }
 
       setLocalPreview(preview);
     },
-    [draggedItemId, previewExists]
+    []
   );
 
   useEffect(() => {
-    updateContent(content, preview, isDragging);
-  }, [content, preview, isDragging]);
+    // We MUST explicitly pass these in, otherwise mobile dragging fails
+    // due to hard-to-debug rendering race conditions. This must happen
+    // within this callback (after preview has updated), and not inside
+    // the renderedCallback.
+    const s = zoneStore.getState();
+    const draggedItemId = s.draggedItem?.id;
+    const previewExists = Object.keys(s.previewIndex || {}).length > 0;
 
-  return [contentWithPreview, localPreview];
+    updateContent(
+      contentIds,
+      preview,
+      isDragging,
+      draggedItemId,
+      previewExists
+    );
+  }, [contentIds, preview, isDragging]);
+
+  return [contentIdsWithPreview, localPreview];
 };

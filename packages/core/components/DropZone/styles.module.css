@@ -3,23 +3,21 @@
 
   position: relative;
   height: 100%;
+  min-height: var(--min-empty-height);
   outline-offset: -2px;
   width: 100%;
-}
-
-.DropZone--isActive {
-  min-height: var(--min-empty-height);
 }
 
 .DropZone--hasChildren {
   min-height: 0;
 }
 
-.DropZone--isActive.DropZone:empty {
+.DropZone:empty {
   min-height: var(--min-empty-height);
 }
 
-.DropZone:not(.DropZone--userIsDragging) {
+/* We use global data-puck-dragging to avoid re-rendering DropZone */
+[data-puck-entry]:not([data-puck-dragging]) .DropZone {
   transition: min-height var(--resize-animation-ms) ease-in;
 }
 
@@ -58,7 +56,7 @@
   z-index: 1;
 }
 
-.DropZone--isEnabled.DropZone--userIsDragging {
+[data-puck-dragging] .DropZone--isEnabled {
   outline: 2px dashed var(--puck-color-azure-06);
 }
 

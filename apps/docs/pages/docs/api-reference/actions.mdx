@@ -1,6 +1,6 @@
 # Actions
 
-Actions enable you to make changes to the internal [AppState](/docs/api-reference/app-state) via the [dispatcher](/docs/api-reference/functions/use-puck#dispatch).
+Actions enable you to make changes to the internal [AppState](/docs/api-reference/data-model/app-state) via the [dispatcher](/docs/api-reference/puck-api#dispatch).
 
 This is a partial reference of the most useful actions. A full reference is available in [the codebase](https://github.com/measuredco/puck/blob/main/packages/core/reducer/actions.tsx).
 
@@ -8,12 +8,12 @@ This is a partial reference of the most useful actions. A full reference is avai
 
 ### `setData`
 
-Modify the [data payload](/docs/api-reference/data) currently managed by Puck.
+Modify the [data payload](/docs/api-reference/data-model/data) currently managed by Puck.
 
-| Param  | Example           | Type                             | Status   |
-| ------ | ----------------- | -------------------------------- | -------- |
-| `type` | `type: "setData"` | "setData"                        | Required |
-| `data` | `data: {}`        | [Data](/docs/api-reference/data) | Required |
+| Param  | Example           | Type                                        | Status   |
+| ------ | ----------------- | ------------------------------------------- | -------- |
+| `type` | `type: "setData"` | "setData"                                   | Required |
+| `data` | `data: {}`        | [Data](/docs/api-reference/data-model/data) | Required |
 
 #### Example
 
@@ -26,7 +26,7 @@ dispatch({
 
 ### `setUi`
 
-Change a value on Puck's [UI state](/docs/api-reference/app-state#ui).
+Change a value on Puck's [UI state](/docs/api-reference/data-model/app-state#ui).
 
 | Param  | Example                             | Type                                         | Status   |
 | ------ | ----------------------------------- | -------------------------------------------- | -------- |
@@ -46,12 +46,12 @@ dispatch({
 
 ### `set`
 
-Change the entire [AppState](/docs/api-reference/app-state) in a single action.
+Change the entire [AppState](/docs/api-reference/data-model/app-state) in a single action.
 
-| Param   | Example                       | Type                                      | Status   |
-| ------- | ----------------------------- | ----------------------------------------- | -------- |
-| `type`  | `type: "set"`                 | "set"                                     | Required |
-| `state` | `state: { data: {}, ui: {} }` | [AppState](/docs/api-reference/app-state) | Required |
+| Param   | Example                       | Type                                                 | Status   |
+| ------- | ----------------------------- | ---------------------------------------------------- | -------- |
+| `type`  | `type: "set"`                 | "set"                                                | Required |
+| `state` | `state: { data: {}, ui: {} }` | [AppState](/docs/api-reference/data-model/app-state) | Required |
 
 #### Example
 

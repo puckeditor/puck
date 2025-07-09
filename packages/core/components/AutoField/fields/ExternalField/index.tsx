@@ -14,6 +14,7 @@ export const ExternalField = ({
   value,
   name,
   label,
+  labelIcon,
   Label,
   id,
   readOnly,
@@ -35,7 +36,11 @@ export const ExternalField = ({
   }
 
   return (
-    <Label label={label || name} icon={<Link size={16} />} el="div">
+    <Label
+      label={label || name}
+      icon={labelIcon || <Link size={16} />}
+      el="div"
+    >
       <ExternalInput
         name={name}
         field={{

@@ -16,10 +16,17 @@ export { Drawer } from "./components/Drawer";
 
 export { DropZone } from "./components/DropZone";
 export * from "./components/IconButton";
-export * from "./components/Puck";
+export { Puck } from "./components/Puck";
 export * from "./components/Render";
 
 export * from "./lib/migrate";
 export * from "./lib/transform-props";
 export * from "./lib/resolve-all-data";
-export { usePuck } from "./lib/use-puck";
+export { walkTree } from "./lib/data/walk-tree";
+export {
+  createUsePuck,
+  usePuck,
+  useGetPuck,
+  type UsePuckData,
+  type PuckApi,
+} from "./lib/use-puck";

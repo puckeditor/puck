@@ -1,0 +1,92 @@
+---
+title: walkTree
+---
+
+# walkTree
+
+Recursively walk the entire tree for the [`Data`](/docs/api-reference/data-model/data) or a single [`ComponentData`](/docs/api-reference/data-model/component-data) node, using a depth-first approach where the deepest [slots](/docs/api-reference/fields/slots) are processed first.
+
+Receives a callback function that is called once for each slot. You can optionally return a value to update the slot.
+
+```tsx
+import { walkTree } from "@measured/puck";
+
+// Add the example prop to all children in the data
+const newData = walkTree(data, config, (content) =>
+  content.map((child) => ({
+    ...child,
+    props: { ...child.props, example: "Hello, world" },
+  }))
+);
+
+console.log(newData);
+// {
+//   "root": {},
+//   "content": [
+//     {
+//       "type": "Component",
+//       "props": {
+//         "id": "1234",
+//         "content": [
+//           {
+//             "type": "Child",
+//             "props": { "id": "5678", "example": "Hello, world" }
+//           }
+//         ],
+//         "example": "Hello, world"
+//       }
+//     }
+//   ]
+// }
+```
+
+## Args
+
+| Param                                        | Example                            | Type                                                                                                          |
+| -------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [`data`](#data)                              | `{ root: {}, content: [] }`        | [Data](/docs/api-reference/data-model/data) \| [ComponentData](/docs/api-reference/data-model/component-data) |
+| [`config`](#config)                          | `{ components: {} }`               | [Config](/docs/api-reference/configuration/config)                                                            |
+| [`callbackFn()`](#callbackfncontent-options) | `(content) => content.slice(0, 1)` | Function                                                                                                      |
+
+### `data`
+
+The [`Data`](/docs/api-reference/data-model/data) or [`ComponentData`](/docs/api-reference/data-model/component-data) to traverse.
+
+### `config`
+
+A Puck [config](/docs/api-reference/configuration/config) object, used to determine which components contain slots.
+
+### `callbackFn(content, options)`
+
+A callback function called for each slot. Receives an array of [`ComponentData`](/docs/api-reference/data-model/component-data). Optionally returns an updated array of [`ComponentData`](/docs/api-reference/data-model/component-data) to update the content for this slot.
+
+#### Args
+
+| Param                 | Example                                         | Type                                                               |
+| --------------------- | ----------------------------------------------- | ------------------------------------------------------------------ |
+| [`content`](#content) | `[{ type: "Heading", props: {} }]`              | [`ComponentData[]`](/docs/api-reference/data-model/component-data) |
+| [`options`](#options) | `{ parentId: "Flex-123", propName: "Content" }` | object                                                             |
+
+##### `content`
+
+An array of [`ComponentData`](/docs/api-reference/data-model/component-data), containing all the nodes for this slot.
+
+##### `options`
+
+An object containing additional options
+
+##### `options.parentId`
+
+The id of the parent component that defines this slot.
+
+##### `options.propName`
+
+The name of the slot field.
+
+#### Returns
+
+Optionally return an updated array of [`ComponentData`](/docs/api-reference/data-model/component-data) objects.
+
+## Returns
+
+A new [`Data`](/docs/api-reference/data-model/data) or [`ComponentData`](/docs/api-reference/data-model/component-data) object populated with any values returned by the callbackFn.

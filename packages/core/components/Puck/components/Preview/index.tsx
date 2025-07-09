@@ -1,20 +1,21 @@
-import { DropZonePure } from "../../../DropZone";
+import { DropZoneEditPure, DropZonePure } from "../../../DropZone";
 import { rootDroppableId } from "../../../../lib/root-droppable-id";
 import { RefObject, useCallback, useEffect, useRef, useMemo } from "react";
-import { useAppContext } from "../../context";
+import { useAppStore } from "../../../../store";
 import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
 import { DefaultRootRenderProps } from "../../../../types";
 import { Render } from "../../../Render";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
+import { useSlots } from "../../../../lib/use-slots";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
 
 type PageProps = DefaultRootRenderProps;
 
 const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
-  const { status } = useAppContext();
+  const status = useAppStore((s) => s.status);
 
   useEffect(() => {
     if (ref.current && status === "READY") {
@@ -33,68 +34,100 @@ const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
         iframe.dispatchEvent(evt as any);
       };
 
-      // Add event listeners
-      iframe.contentDocument?.addEventListener(
-        "pointermove",
-        handlePointerMove,
-        {
-          capture: true,
-        }
-      );
+      const register = () => {
+        unregister();
 
-      return () => {
+        // Add event listeners
+        iframe.contentDocument?.addEventListener(
+          "pointermove",
+          handlePointerMove,
+          {
+            capture: true,
+          }
+        );
+      };
+
+      const unregister = () => {
         // Clean up event listeners
         iframe.contentDocument?.removeEventListener(
           "pointermove",
           handlePointerMove
         );
       };
+
+      register();
+
+      return () => {
+        unregister();
+      };
     }
   }, [status]);
 };
 
 export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
-  const { config, dispatch, state, setStatus, iframe, overrides } =
-    useAppContext();
+  const dispatch = useAppStore((s) => s.dispatch);
+  const root = useAppStore((s) => s.state.data.root);
+  const config = useAppStore((s) => s.config);
+  const setStatus = useAppStore((s) => s.setStatus);
+  const iframe = useAppStore((s) => s.iframe);
+  const overrides = useAppStore((s) => s.overrides);
+  const metadata = useAppStore((s) => s.metadata);
+  const renderData = useAppStore((s) =>
+    s.state.ui.previewMode === "edit" ? null : s.state.data
+  );
 
   const Page = useCallback<React.FC<PageProps>>(
-    (pageProps) =>
-      config.root?.render ? (
+    (pageProps) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const propsWithSlots = useSlots(
+        config,
+        { type: "root", props: pageProps },
+        DropZoneEditPure
+      );
+
+      return config.root?.render ? (
         config.root?.render({
           id: "puck-root",
-          ...pageProps,
+          ...propsWithSlots,
         })
       ) : (
-        <>{pageProps.children}</>
-      ),
-    [config.root]
+        <>{propsWithSlots.children}</>
+      );
+    },
+    [config]
   );
 
   const Frame = useMemo(() => overrides.iframe, [overrides]);
 
   // DEPRECATED
-  const rootProps = state.data.root.props || state.data.root;
+  const rootProps = root.props || root;
 
   const ref = useRef<HTMLIFrameElement>(null);
 
   useBubbleIframeEvents(ref);
 
-  const inner =
-    state.ui.previewMode === "edit" ? (
-      <Page
-        {...rootProps}
-        puck={{
-          renderDropZone: DropZonePure,
-          isEditing: true,
-          dragRef: null,
-        }}
-        editMode={true} // DEPRECATED
-      >
-        <DropZonePure zone={rootDroppableId} />
-      </Page>
-    ) : (
-      <Render data={state.data} config={config} />
-    );
+  const inner = !renderData ? (
+    <Page
+      {...rootProps}
+      puck={{
+        renderDropZone: DropZonePure,
+        isEditing: true,
+        dragRef: null,
+        metadata,
+      }}
+      editMode={true} // DEPRECATED
+    >
+      <DropZonePure zone={rootDroppableId} />
+    </Page>
+  ) : (
+    <Render data={renderData} config={config} />
+  );
+
+  useEffect(() => {
+    if (!iframe.enabled) {
+      setStatus("READY");
+    }
+  }, [iframe.enabled]);
 
   return (
     <div
@@ -102,7 +135,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       id={id}
       data-puck-preview
       onClick={() => {
-        dispatch({ type: "setUi", ui: { ...state.ui, itemSelector: null } });
+        dispatch({ type: "setUi", ui: { itemSelector: null } });
       }}
     >
       {iframe.enabled ? (
@@ -110,8 +143,11 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
           id="preview-frame"
           className={getClassName("frame")}
           data-rfd-iframe
-          onStylesLoaded={() => {
+          onReady={() => {
             setStatus("READY");
+          }}
+          onNotReady={() => {
+            setStatus("MOUNTED");
           }}
           frameRef={ref}
         >

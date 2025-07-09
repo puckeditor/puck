@@ -21,7 +21,7 @@
 }
 
 /* Placeholder */
-[data-puck-dragging]:not([data-dnd-dragging]) {
+[data-dnd-placeholder] {
   background: var(--puck-color-azure-06) !important;
   border: none !important;
   color: #00000000 !important;
@@ -30,9 +30,9 @@
   transition: none !important;
 }
 
-[data-puck-dragging]:not([data-dnd-dragging]) *,
-[data-puck-dragging]:not([data-dnd-dragging])::after,
-[data-puck-dragging]:not([data-dnd-dragging])::before {
+[data-dnd-placeholder] *,
+[data-dnd-placeholder]::after,
+[data-dnd-placeholder]::before {
   opacity: 0 !important;
 }
 

@@ -25,24 +25,25 @@ export function Editor() {
 
 ## Props
 
-| Param                                                 | Example                                            | Type                                               | Status       |
-| ----------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------- | ------------ |
-| [`config`](#config)                                   | `config: { components: {} }`                       | [Config](/docs/api-reference/configuration/config) | Required     |
-| [`data`](#data)                                       | `data: {}`                                         | [Data](/docs/api-reference/data)                   | Required     |
-| [`dnd`](#dnd)                                         | `dnd: {}`                                          | [DndConfig](#dnd-params)                           | -            |
-| [`children`](#children)                               | `children: <Puck.Preview />`                       | ReactNode                                          | -            |
-| [`headerPath`](#headerpath)                           | `headerPath: "/my-page"`                           | String                                             | -            |
-| [`headerTitle`](#headertitle)                         | `headerTitle: "My Page"`                           | String                                             | -            |
-| [`iframe`](#iframe)                                   | `iframe: {}`                                       | [IframeConfig](#iframe-params)                     | -            |
-| [`initialHistory`](#initialhistory)                   | `initialHistory: {}`                               | [InitialHistory](#initialhistory-params)           | -            |
-| [`onAction()`](#onactionaction-appstate-prevappstate) | `onAction: (action, appState, prevAppState) => {}` | Function                                           | -            |
-| [`onChange()`](#onchangedata)                         | `onChange: (data) => {}`                           | Function                                           | -            |
-| [`onPublish()`](#onpublishdata)                       | `onPublish: async (data) => {}`                    | Function                                           | -            |
-| [`overrides`](#overrides)                             | `overrides: { header: () => <div /> }`             | [Overrides](/docs/api-reference/overrides)         | Experimental |
-| [`permissions`](#permissions)                         | `permissions: {}`                                  | [Plugin\[\]](/docs/api-reference/plugin)           | Experimental |
-| [`plugins`](#plugins)                                 | `plugins: [myPlugin]`                              | [Plugin\[\]](/docs/api-reference/plugin)           | Experimental |
-| [`ui`](#ui)                                           | `ui: {leftSideBarVisible: false}`                  | [AppState.ui](/docs/api-reference/app-state#ui)    | -            |
-| [`viewports`](#viewports)                             | `viewports: [{ width: 1440 }]`                     | [Viewport\[\]](#viewport-params)                   | -            |
+| Param                                                 | Example                                            | Type                                                       | Status       |
+| ----------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------- | ------------ |
+| [`config`](#config)                                   | `config: { components: {} }`                       | [Config](/docs/api-reference/configuration/config)         | Required     |
+| [`data`](#data)                                       | `data: {}`                                         | [Data](/docs/api-reference/data-model/data)                | Required     |
+| [`dnd`](#dnd)                                         | `dnd: {}`                                          | [DndConfig](#dnd-params)                                   | -            |
+| [`children`](#children)                               | `children: <Puck.Preview />`                       | ReactNode                                                  | -            |
+| [`headerPath`](#headerpath)                           | `headerPath: "/my-page"`                           | String                                                     | -            |
+| [`headerTitle`](#headertitle)                         | `headerTitle: "My Page"`                           | String                                                     | -            |
+| [`iframe`](#iframe)                                   | `iframe: {}`                                       | [IframeConfig](#iframe-params)                             | -            |
+| [`initialHistory`](#initialhistory)                   | `initialHistory: {}`                               | [InitialHistory](#initialhistory-params)                   | -            |
+| [`metadata`](#metadata)                               | `metadata: {}`                                     | Object                                                     | -            |
+| [`onAction()`](#onactionaction-appstate-prevappstate) | `onAction: (action, appState, prevAppState) => {}` | Function                                                   | -            |
+| [`onChange()`](#onchangedata)                         | `onChange: (data) => {}`                           | Function                                                   | -            |
+| [`onPublish()`](#onpublishdata)                       | `onPublish: async (data) => {}`                    | Function                                                   | -            |
+| [`overrides`](#overrides)                             | `overrides: { header: () => <div /> }`             | [Overrides](/docs/api-reference/overrides)                 | Experimental |
+| [`permissions`](#permissions)                         | `permissions: {}`                                  | [Plugin\[\]](/docs/api-reference/plugin)                   | Experimental |
+| [`plugins`](#plugins)                                 | `plugins: [myPlugin]`                              | [Plugin\[\]](/docs/api-reference/plugin)                   | Experimental |
+| [`ui`](#ui)                                           | `ui: {leftSideBarVisible: false}`                  | [AppState.ui](/docs/api-reference/data-model/app-state#ui) | -            |
+| [`viewports`](#viewports)                             | `viewports: [{ width: 1440 }]`                     | [Viewport\[\]](#viewport-params)                           | -            |
 
 ## Required props
 
@@ -76,7 +77,7 @@ export function Editor() {
 
 ### `data`
 
-The initial data to render. Cannot be changed once `<Puck>` has been mounted. See the [`Data` docs](/docs/api-reference/data) for a full reference.
+The initial data to render. Cannot be changed once `<Puck>` has been mounted. See the [`Data` docs](/docs/api-reference/data-model/data) for a full reference.
 
 ```tsx {4-12} copy
 export function Editor() {
@@ -101,7 +102,7 @@ export function Editor() {
 
 ### `children`
 
-Render custom nodes to create [custom interfaces](/docs/extending-puck/custom-interfaces).
+Render custom nodes to create [compositional interfaces](/docs/extending-puck/composition).
 
 ```tsx {4} copy
 export function Editor() {
@@ -191,7 +192,7 @@ Defer rendering of the Puck preview until the iframe styles have loaded, showing
 
 ### `initialHistory`
 
-Sets the undo/redo Puck history state when using the `usePuck` [history API](/docs/api-reference/functions/use-puck#history).
+Sets the undo/redo Puck history state when using the `usePuck` [history API](/docs/api-reference/puck-api#history).
 
 ```tsx showLineNumbers copy {12-15}
 const historyState = {
@@ -217,11 +218,11 @@ export function Editor() {
 
 #### `initialHistory` params
 
-| Param                       | Example             | Type                                                                 | Status   |
-| --------------------------- | ------------------- | -------------------------------------------------------------------- | -------- |
-| [`histories`](#histories)   | `histories: []`     | [History](/docs/api-reference/functions/use-puck#history-params)\[\] | Required |
-| [`index`](#index)           | `index: 2`          | Number                                                               | Required |
-| [`appendData`](#appenddata) | `appendData: false` | Boolean                                                              | -        |
+| Param                       | Example             | Type                                                       | Status   |
+| --------------------------- | ------------------- | ---------------------------------------------------------- | -------- |
+| [`histories`](#histories)   | `histories: []`     | [History](/docs/api-reference/puck-api#history-params)\[\] | Required |
+| [`index`](#index)           | `index: 2`          | Number                                                     | Required |
+| [`appendData`](#appenddata) | `appendData: false` | Boolean                                                    | -        |
 
 ##### `histories`
 
@@ -244,8 +245,8 @@ Callback that triggers when Puck dispatches an [action](https://puckeditor.com/d
 Receives three arguments:
 
 1. `action`: The action that was dispatched
-2. `appState`: The new [`AppState`](/docs/api-reference/app-state) after the action was applied
-3. `prevAppState`: The previous [`AppState`](/docs/api-reference/app-state) before the action was applied
+2. `appState`: The new [`AppState`](/docs/api-reference/data-model/app-state) after the action was applied
+3. `prevAppState`: The previous [`AppState`](/docs/api-reference/data-model/app-state) before the action was applied
 
 ```tsx {4-8} copy
 export function Editor() {
@@ -262,11 +263,33 @@ export function Editor() {
 }
 ```
 
+### `metadata`
+
+An object containing additional data provided to each component's [`render`](/docs/api-reference/configuration/component-config#renderprops) and [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) functions.
+
+```tsx {4,8} copy
+export function Editor() {
+  return (
+    <Puck
+      metadata={{ title: "Hello, world" }}
+      config={{
+        HeadingBlock: {
+          render: ({ puck }) => {
+            return <h1>{puck.metadata.title}</h1>; // "Hello, world"
+          },
+        },
+      }}
+      // ...
+    />
+  );
+}
+```
+
 ### `onChange(data)`
 
 Callback that triggers when the user makes a change.
 
-Receives a single [`Data`](/docs/api-reference/data) arg.
+Receives a single [`Data`](/docs/api-reference/data-model/data) arg.
 
 ```tsx {4-6} copy
 export function Editor() {
@@ -285,7 +308,7 @@ export function Editor() {
 
 Callback that triggers when the user hits the "Publish" button. Use this to save the Puck data to your database.
 
-Receives a single [`Data`](/docs/api-reference/data) arg.
+Receives a single [`Data`](/docs/api-reference/data-model/data) arg.
 
 ```tsx {4-9} copy
 export function Editor() {
@@ -356,7 +379,7 @@ export function Editor() {
 
 ### `ui`
 
-Set the initial application UI state. See [`AppState.ui`](/docs/api-reference/app-state#ui).
+Set the initial application UI state. See [`AppState.ui`](/docs/api-reference/data-model/app-state#ui).
 
 ```tsx {5} copy
 export function Editor() {

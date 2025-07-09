@@ -1,0 +1,321 @@
+import {
+  ConfigPreview,
+  PuckPreview,
+  CodeBlockDrawer,
+} from "@/docs/components/Preview";
+import { usePuck } from "@/puck";
+import { generateId } from "@/core/lib/generate-id";
+
+# Slot
+
+Define a drag-and-drop area containing nested components. Extends [Base](base).
+
+- This field produces an array of [ComponentData](/docs/api-reference/data-model/component-data)
+- The array is transformed to a [render function](#render-function) before being provided to `render()`
+
+This field does render any UI in the form section.
+
+<PuckPreview
+  label="Example"
+  renderDrawer={() => {
+    return (
+      <CodeBlockDrawer getCode={(appState) => appState.data.content[0].props} />
+    );
+  }}
+  config={{
+    components: {
+      Example: {
+        fields: {
+          content: {
+            type: "slot",
+          },
+        },
+        render: ({ content: Content }) => {
+          return (
+            <div style={{ padding: 32 }}>
+              <Content />
+            </div>
+          );
+        },
+        permissions: {
+          duplicate: false,
+          delete: false,
+        },
+      },
+      Card: {
+        render: () => {
+          return (
+            <div
+              style={{
+                background: "white",
+                border: "1px solid black",
+                borderRadius: 4,
+                padding: 16,
+              }}
+            >
+              Hello, world
+            </div>
+          );
+        },
+      },
+    },
+  }}
+  data={{
+    content: [
+      {
+        type: "Example",
+        props: {
+          id: "Example-1",
+          content: [{ type: "Card", props: { id: "Example-2" } }],
+        },
+      },
+    ],
+    root: { props: {} },
+  }}
+/>
+
+```tsx {5-7,10} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        content: {
+          type: "slot",
+        },
+      },
+      render: ({ content: Content }) => {
+        return <Content />;
+      },
+    },
+    Card: {
+      render: () => <div>Hello, world</div>,
+    },
+  },
+};
+```
+
+## TypeScript
+
+When using TypeScript, make sure to use the `Slot` type so the render prop is correctly transformed.
+
+```tsx
+import { Slot } from "@measured/puck";
+
+type Props = {
+  Example: {
+    content: Slot; // Converted from the ComponentData[] type into a render function
+  };
+};
+```
+
+## Params
+
+| Param                   | Example                      | Type   | Status   |
+| ----------------------- | ---------------------------- | ------ | -------- |
+| [`type`](#type)         | `type: "slot"`               | "slot" | Required |
+| [`allow`](#allow)       | `allow: ["HeadingBlock"]`    | Array  | -        |
+| [`disallow`](#disallow) | `disallow: ["HeadingBlock"]` | Array  | -        |
+
+## Required params
+
+### `type`
+
+The type of the field. Must be `"slot"` for Slot fields.
+
+```tsx {6} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        content: {
+          type: "slot",
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+## Optional params
+
+### `allow`
+
+Only allow specific components to be dragged into the slot. Will be overwritten by the [`allow` prop](#allow-1) provided to the render function.
+
+```tsx copy {7}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        content: {
+          type: "slot",
+          allow: ["HeadingBlock"],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `disallow`
+
+Allow all but specific components to be dragged into the slot. Any items in `allow` will override `disallow`. Will be overwritten by the [`disallow` prop](#disallow-1) provided to the render function.
+
+```tsx copy {7}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        content: {
+          type: "slot",
+          disallow: ["HeadingBlock"],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+## Render function
+
+Slot data is provided to `render()` as a render function (or component). Provide props to this function to customize the behavior of the slot at render-time.
+
+| Param                               | Example                      | Type          | Status |
+| ----------------------------------- | ---------------------------- | ------------- | ------ |
+| [`allow`](#allow-1)                 | `allow: ["HeadingBlock"]`    | Array         | -      |
+| [`className`](#classname)           | `className: "MyClass"`       | String        | -      |
+| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String        | -      |
+| [`disallow`](#disallow-1)           | `disallow: ["HeadingBlock"]` | Array         | -      |
+| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: 256`        | Number        | -      |
+| [`ref`](#ref)                       | `ref: ref`                   | Ref           | -      |
+| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties | -      |
+
+### `allow`
+
+Only allow specific components to be dragged into the slot. Overrides the [`allow` parameter](#allow) provided to the field.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content allow={["HeadingBlock"]} />;
+      },
+    },
+  },
+};
+```
+
+### `className`
+
+Provide a className to the rendered element. The default styles will still be applied.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content className="MyComponent" />;
+      },
+    },
+  },
+};
+```
+
+### `collisionAxis`
+
+Configure which axis Puck will use for overlap collision detection.
+
+Options:
+
+- `x` - detect collisions based their x-axis overlap
+- `y` - detect collisions based their y-axis overlap
+- `dynamic` - automatically choose an axis based on the direction of travel
+
+The defaults are set based on the CSS layout of the parent:
+
+- grid: `dynamic`
+- flex (row): `x`
+- inline/inline-block: `x`
+- Everything else: `y`
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content collisionAxis="dynamic" />;
+      },
+    },
+  },
+};
+```
+
+### `disallow`
+
+Allow all but specific components to be dragged into the slot. Any items in `allow` will override `disallow`.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content }) => {
+        return <Content disallow={["HeadingBlock"]} />;
+      },
+    },
+  },
+};
+```
+
+### `minEmptyHeight`
+
+The minimum height of the slot when empty, in pixels. Defaults to `128`.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: () => {
+        return <Content minEmptyHeight={256} />;
+      },
+    },
+  },
+};
+```
+
+### `ref`
+
+A [React ref](https://react.dev/learn/manipulating-the-dom-with-refs), assigned to the root node of the slot.
+
+```tsx copy {7}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        const ref = useRef();
+
+        return <Content ref={ref} />;
+      },
+    },
+  },
+};
+```
+
+### `style`
+
+Provide a style attribute to the slot. The default styles will still be applied.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content style={{ display: "flex" }} />;
+      },
+    },
+  },
+};
+```

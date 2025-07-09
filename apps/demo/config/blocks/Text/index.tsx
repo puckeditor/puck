@@ -1,4 +1,5 @@
 import React from "react";
+import { ALargeSmall, AlignLeft } from "lucide-react";
 
 import { ComponentConfig } from "@/core";
 import { Section } from "../../components/Section";
@@ -18,6 +19,7 @@ const TextInner: ComponentConfig<TextProps> = {
     text: { type: "textarea" },
     size: {
       type: "select",
+      labelIcon: <ALargeSmall size={16} />,
       options: [
         { label: "S", value: "s" },
         { label: "M", value: "m" },
@@ -25,6 +27,7 @@ const TextInner: ComponentConfig<TextProps> = {
     },
     align: {
       type: "radio",
+      labelIcon: <AlignLeft size={16} />,
       options: [
         { label: "Left", value: "left" },
         { label: "Center", value: "center" },

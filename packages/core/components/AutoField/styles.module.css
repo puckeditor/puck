@@ -29,11 +29,13 @@
   border-style: solid;
   border-color: var(--puck-color-grey-09);
   border-radius: 4px;
+  box-sizing: border-box;
   font-family: inherit;
   font-size: 14px;
   padding: 12px 15px;
   transition: border-color 50ms ease-in;
   width: 100%;
+  max-width: 100%;
 }
 
 select.Input-input {

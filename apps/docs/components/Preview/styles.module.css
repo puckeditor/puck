@@ -29,42 +29,74 @@
   margin-inline-start: auto;
 }
 
-.PreviewFrame-body {
-  padding: 32px;
-}
-
-.ConfigPreview {
+.PreviewFrame-contents {
+  align-items: stretch;
+  background-color: var(--puck-color-grey-09);
   display: flex;
-  flex-wrap: wrap;
-  background: var(--puck-color-grey-09);
   gap: 1px;
+  flex-wrap: wrap;
+  position: relative;
 }
 
-.ConfigPreview-field {
+.PreviewFrame-body {
+  background-color: white;
+  flex-grow: 1;
+  padding: 32px;
+  flex-basis: 49%;
+}
+
+.PreviewFrame-info {
+  background-color: white;
   flex-grow: 1;
   flex-basis: 49%;
-  min-width: 1px;
-  background: white;
 }
 
-.ConfigPreview-fieldLabel {
+.PreviewFrame-codeblock {
+  height: 100%;
+  overflow: auto;
+}
+
+.PreviewFrame-codeblock pre {
+  height: 100%;
   padding: 24px;
 }
 
-.ConfigPreview-fieldLabel + .ConfigPreview-fieldLabel {
+.PreviewFrame-drawerButton {
+  align-items: center;
+  border-left: 1px solid var(--puck-color-grey-10);
+  border-top: 1px solid var(--puck-color-grey-10);
+  display: flex;
+  gap: 4px;
+  border-top-left-radius: 4px;
+  font-size: var(--puck-font-size-xxxs);
+  font-weight: 500;
+  position: absolute;
+  padding: 4px 12px;
+  padding-right: 4px;
+  bottom: 0px;
+  right: 0px;
+}
+
+.PreviewFrame-drawerButton:hover {
+  background: var(--puck-color-azure-11);
+  color: var(--puck-color-azure-02);
+}
+
+.PreviewFrame-drawerButtonIcon {
+  color: var(--puck-color-grey-07);
+}
+
+.PreviewFrame-drawer {
+  background: var(--puck-color-grey-12);
   border-top: 1px solid var(--puck-color-grey-09);
 }
 
-.ConfigPreview-preview {
+.PreviewFrame-preview {
   color: var(--puck-color-grey-03);
-  flex-grow: 1;
-  flex-basis: 49%;
-  min-width: 256px;
   padding: 16px;
-  background: white;
 }
 
-.ConfigPreview-preview > * {
+.PreviewFrame-preview > * {
   color: var(
     --puck-color-grey-03
   ) !important; /* Override any injected Nextra/Tailwind styles */

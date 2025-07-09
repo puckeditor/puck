@@ -38,9 +38,10 @@ const config = {
 
 ## Params
 
-| Param           | Example            | Type       | Status   |
-| --------------- | ------------------ | ---------- | -------- |
-| [`type`](#type) | `type: "textarea"` | "textarea" | Required |
+| Param                         | Example                         | Type       | Status   |
+| ----------------------------- | ------------------------------- | ---------- | -------- |
+| [`type`](#type)               | `type: "textarea"`              | "textarea" | Required |
+| [`placeholder`](#placeholder) | `placeholder: "Lorem ipsum..."` | String     | -        |
 
 ## Required params
 
@@ -62,3 +63,40 @@ const config = {
   },
 };
 ```
+
+## Optional params
+
+### Placeholder
+
+The placeholder text to display when the field is empty.
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "textarea",
+          placeholder: "Lorem ipsum...",
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      description: {
+        type: "textarea",
+        placeholder: "Lorem ipsum...",
+      },
+    },
+    render: ({ description }) => {
+      return <div>{description}</div>;
+    },
+  }}
+/>

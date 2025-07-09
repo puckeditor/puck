@@ -1,4 +1,4 @@
-import { ItemSelector } from "../lib/get-item";
+import { ItemSelector } from "../lib/data/get-item";
 import { Viewport } from "./API";
 import { Data } from "./Data";
 

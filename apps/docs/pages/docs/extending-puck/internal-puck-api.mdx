@@ -1,0 +1,91 @@
+---
+title: Internal Puck API
+---
+
+# Internal Puck API
+
+Puck exposes it's internal API as [`PuckApi`](/docs/api-reference/puck-api) for extending Puck with custom functionality within [custom fields](/docs/extending-puck/custom-fields), [compositional interfaces](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides).
+
+## Accessing the internal API
+
+You can access [`PuckApi`](/docs/api-reference/puck-api) via two hooks:
+
+- [`usePuck`](/docs/api-reference/functions/use-puck) - returns `PuckApi` as part of your component render lifecycle
+- [`useGetPuck`](/docs/api-reference/functions/use-get-puck) - returns a function to access the latest `PuckApi` at call time
+
+### Within the render lifecycle
+
+To access the API within your render lifecycle, use the `usePuck` hook. You can use a selector to limit re-rendering to a specific part of the API.
+
+```tsx copy
+import { createUsePuck } from "@measured/puck";
+
+const usePuck = createUsePuck();
+
+const Example = () => {
+  // Use a selector so you only re-render when the selected type changes
+  const type = usePuck((s) => s.selectedItem?.type || "Nothing");
+
+  return <h2>{type} selected</h2>;
+};
+```
+
+See the [`usePuck`](/docs/api-reference/functions/use-puck) docs for a full API reference.
+
+### Outside of the render lifecycle
+
+Often it's not necessary to re-render your component when the PuckApi changes. Puck provides the `useGetPuck` hook for accessing the latest `PuckApi` at call time.
+
+```tsx copy
+import { useGetPuck } from "@measured/puck";
+
+const Example = () => {
+  const getPuck = useGetPuck();
+
+  const handleClick = useCallback(() => {
+    // Get the latest PuckApi value
+    const { appState } = getPuck();
+
+    console.log(appState);
+  }, [getPuck]);
+
+  return <button onClick={handleClick}>Click me</button>;
+};
+```
+
+See the [`useGetPuck`](/docs/api-reference/functions/use-get-puck) docs for a full API reference.
+
+## Usage in practice
+
+Generally, you'll want to combine this with composition, UI overrides or custom fields. **PuckApi cannot currently be accessed outside of these contexts**.
+
+Here's an example using the internal API to render the page data as JSON using composition:
+
+```tsx
+import { Puck, createUsePuck } from "@measured/puck";
+
+const usePuck = createUsePuck();
+
+const JSONRenderer = () => {
+  const appState = usePuck((s) => s.appState);
+
+  return <div>{JSON.stringify(appState.data)}</div>;
+};
+
+export function Editor() {
+  return (
+    <Puck>
+      <JSONRenderer />
+    </Puck>
+  );
+}
+```
+
+## Further reading
+
+- [`PuckApi` API reference](/docs/api-reference/puck-api)
+- [`usePuck` API reference](/docs/api-reference/functions/use-puck)
+- [`useGetPuck` API reference](/docs/api-reference/functions/use-get-puck)
+- [Composition](/docs/extending-puck/composition)
+- [Custom fields](/docs/extending-puck/custom-fields)
+- [UI overrides](/docs/extending-puck/ui-overrides)

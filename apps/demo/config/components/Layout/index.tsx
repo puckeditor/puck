@@ -1,5 +1,9 @@
 import { CSSProperties, forwardRef, ReactNode } from "react";
-import { ComponentConfig, DefaultComponentProps, ObjectField } from "@/core";
+import {
+  ComponentConfig,
+  DefaultComponentProps,
+  ObjectField,
+} from "@/core/types";
 import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
 import styles from "./styles.module.css";
@@ -145,7 +149,7 @@ export function withLayout<
     render: (props) => (
       <Layout
         className={getClassName()}
-        layout={props.layout}
+        layout={props.layout as LayoutFieldProps}
         ref={props.puck.dragRef}
       >
         {componentConfig.render(props)}

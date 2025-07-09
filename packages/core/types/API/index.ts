@@ -1,6 +1,8 @@
 import { PuckAction } from "../../reducer";
+import { DefaultAllProps, WithDeepSlots } from "../Internal";
+import { DefaultComponentProps } from "../Props";
 import { AppState } from "./../AppState";
-import { Data } from "./../Data";
+import { ComponentDataOptionalId, Content, Data } from "./../Data";
 import { Overrides } from "./Overrides";
 
 export type Permissions = {
@@ -46,6 +48,23 @@ type InitialHistoryNoAppend<AS = Partial<AppState>> = {
 export type InitialHistory<AS = Partial<AppState>> =
   | InitialHistoryAppend<AS>
   | InitialHistoryNoAppend<AS>;
+
+export type Slot<
+  Props extends { [key: string]: DefaultComponentProps } = {
+    [key: string]: DefaultComponentProps;
+  }
+> = {
+  [K in keyof Props]: ComponentDataOptionalId<
+    Props[K],
+    K extends string ? K : never
+  >;
+}[keyof Props][];
+
+export type WithSlotProps<
+  Target extends Record<string, any>,
+  AllProps extends DefaultAllProps = DefaultAllProps,
+  SlotType extends Content<AllProps> = Content<AllProps>
+> = WithDeepSlots<Target, SlotType>;
 
 export * from "./DropZone";
 export * from "./Viewports";

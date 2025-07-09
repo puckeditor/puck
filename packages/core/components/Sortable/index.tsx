@@ -1,12 +1,9 @@
 import { DragDropProvider } from "@dnd-kit/react";
-import { PropsWithChildren, ReactNode, useState } from "react";
-import { useSortableSafe } from "../../lib/dnd/dnd-kit/safe";
+import { PropsWithChildren, ReactNode } from "react";
 import { useSensors } from "../../lib/dnd/use-sensors";
-import {
-  CollisionMap,
-  createDynamicCollisionDetector,
-} from "../../lib/dnd/collision/dynamic";
-import { RestrictToElement } from "@dnd-kit/dom/modifiers";
+import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
+import "./styles.css";
+import { useSortable } from "@dnd-kit/react/sortable";
 
 export const SortableProvider = ({
   children,
@@ -14,26 +11,23 @@ export const SortableProvider = ({
   onDragEnd,
   onMove,
 }: PropsWithChildren<{
-  onDragStart: () => void;
+  onDragStart: (id: string) => void;
   onDragEnd: () => void;
   onMove: (moveData: { source: number; target: number }) => void;
 }>) => {
-  const [move, setMove] = useState({ source: -1, target: -1 });
-
-  const sensors = useSensors();
+  const sensors = useSensors({
+    mouse: { distance: { value: 5 } },
+  });
 
   return (
     <DragDropProvider
       sensors={sensors}
-      modifiers={[
-        RestrictToElement.configure({
-          element() {
-            return document.querySelector("[data-dnd-container]");
-          },
-        }),
-      ]}
-      onDragStart={onDragStart}
+      onDragStart={(event) =>
+        onDragStart(event.operation.source?.id.toString() ?? "")
+      }
       onDragOver={(event, manager) => {
+        event.preventDefault();
+
         const { operation } = event;
         const { source, target } = operation;
 
@@ -42,9 +36,7 @@ export const SortableProvider = ({
         let sourceIndex = source.data.index;
         let targetIndex = target.data.index;
 
-        const collisionData = (
-          manager.dragOperation.data?.collisionMap as CollisionMap
-        )?.[target.id];
+        const collisionData = manager.collisionObserver.collisions[0]?.data;
 
         if (sourceIndex !== targetIndex && source.id !== target.id) {
           const collisionPosition =
@@ -58,7 +50,7 @@ export const SortableProvider = ({
             targetIndex = targetIndex + 1;
           }
 
-          setMove({
+          onMove({
             source: sourceIndex,
             target: targetIndex,
           });
@@ -66,16 +58,9 @@ export const SortableProvider = ({
       }}
       onDragEnd={() => {
         setTimeout(() => {
-          if (move.source !== -1 && move.target !== -1) {
-            // Delay until animation finished
-            // TODO use this in onDragOver instead of optimistic rendering once re-renders reduced to polish out edge cases
-            onMove(move);
-          }
-
+          // Delay until animation finished
           onDragEnd();
         }, 250);
-
-        setMove({ source: -1, target: -1 });
       }}
     >
       {children}
@@ -94,12 +79,19 @@ export const Sortable = ({
   index: number;
   disabled?: boolean;
   children: (props: {
-    status: "idle" | "dragging" | "dropping";
+    isDragging: boolean;
+    isDropping: boolean;
     ref: (element: Element | null) => void;
+    handleRef: (element: Element | null) => void;
   }) => ReactNode;
   type?: string;
 }) => {
-  const { ref: sortableRef, status } = useSortableSafe({
+  const {
+    ref: sortableRef,
+    isDragging,
+    isDropping,
+    handleRef,
+  } = useSortable({
     id,
     type,
     index,
@@ -108,5 +100,5 @@ export const Sortable = ({
     collisionDetector: createDynamicCollisionDetector("y"),
   });
 
-  return children({ status, ref: sortableRef });
+  return children({ isDragging, isDropping, ref: sortableRef, handleRef });
 };

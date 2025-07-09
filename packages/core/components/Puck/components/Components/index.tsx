@@ -1,12 +1,12 @@
 import { useComponentList } from "../../../../lib/use-component-list";
-import { useAppContext } from "../../context";
+import { useAppStore } from "../../../../store";
 import { ComponentList } from "../../../ComponentList";
 import { useMemo } from "react";
 
 export const Components = () => {
-  const { config, state, overrides } = useAppContext();
+  const overrides = useAppStore((s) => s.overrides);
 
-  const componentList = useComponentList(config, state.ui);
+  const componentList = useComponentList();
 
   const Wrapper = useMemo(() => overrides.components || "div", [overrides]);
 

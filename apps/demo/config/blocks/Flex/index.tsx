@@ -1,8 +1,7 @@
 import React from "react";
-import { ComponentConfig } from "@/core/types";
+import { ComponentConfig, Slot } from "@/core/types";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
-import { DropZone } from "@/core/components/DropZone";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
 
@@ -13,6 +12,7 @@ export type FlexProps = WithLayout<{
   direction: "row" | "column";
   gap: number;
   wrap: "wrap" | "nowrap";
+  items: Slot;
 }>;
 
 const FlexInternal: ComponentConfig<FlexProps> = {
@@ -47,6 +47,9 @@ const FlexInternal: ComponentConfig<FlexProps> = {
         { label: "false", value: "nowrap" },
       ],
     },
+    items: {
+      type: "slot",
+    },
   },
   defaultProps: {
     justifyContent: "start",
@@ -56,11 +59,12 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     layout: {
       grow: true,
     },
+    items: [],
   },
-  render: ({ justifyContent, direction, gap, wrap }) => {
+  render: ({ justifyContent, direction, gap, wrap, items: Items }) => {
     return (
       <Section style={{ height: "100%" }}>
-        <DropZone
+        <Items
           className={getClassName()}
           style={{
             justifyContent,
@@ -68,7 +72,6 @@ const FlexInternal: ComponentConfig<FlexProps> = {
             gap,
             flexWrap: wrap,
           }}
-          zone="flex"
           disallow={["Hero", "Stats"]}
         />
       </Section>

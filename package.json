@@ -25,7 +25,7 @@
     "eslint-config-custom": "*",
     "lerna": "^7.1.1",
     "prettier": "^2.5.1",
-    "puppeteer": "^23.11.1",
+    "puppeteer": "^24.8.2",
     "standard-changelog": "^2.0.21",
     "turbo": "^2.3.3"
   },
@@ -36,8 +36,8 @@
     "recipes/*",
     "packages/*"
   ],
-  "version": "0.18.2",
+  "version": "0.19.1",
   "engines": {
-    "node": ">=18.18"
+    "node": ">=20.0.0"
   }
 }

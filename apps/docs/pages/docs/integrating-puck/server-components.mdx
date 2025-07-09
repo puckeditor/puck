@@ -1,3 +1,5 @@
+import { Callout } from "nextra/components";
+
 # React Server Components
 
 Puck provides support for [React Server Components](https://react.dev/reference/react/use-server#use-server) (RSC), but the interactive-nature of Puck requires special consideration.
@@ -13,7 +15,7 @@ Puck supports the server environment for the following APIs:
 
 These APIs can be used in an RSC environment, but in order to do so the Puck config that they reference must be RSC-friendly.
 
-This can be done by either avoiding client-only code (React `useState`, Puck `<DropZone>`, etc), or split out client components with the `"use client";` directive.
+This can be done by either avoiding client-only code (React `useState`, etc), or split out client components with the `"use client";` directive.
 
 ### Client
 
@@ -27,32 +29,15 @@ Since the Puck config can be referenced on the client or the server, we need to 
 
 There are three approaches to this:
 
-1. Avoid using any client-specific functionality (like React `useState` or Puck's `<DropZone>`) in your components
+1. Avoid using any client-specific functionality (like React `useState`) in your components
 2. Mark your components up with the `"use client";` directive if you need client-specific functionality
 3. Create separate configs for client and server rendering
 
 ### 1. Avoid client-specific code
 
-Avoiding client-specific code is the easiest way to support RSC across both environments, but may not be realistic for all users. This means:
+Avoiding client-specific code is the easiest way to support RSC across both environments, but may not be realistic for all users. This normally means avoiding React hooks like `useState` or `useContext`.
 
-1. Avoiding React hooks like `useState`, `useContext` etc
-2. Replacing Puck's `<DropZone>` with the `renderDropZone` prop
-
-#### Replacing DropZone with renderDropZone
-
-The [`puck.renderDropZone` prop](/docs/api-reference/configuration/component-config#propspuckrenderdropzone) is an RSC-friendly way to implement `<DropZone>` functionality:
-
-```tsx copy
-const config = {
-  components: {
-    Columns: {
-      render: ({ puck: { renderDropZone } }) => (
-        <div>{renderDropZone({ zone: "my-content" })}</div>
-      ),
-    },
-  },
-};
-```
+<Callout type="info">If you're using the legacy [`<DropZone>` component](/docs/api-reference/components/drop-zone), you will may encounter issues with server components. We recommend migrating to the [`slot` field](/docs/api-reference/fields/slot) which provides native server component support. Alternatively, see [our previous server components guide](https://puckeditor.com/v/0.18.3/docs/integrating-puck/server-components) for information on handling DropZones.</Callout>
 
 ### 2. Marking up components with `"use client";`
 

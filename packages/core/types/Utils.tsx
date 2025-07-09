@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Config } from "./Config";
 import { PuckContext } from "./Props";
 import { ComponentData, Data } from "./Data";
-import { AppState } from "./AppState";
+import { PrivateAppState } from "./Internal";
 
 export type WithId<Props> = Props & {
   id: string;
@@ -42,7 +42,7 @@ export type UserGenerics<
     UserProps,
     UserRootProps
   >,
-  UserAppState extends AppState<UserData> = AppState<UserData>,
+  UserAppState extends PrivateAppState<UserData> = PrivateAppState<UserData>,
   UserComponentData extends ComponentData = UserData["content"][0]
 > = {
   UserConfig: UserConfig;

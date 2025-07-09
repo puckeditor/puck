@@ -1,8 +1,43 @@
 import { useState } from "react";
-import { PointerSensor } from "./PointerSensor";
+import { PointerSensor } from "@dnd-kit/react";
 import { isElement } from "@dnd-kit/dom/utilities";
+import { type Distance } from "@dnd-kit/geometry";
 
-export const useSensors = () => {
+export interface DelayConstraint {
+  value: number;
+  tolerance: Distance;
+}
+
+export interface DistanceConstraint {
+  value: Distance;
+  tolerance?: Distance;
+}
+
+export interface ActivationConstraints {
+  distance?: DistanceConstraint;
+  delay?: DelayConstraint;
+}
+
+const touchDefault = { delay: { value: 200, tolerance: 10 } };
+const otherDefault = {
+  delay: { value: 200, tolerance: 10 },
+  distance: { value: 5 },
+};
+
+export const useSensors = (
+  {
+    other = otherDefault,
+    mouse,
+    touch = touchDefault,
+  }: {
+    mouse?: ActivationConstraints;
+    touch?: ActivationConstraints;
+    other?: ActivationConstraints;
+  } = {
+    touch: touchDefault,
+    other: otherDefault,
+  }
+) => {
   const [sensors] = useState(() => [
     PointerSensor.configure({
       activationConstraints(event, source) {
@@ -13,19 +48,14 @@ export const useSensors = () => {
           isElement(target) &&
           (source.handle === target || source.handle?.contains(target))
         ) {
-          return undefined;
+          return mouse;
         }
-
-        const delay = { value: 200, tolerance: 10 };
 
         if (pointerType === "touch") {
-          return { delay };
+          return touch;
         }
 
-        return {
-          delay,
-          distance: { value: 5 },
-        };
+        return other;
       },
     }),
   ]);

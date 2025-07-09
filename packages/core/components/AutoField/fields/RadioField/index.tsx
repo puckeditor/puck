@@ -15,6 +15,7 @@ export const RadioField = ({
   name,
   id,
   label,
+  labelIcon,
   Label,
 }: FieldPropsInternal) => {
   const flatOptions = useMemo(
@@ -29,7 +30,7 @@ export const RadioField = ({
 
   return (
     <Label
-      icon={<CheckCircle size={16} />}
+      icon={labelIcon || <CheckCircle size={16} />}
       label={label || name}
       readOnly={readOnly}
       el="div"

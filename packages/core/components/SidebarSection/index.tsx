@@ -4,7 +4,7 @@ import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Heading } from "../Heading";
 import { ChevronRight } from "lucide-react";
 import { useBreadcrumbs } from "../../lib/use-breadcrumbs";
-import { useAppContext } from "../Puck/context";
+import { useAppStore } from "../../store";
 import { Loader } from "../Loader";
 
 const getClassName = getClassNameFactory("SidebarSection", styles);
@@ -26,7 +26,7 @@ export const SidebarSection = ({
   noPadding?: boolean;
   isLoading?: boolean | null;
 }) => {
-  const { setUi } = useAppContext();
+  const setUi = useAppStore((s) => s.setUi);
   const breadcrumbs = useBreadcrumbs(1);
 
   return (

@@ -1,7 +1,13 @@
 import { CSSProperties } from "react";
-import { rootDroppableId } from "../../lib/root-droppable-id";
-import { Config, Data, UserGenerics } from "../../types";
-import { setupZone } from "../../lib/setup-zone";
+import {
+  rootAreaId,
+  rootDroppableId,
+  rootZone,
+} from "../../lib/root-droppable-id";
+import { setupZone } from "../../lib/data/setup-zone";
+import { Config, Data, Metadata, UserGenerics } from "../../types";
+import { useSlots } from "../../lib/use-slots";
+import { SlotRenderPure } from "../SlotRender/server";
 
 type DropZoneRenderProps = {
   zone: string;
@@ -9,13 +15,15 @@ type DropZoneRenderProps = {
   config: Config;
   areaId?: string;
   style?: CSSProperties;
+  metadata?: Metadata;
 };
 
-function DropZoneRender({
+export function DropZoneRender({
   zone,
   data,
   areaId = "root",
   config,
+  metadata = {},
 }: DropZoneRenderProps) {
   let zoneCompound = rootDroppableId;
   let content = data?.content || [];
@@ -24,7 +32,7 @@ function DropZoneRender({
     return null;
   }
 
-  if (areaId && zone && zone !== rootDroppableId) {
+  if (areaId !== rootAreaId && zone !== rootZone) {
     zoneCompound = `${areaId}:${zone}`;
     content = setupZone(data, zoneCompound).zones[zoneCompound];
   }
@@ -34,22 +42,34 @@ function DropZoneRender({
       {content.map((item) => {
         const Component = config.components[item.type];
 
+        const props = {
+          ...item.props,
+          puck: {
+            renderDropZone: ({ zone }: { zone: string }) => (
+              <DropZoneRender
+                zone={zone}
+                data={data}
+                areaId={item.props.id}
+                config={config}
+                metadata={metadata}
+              />
+            ),
+            metadata,
+            dragRef: null,
+            isEditing: false,
+          },
+        };
+
+        const renderItem = { ...item, props };
+
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const propsWithSlots = useSlots(config, renderItem, (props) => (
+          <SlotRenderPure {...props} config={config} metadata={metadata} />
+        ));
+
         if (Component) {
           return (
-            <Component.render
-              key={item.props.id}
-              {...item.props}
-              puck={{
-                renderDropZone: ({ zone }: { zone: string }) => (
-                  <DropZoneRender
-                    zone={zone}
-                    data={data}
-                    areaId={item.props.id}
-                    config={config}
-                  />
-                ),
-              }}
-            />
+            <Component.render key={renderItem.props.id} {...propsWithSlots} />
           );
         }
 
@@ -62,31 +82,63 @@ function DropZoneRender({
 export function Render<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
->({ config, data }: { config: UserConfig; data: G["UserData"] }) {
+>({
+  config,
+  data,
+  metadata = {},
+}: {
+  config: UserConfig;
+  data: G["UserData"];
+  metadata?: Metadata;
+}) {
+  // DEPRECATED
+  const rootProps = "props" in data.root ? data.root.props : data.root;
+
+  const title = rootProps.title || "";
+
+  const props = {
+    ...rootProps,
+    puck: {
+      renderDropZone: ({ zone }: { zone: string }) => (
+        <DropZoneRender
+          zone={zone}
+          data={data}
+          config={config}
+          metadata={metadata}
+        />
+      ),
+      isEditing: false,
+      dragRef: null,
+      metadata,
+    },
+    title,
+    editMode: false,
+    id: "puck-root",
+  };
+
+  const propsWithSlots = useSlots(config, { type: "root", props }, (props) => (
+    <SlotRenderPure {...props} config={config} metadata={metadata} />
+  ));
+
   if (config.root?.render) {
-    // DEPRECATED
-    const rootProps = data.root.props || data.root;
-
-    const title = rootProps.title || "";
-
     return (
-      <config.root.render
-        {...rootProps}
-        puck={{
-          renderDropZone: ({ zone }: { zone: string }) => (
-            <DropZoneRender zone={zone} data={data} config={config} />
-          ),
-          isEditing: false,
-          dragRef: null,
-        }}
-        title={title}
-        editMode={false}
-        id={"puck-root"}
-      >
-        <DropZoneRender config={config} data={data} zone={rootDroppableId} />
+      <config.root.render {...propsWithSlots}>
+        <DropZoneRender
+          config={config}
+          data={data}
+          zone={rootZone}
+          metadata={metadata}
+        />
       </config.root.render>
     );
   }
 
-  return <DropZoneRender config={config} data={data} zone={rootDroppableId} />;
+  return (
+    <DropZoneRender
+      config={config}
+      data={data}
+      zone={rootZone}
+      metadata={metadata}
+    />
+  );
 }

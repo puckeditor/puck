@@ -1,32 +1,34 @@
 import { cleanup } from "@testing-library/react";
-import { AppState, Config, Data } from "../../types";
+import { ComponentData, Config, RootDataWithProps } from "../../types";
 import { PuckAction } from "../../reducer";
-import { defaultAppState } from "../../components/Puck/context";
 import { insertComponent } from "../insert-component";
 import { rootDroppableId } from "../root-droppable-id";
 
-const item1 = { type: "MyComponent", props: { id: "MyComponent-1" } };
-const item2 = { type: "MyComponent", props: { id: "MyComponent-2" } };
-const item3 = { type: "MyComponent", props: { id: "MyComponent-3" } };
+import { createAppStore } from "../../store";
 
-const data: Data = {
-  root: { props: { title: "" } },
-  content: [item1],
-  zones: {
-    "MyComponent-1:zone": [item2],
-    "MyComponent-2:zone": [item3],
-  },
-};
-
-const state: AppState = {
-  data,
-  ui: defaultAppState.ui,
-};
+const appStore = createAppStore();
 
 const config: Config = {
   components: {
     MyComponent: {
-      defaultProps: { prop: "example" },
+      fields: {
+        prop: { type: "text" },
+        object: { type: "object", objectFields: { slot: { type: "slot" } } },
+      },
+      defaultProps: {
+        prop: "Unresolved",
+        object: {
+          slot: [
+            {
+              type: "MyComponent",
+              props: {
+                prop: "Unresolved",
+                object: { slot: [] },
+              },
+            },
+          ],
+        },
+      },
       resolveData: ({ props }) => {
         return {
           props: {
@@ -43,21 +45,33 @@ const config: Config = {
   },
 };
 
+type ComponentOrRootData = ComponentData | RootDataWithProps;
+
 describe("use-insert-component", () => {
   describe("insert-component", () => {
     let dispatchedEvents: PuckAction[] = [];
-    let resolvedDataEvents: AppState[] = [];
+    let resolvedDataEvents: ComponentOrRootData[] = [];
+    let resolvedTrigger: string = "";
 
-    const ctx = {
-      config,
-      dispatch: (action: PuckAction) => {
-        dispatchedEvents.push(action);
-      },
-      resolveData: (appState: AppState) => {
-        resolvedDataEvents.push(appState);
-      },
-      state,
-    };
+    beforeEach(() => {
+      appStore.setState(
+        {
+          ...appStore.getInitialState(),
+          config,
+          dispatch: (action) => {
+            dispatchedEvents.push(action);
+          },
+          resolveComponentData: async (data, trigger) => {
+            resolvedDataEvents.push(data);
+
+            resolvedTrigger = trigger;
+
+            return data as any;
+          },
+        },
+        true
+      );
+    });
 
     afterEach(() => {
       cleanup();
@@ -66,7 +80,7 @@ describe("use-insert-component", () => {
     });
 
     it("should dispatch the insert action", async () => {
-      insertComponent("MyComponent", rootDroppableId, 0, ctx);
+      insertComponent("MyComponent", rootDroppableId, 0, appStore.getState());
 
       expect(dispatchedEvents[0]).toEqual<PuckAction>({
         type: "insert",
@@ -79,7 +93,7 @@ describe("use-insert-component", () => {
     });
 
     it("should dispatch the setUi action, and select the item", async () => {
-      insertComponent("MyComponent", rootDroppableId, 0, ctx);
+      insertComponent("MyComponent", rootDroppableId, 0, appStore.getState());
 
       expect(dispatchedEvents[1]).toEqual<PuckAction>({
         type: "setUi",
@@ -93,31 +107,29 @@ describe("use-insert-component", () => {
     });
 
     it("should run any resolveData methods on the inserted item", async () => {
-      insertComponent("MyComponent", rootDroppableId, 0, ctx);
+      insertComponent("MyComponent", rootDroppableId, 0, appStore.getState());
 
-      expect(resolvedDataEvents[0]).toEqual<AppState>({
-        ...state,
-        data: {
-          ...state.data,
-          content: [
-            {
-              type: "MyComponent",
-              props: {
-                id: expect.stringContaining("MyComponent-"),
-                prop: "example",
+      expect(resolvedDataEvents[0]).toEqual({
+        type: "MyComponent",
+        props: {
+          id: expect.stringContaining("MyComponent-"),
+          prop: "Unresolved",
+          object: {
+            slot: [
+              {
+                type: "MyComponent",
+                props: {
+                  id: expect.stringContaining("MyComponent-"),
+                  prop: "Unresolved",
+                  object: { slot: [] },
+                },
               },
-            },
-            ...state.data.content,
-          ],
-        },
-        ui: {
-          ...state.ui,
-          itemSelector: {
-            index: 0,
-            zone: rootDroppableId,
+            ],
           },
         },
       });
+
+      expect(resolvedTrigger).toEqual("insert");
     });
   });
 });

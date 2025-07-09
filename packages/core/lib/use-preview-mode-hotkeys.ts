@@ -1,40 +1,20 @@
-import { Dispatch, useCallback } from "react";
-import { getFrame } from "./get-frame";
-import { useHotkeys } from "react-hotkeys-hook";
-import { PuckAction } from "../reducer";
+import { useCallback } from "react";
+import { useHotkey } from "./use-hotkey";
+import { useAppStoreApi } from "../store";
 
-export const usePreviewModeHotkeys = (
-  dispatch: Dispatch<PuckAction>,
-  iframeEnabled?: boolean
-) => {
+export const usePreviewModeHotkeys = () => {
+  const appStore = useAppStoreApi();
   const toggleInteractive = useCallback(() => {
+    const dispatch = appStore.getState().dispatch;
+
     dispatch({
       type: "setUi",
       ui: (ui) => ({
         previewMode: ui.previewMode === "edit" ? "interactive" : "edit",
       }),
     });
-  }, [dispatch]);
+  }, [appStore]);
 
-  const toggleInteractiveIframe = () => {
-    if (iframeEnabled) {
-      toggleInteractive();
-    }
-  };
-
-  const frame = getFrame();
-  const resolvedFrame =
-    typeof window !== "undefined" && frame !== document ? frame : undefined;
-
-  useHotkeys("meta+i", toggleInteractive, { preventDefault: true });
-  useHotkeys("meta+i", toggleInteractiveIframe, {
-    preventDefault: true,
-    document: resolvedFrame,
-  });
-  // For Windows
-  useHotkeys("ctrl+i", toggleInteractive, { preventDefault: true });
-  useHotkeys("ctrl+i", toggleInteractiveIframe, {
-    preventDefault: true,
-    document: resolvedFrame,
-  });
+  useHotkey({ meta: true, i: true }, toggleInteractive);
+  useHotkey({ ctrl: true, i: true }, toggleInteractive); // Windows
 };

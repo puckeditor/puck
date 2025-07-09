@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode } from "react";
 import { Field, FieldProps } from "../Fields";
-import { ItemSelector } from "../../lib/get-item";
+import { ItemSelector } from "../../lib/data/get-item";
 
 // Plugins can use `usePuck` instead of relying on props
 type RenderFunc<

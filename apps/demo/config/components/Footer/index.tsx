@@ -83,11 +83,11 @@ const Footer = ({ children }: { children: ReactNode }) => {
       >
         Made by{" "}
         <a
-          href="https://measured.co"
+          href="https://github.com/chrisvxd"
           target="_blank"
           style={{ color: "inherit", textDecoration: "none", fontWeight: 600 }}
         >
-          Measured
+          Chris Villa
         </a>
       </div>
     </footer>

@@ -1,8 +1,10 @@
 const menu = {
+  composition: {},
   "custom-fields": {},
-  "custom-interfaces": {},
+  "internal-puck-api": {},
   theming: {},
   plugins: {},
+  "ui-overrides": {},
 };
 
 export default menu;

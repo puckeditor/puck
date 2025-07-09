@@ -46,7 +46,7 @@ export const collisionDebug = (
       svg.setAttribute("id", debugId);
       svg.setAttribute(
         "style",
-        "position: fixed; height: 100%; width: 100%; pointer-events: none;"
+        "position: fixed; height: 100%; width: 100%; pointer-events: none; top: 0px; left: 0px;"
       );
       svg.appendChild(line);
       svg.appendChild(text);

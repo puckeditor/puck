@@ -1,4 +1,5 @@
-import { AppState, Data, UiState } from "../types";
+import { AppState, ComponentData, Data, RootData, UiState } from "../types";
+import { PrivateAppState } from "../types/Internal";
 
 export type InsertAction = {
   type: "insert";
@@ -14,11 +15,18 @@ export type DuplicateAction = {
   sourceZone: string;
 };
 
-export type ReplaceAction = {
+export type ReplaceAction<UserData extends Data = Data> = {
   type: "replace";
   destinationIndex: number;
   destinationZone: string;
-  data: any;
+  data: ComponentData;
+  ui?: Partial<AppState<UserData>["ui"]>;
+};
+
+export type ReplaceRootAction<UserData extends Data = Data> = {
+  type: "replaceRoot";
+  root: RootData;
+  ui?: Partial<AppState<UserData>["ui"]>;
 };
 
 export type ReorderAction = {
@@ -55,8 +63,10 @@ export type SetDataAction = {
 export type SetAction<UserData extends Data = Data> = {
   type: "set";
   state:
-    | Partial<AppState<UserData>>
-    | ((previous: AppState<UserData>) => Partial<AppState<UserData>>);
+    | Partial<PrivateAppState<UserData>>
+    | ((
+        previous: PrivateAppState<UserData>
+      ) => Partial<PrivateAppState<UserData>>);
 };
 
 export type RegisterZoneAction = {
@@ -74,6 +84,7 @@ export type PuckAction = { recordHistory?: boolean } & (
   | InsertAction
   | MoveAction
   | ReplaceAction
+  | ReplaceRootAction
   | RemoveAction
   | DuplicateAction
   | SetAction

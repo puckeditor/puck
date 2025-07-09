@@ -36,7 +36,3 @@ To adopt this recipe you will need to:
 - Implement a custom puck configuration in `puck.config.tsx`
 
 By default, this recipe will generate static pages by setting `dynamic` to [`force-static`](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#dynamic) in the `/app/[...puckPath]/page.tsx`. This will strip headers and cookies. If you need dynamic pages, you can delete this.
-
-## License
-
-MIT © [Measured Co.](https://github.com/measuredco)

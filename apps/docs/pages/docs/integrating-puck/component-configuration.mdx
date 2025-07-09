@@ -1,5 +1,5 @@
 import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
-import { Puck } from "@/core";
+import { Puck } from "@/puck";
 
 # Component Configuration
 
@@ -12,12 +12,12 @@ Puck's core behaviour is configured via the [Config](/docs/api-reference/configu
 
 The [Config](/docs/api-reference/configuration/config) is provided via the `config` prop to the main Puck components:
 
-- [`<Puck>`](/docs/api-reference/components/puck) reads the Config and renders an editor UI. The user interacts with the editor to produce a [data payload](/docs/api-reference/data).
-- [`<Render>`](/docs/api-reference/components/render) walks a [data payload](/docs/api-reference/data) and renders it according to the provided Config.
+- [`<Puck>`](/docs/api-reference/components/puck) reads the Config and renders an editor UI. The user interacts with the editor to produce a [data payload](/docs/api-reference/data-model/data).
+- [`<Render>`](/docs/api-reference/components/render) takes a [data payload](/docs/api-reference/data-model/data) and renders it according to the provided Config.
 
 ## The `render` function
 
-Components can be defined by via the `components` object in [Config](/docs/api-reference/configuration/config). Every definition must provide a [`render` function](/docs/api-reference/configuration/component-config#renderprops):
+Components can be defined via the `components` object in [Config](/docs/api-reference/configuration/config). Every definition must provide a [`render` function](/docs/api-reference/configuration/component-config#renderprops):
 
 ```tsx showLineNumbers copy {4-6}
 const config = {
@@ -33,7 +33,7 @@ const config = {
 
 This tells Puck that **HeadingBlock** is a valid component, and describes how to render it.
 
-When the user drags the component onto the preview and hits **Publish** in the editor UI via the `<Puck>` component, this Config will produce a [data payload](/docs/api-reference/data) like this:
+When the user drags the component onto the preview and hits **Publish** in the editor UI via the `<Puck>` component, this Config will produce a [data payload](/docs/api-reference/data-model/data) like this:
 
 ```json copy
 {

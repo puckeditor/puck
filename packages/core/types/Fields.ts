@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { DefaultComponentProps, UiState } from ".";
+import { DefaultComponentProps, Metadata, UiState } from ".";
 
 type FieldOption = {
   label: string;
@@ -10,19 +10,26 @@ type FieldOptions = Array<FieldOption> | ReadonlyArray<FieldOption>;
 
 export type BaseField = {
   label?: string;
+  labelIcon?: ReactElement;
+  metadata?: Metadata;
+  visible?: boolean;
 };
 
 export type TextField = BaseField & {
   type: "text";
+  placeholder?: string;
 };
 export type NumberField = BaseField & {
   type: "number";
+  placeholder?: string;
   min?: number;
   max?: number;
+  step?: number;
 };
 
 export type TextareaField = BaseField & {
   type: "textarea";
+  placeholder?: string;
 };
 
 export type SelectField = BaseField & {
@@ -100,16 +107,24 @@ export type ExternalField<
   initialFilters?: Record<string, any>;
 };
 
-export type CustomField<Props extends any = {}> = BaseField & {
+export type CustomFieldRender<Value extends any> = (props: {
+  field: CustomField<Value>;
+  name: string;
+  id: string;
+  value: Value;
+  onChange: (value: Value) => void;
+  readOnly?: boolean;
+}) => ReactElement;
+
+export type CustomField<Value extends any> = BaseField & {
   type: "custom";
-  render: (props: {
-    field: CustomField<Props>;
-    name: string;
-    id: string;
-    value: Props;
-    onChange: (value: Props) => void;
-    readOnly?: boolean;
-  }) => ReactElement;
+  render: CustomFieldRender<Value>;
+};
+
+export type SlotField = BaseField & {
+  type: "slot";
+  allow?: string[];
+  disallow?: string[];
 };
 
 export type Field<Props extends any = any> =
@@ -122,7 +137,8 @@ export type Field<Props extends any = any> =
   | ObjectField<Props extends { [key: string]: any } ? Props : any>
   | ExternalField<Props extends { [key: string]: any } ? Props : any>
   | ExternalFieldWithAdaptor<Props extends { [key: string]: any } ? Props : any>
-  | CustomField<Props>;
+  | CustomField<Props>
+  | SlotField;
 
 export type Fields<
   ComponentProps extends DefaultComponentProps = DefaultComponentProps

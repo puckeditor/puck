@@ -1,0 +1,28 @@
+---
+title: useGetPuck
+---
+
+# useGetPuck
+
+A hook that returns a function that retrieves the latest [`PuckApi`](/docs/api-reference/puck-api) at call time. This is useful in callbacks, effects, or any logic that runs outside the component render lifecycle.
+
+```tsx copy
+import { useGetPuck } from "@measured/puck";
+
+const Example = () => {
+  const getPuck = useGetPuck();
+
+  const handleClick = useCallback(() => {
+    // Current PuckApi is always provided
+    const { appState } = getPuck();
+  }, [getPuck]);
+
+  return <button onClick={handleClick}>Click me</button>;
+};
+```
+
+If you need to react to changes to `PuckApi`, try the [`usePuck` hook](use-puck).
+
+## Returns
+
+A function to retrieve the latest [`PuckApi`](/docs/api-reference/puck-api) data at call time.

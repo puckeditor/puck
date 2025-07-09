@@ -1,0 +1,280 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Puck should generate the correct state on mount 1`] = `
+{
+  "componentState": {},
+  "config": {
+    "components": {
+      "componentA": {
+        "render": [Function],
+      },
+      "componentB": {
+        "render": [Function],
+      },
+    },
+    "root": {
+      "render": [Function],
+    },
+  },
+  "dispatch": [Function],
+  "fields": {
+    "fields": {
+      "title": {
+        "type": "text",
+      },
+    },
+    "id": undefined,
+    "lastResolvedData": {},
+    "loading": false,
+  },
+  "getComponentConfig": [Function],
+  "history": {
+    "back": [Function],
+    "currentHistory": [Function],
+    "forward": [Function],
+    "hasFuture": [Function],
+    "hasPast": [Function],
+    "histories": [
+      {
+        "state": {
+          "data": {
+            "content": [],
+            "root": {
+              "props": {},
+            },
+            "zones": {},
+          },
+          "indexes": {
+            "nodes": {
+              "root": {
+                "data": {
+                  "props": {
+                    "id": "root",
+                  },
+                  "type": "root",
+                },
+                "flatData": {
+                  "props": {
+                    "id": "root",
+                  },
+                  "type": "root",
+                },
+                "parentId": null,
+                "path": [],
+                "zone": "",
+              },
+            },
+            "zones": {
+              "root:default-zone": {
+                "contentIds": [],
+                "type": "root",
+              },
+            },
+          },
+          "ui": {
+            "arrayState": {},
+            "componentList": {},
+            "field": {
+              "focus": null,
+            },
+            "isDragging": false,
+            "itemSelector": null,
+            "leftSideBarVisible": true,
+            "previewMode": "edit",
+            "rightSideBarVisible": true,
+            "viewports": {
+              "controlsVisible": true,
+              "current": {
+                "height": "auto",
+                "width": 360,
+              },
+              "options": [],
+            },
+          },
+        },
+      },
+    ],
+    "index": 0,
+    "initialAppState": {
+      "data": {
+        "content": [],
+        "root": {
+          "props": {},
+        },
+        "zones": {},
+      },
+      "indexes": {
+        "nodes": {
+          "root": {
+            "data": {
+              "props": {
+                "id": "root",
+              },
+              "type": "root",
+            },
+            "flatData": {
+              "props": {
+                "id": "root",
+              },
+              "type": "root",
+            },
+            "parentId": null,
+            "path": [],
+            "zone": "",
+          },
+        },
+        "zones": {
+          "root:default-zone": {
+            "contentIds": [],
+            "type": "root",
+          },
+        },
+      },
+      "ui": {
+        "arrayState": {},
+        "componentList": {},
+        "field": {
+          "focus": null,
+        },
+        "isDragging": false,
+        "itemSelector": null,
+        "leftSideBarVisible": true,
+        "previewMode": "edit",
+        "rightSideBarVisible": true,
+        "viewports": {
+          "controlsVisible": true,
+          "current": {
+            "height": "auto",
+            "width": 360,
+          },
+          "options": [],
+        },
+      },
+    },
+    "nextHistory": [Function],
+    "prevHistory": [Function],
+    "record": [Function],
+    "setHistories": [Function],
+    "setHistoryIndex": [Function],
+  },
+  "iframe": {
+    "enabled": false,
+    "waitForStyles": true,
+  },
+  "metadata": undefined,
+  "nodes": {
+    "nodes": {},
+    "registerNode": [Function],
+    "unregisterNode": [Function],
+  },
+  "onAction": undefined,
+  "overrides": {},
+  "pendingLoadTimeouts": {},
+  "permissions": {
+    "cache": {},
+    "getPermissions": [Function],
+    "globalPermissions": {
+      "delete": true,
+      "drag": true,
+      "duplicate": true,
+      "edit": true,
+      "insert": true,
+    },
+    "refreshPermissions": [Function],
+    "resolvePermissions": [Function],
+    "resolvedPermissions": {},
+  },
+  "plugins": [],
+  "resolveAndCommitData": [Function],
+  "resolveComponentData": [Function],
+  "selectedItem": null,
+  "setComponentLoading": [Function],
+  "setComponentState": [Function],
+  "setStatus": [Function],
+  "setUi": [Function],
+  "setZoomConfig": [Function],
+  "state": {
+    "data": {
+      "content": [],
+      "root": {
+        "props": {},
+      },
+      "zones": {},
+    },
+    "indexes": {
+      "nodes": {
+        "root": {
+          "data": {
+            "props": {
+              "id": "root",
+            },
+            "type": "root",
+          },
+          "flatData": {
+            "props": {
+              "id": "root",
+            },
+            "type": "root",
+          },
+          "parentId": null,
+          "path": [],
+          "zone": "",
+        },
+      },
+      "zones": {
+        "root:default-zone": {
+          "contentIds": [],
+          "type": "root",
+        },
+      },
+    },
+    "ui": {
+      "arrayState": {},
+      "componentList": {},
+      "field": {
+        "focus": null,
+      },
+      "isDragging": false,
+      "itemSelector": null,
+      "leftSideBarVisible": false,
+      "previewMode": "edit",
+      "rightSideBarVisible": false,
+      "viewports": {
+        "controlsVisible": true,
+        "current": {
+          "height": "auto",
+          "width": 360,
+        },
+        "options": [],
+      },
+    },
+  },
+  "status": "READY",
+  "unsetComponentLoading": [Function],
+  "viewports": [
+    {
+      "height": "auto",
+      "icon": "Smartphone",
+      "label": "Small",
+      "width": 360,
+    },
+    {
+      "height": "auto",
+      "icon": "Tablet",
+      "label": "Medium",
+      "width": 768,
+    },
+    {
+      "height": "auto",
+      "icon": "Monitor",
+      "label": "Large",
+      "width": 1280,
+    },
+  ],
+  "zoomConfig": {
+    "autoZoom": NaN,
+    "rootHeight": 0,
+    "zoom": NaN,
+  },
+}
+`;

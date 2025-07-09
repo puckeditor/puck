@@ -36,4 +36,4 @@ To adopt this recipe you will need to:
 
 ## License
 
-MIT © [Measured Co.](https://github.com/measuredco)
+MIT © [The Puck Contributors](https://github.com/measuredco/puck/graphs/contributors).

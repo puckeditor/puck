@@ -1,6 +1,11 @@
 # Plugin API
 
-> **⚠️ The plugin API is highly experimental and is likely to experience breaking changes.**
+import { Callout } from "nextra/components";
+
+<Callout>
+  The plugin API is highly experimental and is likely to experience breaking
+  changes.
+</Callout>
 
 The plugin API enables developers to distribute plugins to customize the Puck interface.
 
@@ -13,7 +18,7 @@ Please see the [awesome-puck repo](https://github.com/measuredco/awesome-puck) f
 
 ## Developing a plugin
 
-Plugins implement the same [`overrides`](/docs/api-reference/overrides) API used to build [custom interfaces](custom-interfaces#ui-overrides):
+Plugins implement the [`overrides`](/docs/extending-puck/ui-overrides) API:
 
 ```tsx showLineNumbers copy {3-9, 15}
 import { Puck } from "@measured/puck";

@@ -1,0 +1,82 @@
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+
+# Composition
+
+Puck uses compositional patterns enable completely custom editor interfaces. [See an example](https://demo.puckeditor.com/custom-ui/edit/).
+
+## Using composition
+
+Composition can be achieved by providing [`children`](/docs/api-reference/components/puck#children) to the [`<Puck>` component](/docs/api-reference/components/puck):
+
+```tsx showLineNumbers copy
+import { Puck } from "@measured/puck";
+
+export function Editor() {
+  return (
+    <Puck>
+      <div
+        style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gridGap: 16 }}
+      >
+        <div>
+          {/* Render the drag-and-drop preview */}
+          <Puck.Preview />
+        </div>
+        <div>
+          {/* Render the component list */}
+          <Puck.Components />
+        </div>
+      </div>
+    </Puck>
+  );
+}
+```
+
+<PuckPreview
+  config={{
+    components: {
+      HeadingBlock: {
+        render: () => {
+          return <span>Hello, world</span>;
+        },
+      },
+    },
+  }}
+  data={{
+    content: [{ type: "HeadingBlock", props: { id: "HeadingBlock-1" } }],
+    root: { props: {} },
+  }}
+>
+  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gridGap: 16 }}>
+    <div>
+      <Puck.Components />
+    </div>
+    <div>
+      <Puck.Preview />
+    </div>
+  </div>
+</PuckPreview>
+
+## Compositional components
+
+Puck exposes its core components, allowing you to compose them together to create new layouts:
+
+- [`<Puck.Components>`](/docs/api-reference/components/puck-components) - A draggable list of components.
+- [`<Puck.Fields>`](/docs/api-reference/components/puck-fields) - The fields for the currently selected item.
+- [`<Puck.Outline>`](/docs/api-reference/components/puck-outline) - An interactive outline.
+- [`<Puck.Preview>`](/docs/api-reference/components/puck-preview) - A drag-and-drop preview.
+
+The internal UI for these components can also be changed by implementing [UI overrides](/docs/extending-puck/overrides) or [theming](theming).
+
+### Helper components
+
+Puck also exposes helper components for even deeper customization:
+
+- [`<Drawer>`](/docs/api-reference/components/drawer) - A reference list of items that can be dragged into a droppable area, normally `<Puck.Preview>`.
+- [`<Drawer.Item>`](/docs/api-reference/components/drawer-item) - An item that can be dragged from a `<Drawer>`.
+- [`<FieldLabel>`](/docs/api-reference/components/field-label) - A styled label for creating inputs.
+
+## Further reading
+
+- [Internal Puck API](/docs/extending-puck/internal-puck-api)
+- [UI overrides](/docs/extending-puck/ui-overrides)

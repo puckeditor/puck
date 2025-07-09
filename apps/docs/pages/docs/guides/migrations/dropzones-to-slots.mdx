@@ -1,0 +1,123 @@
+---
+title: Migrating - DropZones to Slots
+---
+
+# How to migrate from DropZones to Slots
+
+This guide will help you migrate from [`DropZones`](/docs/api-reference/components/drop-zone) to [Slots](/docs/api-reference/fields/slot).
+
+---
+
+[Slot fields](/docs/api-reference/fields/slot) replace the [`<DropZone>` component](/docs/api-reference/components/drop-zone), introducing an inline data model that supports [`defaultProps`](/docs/api-reference/configuration/component-config#defaultprops), [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) and [Server Components](/docs/integrating-puck/server-components) out-of-the-box.
+
+## Replace DropZone instances
+
+Replace your `<DropZone>` instances with [slot fields](/docs/api-reference/fields/slot) and the slot [render function](/docs/api-reference/fields/slot#render-function).
+
+**Before**
+
+```tsx {5}
+const config = {
+  components: {
+    Example: {
+      render: () => {
+        return <DropZone zone="items" allow={["HeadingBlock"]} />;
+      },
+    },
+  },
+};
+```
+
+**After**
+
+```tsx {5-7, 10, 13}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        items: {
+          type: "slot",
+        },
+      },
+      defaultProps: {
+        items: [], // Slots support defaultProps and other APIs like resolveData
+      },
+      render: ({ items: Items }) => {
+        return <Items allow={["HeadingBlock"]} />; // Slots support most DropZone APIs
+      },
+    },
+  },
+};
+```
+
+## The data model
+
+The slot data model is inline and recursive. This means that instead of storing data in a global `zones` object, data is stored as arrays of [ComponentData](/docs/api-reference/data-model/component-data) as a prop.
+
+**Before**
+
+```json showLineNumbers {10-20}
+{
+  "content": [
+    {
+      "type": "Grid",
+      "props": {
+        "id": "Grid-12345"
+      }
+    }
+  ],
+  "zones": {
+    "Grid-12345:items": [
+      {
+        "type": "HeadingBlock",
+        "props": {
+          "id": "Heading-12345",
+          "title": "Hello, world"
+        }
+      }
+    ]
+  }
+}
+```
+
+**After**
+
+```json showLineNumbers {7-15}
+{
+  "content": [
+    {
+      "type": "Grid",
+      "props": {
+        "id": "Grid-12345",
+        "items": [
+          {
+            "type": "HeadingBlock",
+            "props": {
+              "id": "Heading-12345",
+              "title": "Hello, world"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Migrating legacy data
+
+For new slots, you don't need to do anything. If you're migrating existing DropZones to slots, you will need to migrate your the data accordingly. Puck provides the [`migrate()` helper](/docs/api-reference/functions/migrate) to help with this:
+
+```tsx
+import { migrate } from "@measured/puck";
+import config from "puck.config.tsx";
+
+const newData = migrate(legacyData, config);
+```
+
+This will migrate any existing zone in `zones` where you have defined a `slot` with the same name.
+
+## Further reading
+
+- [The `slot` field API](/docs/api-reference/fields/slot)
+- [The `DropZone` component](/docs/api-reference/components/drop-zone)
