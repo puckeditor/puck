@@ -127,7 +127,7 @@ const migrations: Migration[] = [
       }
     });
 
-    Object.keys(unmigratedZonesGrouped).forEach((zoneId) => {
+    Object.keys(unmigratedZonesGrouped).forEach((componentId) => {
       updated.data = walkTree(updated.data, config, (content) => {
         return content.map((child) => {
           if (child.props.id !== zoneId) {
