@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
-import { ComponentConfig } from "@/core/types";
+import { ComponentConfigWithExtensions } from "@/core/types";
 import { quotes } from "./quotes";
 import { AutoField, FieldLabel } from "@/core";
 import { Link2 } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
+import { Extensions } from "../../types";
 
-export const Hero: ComponentConfig<HeroProps> = {
+export const Hero: ComponentConfigWithExtensions<Extensions, HeroProps> = {
   fields: {
     quote: {
       type: "external",
@@ -133,7 +134,7 @@ export const Hero: ComponentConfig<HeroProps> = {
         },
       },
     },
-    padding: { type: "text" },
+    padding: { type: "userField", option: true },
   },
   defaultProps: {
     title: "Hero",
