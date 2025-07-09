@@ -94,10 +94,11 @@ Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zo
 
 ## Args
 
-| Param               | Example                                       | Type                                               | Status   |
-| ------------------- | --------------------------------------------- | -------------------------------------------------- | -------- |
-| [`data`](#data)     | `{ content: [{type: "Heading", props: {} }]}` | [Data](/docs/api-reference/data-model/data)        | Required |
-| [`config`](#config) | `{ components: {} }`                          | [Config](/docs/api-reference/configuration/config) | -        |
+| Param                                 | Example                                       | Type                                               | Status   |
+| ------------------------------------- | --------------------------------------------- | -------------------------------------------------- | -------- |
+| [`data`](#data)                       | `{ content: [{type: "Heading", props: {} }]}` | [Data](/docs/api-reference/data-model/data)        | Required |
+| [`config`](#config)                   | `{ components: {} }`                          | [Config](/docs/api-reference/configuration/config) | -        |
+| [`migrationOptions`](#migrationoptions) | `{ migrateDynamicZonesForComponent: {} }`            | [MigrationOptions](#migrationoptions-type)        | -        |
 
 ### `data`
 
@@ -106,6 +107,100 @@ The legacy data you want to transform.
 ### `config`
 
 A [config](/docs/api-reference/configuration/config) object. Normally only required if using [slots](/docs/api-reference/fields/slot).
+
+### `migrationOptions`
+
+Options to customise how data is migrated.
+
+### `migrateDynamicZonesForComponent`
+
+An object mapping component names to custom migration functions. Used during the [DropZones to slots migration](#dropzones-to-slots) to handle complex zone migration scenarios where automatic migration isn't possible.
+
+Each migration function receives:
+- `props`: The current component props
+- `zones`: A record of zone names to their content
+
+The function should return the updated component props with the migrated zone data.
+
+```tsx
+migrate(legacyData, config, {
+  migrateDynamicZonesForComponent: {
+    Columns: (props, zones) => {
+      return {
+        ...props,
+        columns: Object.values(zones).map((zone) => ({
+          column: zone,
+        })),
+      };
+    },
+  },
+});
+```
+
+**Before**
+
+```json showLineNumbers {10-20}
+{
+  "root": {
+    "props": {
+      "title": "Legacy Zones Migration"
+    }
+  },
+  "content": [
+    {
+      "type": "Columns",
+      "props": {
+        "columns": [{}],
+        "id": "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be"
+      }
+    }
+  ],
+  "zones": {
+    "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be:column-0": [
+      {
+        "type": "Text",
+        "props": {
+          "text": "Drop zone 1",
+          "id": "Text-c2b5c0a5-d76b-4120-8bb3-99934e119967"
+        }
+      }
+    ]
+  }
+}
+```
+
+**After**
+
+```json showLineNumbers {10-20}
+{
+  "root": {
+    "props": {
+      "title": "Legacy Zones Migration"
+    }
+  },
+  "content": [
+    {
+      "type": "Columns",
+      "props": {
+        "columns": [
+          {
+            "column": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Drop zone 1",
+                  "id": "Text-c2b5c0a5-d76b-4120-8bb3-99934e119967"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be"
+      }
+    }
+  ]
+}
+```
 
 ## Returns
 
