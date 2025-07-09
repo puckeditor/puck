@@ -53,7 +53,11 @@ import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
-import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
+import {
+  monitorHotkeys,
+  useMonitorHotkeys,
+  useHotkey,
+} from "../../lib/use-hotkey";
 import { getFrame } from "../../lib/get-frame";
 import {
   UsePuckStoreContext,
@@ -401,6 +405,33 @@ function PuckLayout<
   );
 
   const dispatch = useAppStore((s) => s.dispatch);
+  const selectedItem = useAppStore((s) => s.selectedItem);
+  const itemSelector = useAppStore((s) => s.state.ui.itemSelector);
+  const permissions = useAppStore((s) => s.permissions);
+
+  // Add delete hotkey functionality
+  const handleDelete = useCallback(() => {
+    if (selectedItem && itemSelector) {
+      // Get the zone and index from itemSelector
+      const { zone, index } = itemSelector;
+      
+      // Check if the selected item can be deleted
+      const itemPermissions = permissions.getPermissions?.({ item: selectedItem }) || { delete: true };
+      
+      if (itemPermissions.delete && typeof zone === "string") {
+        dispatch({
+          type: "remove",
+          index,
+          zone,
+        });
+      }
+    }
+  }, [selectedItem, itemSelector, dispatch, permissions]);
+
+  // Register delete hotkeys
+  useHotkey({ delete: true }, handleDelete);
+  useHotkey({ backspace: true }, handleDelete);
+  useHotkey({ meta: true, backspace: true }, handleDelete); // Cmd+Backspace
 
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
