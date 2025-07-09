@@ -414,10 +414,12 @@ function PuckLayout<
     if (selectedItem && itemSelector) {
       // Get the zone and index from itemSelector
       const { zone, index } = itemSelector;
-      
+
       // Check if the selected item can be deleted
-      const itemPermissions = permissions.getPermissions?.({ item: selectedItem }) || { delete: true };
-      
+      const itemPermissions = permissions.getPermissions?.({
+        item: selectedItem,
+      }) || { delete: true };
+
       if (itemPermissions.delete && typeof zone === "string") {
         dispatch({
           type: "remove",
