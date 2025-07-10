@@ -108,53 +108,60 @@ const migrations: Migration[] = [
     });
 
     // Migrate zones created by dynamic arrays
-    const unmigratedZonesGrouped: Record<string, Record<string, Content>> = {};
+    if (migrationOptions?.migrateDynamicZonesForComponent) {
+      const unmigratedZonesGrouped: Record<
+        string,
+        Record<string, Content>
+      > = {};
 
-    Object.keys(updated.data.zones ?? {}).forEach((zoneCompound) => {
-      const [componentId, propName] = zoneCompound.split(":");
-      const content = updated.data.zones?.[zoneCompound];
+      Object.keys(updated.data.zones ?? {}).forEach((zoneCompound) => {
+        const [componentId, propName] = zoneCompound.split(":");
+        const content = updated.data.zones?.[zoneCompound];
 
-      if (!content) {
-        return;
-      }
+        if (!content) {
+          return;
+        }
 
-      if (!unmigratedZonesGrouped[zoneId]) {
-        unmigratedZonesGrouped[zoneId] = {};
-      }
+        if (!unmigratedZonesGrouped[componentId]) {
+          unmigratedZonesGrouped[componentId] = {};
+        }
 
-      if (!unmigratedZonesGrouped[zoneId][propName]) {
-        unmigratedZonesGrouped[zoneId][propName] = content;
-      }
-    });
+        if (!unmigratedZonesGrouped[componentId][propName]) {
+          unmigratedZonesGrouped[componentId][propName] = content;
+        }
+      });
 
-    Object.keys(unmigratedZonesGrouped).forEach((componentId) => {
-      updated.data = walkTree(updated.data, config, (content) => {
-        return content.map((child) => {
-          if (child.props.id !== zoneId) {
-            return child;
-          }
+      Object.keys(unmigratedZonesGrouped).forEach((componentId) => {
+        updated.data = walkTree(updated.data, config, (content) => {
+          return content.map((child) => {
+            if (child.props.id !== componentId) {
+              return child;
+            }
 
-          const migrateFn =
-            migrationOptions?.migrateDynamicZonesForComponent?.[child.type];
+            const migrateFn =
+              migrationOptions?.migrateDynamicZonesForComponent?.[child.type];
 
-          if (!migrateFn) {
-            return child;
-          }
+            if (!migrateFn) {
+              return child;
+            }
 
-          const zones = unmigratedZonesGrouped[zoneId];
-          const migratedProps = migrateFn(child.props, zones);
+            const zones = unmigratedZonesGrouped[componentId];
+            const migratedProps = migrateFn(child.props, zones);
 
-          Object.keys(zones).forEach((zoneCompound) => {
-            delete updated.data.zones?.[`${zoneId}:${zoneCompound}`];
+            Object.keys(zones).forEach((propName) => {
+              const zoneCompound = `${componentId}:${propName}`;
+              console.log(`✓ Success: Migrated "${zoneCompound}" DropZone`);
+              delete updated.data.zones?.[zoneCompound];
+            });
+
+            return {
+              ...child,
+              props: migratedProps,
+            };
           });
-
-          return {
-            ...child,
-            props: migratedProps,
-          };
         });
       });
-    });
+    }
 
     Object.keys(updated.data.zones ?? {}).forEach((zoneCompound) => {
       const [_, propName] = zoneCompound.split(":");
