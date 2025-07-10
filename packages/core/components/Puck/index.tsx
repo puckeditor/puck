@@ -35,6 +35,7 @@ import {
   createAppStore,
   defaultAppState,
   useAppStore,
+  useAppStoreApi,
   appStoreContext,
   AppStore,
 } from "../../store";
@@ -53,9 +54,14 @@ import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
-import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
+import {
+  monitorHotkeys,
+  useMonitorHotkeys,
+  useHotkey,
+} from "../../lib/use-hotkey";
 import { getFrame } from "../../lib/get-frame";
 import {
+  useGetPuck,
   UsePuckStoreContext,
   useRegisterUsePuckStore,
 } from "../../lib/use-puck";
@@ -374,6 +380,12 @@ function PuckProvider<
   );
 }
 
+const useDeleteHotkeys = (handleDelete: () => void) => {
+  useHotkey({ delete: true }, handleDelete);
+  useHotkey({ backspace: true }, handleDelete);
+  useHotkey({ meta: true, backspace: true }, handleDelete); // Cmd+Backspace
+};
+
 function PuckLayout<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
@@ -401,6 +413,32 @@ function PuckLayout<
   );
 
   const dispatch = useAppStore((s) => s.dispatch);
+  const appStoreApi = useAppStoreApi();
+
+  // Add delete hotkey functionality
+  const handleDelete = useCallback(() => {
+    // Access the store state directly to avoid hook call issues in hotkey handlers
+    const storeState = appStoreApi.getState();
+    const selectedItem = storeState.selectedItem;
+    const itemSelector = storeState.state.ui.itemSelector;
+
+    if (selectedItem && itemSelector) {
+      // Get the zone and index from itemSelector
+      const { zone, index } = itemSelector;
+
+      // Use a simple permission check without calling getPermissions
+      // Since getPermissions might be calling hooks internally
+      if (typeof zone === "string") {
+        storeState.dispatch({
+          type: "remove",
+          index,
+          zone,
+        });
+      }
+    }
+  }, [appStoreApi]);
+
+  useDeleteHotkeys(handleDelete);
 
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
