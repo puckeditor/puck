@@ -41,6 +41,7 @@ const ViewportButton = ({
   return (
     <span className={getClassNameButton({ isActive })}>
       <IconButton
+        type="button"
         title={title}
         disabled={isActive}
         onClick={(e) => {
@@ -121,6 +122,7 @@ export const ViewportControls = ({
       ))}
       <div className={getClassName("divider")} />
       <IconButton
+        type="button"
         title="Zoom viewport out"
         disabled={zoom <= zoomOptions[0]?.value}
         onClick={(e) => {
@@ -138,6 +140,7 @@ export const ViewportControls = ({
         <ZoomOut size={16} />
       </IconButton>
       <IconButton
+        type="button"
         title="Zoom viewport in"
         disabled={zoom >= zoomOptions[zoomOptions.length - 1]?.value}
         onClick={(e) => {
