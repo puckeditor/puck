@@ -46,10 +46,20 @@ export function MenuBar<UserData extends Data>({
     >
       <div className={getClassName("inner")}>
         <div className={getClassName("history")}>
-          <IconButton type="button" title="undo" disabled={!hasPast} onClick={back}>
+          <IconButton
+            type="button"
+            title="undo"
+            disabled={!hasPast}
+            onClick={back}
+          >
             <Undo2Icon size={21} />
           </IconButton>
-          <IconButton type="button" title="redo" disabled={!hasFuture} onClick={forward}>
+          <IconButton
+            type="button"
+            title="redo"
+            disabled={!hasFuture}
+            onClick={forward}
+          >
             <Redo2Icon size={21} />
           </IconButton>
         </div>
