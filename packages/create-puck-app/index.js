@@ -71,11 +71,25 @@ program
     const questions = [
       ...beforeQuestions,
       {
-        type: "input",
+        type: "list",
         name: "recipe",
         message: "Which recipe would you like to use?",
         required: true,
         default: "next",
+        choices: [
+          {
+            name: "Next.js",
+            value: "next",
+          },
+          {
+            name: "React Router",
+            value: "react-router",
+          },
+          {
+            name: "Remix",
+            value: "remix",
+          },
+        ],
       },
     ];
     const answers = await inquirer.prompt(questions);
