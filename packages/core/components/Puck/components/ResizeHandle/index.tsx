@@ -25,27 +25,6 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   const startX = useRef(0);
   const startWidth = useRef(0);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      isDragging.current = true;
-      startX.current = e.clientX;
-
-      startWidth.current =
-        sidebarRef.current?.getBoundingClientRect().width || 0;
-
-      document.body.style.cursor = "col-resize";
-      document.body.style.userSelect = "none";
-
-      const overlay = document.createElement("div");
-      overlay.id = "resize-overlay";
-      overlay.setAttribute("data-resize-overlay", "");
-      document.body.appendChild(overlay);
-
-      e.preventDefault();
-    },
-    [position]
-  );
-
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDragging.current) return;
@@ -75,21 +54,41 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
       document.body.removeChild(overlay);
     }
 
+    // Remove event listeners when dragging ends
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+
     const finalWidth = sidebarRef.current?.getBoundingClientRect().width || 0;
     onResizeEnd(finalWidth);
 
     resetAutoZoom();
   }, [onResizeEnd, resetAutoZoom]);
 
-  useEffect(() => {
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      isDragging.current = true;
+      startX.current = e.clientX;
 
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [handleMouseMove, handleMouseUp]);
+      startWidth.current =
+        sidebarRef.current?.getBoundingClientRect().width || 0;
+
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+
+      const overlay = document.createElement("div");
+      overlay.id = "resize-overlay";
+      overlay.setAttribute("data-resize-overlay", "");
+      document.body.appendChild(overlay);
+
+      // Add event listeners only when dragging starts
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+
+      e.preventDefault();
+    },
+    [position, handleMouseMove, handleMouseUp]
+  );
+
 
   return (
     <div
