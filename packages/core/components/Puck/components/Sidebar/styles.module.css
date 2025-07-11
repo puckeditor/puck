@@ -20,8 +20,6 @@
 .Sidebar-resizeHandle {
   position: absolute;
   height: 100%;
-  width: 6px;
-  z-index: 11;
 }
 
 .Sidebar--left + .Sidebar-resizeHandle {
