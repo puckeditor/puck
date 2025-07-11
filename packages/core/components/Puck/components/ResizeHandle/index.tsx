@@ -35,13 +35,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
 
       const overlay = document.createElement("div");
       overlay.id = "resize-overlay";
-      overlay.style.position = "fixed";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.right = "0";
-      overlay.style.bottom = "0";
-      overlay.style.zIndex = "9999";
-      overlay.style.cursor = "col-resize";
+      overlay.setAttribute("data-resize-overlay", "");
       document.body.appendChild(overlay);
 
       e.preventDefault();
