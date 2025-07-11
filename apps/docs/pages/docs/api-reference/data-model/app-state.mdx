@@ -87,6 +87,39 @@ Whether or not the left side bar is visible.
 
 ---
 
+### `ui.rightSideBarVisible`
+
+Whether or not the right side bar is visible.
+
+---
+
+### `ui.leftSideBarWidth`
+
+Width of the left side bar in pixels. This value can be dynamically adjusted by users through the `ResizeHandle` component, which provides a draggable interface for resizing the sidebar.
+
+---
+
+### `ui.rightSideBarWidth`
+
+Width of the right side bar in pixels. Similar to the left sidebar, this width can be adjusted using the `ResizeHandle` component.
+
+---
+
+### `ResizeHandle`
+
+The `ResizeHandle` component provides a draggable interface for resizing sidebars in the Puck editor. It appears as a thin vertical handle on the edge of sidebars that users can drag to adjust the width.
+
+| Prop | Type | Description |
+| ---- | ---- | ----------- |
+| `position` | `"left" \| "right"` | Determines which side of the sidebar the handle appears on |
+| `sidebarRef` | `{ current: HTMLDivElement \| null }` | React ref to the sidebar element being resized |
+| `onResize` | `(width: number) => void` | Callback function triggered during resize with the new width |
+| `onResizeEnd` | `(width: number) => void` | Callback function triggered when resizing ends |
+
+The component creates a draggable handle that updates the corresponding sidebar width in the AppState when dragged, and resets the canvas zoom when the resize operation completes.
+
+---
+
 ### `ui.previewMode`
 
 The mode for the preview area, controlling whether or not the user can interact with the underlying component. Accepts the following values:
@@ -95,12 +128,6 @@ The mode for the preview area, controlling whether or not the user can interact 
 - **`"interactive"`**: Editing functionality is disabled. The user can interact with the underlying component.
 
 Puck does not currently provide the UI to control this value, but it can be toggled via the `cmd+i` or `ctrl+i` hotkeys.
-
----
-
-### `ui.rightSideBarVisible`
-
-Whether or not the right side bar is visible.
 
 ---
 
