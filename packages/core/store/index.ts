@@ -11,7 +11,7 @@ import {
   Metadata,
   ComponentData,
   RootDataWithProps,
-  ResolveDataTrigger,
+  ResolverTrigger,
 } from "../types";
 import { createReducer, PuckAction } from "../reducer";
 import { getItem } from "../lib/data/get-item";
@@ -63,7 +63,7 @@ export type AppStore<
   pendingLoadTimeouts: Record<string, NodeJS.Timeout>;
   resolveComponentData: <T extends ComponentData | RootDataWithProps>(
     componentData: T,
-    trigger: ResolveDataTrigger
+    trigger: ResolverTrigger
   ) => Promise<{ node: T; didChange: boolean }>;
   resolveAndCommitData: () => void;
   plugins: Plugin[];
@@ -87,7 +87,7 @@ export type AppStore<
 
 export type AppStoreApi = StoreApi<AppStore>;
 
-const defaultPageFields: Record<string, Field> = {
+export const defaultPageFields: Record<string, Field> = {
   title: { type: "text" },
 };
 

@@ -2,12 +2,13 @@ import {
   ComponentData,
   Config,
   Metadata,
-  ResolveDataTrigger,
+  ResolverTrigger,
   RootDataWithProps,
 } from "../types";
 import { mapSlots } from "./data/map-slots";
 import { getChanged } from "./get-changed";
 import fdeq from "fast-deep-equal";
+import { getConfig } from "./get-config";
 
 export const cache: {
   lastChange: Record<string, any>;
@@ -21,12 +22,9 @@ export const resolveComponentData = async <
   metadata: Metadata = {},
   onResolveStart?: (item: T) => void,
   onResolveEnd?: (item: T) => void,
-  trigger: ResolveDataTrigger = "replace"
+  trigger: ResolverTrigger = "replace"
 ) => {
-  const configForItem =
-    "type" in item && item.type !== "root"
-      ? config.components[item.type]
-      : config.root;
+  const configForItem = getConfig(item, config);
 
   const resolvedItem: T = {
     ...item,

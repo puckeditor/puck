@@ -29,7 +29,7 @@ const createOnChange =
   async (value: any, updatedUi?: Partial<UiState>) => {
     let currentProps;
 
-    const { dispatch, state, selectedItem, resolveComponentData } =
+    const { dispatch, state, selectedItem, resolveComponentData, fields } =
       appStore.getState();
 
     const { data, ui } = state;
@@ -50,28 +50,36 @@ const createOnChange =
     };
 
     if (selectedItem && itemSelector) {
+      const newData = (
+        await resolveComponentData(
+          { ...selectedItem, props: newProps },
+          "replace"
+        )
+      ).node;
+
+      await fields.resolveFields(newData, "replace");
+
       dispatch({
         type: "replace",
         destinationIndex: itemSelector.index,
         destinationZone: itemSelector.zone || rootDroppableId,
-        data: (
-          await resolveComponentData(
-            { ...selectedItem, props: newProps },
-            "replace"
-          )
-        ).node,
+        data: newData,
         ui: updatedUi,
       });
     } else {
       if (data.root.props) {
+        const newData = (
+          await resolveComponentData(
+            { ...data.root, props: newProps },
+            "replace"
+          )
+        ).node;
+
+        await fields.resolveFields(newData, "replace");
+
         dispatch({
           type: "replaceRoot",
-          root: (
-            await resolveComponentData(
-              { ...data.root, props: newProps },
-              "replace"
-            )
-          ).node,
+          root: newData,
           ui: { ...ui, ...updatedUi },
           recordHistory: true,
         });
@@ -86,7 +94,8 @@ const createOnChange =
   };
 
 const FieldsChild = ({ fieldName }: { fieldName: string }) => {
-  const field = useAppStore((s) => s.fields.fields[fieldName]);
+  const field = useAppStore((s) => s.fields.get()[fieldName]);
+
   const isReadOnly = useAppStore(
     (s) =>
       ((s.selectedItem
@@ -163,18 +172,11 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   const appStore = useAppStoreApi();
   useRegisterFieldsSlice(appStore, id);
 
-  const fieldsLoading = useAppStore((s) => s.fields.loading);
   const fieldNames = useAppStore(
-    useShallow((s) => {
-      if (s.fields.id === id) {
-        return Object.keys(s.fields.fields);
-      }
-
-      return [];
-    })
+    useShallow((s) => Object.keys(s.fields.get()))
   );
 
-  const isLoading = fieldsLoading || componentResolving;
+  const isLoading = componentResolving;
 
   const Wrapper = useMemo(() => overrides.fields || DefaultFields, [overrides]);
 

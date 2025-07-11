@@ -1,4 +1,4 @@
-import { resolveComponentData } from "../resolve-component-data";
+import { resolveComponentData, cache } from "../resolve-component-data";
 import { createAppStore } from "../../store";
 import { Config, Fields } from "../../types";
 import { toComponent } from "../data/to-component";
@@ -93,6 +93,7 @@ const config: Config = {
 describe("resolveComponentData", () => {
   beforeEach(() => {
     appStore.setState({ ...appStore.getInitialState(), config }, true);
+    cache.lastChange = {};
   });
 
   it("should run resolvers for every node in the tree", async () => {
