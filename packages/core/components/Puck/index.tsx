@@ -27,34 +27,17 @@ import type {
   Metadata,
 } from "../../types";
 
-import { SidebarSection } from "../SidebarSection";
-
 import { PuckAction } from "../../reducer";
-import getClassNameFactory from "../../lib/get-class-name-factory";
-import {
-  createAppStore,
-  defaultAppState,
-  useAppStore,
-  appStoreContext,
-  AppStore,
-} from "../../store";
-import styles from "./styles.module.css";
+import { createAppStore, defaultAppState, appStoreContext } from "../../store";
 import { Fields } from "./components/Fields";
 import { Components } from "./components/Components";
 import { Preview } from "./components/Preview";
 import { Outline } from "./components/Outline";
-import { Canvas } from "./components/Canvas";
 import { defaultViewports } from "../ViewportControls/default-viewports";
 import { Viewports } from "../../types";
-import { DragDropContext } from "../DragDropContext";
 import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
-import { DefaultOverride } from "../DefaultOverride";
-import { useInjectGlobalCss } from "../../lib/use-inject-css";
-import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
-import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
-import { getFrame } from "../../lib/get-frame";
 import {
   UsePuckStoreContext,
   useRegisterUsePuckStore,
@@ -62,25 +45,7 @@ import {
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
 import fdeq from "fast-deep-equal";
-import { Header } from "./components/Header";
-
-const getClassName = getClassNameFactory("Puck", styles);
-const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
-
-const FieldSideBar = () => {
-  const title = useAppStore((s) =>
-    s.selectedItem
-      ? s.config.components[s.selectedItem.type]?.["label"] ??
-        s.selectedItem.type.toString()
-      : "Page"
-  );
-
-  return (
-    <SidebarSection noPadding noBorderTop showBreadcrumbs title={title}>
-      <Fields />
-    </SidebarSection>
-  );
-};
+import { Layout } from "./components/Layout";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -374,129 +339,6 @@ function PuckProvider<
   );
 }
 
-function PuckLayout<
-  UserConfig extends Config = Config,
-  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
->({ children }: PropsWithChildren) {
-  const {
-    iframe: _iframe,
-    dnd,
-    initialHistory: _initialHistory,
-  } = usePropsContext();
-
-  const iframe: IframeConfig = useMemo(
-    () => ({
-      enabled: true,
-      waitForStyles: true,
-      ..._iframe,
-    }),
-    [_iframe]
-  );
-
-  useInjectGlobalCss(iframe.enabled);
-
-  const leftSideBarVisible = useAppStore((s) => s.state.ui.leftSideBarVisible);
-  const rightSideBarVisible = useAppStore(
-    (s) => s.state.ui.rightSideBarVisible
-  );
-
-  const dispatch = useAppStore((s) => s.dispatch);
-
-  useEffect(() => {
-    if (!window.matchMedia("(min-width: 638px)").matches) {
-      dispatch({
-        type: "setUi",
-        ui: {
-          leftSideBarVisible: false,
-          rightSideBarVisible: false,
-        },
-      });
-    }
-
-    const handleResize = () => {
-      if (!window.matchMedia("(min-width: 638px)").matches) {
-        dispatch({
-          type: "setUi",
-          ui: (ui: UiState) => ({
-            ...ui,
-            ...(ui.rightSideBarVisible ? { leftSideBarVisible: false } : {}),
-          }),
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const overrides = useAppStore((s) => s.overrides);
-
-  const CustomPuck = useMemo(
-    () => overrides.puck || DefaultOverride,
-    [overrides]
-  );
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const ready = useAppStore((s) => s.status === "READY");
-
-  useMonitorHotkeys();
-
-  useEffect(() => {
-    if (ready && iframe.enabled) {
-      const frameDoc = getFrame();
-
-      if (frameDoc) {
-        return monitorHotkeys(frameDoc);
-      }
-    }
-  }, [ready, iframe.enabled]);
-
-  usePreviewModeHotkeys();
-
-  return (
-    <div className={`Puck ${getClassName()}`}>
-      <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
-        <CustomPuck>
-          {children || (
-            <div
-              className={getLayoutClassName({
-                leftSideBarVisible,
-                mounted,
-                rightSideBarVisible,
-              })}
-            >
-              <div className={getLayoutClassName("inner")}>
-                <Header />
-                <div className={getLayoutClassName("leftSideBar")}>
-                  <SidebarSection title="Components" noBorderTop>
-                    <Components />
-                  </SidebarSection>
-                  <SidebarSection title="Outline">
-                    <Outline />
-                  </SidebarSection>
-                </div>
-                <Canvas />
-                <div className={getLayoutClassName("rightSideBar")}>
-                  <FieldSideBar />
-                </div>
-              </div>
-            </div>
-          )}
-        </CustomPuck>
-      </DragDropContext>
-      <div id="puck-portal-root" className={getClassName("portal")} />
-    </div>
-  );
-}
-
 export function Puck<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
@@ -504,7 +346,7 @@ export function Puck<
   return (
     <PropsProvider {...props}>
       <PuckProvider {...props}>
-        <PuckLayout {...props} />
+        <Layout>{props.children}</Layout>
       </PuckProvider>
     </PropsProvider>
   );
