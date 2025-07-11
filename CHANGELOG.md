@@ -2,6 +2,19 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.19.2](https://github.com/measuredco/puck/compare/v0.19.1...v0.19.2) (2025-07-11)
+
+
+### Bug Fixes
+
+* ensure setHistories resets the appState ([7cccfdd](https://github.com/measuredco/puck/commit/7cccfddf2c3c74ea8b17b1e6dda7dbdc2e231022))
+* prevent icon buttons from submitting parent form ([5f6f6d8](https://github.com/measuredco/puck/commit/5f6f6d8e8e2e33281ff235a51786d1af9a6e5622))
+* release ctrl/cmd when tab changes ([37d387b](https://github.com/measuredco/puck/commit/37d387bddec49f03dc10b1df6f72768bf39b24dd))
+* respect slot label in outline panel ([cccf912](https://github.com/measuredco/puck/commit/cccf9125587f14ee1336447a4e63e044af787ca6))
+
+
+
+
 ## [0.19.1](https://github.com/measuredco/puck/compare/v0.19.0...v0.19.1) (2025-06-09)
 
 

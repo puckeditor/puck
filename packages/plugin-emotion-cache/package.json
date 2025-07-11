@@ -1,6 +1,6 @@
 {
   "name": "@measured/puck-plugin-emotion-cache",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
   "bugs": "https://github.com/measuredco/puck/issues",
@@ -23,7 +23,7 @@
   ],
   "devDependencies": {
     "@emotion/react": "^11.13.3",
-    "@measured/puck": "^0.19.1",
+    "@measured/puck": "^0.19.2",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "eslint": "^7.32.0",
