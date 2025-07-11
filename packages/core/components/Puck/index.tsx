@@ -503,20 +503,20 @@ function PuckLayout<
   return (
     <div className={`Puck ${getClassName()}`}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
-          <CustomPuck>
-            {children || (
-              <FrameProvider>
-                <div
-                  className={getLayoutClassName({
-                    leftSideBarVisible,
-                    mounted,
-                    rightSideBarVisible,
-                  })}
-                >
+        <CustomPuck>
+          {children || (
+            <FrameProvider>
               <div
-                className={getLayoutClassName("inner")}
-                style={{
-                  gridTemplateColumns: `
+                className={getLayoutClassName({
+                  leftSideBarVisible,
+                  mounted,
+                  rightSideBarVisible,
+                })}
+              >
+                <div
+                  className={getLayoutClassName("inner")}
+                  style={{
+                    gridTemplateColumns: `
                     ${
                       leftSideBarVisible
                         ? leftWidth
@@ -533,40 +533,40 @@ function PuckLayout<
                         : "0"
                     }
                   `,
-                }}
-              >
-                <Header />
-                <Sidebar
-                  position="left"
-                  sidebarRef={leftSidebarRef}
-                  isVisible={leftSideBarVisible}
-                  width={leftWidth}
-                  onResize={setLeftWidth}
-                  onResizeEnd={handleLeftSidebarResizeEnd}
+                  }}
                 >
-                  <SidebarSection title="Components" noBorderTop>
-                    <Components />
-                  </SidebarSection>
-                  <SidebarSection title="Outline">
-                    <Outline />
-                  </SidebarSection>
-                </Sidebar>
-                <Canvas />
-                <Sidebar
-                  position="right"
-                  sidebarRef={rightSidebarRef}
-                  isVisible={rightSideBarVisible}
-                  width={rightWidth}
-                  onResize={setRightWidth}
-                  onResizeEnd={handleRightSidebarResizeEnd}
-                >
-                  <FieldSideBar />
-                </Sidebar>
-              </div>
+                  <Header />
+                  <Sidebar
+                    position="left"
+                    sidebarRef={leftSidebarRef}
+                    isVisible={leftSideBarVisible}
+                    width={leftWidth}
+                    onResize={setLeftWidth}
+                    onResizeEnd={handleLeftSidebarResizeEnd}
+                  >
+                    <SidebarSection title="Components" noBorderTop>
+                      <Components />
+                    </SidebarSection>
+                    <SidebarSection title="Outline">
+                      <Outline />
+                    </SidebarSection>
+                  </Sidebar>
+                  <Canvas />
+                  <Sidebar
+                    position="right"
+                    sidebarRef={rightSidebarRef}
+                    isVisible={rightSideBarVisible}
+                    width={rightWidth}
+                    onResize={setRightWidth}
+                    onResizeEnd={handleRightSidebarResizeEnd}
+                  >
+                    <FieldSideBar />
+                  </Sidebar>
                 </div>
-              </FrameProvider>
-            )}
-          </CustomPuck>
+              </div>
+            </FrameProvider>
+          )}
+        </CustomPuck>
       </DragDropContext>
       <div id="puck-portal-root" className={getClassName("portal")} />
     </div>

@@ -19,7 +19,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   onResizeEnd,
 }) => {
   const { resetAutoZoom } = useCanvasFrame();
-  
+
   const handleRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -88,7 +88,6 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
     },
     [position, handleMouseMove, handleMouseUp]
   );
-
 
   return (
     <div

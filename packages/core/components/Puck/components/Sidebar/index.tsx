@@ -31,9 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div ref={sidebarRef} className={getClassName({ [position]: true })}>
         {children}
       </div>
-      <div
-        className={`${getClassName("resizeHandle")}`}
-      >
+      <div className={`${getClassName("resizeHandle")}`}>
         <ResizeHandle
           position={position}
           sidebarRef={sidebarRef}

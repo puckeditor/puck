@@ -1,11 +1,5 @@
 import { getBox } from "css-box-model";
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useAppStore } from "../../../../store";
 import { ViewportControls } from "../../../ViewportControls";
 import styles from "./styles.module.css";
@@ -23,7 +17,7 @@ const ZOOM_ON_CHANGE = true;
 export const Canvas = () => {
   // Use the shared canvas frame hook - must be called before other hooks to maintain hook order
   const { frameRef, resetAutoZoom } = useCanvasFrame();
-  
+
   const {
     dispatch,
     overrides,
