@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
+import { useCanvasFrame } from "../../../../lib/frame-context";
 
 const getClassName = getClassNameFactory("ResizeHandle", styles);
 
@@ -17,6 +18,8 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   onResize,
   onResizeEnd,
 }) => {
+  const { resetAutoZoom } = useCanvasFrame();
+  
   const handleRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -75,14 +78,8 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
     const finalWidth = sidebarRef.current?.getBoundingClientRect().width || 0;
     onResizeEnd(finalWidth);
 
-    // Trigger auto zoom by dispatching the viewportchange event
-    window.dispatchEvent(
-      new CustomEvent("viewportchange", {
-        bubbles: true,
-        cancelable: false,
-      })
-    );
-  }, [onResizeEnd]);
+    resetAutoZoom();
+  }, [onResizeEnd, resetAutoZoom]);
 
   useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
@@ -97,7 +94,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   return (
     <div
       ref={handleRef}
-      className={`${getClassName()} ${getClassName(`--${position}`)}`}
+      className={getClassName({ [position]: true })}
       onMouseDown={handleMouseDown}
     />
   );

@@ -59,6 +59,7 @@ import {
   UsePuckStoreContext,
   useRegisterUsePuckStore,
 } from "../../lib/use-puck";
+import { FrameProvider } from "../../lib/frame-context";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
 import fdeq from "fast-deep-equal";
@@ -502,15 +503,16 @@ function PuckLayout<
   return (
     <div className={`Puck ${getClassName()}`}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
-        <CustomPuck>
-          {children || (
-            <div
-              className={getLayoutClassName({
-                leftSideBarVisible,
-                mounted,
-                rightSideBarVisible,
-              })}
-            >
+          <CustomPuck>
+            {children || (
+              <FrameProvider>
+                <div
+                  className={getLayoutClassName({
+                    leftSideBarVisible,
+                    mounted,
+                    rightSideBarVisible,
+                  })}
+                >
               <div
                 className={getLayoutClassName("inner")}
                 style={{
@@ -561,9 +563,10 @@ function PuckLayout<
                   <FieldSideBar />
                 </Sidebar>
               </div>
-            </div>
-          )}
-        </CustomPuck>
+                </div>
+              </FrameProvider>
+            )}
+          </CustomPuck>
       </DragDropContext>
       <div id="puck-portal-root" className={getClassName("portal")} />
     </div>
