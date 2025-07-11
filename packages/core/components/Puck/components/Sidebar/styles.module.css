@@ -17,19 +17,19 @@
   grid-area: right;
 }
 
-.ResizeHandleContainer {
+.Sidebar-resizeHandle {
   position: absolute;
   height: 100%;
   width: 6px;
   z-index: 11;
 }
 
-.ResizeHandleContainer--left {
+.Sidebar--left + .Sidebar-resizeHandle {
   grid-area: left;
   justify-self: end;
 }
 
-.ResizeHandleContainer--right {
+.Sidebar--right + .Sidebar-resizeHandle {
   grid-area: right;
   justify-self: start;
 }

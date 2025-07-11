@@ -4,10 +4,6 @@ import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("Sidebar", styles);
-const getResizeHandleContainerClassName = getClassNameFactory(
-  "ResizeHandleContainer",
-  styles
-);
 
 interface SidebarProps {
   position: "left" | "right";
@@ -32,16 +28,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      <div
-        ref={sidebarRef}
-        className={`${getClassName()} ${getClassName(`--${position}`)}`}
-      >
+      <div ref={sidebarRef} className={getClassName({ [position]: true })}>
         {children}
       </div>
       <div
-        className={`${getResizeHandleContainerClassName()} ${getResizeHandleContainerClassName(
-          `--${position}`
-        )}`}
+        className={`${getClassName("resizeHandle")}`}
       >
         <ResizeHandle
           position={position}
