@@ -111,21 +111,3 @@
     --puck-side-bar-width: 320px;
   }
 }
-
-.PuckLayout-leftSideBar {
-  background: var(--puck-color-grey-12);
-  border-inline-end: 1px solid var(--puck-color-grey-09);
-  display: flex;
-  flex-direction: column;
-  grid-area: left;
-  overflow-y: auto;
-}
-
-.PuckLayout-rightSideBar {
-  background: var(--puck-color-white);
-  border-inline-start: 1px solid var(--puck-color-grey-09);
-  display: flex;
-  flex-direction: column;
-  grid-area: right;
-  overflow-y: auto;
-}
