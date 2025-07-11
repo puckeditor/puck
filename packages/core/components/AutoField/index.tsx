@@ -232,9 +232,13 @@ function AutoFieldInternal<
     );
   }
 
-  const children = defaultFields[field.type](mergedProps);
+  const children = defaultFields[field.type]?.(mergedProps) ?? null;
 
   const Render = render[field.type] as (props: FieldProps) => ReactElement;
+
+  if (!Render) {
+    throw new Error(`Field type for ${field.type} did not exist.`);
+  }
 
   return (
     <NestedFieldContext.Provider
