@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppStore } from "../store";
 import { PuckAction } from "../reducer";
+import { UiState } from "../types";
 
 /**
  * Custom hook for managing sidebar resize functionality
@@ -20,6 +21,30 @@ export function useSidebarResize(
       ? s.state.ui.leftSidebarWidth
       : s.state.ui.rightSidebarWidth
   );
+
+  // Load saved widths from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && !storeWidth) {
+      try {
+        const savedWidths = localStorage.getItem("puck-sidebar-widths");
+        if (savedWidths) {
+          const widths = JSON.parse(savedWidths);
+          const savedWidth = widths[position];
+          
+          if (savedWidth) {
+            dispatch({
+              type: "setUi",
+              ui: {
+                [position === "left" ? "leftSidebarWidth" : "rightSidebarWidth"]: savedWidth,
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to load ${position} sidebar width from localStorage`, error);
+      }
+    }
+  }, [dispatch, position, storeWidth]);
 
   useEffect(() => {
     if (storeWidth !== undefined) {

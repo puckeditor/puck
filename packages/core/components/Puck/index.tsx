@@ -418,28 +418,6 @@ function PuckLayout<
     handleResizeEnd: handleRightSidebarResizeEnd,
   } = useSidebarResize("right", dispatch);
 
-  // Load saved widths from localStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const savedWidths = localStorage.getItem("puck-sidebar-widths");
-        if (savedWidths) {
-          const { left, right } = JSON.parse(savedWidths);
-          if (left || right) {
-            dispatch({
-              type: "setUi",
-              ui: {
-                leftSidebarWidth: left || null,
-                rightSidebarWidth: right || null,
-              },
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Failed to load sidebar widths from localStorage", error);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
