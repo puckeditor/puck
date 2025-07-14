@@ -47,15 +47,15 @@ export const Canvas = () => {
   const {
     leftSideBarVisible,
     rightSideBarVisible,
-    leftSidebarWidth,
-    rightSidebarWidth,
+    leftSideBarWidth,
+    rightSideBarWidth,
     viewports,
   } = useAppStore(
     useShallow((s) => ({
       leftSideBarVisible: s.state.ui.leftSideBarVisible,
       rightSideBarVisible: s.state.ui.rightSideBarVisible,
-      leftSidebarWidth: s.state.ui.leftSidebarWidth,
-      rightSidebarWidth: s.state.ui.rightSidebarWidth,
+      leftSideBarWidth: s.state.ui.leftSideBarWidth,
+      rightSideBarWidth: s.state.ui.rightSideBarWidth,
       viewports: s.state.ui.viewports,
     }))
   );
@@ -104,8 +104,8 @@ export const Canvas = () => {
     frameRef,
     leftSideBarVisible,
     rightSideBarVisible,
-    leftSidebarWidth,
-    rightSidebarWidth,
+    leftSideBarWidth,
+    rightSideBarWidth,
     resetAutoZoom,
     viewports,
   ]);

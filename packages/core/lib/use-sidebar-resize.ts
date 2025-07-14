@@ -18,8 +18,8 @@ export function useSidebarResize(
 
   const storeWidth = useAppStore((s) =>
     position === "left"
-      ? s.state.ui.leftSidebarWidth
-      : s.state.ui.rightSidebarWidth
+      ? s.state.ui.leftSideBarWidth
+      : s.state.ui.rightSideBarWidth
   );
 
   // Load saved widths from localStorage on mount
@@ -36,8 +36,8 @@ export function useSidebarResize(
               type: "setUi",
               ui: {
                 [position === "left"
-                  ? "leftSidebarWidth"
-                  : "rightSidebarWidth"]: savedWidth,
+                  ? "leftSideBarWidth"
+                  : "rightSideBarWidth"]: savedWidth,
               },
             });
           }
@@ -63,7 +63,7 @@ export function useSidebarResize(
       dispatch({
         type: "setUi",
         ui: {
-          [position === "left" ? "leftSidebarWidth" : "rightSidebarWidth"]:
+          [position === "left" ? "leftSideBarWidth" : "rightSideBarWidth"]:
             width,
         },
       });
