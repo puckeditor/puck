@@ -418,7 +418,6 @@ function PuckLayout<
     handleResizeEnd: handleRightSidebarResizeEnd,
   } = useSidebarResize("right", dispatch);
 
-
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
       dispatch({

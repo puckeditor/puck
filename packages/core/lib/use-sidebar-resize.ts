@@ -30,18 +30,23 @@ export function useSidebarResize(
         if (savedWidths) {
           const widths = JSON.parse(savedWidths);
           const savedWidth = widths[position];
-          
+
           if (savedWidth) {
             dispatch({
               type: "setUi",
               ui: {
-                [position === "left" ? "leftSidebarWidth" : "rightSidebarWidth"]: savedWidth,
+                [position === "left"
+                  ? "leftSidebarWidth"
+                  : "rightSidebarWidth"]: savedWidth,
               },
             });
           }
         }
       } catch (error) {
-        console.error(`Failed to load ${position} sidebar width from localStorage`, error);
+        console.error(
+          `Failed to load ${position} sidebar width from localStorage`,
+          error
+        );
       }
     }
   }, [dispatch, position, storeWidth]);
