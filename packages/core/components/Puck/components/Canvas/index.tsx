@@ -3,7 +3,7 @@ import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useAppStore } from "../../../../store";
 import { ViewportControls } from "../../../ViewportControls";
 import styles from "./styles.module.css";
-import { getClassNameFactory } from "../../../../lib";
+import { getClassNameFactory, useResetAutoZoom } from "../../../../lib";
 import { Preview } from "../Preview";
 import { UiState } from "../../../../types";
 import { Loader } from "../../../Loader";
@@ -16,7 +16,8 @@ const ZOOM_ON_CHANGE = true;
 
 export const Canvas = () => {
   // Use the shared canvas frame hook - must be called before other hooks to maintain hook order
-  const { frameRef, resetAutoZoom } = useCanvasFrame();
+  const { frameRef } = useCanvasFrame();
+  const resetAutoZoom = useResetAutoZoom(frameRef);
 
   const {
     dispatch,

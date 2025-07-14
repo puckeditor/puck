@@ -6,13 +6,10 @@ import React, {
   useRef,
   RefObject,
   useMemo,
-  useCallback,
 } from "react";
-import { useResetAutoZoom } from "./use-reset-auto-zoom";
 
 interface FrameContextType {
   frameRef: RefObject<HTMLDivElement | null>;
-  resetAutoZoom: ReturnType<typeof useResetAutoZoom>;
 }
 
 const FrameContext = createContext<FrameContextType | null>(null);
@@ -23,18 +20,11 @@ export const FrameProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const frameRef = useRef<HTMLDivElement>(null);
 
-  const resetAutoZoomFn = useResetAutoZoom(frameRef);
-
-  const resetAutoZoom = useCallback((newViewports?: any) => {
-    resetAutoZoomFn(newViewports);
-  }, []);
-
   const value = useMemo(
     () => ({
       frameRef,
-      resetAutoZoom,
     }),
-    [resetAutoZoom]
+    []
   );
 
   return (
