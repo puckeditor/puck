@@ -1,5 +1,12 @@
 import { getBox } from "css-box-model";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAppStore } from "../../../../store";
 import { ViewportControls } from "../../../ViewportControls";
 import styles from "./styles.module.css";
@@ -15,7 +22,6 @@ const getClassName = getClassNameFactory("PuckCanvas", styles);
 const ZOOM_ON_CHANGE = true;
 
 export const Canvas = () => {
-  // Use the shared canvas frame hook - must be called before other hooks to maintain hook order
   const { frameRef } = useCanvasFrame();
   const resetAutoZoom = useResetAutoZoom(frameRef);
 
@@ -55,6 +61,7 @@ export const Canvas = () => {
   );
 
   const [showTransition, setShowTransition] = useState(false);
+  const isResettingZoomRef = useRef(false);
 
   const defaultRender = useMemo<
     React.FunctionComponent<{ children?: ReactNode }>
@@ -85,8 +92,14 @@ export const Canvas = () => {
 
   // Auto zoom
   useEffect(() => {
-    setShowTransition(false);
-    resetAutoZoom(viewports);
+    if (!isResettingZoomRef.current) {
+      isResettingZoomRef.current = true;
+      setShowTransition(false);
+      resetAutoZoom(viewports);
+      setTimeout(() => {
+        isResettingZoomRef.current = false;
+      }, 0);
+    }
   }, [
     frameRef,
     leftSideBarVisible,
@@ -111,17 +124,27 @@ export const Canvas = () => {
 
   // Zoom whenever state changes, even if external driver
   useEffect(() => {
-    if (ZOOM_ON_CHANGE) {
+    if (ZOOM_ON_CHANGE && !isResettingZoomRef.current) {
+      isResettingZoomRef.current = true;
       setShowTransition(true);
       resetAutoZoom(viewports);
+      setTimeout(() => {
+        isResettingZoomRef.current = false;
+      }, 0);
     }
   }, [viewports.current.width, resetAutoZoom, viewports]);
 
   // Resize based on window size
   useEffect(() => {
     const cb = () => {
-      setShowTransition(false);
-      resetAutoZoom();
+      if (!isResettingZoomRef.current) {
+        isResettingZoomRef.current = true;
+        setShowTransition(false);
+        resetAutoZoom();
+        setTimeout(() => {
+          isResettingZoomRef.current = false;
+        }, 0);
+      }
     };
 
     window.addEventListener("resize", cb);
@@ -201,7 +224,13 @@ export const Canvas = () => {
           suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
           id="puck-canvas-root"
           onTransitionEnd={() => {
-            resetAutoZoom();
+            if (!isResettingZoomRef.current) {
+              isResettingZoomRef.current = true;
+              resetAutoZoom();
+              setTimeout(() => {
+                isResettingZoomRef.current = false;
+              }, 0);
+            }
           }}
         >
           <CustomPreview>
