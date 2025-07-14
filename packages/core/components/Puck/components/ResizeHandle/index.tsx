@@ -35,7 +35,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
           ? startWidth.current + delta
           : startWidth.current - delta;
 
-      const width = Math.max(186, newWidth);
+      const width = Math.max(192, newWidth);
       onResize(width);
       e.preventDefault();
     },
