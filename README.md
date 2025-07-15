@@ -12,8 +12,11 @@ The visual editor for React.
   <a aria-label="Join the community on Discord" href="https://discord.gg/D9e4E3MQVZ">
     <img alt="" src="https://img.shields.io/badge/Join%20the%20Discord-blueviolet.svg?style=for-the-badge&logo=Discord&labelColor=000000&logoWidth=20">
   </a>
- <a aria-label="Browse the awesome-puck community repo" href="https://github.com/measuredco/awesome-puck">
+  <a aria-label="Browse the awesome-puck community repo" href="https://github.com/measuredco/awesome-puck">
     <img alt="" src="https://img.shields.io/badge/repo-awesome--puck-fc60a8.svg?style=for-the-badge&labelColor=000000&logoWidth=20">
+  </a>
+  <a aria-label="Contributing guide" href="https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md">
+    <img alt="" src="https://img.shields.io/badge/contributions-welcome-blue?style=for-the-badge&labelColor=000000">
   </a>
 </p>
 
