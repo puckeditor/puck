@@ -15,7 +15,15 @@ const collectStyles = (doc: Document) => {
   const collected: HTMLElement[] = [];
 
   doc.querySelectorAll(styleSelector).forEach((style) => {
-    collected.push(style as HTMLElement);
+    if (style.tagName === "STYLE") {
+      const hasContent = !!style.innerHTML.trim();
+
+      if (hasContent) {
+        collected.push(style as HTMLElement);
+      }
+    } else {
+      collected.push(style as HTMLElement);
+    }
   });
 
   return collected;
