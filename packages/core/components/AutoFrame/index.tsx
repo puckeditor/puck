@@ -40,7 +40,9 @@ const getStyleSheet = (el: HTMLElement) => {
 const getStyles = (styleSheet?: CSSStyleSheet) => {
   if (styleSheet) {
     try {
-      return [...styleSheet.cssRules].map((rule) => rule.cssText).join("");
+      return [...Array.from(styleSheet.cssRules)]
+        .map((rule) => rule.cssText)
+        .join("");
     } catch (e) {
       console.warn(
         "Access to stylesheet %s is denied. Ignoring…",
