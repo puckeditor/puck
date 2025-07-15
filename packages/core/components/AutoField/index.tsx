@@ -232,6 +232,10 @@ function AutoFieldInternal<
     );
   }
 
+  if (!defaultFields[field.type]) {
+    throw new Error(`Unsupported field type: ${field.type}`);
+  }
+
   const children = defaultFields[field.type](mergedProps);
 
   const Render = render[field.type] as (props: FieldProps) => ReactElement;

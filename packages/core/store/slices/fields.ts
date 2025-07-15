@@ -1,28 +1,82 @@
 import { ComponentData } from "../../types";
-import type { Fields } from "../../types";
-import { AppStore, useAppStoreApi } from "../";
+import type { Fields, ResolverTrigger, RootDataWithProps } from "../../types";
+import { AppStore, defaultPageFields, useAppStoreApi } from "../";
 import { useCallback, useEffect } from "react";
-import { getChanged } from "../../lib/get-changed";
-import { makeStatePublic } from "../../lib/data/make-state-public";
-
-type ComponentOrRootData = Omit<ComponentData<any>, "type">;
+import { resolveFields } from "../../lib/resolve-fields";
+import { getConfig } from "../../lib/get-config";
 
 export type FieldsSlice = {
-  fields: Fields | Partial<Fields>;
-  loading: boolean;
-  lastResolvedData: Partial<ComponentOrRootData>;
-  id: string | undefined;
+  resolved: Record<string, Fields>;
+  resolveFields: <T extends ComponentData | RootDataWithProps>(
+    componentData: T,
+    trigger: ResolverTrigger
+  ) => Promise<{ data: Fields; didChange: boolean }>;
+  resolveAllFields: () => void;
+  get: () => Fields;
 };
 
 export const createFieldsSlice = (
-  _set: (newState: Partial<AppStore>) => void,
-  _get: () => AppStore
+  set: (newState: Partial<AppStore>) => void,
+  get: () => AppStore
 ): FieldsSlice => {
   return {
-    fields: {},
-    loading: false,
-    lastResolvedData: {},
-    id: undefined,
+    resolved: {},
+    resolveFields: async (componentData, trigger) => {
+      const { metadata, setComponentLoading, config, state } = get();
+
+      const timeouts: Record<string, () => void> = {};
+
+      return await resolveFields(
+        componentData,
+        config,
+        state,
+        metadata,
+        (item) => {
+          const id = "id" in item.props ? item.props.id : "root";
+          timeouts[id] = setComponentLoading(id, true, 50);
+        },
+        async (item, resolvedFields) => {
+          const id = "id" in item.props ? item.props.id : "root";
+
+          const fields = get().fields;
+
+          if (resolvedFields.didChange) {
+            set({
+              fields: {
+                ...fields,
+                resolved: {
+                  ...fields.resolved,
+                  [item.props.id]: resolvedFields.data,
+                },
+              },
+            });
+          }
+
+          timeouts[id]();
+        },
+        trigger
+      );
+    },
+    resolveAllFields: () => {},
+    get: () => {
+      const s = get();
+
+      const item = s.selectedItem;
+
+      if (item) {
+        const config = s.config;
+        const componentConfig = getConfig(item, config);
+
+        const resolvedFields =
+          s.fields.resolved[item.props.id] ?? componentConfig?.fields ?? {};
+
+        return resolvedFields;
+      }
+
+      return (
+        s.fields.resolved["root"] ?? s.config.root?.fields ?? defaultPageFields
+      );
+    },
   };
 };
 
@@ -30,81 +84,16 @@ export const useRegisterFieldsSlice = (
   appStore: ReturnType<typeof useAppStoreApi>,
   id?: string
 ) => {
-  const resolveFields = useCallback(
-    async (reset?: boolean) => {
-      const { fields, lastResolvedData } = appStore.getState().fields;
-      const nodes = appStore.getState().state.indexes.nodes;
-      const node = nodes[id || "root"];
-      const componentData = node?.data;
-      const parentNode = node?.parentId ? nodes[node.parentId] : null;
-      const parent = parentNode?.data || null;
+  const resolveFields = useCallback(async () => {
+    const fields = appStore.getState().fields;
+    const nodes = appStore.getState().state.indexes.nodes;
+    const node = nodes[id || "root"];
+    const componentData = node?.data;
 
-      const { getComponentConfig, state } = appStore.getState();
-
-      const componentConfig = getComponentConfig(componentData?.type);
-
-      if (!componentData || !componentConfig) return;
-
-      const defaultFields = componentConfig.fields || {};
-      const resolver = componentConfig.resolveFields;
-      let lastFields: Fields | null = fields as Fields;
-
-      if (reset) {
-        appStore.setState((s) => ({
-          fields: { ...s.fields, fields: defaultFields, id },
-        }));
-
-        lastFields = defaultFields;
-      }
-
-      if (resolver) {
-        const timeout = setTimeout(() => {
-          appStore.setState((s) => ({
-            fields: { ...s.fields, loading: true },
-          }));
-        }, 50);
-
-        const lastData =
-          lastResolvedData.props?.id === id ? lastResolvedData : null;
-
-        const changed = getChanged(componentData, lastData);
-
-        const newFields = await resolver(componentData, {
-          changed,
-          fields: defaultFields,
-          lastFields,
-          lastData: lastData as ComponentOrRootData,
-          appState: makeStatePublic(state),
-          parent,
-        });
-
-        clearTimeout(timeout);
-
-        // Abort if item has changed during resolution (happens with history)
-        if (appStore.getState().selectedItem?.props.id !== id) {
-          return;
-        }
-
-        appStore.setState({
-          fields: {
-            fields: newFields,
-            loading: false,
-            lastResolvedData: componentData,
-            id,
-          },
-        });
-      } else {
-        appStore.setState((s) => ({
-          fields: { ...s.fields, fields: defaultFields, id },
-        }));
-      }
-    },
-    [id]
-  );
+    fields.resolveFields(componentData, "replace");
+  }, [id]);
 
   useEffect(() => {
-    resolveFields(true);
-
     return appStore.subscribe(
       (s) => s.state.indexes.nodes[id || "root"],
       () => resolveFields()
