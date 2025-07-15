@@ -2,6 +2,16 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.19.3](https://github.com/measuredco/puck/compare/v0.19.2...v0.19.3) (2025-07-15)
+
+
+### Bug Fixes
+
+* don't duplicate content in Render when using multiple root DropZones ([412cc57](https://github.com/measuredco/puck/commit/412cc57d9f800e7f862bb4dd59ea4fc8056daea3))
+
+
+
+
 ## [0.19.2](https://github.com/measuredco/puck/compare/v0.19.1...v0.19.2) (2025-07-11)
 
 

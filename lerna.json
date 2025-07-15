@@ -7,6 +7,6 @@
     "packages/plugin-emotion-cache",
     "packages/plugin-heading-analyzer"
   ],
-  "version": "0.19.2",
+  "version": "0.19.3",
   "npmClient": "yarn"
 }
