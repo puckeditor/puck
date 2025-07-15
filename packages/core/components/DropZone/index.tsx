@@ -534,7 +534,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     const { areaId = "root" } = ctx || {};
     const { config, data, metadata } = useContext(renderContext);
 
-    let zoneCompound = rootDroppableId;
+    let zoneCompound = `${areaId}:${zone}`;
     let content = data?.content || [];
 
     // Register zones if running Render mode inside editor (i.e. previewMode === "interactive")
@@ -557,8 +557,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       return null;
     }
 
-    if (areaId !== rootAreaId && zone !== rootZone) {
-      zoneCompound = `${areaId}:${zone}`;
+    if (zoneCompound !== rootDroppableId) {
       content = setupZone(data, zoneCompound).zones[zoneCompound];
     }
 
