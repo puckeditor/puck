@@ -24,6 +24,8 @@ The visual editor for React.
 
 Visit https://demo.puckeditor.com/edit to try the demo.
 
+[![demo](https://github.com/user-attachments/assets/916a29f2-8c8d-4c15-a7c7-6346efea26cb)](https://demo.puckeditor.com/edit)
+
 ## Documentation
 
 Visit https://puckeditor.com to view the full documentation.
