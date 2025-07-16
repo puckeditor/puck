@@ -17,7 +17,7 @@ The visual editor for React.
   </a>
 </p>
 
-> ⭐️ Enjoying Puck? Star the repo on [Github](https://github.com/puckeditor/puck)!
+> ⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
 
 ## Demo
 
