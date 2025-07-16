@@ -1,3 +1,4 @@
+import { ReactElement, ReactNode } from "react";
 import { PuckAction } from "../../reducer";
 import { DefaultAllProps, WithDeepSlots } from "../Internal";
 import { DefaultComponentProps } from "../Props";
@@ -25,7 +26,11 @@ export type OnAction<UserData extends Data = Data> = (
 ) => void;
 
 export type Plugin = {
-  overrides: Partial<Overrides>;
+  name?: string;
+  label?: string;
+  icon?: ReactNode;
+  render?: () => ReactElement;
+  overrides?: Partial<Overrides>;
 };
 
 export type History<D = any> = {

@@ -1,3 +1,4 @@
+import { ReactElement, ReactNode } from "react";
 import { Slot } from "./API";
 import { AppState } from "./AppState";
 import { ComponentData, Data } from "./Data";
@@ -59,3 +60,8 @@ export type WithDeepSlots<T, SlotType = T> =
     T extends object
     ? { [K in keyof T]: WithDeepSlots<T[K], SlotType> }
     : T;
+
+// Plugins can use `usePuck` instead of relying on props
+export type RenderFunc<
+  Props extends { [key: string]: any } = { children: ReactNode }
+> = (props: Props) => ReactElement;

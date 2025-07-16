@@ -33,14 +33,12 @@
   z-index: 2;
 }
 
-/* Puck Layout */
-
 .PuckLayout-inner {
   --puck-frame-width: auto;
   --puck-side-bar-width: 0px;
   display: grid;
-  grid-template-areas: "header header header" "left editor right";
-  grid-template-columns: 0 var(--puck-frame-width) 0;
+  grid-template-areas: "header header header header" "sidenav left editor right";
+  grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
   grid-template-rows: min-content auto;
   height: 100dvh;
   position: relative;
@@ -49,24 +47,29 @@
 
 .PuckLayout--mounted .PuckLayout-inner {
   --puck-side-bar-width: 186px;
+  --puck-side-nav-width: 68px;
 }
 
 .PuckLayout--leftSideBarVisible .PuckLayout-inner {
   grid-template-columns:
-    var(--puck-side-bar-width) var(--puck-frame-width)
+    var(--puck-side-nav-width) var(--puck-side-bar-width) var(
+      --puck-frame-width
+    )
     0;
 }
 
 .PuckLayout--rightSideBarVisible .PuckLayout-inner {
   grid-template-columns:
-    0 var(--puck-frame-width)
+    var(--puck-side-nav-width) 0 var(--puck-frame-width)
     var(--puck-side-bar-width);
 }
 
 .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
   .PuckLayout-inner {
   grid-template-columns:
-    var(--puck-side-bar-width) var(--puck-frame-width)
+    var(--puck-side-nav-width) var(--puck-side-bar-width) var(
+      --puck-frame-width
+    )
     var(--puck-side-bar-width);
 }
 
@@ -118,6 +121,7 @@
   display: flex;
   flex-direction: column;
   grid-area: left;
+  padding: 16px;
   overflow-y: auto;
 }
 
@@ -128,4 +132,9 @@
   flex-direction: column;
   grid-area: right;
   overflow-y: auto;
+}
+
+.PuckLayout-nav {
+  border-right: 1px solid var(--puck-color-grey-09);
+  background-color: var(--puck-color-grey-12);
 }
