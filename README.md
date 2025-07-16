@@ -1,34 +1,28 @@
-# Puck
+<div align="center">
 
-The visual editor for React.
+<a href="https://puckeditor.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://res.cloudinary.com/die3nptcg/image/upload/Puck_Logo_White_RGB_j2rwgg.svg" height="100px" aria-label="Puck logo">
+    <img src="https://res.cloudinary.com/die3nptcg/image/upload/Puck_Logo_Black_RGB_dqsjag.svg" height="100px" aria-label="Puck logo">
+  </picture>
+</a>
 
-<p align="left">
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/@measured/puck">
-    <img alt="" src="https://img.shields.io/npm/v/@measured/puck.svg?style=for-the-badge&labelColor=000000">
-  </a>
-  <a aria-label="License" href="https://github.com/measuredco/puck/blob/main/LICENSE">
-    <img alt="" src="https://img.shields.io/npm/l/@measured/puck.svg?style=for-the-badge&labelColor=000000">
-  </a>
-  <a aria-label="Join the community on Discord" href="https://discord.gg/D9e4E3MQVZ">
-    <img alt="" src="https://img.shields.io/badge/Join%20the%20Discord-blueviolet.svg?style=for-the-badge&logo=Discord&labelColor=000000&logoWidth=20">
-  </a>
-  <a aria-label="Browse the awesome-puck community repo" href="https://github.com/measuredco/awesome-puck">
-    <img alt="" src="https://img.shields.io/badge/repo-awesome--puck-fc60a8.svg?style=for-the-badge&labelColor=000000&logoWidth=20">
-  </a>
-  <a aria-label="Contributing guide" href="https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md">
-    <img alt="" src="https://img.shields.io/badge/contributions-welcome-blue?style=for-the-badge&labelColor=000000">
-  </a>
-</p>
+_The visual editor for React_
 
-## Demo
+[Documentation](https://puckeditor.com/docs) • [Demo](https://demo.puckeditor.com/edit) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
 
-Visit https://demo.puckeditor.com/edit to try the demo.
+</div>
+
+<br />
 
 [![GIF showing a page being created in the Puck Editor, with components being added, arranged, and customized in real time](https://github.com/user-attachments/assets/916a29f2-8c8d-4c15-a7c7-6346efea26cb)](https://demo.puckeditor.com/edit)
 
-## Documentation
+## What is Puck?
+Puck is a modular, open-source visual editor for React.js. You can use Puck to build custom drag-and-drop experiences with your own application and React components.
 
-Visit https://puckeditor.com to view the full documentation.
+Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there’s no vendor lock-in.
+
+Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
 
 ## Quick start
 
