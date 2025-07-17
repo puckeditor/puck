@@ -13,6 +13,8 @@ _The visual editor for React_
 
 [Documentation](https://puckeditor.com/docs) • [Demo](https://demo.puckeditor.com/edit) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
 
+⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
+
 </div>
 
 <br />
@@ -20,6 +22,7 @@ _The visual editor for React_
 [![GIF showing a page being created in the Puck Editor, with components being added, arranged, and customized in real time](https://github.com/user-attachments/assets/916a29f2-8c8d-4c15-a7c7-6346efea26cb)](https://demo.puckeditor.com/edit)
 
 ## What is Puck?
+
 Puck is a modular, open-source visual editor for React.js. You can use Puck to build custom drag-and-drop experiences with your own application and React components.
 
 Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there’s no vendor lock-in.
