@@ -42,29 +42,27 @@ export type RadioField = BaseField & {
   options: FieldOptions;
 };
 
-export type ArrayField<
-  Props extends { [key: string]: any } = { [key: string]: any }
-> = BaseField & {
-  type: "array";
-  arrayFields: {
-    [SubPropName in keyof Props[0]]: Field<Props[0][SubPropName]>;
-  };
-  defaultItemProps?: Props[0];
-  getItemSummary?: (item: Props[0], index?: number) => string;
-  max?: number;
-  min?: number;
-};
+export type ArrayField<Props extends any = { [key: string]: any }> =
+  Props extends { [key: string]: any }
+    ? BaseField & {
+        type: "array";
+        arrayFields: {
+          [SubPropName in keyof Props[0]]: Field<Props[0][SubPropName]>;
+        };
+        defaultItemProps?: Props[0];
+        getItemSummary?: (item: Props[0], index?: number) => string;
+        max?: number;
+        min?: number;
+      }
+    : never;
 
-export type ObjectField<
-  Props extends { [key: string]: any } = { [key: string]: any }
-> = BaseField & {
-  type: "object";
-  objectFields: Props extends any[]
-    ? never
-    : {
-        [SubPropName in keyof Props]: Field<Props[SubPropName]>;
-      };
-};
+export type ObjectField<Props extends any = { [key: string]: any }> =
+  BaseField & {
+    type: "object";
+    objectFields: {
+      [SubPropName in keyof Props]: Field<Props[SubPropName]>;
+    };
+  };
 
 // DEPRECATED
 export type Adaptor<
@@ -77,35 +75,36 @@ export type Adaptor<
   mapProp?: (value: TableShape) => PropShape;
 };
 
+type NotUndefined<T> = T extends undefined ? Record<string, any> : T;
+
 // DEPRECATED
 export type ExternalFieldWithAdaptor<
-  Props extends { [key: string]: any } = { [key: string]: any }
+  Props extends any = { [key: string]: any }
 > = BaseField & {
   type: "external";
   placeholder?: string;
   adaptor: Adaptor<any, any, Props>;
   adaptorParams?: object;
-  getItemSummary: (item: Props, index?: number) => string;
+  getItemSummary: (item: NotUndefined<Props>, index?: number) => string;
 };
 
-export type ExternalField<
-  Props extends { [key: string]: any } = { [key: string]: any }
-> = BaseField & {
-  type: "external";
-  placeholder?: string;
-  fetchList: (params: {
-    query: string;
-    filters: Record<string, any>;
-  }) => Promise<any[] | null>;
-  mapProp?: (value: any) => Props;
-  mapRow?: (value: any) => Record<string, string | number | ReactElement>;
-  getItemSummary?: (item: Props, index?: number) => string;
-  showSearch?: boolean;
-  renderFooter?: (props: { items: any[] }) => ReactElement;
-  initialQuery?: string;
-  filterFields?: Record<string, Field>;
-  initialFilters?: Record<string, any>;
-};
+export type ExternalField<Props extends any = { [key: string]: any }> =
+  BaseField & {
+    type: "external";
+    placeholder?: string;
+    fetchList: (params: {
+      query: string;
+      filters: Record<string, any>;
+    }) => Promise<any[] | null>;
+    mapProp?: (value: any) => Props;
+    mapRow?: (value: any) => Record<string, string | number | ReactElement>;
+    getItemSummary?: (item: NotUndefined<Props>, index?: number) => string;
+    showSearch?: boolean;
+    renderFooter?: (props: { items: any[] }) => ReactElement;
+    initialQuery?: string;
+    filterFields?: Record<string, Field>;
+    initialFilters?: Record<string, any>;
+  };
 
 export type CustomFieldRender<Value extends any> = (props: {
   field: CustomField<Value>;
@@ -127,17 +126,17 @@ export type SlotField = BaseField & {
   disallow?: string[];
 };
 
-export type Field<Props extends any = any> =
+export type Field<ValueType = any> =
   | TextField
   | NumberField
   | TextareaField
   | SelectField
   | RadioField
-  | ArrayField<Props extends { [key: string]: any } ? Props : any>
-  | ObjectField<Props extends { [key: string]: any } ? Props : any>
-  | ExternalField<Props extends { [key: string]: any } ? Props : any>
-  | ExternalFieldWithAdaptor<Props extends { [key: string]: any } ? Props : any>
-  | CustomField<Props>
+  | ArrayField<ValueType>
+  | ObjectField<ValueType>
+  | ExternalField<ValueType>
+  | ExternalFieldWithAdaptor<ValueType>
+  | CustomField<ValueType>
   | SlotField;
 
 export type Fields<
