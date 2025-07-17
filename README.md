@@ -15,11 +15,11 @@ _The visual editor for React_
 
 ⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
 
-</div>
-
 <br />
 
-[![GIF showing a page being created in the Puck Editor, with components being added, arranged, and customized in real time](https://github.com/user-attachments/assets/916a29f2-8c8d-4c15-a7c7-6346efea26cb)](https://demo.puckeditor.com/edit)
+[![GIF showing a page being created in the Puck Editor, with components being added, arranged, and customized in real time](https://github.com/user-attachments/assets/25e1ae25-ca5e-450f-afa0-01816830b731)](https://demo.puckeditor.com/edit)
+
+</div>
 
 ## What is Puck?
 
