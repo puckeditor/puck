@@ -10,11 +10,7 @@ import {
 } from "react";
 import { DraggableComponent } from "../DraggableComponent";
 import { setupZone } from "../../lib/data/setup-zone";
-import {
-  rootAreaId,
-  rootDroppableId,
-  rootZone,
-} from "../../lib/root-droppable-id";
+import { rootDroppableId } from "../../lib/root-droppable-id";
 import { getClassNameFactory } from "../../lib";
 import styles from "./styles.module.css";
 import {
@@ -123,6 +119,7 @@ const DropZoneChild = ({
         type: preview.componentType,
         props: preview.props,
         previewType: preview.type,
+        element: preview.element,
       };
     }
 
@@ -156,6 +153,13 @@ const DropZoneChild = ({
   const renderPreview = useMemo(
     () =>
       function Preview() {
+        if (item && "element" in item && item.element) {
+          return (
+            // Safe to use this since the HTML is set by the user
+            <div dangerouslySetInnerHTML={{ __html: item.element.outerHTML }} />
+          );
+        }
+
         return (
           <DrawerItemInner name={label}>
             {overrides.componentItem}

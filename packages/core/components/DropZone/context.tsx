@@ -33,6 +33,7 @@ export type Preview = {
   zone: string;
   props: Record<string, any>;
   type: "insert" | "move";
+  element: Element | undefined;
 } | null;
 
 export type ZoneStore = {
