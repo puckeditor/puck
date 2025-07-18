@@ -120,7 +120,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       <DropZonePure zone={rootDroppableId} />
     </Page>
   ) : (
-    <Render data={renderData} config={config} />
+    <Render data={renderData} config={config} metadata={metadata} />
   );
 
   useEffect(() => {
