@@ -389,6 +389,19 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           outline: ({ children }) => (
             <div style={{ padding: 16 }}>{children}</div>
           ),
+          componentOverlay: ({ hover, isSelected }) => {
+            return (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  background: hover ? "red" : "transparent",
+                  outline: isSelected ? "2px solid blue" : "",
+                  opacity: 0.4,
+                }}
+              />
+            );
+          },
           actionBar: ({ children, label, parentAction }) => {
             const selectedItem = usePuck((s) => s.selectedItem);
             const getPermissions = usePuck((s) => s.getPermissions);

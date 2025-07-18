@@ -62,6 +62,16 @@ const DefaultActionBar = ({
   </ActionBar>
 );
 
+const DefaultOverlay = ({
+  children,
+}: {
+  children: ReactNode;
+  hover: boolean;
+  isSelected: boolean;
+  componentId: string;
+  componentType: string;
+}) => <>{children}</>;
+
 export type ComponentDndData = {
   areaId?: string;
   zone: string;
@@ -330,6 +340,11 @@ export const DraggableComponent = ({
   const CustomActionBar = useMemo(
     () => overrides.actionBar || DefaultActionBar,
     [overrides.actionBar]
+  );
+
+  const CustomOverlay = useMemo(
+    () => overrides.componentOverlay || DefaultOverlay,
+    [overrides.componentOverlay]
   );
 
   const onClick = useCallback(
@@ -630,7 +645,16 @@ export const DraggableComponent = ({
                 </CustomActionBar>
               </div>
             </div>
-            <div className={getClassName("overlay")} />
+            <div className={getClassName("overlayWrapper")}>
+              <CustomOverlay
+                componentId={id}
+                componentType={componentType}
+                hover={hover}
+                isSelected={isSelected}
+              >
+                <div className={getClassName("overlay")}></div>
+              </CustomOverlay>
+            </div>
           </div>,
           portalEl || document.body
         )}
