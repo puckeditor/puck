@@ -96,7 +96,13 @@ export type ExternalField<
   fetchList: (params: {
     query: string;
     filters: Record<string, any>;
-  }) => Promise<any[] | null>;
+    pagination?: {
+      page: number;
+      itemsPerPage: number;
+    };
+  }) => Promise<
+    any[] | { data: any[]; totalPages?: number; total?: number } | null
+  >;
   mapProp?: (value: any) => Props;
   mapRow?: (value: any) => Record<string, string | number | ReactElement>;
   getItemSummary?: (item: Props, index?: number) => string;
@@ -105,6 +111,7 @@ export type ExternalField<
   initialQuery?: string;
   filterFields?: Record<string, Field>;
   initialFilters?: Record<string, any>;
+  itemsPerPage?: number;
 };
 
 export type CustomFieldRender<Value extends any> = (props: {

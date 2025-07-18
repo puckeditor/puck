@@ -8,7 +8,14 @@ import {
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { ExternalField } from "../../types";
-import { Link, Search, SlidersHorizontal, Unlock } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Link,
+  Search,
+  SlidersHorizontal,
+  Unlock,
+} from "lucide-react";
 import { Modal } from "../Modal";
 import { Heading } from "../Heading";
 import { Loader } from "../Loader";
@@ -45,6 +52,9 @@ export const ExternalInput = ({
   const [data, setData] = useState<Record<string, any>[]>([]);
   const [isOpen, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = field.itemsPerPage || 10;
 
   const hasFilterFields = !!filterFields;
 
@@ -53,7 +63,7 @@ export const ExternalInput = ({
 
   const mappedData = useMemo(() => {
     return data.map(mapRow);
-  }, [data]);
+  }, [data, mapRow]);
 
   const keys = useMemo(() => {
     const validKeys: Set<string> = new Set();
@@ -76,39 +86,67 @@ export const ExternalInput = ({
   const [searchQuery, setSearchQuery] = useState(field.initialQuery || "");
 
   const search = useCallback(
-    async (query: string, filters: object) => {
+    async (query: string, filters: object, page = 1) => {
       setIsLoading(true);
 
-      const cacheKey = `${id}-${query}-${JSON.stringify(filters)}`;
+      const cacheKey = `${id}-${query}-${JSON.stringify(
+        filters
+      )}-${page}-${itemsPerPage}`;
 
       const listData =
-        dataCache[cacheKey] || (await field.fetchList({ query, filters }));
+        dataCache[cacheKey] ||
+        (await field.fetchList({
+          query,
+          filters,
+          pagination: { page, itemsPerPage },
+        }));
 
       if (listData) {
-        setData(listData);
+        const newData = Array.isArray(listData)
+          ? listData
+          : listData.data || [];
+        setData(newData);
+
+        // Update totalPages if available
+        if (!Array.isArray(listData)) {
+          if (listData.totalPages) {
+            setTotalPages(listData.totalPages);
+          } else if (listData.total) {
+            // Calculate total pages if only total count is provided
+            setTotalPages(Math.ceil(listData.total / itemsPerPage));
+          }
+        }
+
         setIsLoading(false);
 
         dataCache[cacheKey] = listData;
       }
     },
-    [id, field]
+    [id, field, itemsPerPage]
   );
 
-  const Footer = useCallback(
-    (props: { items: any[] }) =>
-      field.renderFooter ? (
+  const ResultsInfo = useCallback(
+    (props: { items: any[] }) => {
+      return field.renderFooter ? (
         field.renderFooter(props)
       ) : (
-        <span className={getClassNameModal("footer")}>
+        <span>
           {props.items.length} result{props.items.length === 1 ? "" : "s"}
         </span>
-      ),
+      );
+    },
     [field.renderFooter]
   );
 
   useEffect(() => {
-    search(searchQuery, filters);
+    search(searchQuery, filters, currentPage);
   }, []);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    search(searchQuery, filters, newPage);
+  };
 
   return (
     <div
@@ -164,7 +202,8 @@ export const ExternalInput = ({
           onSubmit={(e) => {
             e.preventDefault();
 
-            search(searchQuery, filters);
+            search(searchQuery, filters, 1);
+            setCurrentPage(1);
           }}
         >
           <div className={getClassNameModal("masthead")}>
@@ -242,7 +281,8 @@ export const ExternalInput = ({
 
                             setFilters(newFilters);
 
-                            search(searchQuery, newFilters);
+                            search(searchQuery, newFilters, 1);
+                            setCurrentPage(1);
                           }}
                         />
                       </div>
@@ -296,7 +336,33 @@ export const ExternalInput = ({
             </div>
           </div>
           <div className={getClassNameModal("footerContainer")}>
-            <Footer items={mappedData} />
+            <div className={getClassNameModal("footerLeft")}>
+              <ResultsInfo items={mappedData} />
+            </div>
+            <div className={getClassNameModal("footerCenter")}>
+              {totalPages > 1 && (
+                <>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1 || isLoading}
+                  >
+                    <ChevronLeft size={16} />
+                  </Button>
+                  <span className={getClassNameModal("paginationInfo")}>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= totalPages || isLoading}
+                  >
+                    <ChevronRight size={16} />
+                  </Button>
+                </>
+              )}
+            </div>
+            <div className={getClassNameModal("footerRight")}></div>
           </div>
         </form>
       </Modal>

@@ -332,12 +332,87 @@
   border-top: 1px solid var(--puck-color-grey-09);
   color: var(--puck-color-grey-04);
   padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.ExternalInputModal-footerCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  grid-column: 2;
+}
+
+.ExternalInputModal-footerLeft {
+  font-weight: 500;
+  font-size: 14px;
+  text-align: left;
+  grid-column: 1;
+}
+
+.ExternalInputModal-footerRight {
+  grid-column: 3;
+  text-align: right;
 }
 
 .ExternalInputModal-footer {
   font-weight: 500;
   font-size: 14px;
-  text-align: right;
+  text-align: left;
+  grid-column: 1;
+}
+
+.ExternalInputModal-paginationButton {
+  align-items: center;
+  background-color: var(--puck-color-grey-12);
+  border-radius: 4px;
+  border: 1px solid var(--puck-color-grey-09);
+  color: var(--puck-color-azure-04);
+  display: flex;
+  font-weight: 500;
+  font-size: 16px;
+  gap: 8px;
+  justify-content: center;
+  margin-inline-start: -1px;
+  padding: 8px 12px;
+  position: relative;
+  transition: background-color 50ms ease-in, color 50ms ease-in;
+}
+
+.ExternalInputModal-paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--puck-color-grey-05);
+}
+
+.ExternalInputModal-paginationButton:focus-visible {
+  outline: 2px solid var(--puck-color-azure-05);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ExternalInputModal-paginationButton:not(:disabled):hover {
+    background: var(--puck-color-azure-12);
+    transition: none;
+  }
+}
+
+.ExternalInputModal-paginationButton:not(:disabled):active {
+  background: var(--puck-color-azure-11);
+  transition: none;
+}
+
+.ExternalInputModal-paginationInfo {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--puck-color-grey-04);
+}
+
+.ExternalInputModal-customContent {
+  padding: 16px;
 }
 
 .ExternalInputModal-field {
