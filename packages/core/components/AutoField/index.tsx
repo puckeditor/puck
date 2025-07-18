@@ -225,8 +225,12 @@ function AutoFieldInternal<
     }
     FieldComponent = field.render as any;
   } else {
-    children = defaultFields[field.type](mergedProps);
+    children = defaultFields[field.type]?.(mergedProps) ?? null;
     FieldComponent = render[field.type] as (props: FieldProps) => ReactElement;
+
+    if (!FieldComponent) {
+      throw new Error(`Field type for ${field.type} did not exist.`);
+    }
   }
 
   return (
