@@ -3,7 +3,7 @@ import { DefaultComponentProps, Metadata, UiState } from ".";
 
 type FieldOption = {
   label: string;
-  value: string | number | boolean;
+  value: string | number | boolean | undefined | null | object;
 };
 
 type FieldOptions = Array<FieldOption> | ReadonlyArray<FieldOption>;
