@@ -10,8 +10,6 @@ import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
 
-type WithGet<T> = T & { get: () => T };
-
 export type UsePuckData<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
@@ -40,9 +38,7 @@ export type UsePuckData<
 export type PuckApi<UserConfig extends Config = Config> =
   UsePuckData<UserConfig>;
 
-type UsePuckStore<UserConfig extends Config = Config> = WithGet<
-  PuckApi<UserConfig>
->;
+type UsePuckStore<UserConfig extends Config = Config> = PuckApi<UserConfig>;
 
 type PickedStore = Pick<
   AppStore,
@@ -85,9 +81,7 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     },
   };
 
-  const get = () => storeData;
-
-  return { ...storeData, get };
+  return storeData;
 };
 
 export const UsePuckStoreContext = createContext<StoreApi<UsePuckStore> | null>(

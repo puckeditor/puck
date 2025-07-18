@@ -3,7 +3,7 @@
 
 "use client";
 
-import { ActionBar, Button, Data, Puck, Render } from "@/core";
+import { ActionBar, Button, Data, Puck, Render, useGetPuck } from "@/core";
 import { HeadingAnalyzer } from "@/plugin-heading-analyzer/src/HeadingAnalyzer";
 import config from "../../../config";
 import { UserConfig } from "../../../config/types";
@@ -16,7 +16,7 @@ import { ChevronUp, ChevronDown, Globe, Lock, Unlock } from "lucide-react";
 const usePuck = createUsePuck<UserConfig>();
 
 const CustomHeader = ({ onPublish }: { onPublish: (data: Data) => void }) => {
-  const get = usePuck((s) => s.get);
+  const getPuck = useGetPuck();
   const dispatch = usePuck((s) => s.dispatch);
   const previewMode = usePuck((s) => s.appState.ui.previewMode);
 
@@ -50,7 +50,7 @@ const CustomHeader = ({ onPublish }: { onPublish: (data: Data) => void }) => {
             Switch to {previewMode === "edit" ? "interactive" : "edit"}
           </Button>
           <Button
-            onClick={() => onPublish(get().appState.data)}
+            onClick={() => onPublish(getPuck().appState.data)}
             icon={<Globe size="14" />}
           >
             Publish
