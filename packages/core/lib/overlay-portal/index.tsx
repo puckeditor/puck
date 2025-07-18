@@ -1,6 +1,5 @@
 import "./styles.css";
 
-// TODO prevent drag
 export const registerOverlayPortal = (
   el: HTMLElement | null | undefined,
   opts: { disableDrag?: boolean } = {}

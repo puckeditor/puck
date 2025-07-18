@@ -349,7 +349,11 @@ export const DraggableComponent = ({
 
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
-      e.stopPropagation();
+      const el = e.target as Element;
+
+      if (!el.closest("[data-puck-overlay-portal]")) {
+        e.stopPropagation();
+      }
 
       dispatch({
         type: "setUi",

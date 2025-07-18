@@ -163,13 +163,20 @@ export const Canvas = () => {
         ready: status === "READY" || !iframe.enabled || !iframe.waitForStyles,
         showLoader,
       })}
-      onClick={() =>
-        dispatch({
-          type: "setUi",
-          ui: { itemSelector: null },
-          recordHistory: true,
-        })
-      }
+      onClick={(e) => {
+        const el = e.target as Element;
+
+        if (
+          !el.hasAttribute("data-puck-component") &&
+          !el.hasAttribute("data-puck-dropzone")
+        ) {
+          dispatch({
+            type: "setUi",
+            ui: { itemSelector: null },
+            recordHistory: true,
+          });
+        }
+      }}
     >
       {viewports.controlsVisible && iframe.enabled && (
         <div className={getClassName("controls")}>
