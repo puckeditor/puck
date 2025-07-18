@@ -347,7 +347,15 @@ export const DraggableComponent = ({
 
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
-      e.stopPropagation();
+      const el = e.target as Element;
+
+      // Makes it impossible to click area ini between cards
+      if (
+        el.hasAttribute("data-puck-component") &&
+        e.target !== e.currentTarget
+      ) {
+        return;
+      }
 
       dispatch({
         type: "setUi",
