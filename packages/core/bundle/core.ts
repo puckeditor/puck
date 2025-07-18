@@ -19,6 +19,7 @@ export * from "../components/Render";
 
 export * from "../lib/migrate";
 export * from "../lib/transform-props";
+export { registerOverlayPortal } from "../lib/overlay-portal";
 export * from "../lib/resolve-all-data";
 export { walkTree } from "../lib/data/walk-tree";
 export {

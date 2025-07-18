@@ -1,0 +1,14 @@
+[data-puck-overlay-portal],
+[data-puck-overlay-portal] * {
+  pointer-events: auto;
+}
+
+[data-puck-overlay-portal]:hover {
+  outline: 2px var(--puck-color-azure-09) solid;
+  outline-offset: 2px;
+}
+
+[data-puck-overlay-portal]:focus-within {
+  outline: 2px var(--puck-color-azure-07) solid;
+  outline-offset: 2px;
+}
