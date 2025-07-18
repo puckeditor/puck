@@ -1,0 +1,27 @@
+# Fonts
+
+Puck uses the [Inter typeface family](https://rsms.me/inter/) by default, loaded via a CDN.
+
+It's possible to change the font, or provide your own version of Inter if you need to host it locally.
+
+## Load your own font file
+
+To load your own font file, use the `no-external.css` bundle instead of the primary one.
+
+```css
+/* @import "@measured/puck/puck.css"; */
+@import "@measured/puck/no-external.css";
+```
+
+## Changing the font family
+
+To change the font family Puck uses, change the [`--puck-font-family`](/docs/api-reference/theming#--puck-font-family) CSS property:
+
+```css
+/* @import "@measured/puck/puck.css"; */
+@import "@measured/puck/no-external.css";
+
+:root {
+  --puck-font-family: Arial;
+}
+```

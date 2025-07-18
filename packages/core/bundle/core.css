@@ -1,0 +1,13 @@
+@import "../styles/color.css";
+@import "../styles/typography.css";
+
+#frame-root {
+  height: 1px; /* Enables DropZone to inherit min-height */
+  min-height: 100vh;
+}
+
+[data-puck-entry] {
+  /* Reset stacking context */
+  position: relative;
+  z-index: 0;
+}

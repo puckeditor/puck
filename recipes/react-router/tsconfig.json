@@ -17,7 +17,7 @@
     "paths": {
       "~/*": ["./app/*"],
       "@measured/puck": ["../../packages/core/index.ts"],
-      "@measured/puck/puck.css": ["../../packages/core/styles.css"]
+      "@measured/puck/puck.css": ["../../packages/core/bundle/index.css"]
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,

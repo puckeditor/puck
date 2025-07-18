@@ -4,9 +4,9 @@ import { initialData } from "../../config/initial-data";
 import { Props, RootProps } from "../../config/types";
 
 import { Config } from "@/core";
-import { Render, resolveAllData } from "@/core/rsc";
+import { Render, resolveAllData } from "@/core/bundle/rsc";
 
-// NB This is only necessary for this demo app, as the `@/core/rsc` path does not resolve to dist but the type for Config does
+// NB This is only necessary for this demo app, as the `@/core/bundle/rsc` path does not resolve to dist but the type for Config does
 // This will be resolved once the RSC package is merged with the regular package after DropZone support is dropped
 const conf = config as unknown as Config;
 

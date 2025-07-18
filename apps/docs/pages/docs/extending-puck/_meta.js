@@ -2,7 +2,7 @@ const menu = {
   composition: {},
   "custom-fields": {},
   "internal-puck-api": {},
-  theming: {},
+  theming: { title: "Theming" },
   plugins: {},
   "ui-overrides": {},
 };

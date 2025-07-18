@@ -4,7 +4,7 @@ import { AppStore } from "../../store";
 import { PrivateAppState } from "../../types/Internal";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { getIdsForParent } from "../../lib/data/get-ids-for-parent";
-import { walkTree } from "../../rsc";
+import { walkTree } from "../../lib/data/walk-tree";
 import { generateId } from "../../lib/generate-id";
 
 export const replaceAction = <UserData extends Data>(
