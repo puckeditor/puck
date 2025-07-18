@@ -263,6 +263,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
     userRef
   ) {
     const ctx = useContext(dropZoneContext);
+    const appStoreApi = useAppStoreApi();
 
     const {
       // These all need setting via context
@@ -305,20 +306,14 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       })
     );
 
-    // Register and unregister zone on mount
+    // Register zone on mount
     useEffect(() => {
       if (!zoneType || zoneType === "dropzone") {
         if (ctx?.registerZone) {
           ctx?.registerZone(zoneCompound);
         }
-
-        return () => {
-          if (ctx?.unregisterZone) {
-            ctx?.unregisterZone(zoneCompound);
-          }
-        };
       }
-    }, [zoneType]);
+    }, [zoneType, appStoreApi]);
 
     useEffect(() => {
       if (zoneType === "dropzone") {
@@ -544,12 +539,6 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
         if (ctx?.registerZone) {
           ctx?.registerZone(zoneCompound);
         }
-
-        return () => {
-          if (ctx?.unregisterZone) {
-            ctx?.unregisterZone(zoneCompound);
-          }
-        };
       }
     }, [content]);
 

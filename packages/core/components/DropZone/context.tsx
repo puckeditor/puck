@@ -89,21 +89,10 @@ export const DropZoneProvider = ({
     [dispatch]
   );
 
-  const unregisterZone = useCallback(
-    (zoneCompound: string) => {
-      dispatch({
-        type: "unregisterZone",
-        zone: zoneCompound,
-      });
-    },
-    [dispatch]
-  );
-
   const memoValue = useMemo(
     () =>
       ({
         registerZone,
-        unregisterZone,
         ...value,
       } as DropZoneContext),
     [value]
