@@ -114,7 +114,6 @@ describe("transformProps method", () => {
               },
             },
           ],
-
           root: {
             props: {
               content: [
