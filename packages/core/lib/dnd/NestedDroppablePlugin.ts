@@ -211,6 +211,9 @@ export const findDeepestCandidate = (
     filteredCandidates.reverse();
 
     const primaryCandidate = filteredCandidates[0];
+
+    if (!primaryCandidate) return { zone: null, area: null };
+
     const primaryCandidateData = primaryCandidate.data as
       | ComponentDndData
       | DropZoneDndData;
