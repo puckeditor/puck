@@ -1,0 +1,33 @@
+.Sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.Sidebar--left {
+  background: var(--puck-color-grey-12);
+  border-inline-end: 1px solid var(--puck-color-grey-09);
+  grid-area: left;
+}
+
+.Sidebar--right {
+  background: var(--puck-color-white);
+  border-inline-start: 1px solid var(--puck-color-grey-09);
+  grid-area: right;
+}
+
+.Sidebar-resizeHandle {
+  position: absolute;
+  height: 100%;
+}
+
+.Sidebar--left + .Sidebar-resizeHandle {
+  grid-area: left;
+  justify-self: end;
+}
+
+.Sidebar--right + .Sidebar-resizeHandle {
+  grid-area: right;
+  justify-self: start;
+}

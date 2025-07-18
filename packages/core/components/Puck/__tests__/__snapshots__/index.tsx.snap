@@ -272,9 +272,9 @@ exports[`Puck should generate the correct state on mount 1`] = `
     },
   ],
   "zoomConfig": {
-    "autoZoom": NaN,
+    "autoZoom": 1,
     "rootHeight": 0,
-    "zoom": NaN,
+    "zoom": 1,
   },
 }
 `;

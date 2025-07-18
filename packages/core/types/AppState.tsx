@@ -12,6 +12,8 @@ export type ArrayState = { items: ItemWithId[]; openId: string };
 export type UiState = {
   leftSideBarVisible: boolean;
   rightSideBarVisible: boolean;
+  leftSideBarWidth?: number | null;
+  rightSideBarWidth?: number | null;
   itemSelector: ItemSelector | null;
   arrayState: Record<string, ArrayState | undefined>;
   previewMode: "interactive" | "edit";

@@ -58,10 +58,13 @@ import {
   UsePuckStoreContext,
   useRegisterUsePuckStore,
 } from "../../lib/use-puck";
+import { FrameProvider } from "../../lib/frame-context";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
 import fdeq from "fast-deep-equal";
 import { Header } from "./components/Header";
+import { Sidebar } from "./components/Sidebar";
+import { useSidebarResize } from "../../lib/use-sidebar-resize";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -394,12 +397,25 @@ function PuckLayout<
 
   useInjectGlobalCss(iframe.enabled);
 
+  const dispatch = useAppStore((s) => s.dispatch);
   const leftSideBarVisible = useAppStore((s) => s.state.ui.leftSideBarVisible);
   const rightSideBarVisible = useAppStore(
     (s) => s.state.ui.rightSideBarVisible
   );
 
-  const dispatch = useAppStore((s) => s.dispatch);
+  const {
+    width: leftWidth,
+    setWidth: setLeftWidth,
+    sidebarRef: leftSidebarRef,
+    handleResizeEnd: handleLeftSidebarResizeEnd,
+  } = useSidebarResize("left", dispatch);
+
+  const {
+    width: rightWidth,
+    setWidth: setRightWidth,
+    sidebarRef: rightSidebarRef,
+    handleResizeEnd: handleRightSidebarResizeEnd,
+  } = useSidebarResize("right", dispatch);
 
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
@@ -465,29 +481,66 @@ function PuckLayout<
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
           {children || (
-            <div
-              className={getLayoutClassName({
-                leftSideBarVisible,
-                mounted,
-                rightSideBarVisible,
-              })}
-            >
-              <div className={getLayoutClassName("inner")}>
-                <Header />
-                <div className={getLayoutClassName("leftSideBar")}>
-                  <SidebarSection title="Components" noBorderTop>
-                    <Components />
-                  </SidebarSection>
-                  <SidebarSection title="Outline">
-                    <Outline />
-                  </SidebarSection>
-                </div>
-                <Canvas />
-                <div className={getLayoutClassName("rightSideBar")}>
-                  <FieldSideBar />
+            <FrameProvider>
+              <div
+                className={getLayoutClassName({
+                  leftSideBarVisible,
+                  mounted,
+                  rightSideBarVisible,
+                })}
+              >
+                <div
+                  className={getLayoutClassName("inner")}
+                  style={{
+                    gridTemplateColumns: `
+                    ${
+                      leftSideBarVisible
+                        ? leftWidth
+                          ? `${leftWidth}px`
+                          : "var(--puck-side-bar-width)"
+                        : "0"
+                    } 
+                    var(--puck-frame-width) 
+                    ${
+                      rightSideBarVisible
+                        ? rightWidth
+                          ? `${rightWidth}px`
+                          : "var(--puck-side-bar-width)"
+                        : "0"
+                    }
+                  `,
+                  }}
+                >
+                  <Header />
+                  <Sidebar
+                    position="left"
+                    sidebarRef={leftSidebarRef}
+                    isVisible={leftSideBarVisible}
+                    width={leftWidth}
+                    onResize={setLeftWidth}
+                    onResizeEnd={handleLeftSidebarResizeEnd}
+                  >
+                    <SidebarSection title="Components" noBorderTop>
+                      <Components />
+                    </SidebarSection>
+                    <SidebarSection title="Outline">
+                      <Outline />
+                    </SidebarSection>
+                  </Sidebar>
+                  <Canvas />
+                  <Sidebar
+                    position="right"
+                    sidebarRef={rightSidebarRef}
+                    isVisible={rightSideBarVisible}
+                    width={rightWidth}
+                    onResize={setRightWidth}
+                    onResizeEnd={handleRightSidebarResizeEnd}
+                  >
+                    <FieldSideBar />
+                  </Sidebar>
                 </div>
               </div>
-            </div>
+            </FrameProvider>
           )}
         </CustomPuck>
       </DragDropContext>
