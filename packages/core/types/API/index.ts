@@ -4,6 +4,7 @@ import { DefaultComponentProps } from "../Props";
 import { AppState } from "./../AppState";
 import { ComponentDataOptionalId, Content, Data } from "./../Data";
 import { Overrides } from "./Overrides";
+import { Transforms } from "./Transforms";
 
 export type Permissions = {
   drag: boolean;
@@ -26,6 +27,7 @@ export type OnAction<UserData extends Data = Data> = (
 
 export type Plugin = {
   overrides: Partial<Overrides>;
+  transforms?: Transforms;
 };
 
 export type History<D = any> = {
