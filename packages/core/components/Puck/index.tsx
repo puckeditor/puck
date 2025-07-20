@@ -65,6 +65,7 @@ import fdeq from "fast-deep-equal";
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { useSidebarResize } from "../../lib/use-sidebar-resize";
+import { Transforms } from "../../types/API/Transforms";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -98,6 +99,7 @@ type PuckProps<
   permissions?: Partial<Permissions>;
   plugins?: Plugin[];
   overrides?: Partial<Overrides>;
+  transforms?: Transforms;
   renderHeader?: (props: {
     children: ReactNode;
     dispatch: (action: PuckAction) => void;
@@ -150,6 +152,7 @@ function PuckProvider<
     initialHistory: _initialHistory,
     metadata,
     onAction,
+    transforms,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -302,6 +305,7 @@ function PuckProvider<
         iframe,
         onAction,
         metadata,
+        transforms,
       };
     },
     [
@@ -313,6 +317,7 @@ function PuckProvider<
       iframe,
       onAction,
       metadata,
+      transforms,
     ]
   );
 

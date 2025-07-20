@@ -1,7 +1,8 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { ComponentData, Config, Content, RootData } from "../types";
 import { DropZoneProps } from "../components/DropZone/types";
-import { mapFields } from "./data/map-fields";
+import { useTransformedProps } from "./transforms/use-transformed-props";
+import { getSlotTransform } from "./transforms/default-transforms";
 
 export function useSlots<T extends ComponentData | RootData>(
   config: Config,
@@ -13,39 +14,11 @@ export function useSlots<T extends ComponentData | RootData>(
   readOnly?: T["readOnly"],
   forceReadOnly?: boolean
 ): T["props"] {
-  const slotProps = useMemo(() => {
-    const mapped = mapFields(
-      item,
-      {
-        slot: (content, _parentId, propName, field, propPath) => {
-          const wildcardPath = propPath.replace(/\[\d+\]/g, "[*]");
-          const isReadOnly =
-            readOnly?.[propPath] || readOnly?.[wildcardPath] || forceReadOnly;
-
-          const render = isReadOnly ? renderSlotRender : renderSlotEdit;
-
-          const Slot = (dzProps: DropZoneProps) =>
-            render({
-              allow: field?.type === "slot" ? field.allow : [],
-              disallow: field?.type === "slot" ? field.disallow : [],
-              ...dzProps,
-              zone: propName,
-              content,
-            });
-
-          return Slot;
-        },
-      },
-      config
-    ).props;
-
-    return mapped;
-  }, [config, item, readOnly, forceReadOnly]);
-
-  const mergedProps = useMemo(
-    () => ({ ...item.props, ...slotProps }),
-    [item.props, slotProps]
+  return useTransformedProps(
+    config,
+    item,
+    getSlotTransform(renderSlotEdit, renderSlotRender),
+    readOnly,
+    forceReadOnly
   );
-
-  return mergedProps;
 }

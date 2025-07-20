@@ -43,6 +43,8 @@ import { renderContext } from "../Render";
 import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
+import { useTransformedProps } from "../../lib/transforms/use-transformed-props";
+import { getSlotTransform } from "../../lib/transforms/default-transforms";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -186,13 +188,28 @@ const DropZoneChild = ({
 
   const config = useAppStore((s) => s.config);
 
-  const defaultedPropsWithSlots = useSlots(
+  const plugins = useAppStore((s) => s.plugins);
+  const userTransforms = useAppStore((s) => s.transforms);
+  const combinedTransforms = useMemo(
+    () => ({
+      ...plugins.reduce<Transforms>(
+        (acc, plugin) => ({ ...acc, ...plugin.transforms }),
+        {}
+      ),
+      ...userTransforms,
+    }),
+    [plugins, userTransforms]
+  );
+
+  const transformedProps = useTransformedProps(
     config,
     defaultedNode,
-    DropZoneEditPure,
-    (slotProps) => (
-      <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
-    ),
+    {
+      ...getSlotTransform(DropZoneEditPure, (slotProps) => (
+        <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
+      )),
+      ...combinedTransforms,
+    },
     nodeReadOnly,
     isLoading
   );
@@ -234,16 +251,16 @@ const DropZoneChild = ({
         componentConfig?.inline && !isInserting ? (
           <>
             <Render
-              {...defaultedPropsWithSlots}
+              {...transformedProps}
               puck={{
-                ...defaultedPropsWithSlots.puck,
+                ...transformedProps.puck,
                 dragRef,
               }}
             />
           </>
         ) : (
           <div ref={dragRef}>
-            <Render {...defaultedPropsWithSlots} />
+            <Render {...transformedProps} />
           </div>
         )
       }
