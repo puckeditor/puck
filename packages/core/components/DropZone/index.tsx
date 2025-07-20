@@ -44,7 +44,11 @@ import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useTransformedProps } from "../../lib/transforms/use-transformed-props";
-import { getSlotTransform } from "../../lib/transforms/default-transforms";
+import {
+  getInlineTextTransform,
+  getSlotTransform,
+} from "../../lib/transforms/default-transforms";
+import { Transforms } from "../../types/API/Transforms";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -208,6 +212,7 @@ const DropZoneChild = ({
       ...getSlotTransform(DropZoneEditPure, (slotProps) => (
         <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
       )),
+      ...getInlineTextTransform(),
       ...combinedTransforms,
     },
     nodeReadOnly,

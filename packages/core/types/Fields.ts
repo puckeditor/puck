@@ -18,7 +18,9 @@ export type BaseField = {
 export type TextField = BaseField & {
   type: "text";
   placeholder?: string;
+  contentEditable?: boolean;
 };
+
 export type NumberField = BaseField & {
   type: "number";
   placeholder?: string;
@@ -30,6 +32,7 @@ export type NumberField = BaseField & {
 export type TextareaField = BaseField & {
   type: "textarea";
   placeholder?: string;
+  contentEditable?: boolean;
 };
 
 export type SelectField = BaseField & {
