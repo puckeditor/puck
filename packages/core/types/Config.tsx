@@ -9,7 +9,7 @@ import { Permissions } from "./API";
 import { DropZoneProps } from "../components/DropZone/types";
 import { WithDeepSlots } from "./Internal";
 
-type SlotComponent = (props?: Omit<DropZoneProps, "zone">) => ReactNode;
+export type SlotComponent = (props?: Omit<DropZoneProps, "zone">) => ReactNode;
 
 export type PuckComponent<Props> = (
   props: WithId<

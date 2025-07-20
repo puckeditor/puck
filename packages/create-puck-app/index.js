@@ -17,6 +17,11 @@ const packageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, "./package.json"))
 );
 
+const ansiColors = {
+  reset: "\x1b[0m",
+  cyan: "\x1b[36m",
+};
+
 // Lifted from https://github.com/vercel/next.js/blob/c2d7bbd1b82c71808b99e9a7944fb16717a581db/packages/create-next-app/helpers/get-pkg-manager.ts
 function getPkgManager() {
   // eslint-disable-next-line turbo/no-undeclared-env-vars
@@ -71,11 +76,25 @@ program
     const questions = [
       ...beforeQuestions,
       {
-        type: "input",
+        type: "list",
         name: "recipe",
         message: "Which recipe would you like to use?",
         required: true,
         default: "next",
+        choices: [
+          {
+            name: "Next.js",
+            value: "next",
+          },
+          {
+            name: "React Router",
+            value: "react-router",
+          },
+          {
+            name: "Remix",
+            value: "remix",
+          },
+        ],
       },
     ];
     const answers = await inquirer.prompt(questions);
@@ -178,5 +197,12 @@ program
         console.log("Failed to commit git changes");
       }
     }
+
+    console.log("\nDone! Now run:\n");
+    console.log(`  cd ${appName}`);
+    console.log(`  ${packageManager} run dev\n`);
+    console.log(
+      `⭐ Don't forget to star Puck on Github: ${ansiColors.cyan}https://github.com/puckeditor/puck${ansiColors.reset}`
+    );
   })
   .parse(process.argv);

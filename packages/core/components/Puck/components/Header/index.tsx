@@ -146,6 +146,7 @@ const HeaderInner = <
           <div className={getClassName("toggle")}>
             <div className={getClassName("leftSideBarToggle")}>
               <IconButton
+                type="button"
                 onClick={() => {
                   toggleSidebars("left");
                 }}
@@ -156,6 +157,7 @@ const HeaderInner = <
             </div>
             <div className={getClassName("rightSideBarToggle")}>
               <IconButton
+                type="button"
                 onClick={() => {
                   toggleSidebars("right");
                 }}
@@ -179,6 +181,7 @@ const HeaderInner = <
           <div className={getClassName("tools")}>
             <div className={getClassName("menuButton")}>
               <IconButton
+                type="button"
                 onClick={() => {
                   return setMenuOpen(!menuOpen);
                 }}

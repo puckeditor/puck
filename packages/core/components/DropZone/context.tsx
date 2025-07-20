@@ -33,6 +33,7 @@ export type Preview = {
   zone: string;
   props: Record<string, any>;
   type: "insert" | "move";
+  element: Element | undefined;
 } | null;
 
 export type ZoneStore = {
@@ -89,21 +90,10 @@ export const DropZoneProvider = ({
     [dispatch]
   );
 
-  const unregisterZone = useCallback(
-    (zoneCompound: string) => {
-      dispatch({
-        type: "unregisterZone",
-        zone: zoneCompound,
-      });
-    },
-    [dispatch]
-  );
-
   const memoValue = useMemo(
     () =>
       ({
         registerZone,
-        unregisterZone,
         ...value,
       } as DropZoneContext),
     [value]

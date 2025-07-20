@@ -122,6 +122,7 @@ export const monitorHotkeys = (doc: Document) => {
       }
     }
   };
+
   const onKeyUp = (e: KeyboardEvent) => {
     const key = keyCodeMap[e.code];
 
@@ -135,12 +136,21 @@ export const monitorHotkeys = (doc: Document) => {
     }
   };
 
+  const onVisibilityChanged = (e: Event) => {
+    // Reset keys when tab changes
+    if (document.visibilityState === "hidden") {
+      useHotkeyStore.getState().reset();
+    }
+  };
+
   doc.addEventListener("keydown", onKeyDown);
   doc.addEventListener("keyup", onKeyUp);
+  doc.addEventListener("visibilitychange", onVisibilityChanged);
 
   return () => {
     doc.removeEventListener("keydown", onKeyDown);
     doc.removeEventListener("keyup", onKeyUp);
+    doc.removeEventListener("visibilitychange", onVisibilityChanged);
   };
 };
 

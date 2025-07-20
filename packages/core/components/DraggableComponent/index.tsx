@@ -508,7 +508,7 @@ export const DraggableComponent = ({
       el.removeEventListener("mouseout", _onMouseOut);
     };
   }, [
-    ref,
+    ref.current, // Remount attributes if the element changes
     onClick,
     containsActiveZone,
     zoneCompound,

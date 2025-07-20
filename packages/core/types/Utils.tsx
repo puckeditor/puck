@@ -3,6 +3,7 @@ import { Config } from "./Config";
 import { PuckContext } from "./Props";
 import { ComponentData, Data } from "./Data";
 import { PrivateAppState } from "./Internal";
+import { AppState } from "./AppState";
 
 export type WithId<Props> = Props & {
   id: string;
@@ -43,6 +44,7 @@ export type UserGenerics<
     UserRootProps
   >,
   UserAppState extends PrivateAppState<UserData> = PrivateAppState<UserData>,
+  UserPublicAppState extends AppState<UserData> = AppState<UserData>,
   UserComponentData extends ComponentData = UserData["content"][0]
 > = {
   UserConfig: UserConfig;
@@ -50,5 +52,6 @@ export type UserGenerics<
   UserRootProps: UserRootProps;
   UserData: UserData;
   UserAppState: UserAppState;
+  UserPublicAppState: UserPublicAppState;
   UserComponentData: UserComponentData;
 };
