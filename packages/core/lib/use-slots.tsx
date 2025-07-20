@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from "react";
 import { ComponentData, Config, Content, RootData } from "../types";
 import { DropZoneProps } from "../components/DropZone/types";
-import { mapSlots } from "./data/map-slots";
+import { mapFields } from "./data/map-fields";
 
 export function useSlots<T extends ComponentData | RootData>(
   config: Config,
@@ -14,25 +14,27 @@ export function useSlots<T extends ComponentData | RootData>(
   forceReadOnly?: boolean
 ): T["props"] {
   const slotProps = useMemo(() => {
-    const mapped = mapSlots(
+    const mapped = mapFields(
       item,
-      (content, _parentId, propName, field, propPath) => {
-        const wildcardPath = propPath.replace(/\[\d+\]/g, "[*]");
-        const isReadOnly =
-          readOnly?.[propPath] || readOnly?.[wildcardPath] || forceReadOnly;
+      {
+        slot: (content, _parentId, propName, field, propPath) => {
+          const wildcardPath = propPath.replace(/\[\d+\]/g, "[*]");
+          const isReadOnly =
+            readOnly?.[propPath] || readOnly?.[wildcardPath] || forceReadOnly;
 
-        const render = isReadOnly ? renderSlotRender : renderSlotEdit;
+          const render = isReadOnly ? renderSlotRender : renderSlotEdit;
 
-        const Slot = (dzProps: DropZoneProps) =>
-          render({
-            allow: field?.type === "slot" ? field.allow : [],
-            disallow: field?.type === "slot" ? field.disallow : [],
-            ...dzProps,
-            zone: propName,
-            content,
-          });
+          const Slot = (dzProps: DropZoneProps) =>
+            render({
+              allow: field?.type === "slot" ? field.allow : [],
+              disallow: field?.type === "slot" ? field.disallow : [],
+              ...dzProps,
+              zone: propName,
+              content,
+            });
 
-        return Slot;
+          return Slot;
+        },
       },
       config
     ).props;

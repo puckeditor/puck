@@ -2,19 +2,24 @@ import {
   ComponentData,
   Config,
   Content,
+  Field,
   Fields,
   RootData,
   SlotField,
 } from "../../types";
 import { defaultSlots } from "./default-slots";
 
-type MapFn<T = any> = (
-  data: Content,
-  parentId: string,
-  propName: string,
-  field: SlotField,
-  propPath: string
-) => T;
+export type MapFnParams = {
+  value: any;
+  parentId: string;
+  propName: string;
+  field: Field;
+  propPath: string;
+};
+
+type MapFn<T = any> = (params: MapFnParams) => T;
+
+export type Mappers<T = EitherMapFn> = Partial<Record<Field["type"], T>>;
 
 type PromiseMapFn = MapFn<Promise<any>>;
 
@@ -23,7 +28,7 @@ type EitherMapFn = MapFn<any | Promise<any>>;
 type WalkFieldOpts = {
   value: unknown;
   fields: Fields;
-  map: EitherMapFn;
+  mappers: Mappers;
   propKey?: string;
   propPath?: string;
   id?: string;
@@ -34,7 +39,7 @@ type WalkFieldOpts = {
 type WalkObjectOpts = {
   value: Record<string, any>;
   fields: Fields;
-  map: EitherMapFn;
+  mappers: Mappers;
   id: string;
   getPropPath: (str: string) => string;
   config: Config;
@@ -52,14 +57,17 @@ const containsPromise = (arr: any[]) => arr.some(isPromise);
 export const walkField = ({
   value,
   fields,
-  map,
+  mappers,
   propKey = "",
   propPath = "",
   id = "",
   config,
   recurseSlots = false,
 }: WalkFieldOpts): any | Promise<any> => {
-  if (fields[propKey]?.type === "slot") {
+  const fieldType = fields[propKey]?.type;
+  const map = mappers[fieldType];
+
+  if (map && fieldType === "slot") {
     const content = (value as Content) || [];
 
     const mappedContent = recurseSlots
@@ -75,7 +83,7 @@ export const walkField = ({
           return walkField({
             value: { ...el, props: defaultSlots(el.props, fields) },
             fields,
-            map,
+            mappers,
             id: el.props.id,
             config,
             recurseSlots,
@@ -87,7 +95,21 @@ export const walkField = ({
       return Promise.all(mappedContent);
     }
 
-    return map(mappedContent, id, propPath, fields[propKey], propPath);
+    return map({
+      value: mappedContent,
+      parentId: id,
+      propName: propKey,
+      field: fields[propKey],
+      propPath,
+    });
+  } else if (map && fields[propKey]) {
+    return map({
+      value,
+      parentId: id,
+      propName: propKey,
+      field: fields[propKey],
+      propPath,
+    });
   }
 
   if (value && typeof value === "object") {
@@ -101,7 +123,7 @@ export const walkField = ({
         walkField({
           value: el,
           fields: arrayFields,
-          map,
+          mappers,
           propKey,
           propPath: `${propPath}[${idx}]`,
           id,
@@ -126,7 +148,7 @@ export const walkField = ({
       return walkObject({
         value,
         fields: objectFields,
-        map,
+        mappers,
         id,
         getPropPath: (k) => `${propPath}.${k}`,
         config,
@@ -141,7 +163,7 @@ export const walkField = ({
 const walkObject = ({
   value,
   fields,
-  map,
+  mappers,
   id,
   getPropPath,
   config,
@@ -151,7 +173,7 @@ const walkObject = ({
     const opts: WalkFieldOpts = {
       value: v,
       fields,
-      map,
+      mappers,
       propKey: k,
       propPath: getPropPath(k),
       id,
@@ -179,23 +201,23 @@ const walkObject = ({
   return flatten(newProps);
 };
 
-export function mapSlots<T extends ComponentData | RootData>(
+export function mapFields<T extends ComponentData | RootData>(
   item: T,
-  map: MapFn,
+  mappers: Mappers<MapFn>,
   config: Config,
   recurseSlots?: boolean
 ): T;
 
-export function mapSlots<T extends ComponentData | RootData>(
+export function mapFields<T extends ComponentData | RootData>(
   item: T,
-  map: PromiseMapFn,
+  mappers: Mappers<PromiseMapFn>,
   config: Config,
   recurseSlots?: boolean
 ): Promise<T>;
 
-export function mapSlots(
+export function mapFields(
   item: any,
-  map: EitherMapFn,
+  mappers: Mappers,
   config: Config,
   recurseSlots: boolean = false
 ): any {
@@ -207,7 +229,7 @@ export function mapSlots(
   const newProps = walkObject({
     value: defaultSlots(item.props ?? {}, componentConfig?.fields ?? {}),
     fields: componentConfig?.fields ?? {},
-    map,
+    mappers,
     id: item.props ? item.props.id ?? "root" : "root",
     getPropPath: (k) => k,
     config,
