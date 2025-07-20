@@ -1,10 +1,10 @@
 import { ComponentData, Config, RootData } from "../../types";
-import { mapSlots } from "./map-slots";
+import { mapFields } from "./map-fields";
 
 export const stripSlots = (
   data: ComponentData | RootData,
   config: Config
 ): ComponentData | RootData => {
   // Strip out slots to prevent re-renders of parents when child changes
-  return mapSlots(data, () => null, config);
+  return mapFields(data, { slot: () => null }, config);
 };

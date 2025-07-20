@@ -5,7 +5,7 @@ import {
   RootData,
   UserGenerics,
 } from "../../types";
-import { mapSlots } from "./map-slots";
+import { mapFields } from "./map-fields";
 
 type WalkTreeOptions = {
   parentId: string;
@@ -29,10 +29,14 @@ export function walkTree<
   >(
     item: ItemType
   ): ItemType => {
-    return mapSlots(
+    return mapFields(
       item as ComponentData,
-      (content, parentId, propName) => {
-        return callbackFn(content, { parentId, propName }) ?? content;
+      {
+        slot: ({ value, parentId, propName }) => {
+          const content = value as Content;
+
+          return callbackFn(content, { parentId, propName }) ?? content;
+        },
       },
       config,
       true

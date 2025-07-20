@@ -6,11 +6,11 @@ import { IconButton } from "../../../IconButton";
 import { reorder, replace } from "../../../../lib";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DragIcon } from "../../../DragIcon";
-import { ArrayState, ItemWithId } from "../../../../types";
+import { ArrayState, Content, ItemWithId } from "../../../../types";
 import { useAppStore, useAppStoreApi } from "../../../../store";
 import { Sortable, SortableProvider } from "../../../Sortable";
 import { NestedFieldProvider, useNestedFieldContext } from "../../context";
-import { walkField } from "../../../../lib/data/map-slots";
+import { walkField } from "../../../../lib/data/map-fields";
 import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
 
@@ -134,8 +134,13 @@ export const ArrayField = ({
       return walkField({
         value: val,
         fields: field.arrayFields,
-        map: (content) =>
-          content.map((item) => populateIds(item, config, true)),
+        mappers: {
+          slot: ({ value }) => {
+            const content = value as Content;
+
+            return content.map((item) => populateIds(item, config, true));
+          },
+        },
         config,
       });
     },
