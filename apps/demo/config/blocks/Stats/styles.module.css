@@ -35,8 +35,8 @@
   align-items: center;
   color: white;
   gap: 8px;
-  overflow: hidden;
   width: 100%;
+  text-align: center;
 }
 
 .Stats-icon {
