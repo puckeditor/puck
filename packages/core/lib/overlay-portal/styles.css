@@ -1,6 +1,6 @@
 [data-puck-overlay-portal],
 [data-puck-overlay-portal] * {
-  pointer-events: auto;
+  pointer-events: auto !important;
 }
 
 [data-puck-overlay-portal]:hover {
