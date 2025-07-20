@@ -25,3 +25,37 @@ export const getSlotTransform = (
     return Slot;
   },
 });
+
+export const getInlineTextTransform = (): Transforms => ({
+  text: ({ value, parentId, field: _field, propPath, isReadOnly }) => {
+    const field = _field as TextField;
+
+    if (field.contentEditable) {
+      return (
+        <InlineTextField
+          propPath={propPath}
+          componentId={parentId}
+          value={value}
+          opts={{ disableLineBreaks: true }}
+        />
+      );
+    }
+
+    return value;
+  },
+  textarea: ({ value, parentId, field: _field, propPath, isReadOnly }) => {
+    const field = _field as TextField;
+
+    if (field.contentEditable) {
+      return (
+        <InlineTextField
+          propPath={propPath}
+          componentId={parentId}
+          value={value}
+        />
+      );
+    }
+
+    return value;
+  },
+});

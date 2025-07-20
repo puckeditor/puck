@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { ReactNode } from "react";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Button } from "@/core/components/Button";
@@ -10,7 +10,7 @@ const getClassName = getClassNameFactory("Hero", styles);
 
 export type HeroProps = {
   quote?: { index: number; label: string };
-  title: string;
+  title: string | ReactNode;
   description: string;
   align?: string;
   padding: string;

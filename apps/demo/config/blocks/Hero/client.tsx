@@ -72,8 +72,8 @@ export const Hero: ComponentConfig<HeroProps> = {
       },
       getItemSummary: (item) => item.label,
     },
-    title: { type: "text" },
-    description: { type: "textarea" },
+    title: { type: "text", contentEditable: true },
+    description: { type: "textarea", contentEditable: true },
     buttons: {
       type: "array",
       min: 1,
