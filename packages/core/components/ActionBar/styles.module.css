@@ -92,3 +92,11 @@
 .ActionBar-group * {
   margin: 0;
 }
+
+.ActionBar-action:disabled{
+  color: var(--puck-color-grey-05);
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.6;
+  transition: none;
+}

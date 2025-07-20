@@ -14,13 +14,7 @@ import {
 import styles from "./styles.module.css";
 import "./styles.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import {
-  ChevronDown,
-  ChevronUp,
-  Copy,
-  CornerLeftUp,
-  Trash,
-} from "lucide-react";
+import { MoveDown, MoveUp, Copy, CornerLeftUp, Trash } from "lucide-react";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { Loader } from "../Loader";
 import { ActionBar } from "../ActionBar";
@@ -161,8 +155,10 @@ export const DraggableComponent = ({
     [setLocalZones]
   );
 
-  const zoneContentIds = useAppStore(
-    useShallow((s) => getZoneContentIds(zoneCompound, s.state))
+  const isLast = useAppStore(
+    (s) =>
+      getZoneContentIds(zoneCompound, s.state)?.slice(-1)?.[0] === id ||
+      getZoneContentIds(zoneCompound, s.state)?.length === 0
   );
 
   const containsActiveZone =
@@ -421,8 +417,7 @@ export const DraggableComponent = ({
   }, [zoneCompound, index, id]);
 
   const onMoveDown = useCallback(() => {
-    const zoneItemsLength = zoneContentIds?.length || 0;
-    if (index === zoneItemsLength - 1) {
+    if (isLast) {
       return;
     }
 
@@ -443,7 +438,7 @@ export const DraggableComponent = ({
         },
       },
     });
-  }, [zoneCompound, index, id, zoneContentIds?.length]);
+  }, [zoneCompound, index, id, isLast]);
 
   const onDuplicate = useCallback(() => {
     dispatch({
@@ -626,23 +621,25 @@ export const DraggableComponent = ({
   );
 
   const moveUpAction = useMemo(
-    () =>
-      Boolean(index) && (
-        <ActionBar.Action onClick={onMoveUp} label="Select Previous">
-          <ChevronUp size={16} />
-        </ActionBar.Action>
-      ),
+    () => (
+      <ActionBar.Action onClick={onMoveUp} label="Move Down" disabled={!index}>
+        <MoveUp size={16} />
+      </ActionBar.Action>
+    ),
     [index]
   );
 
   const moveDownAction = useMemo(
-    () =>
-      index < (zoneContentIds?.length || 0) - 1 && (
-        <ActionBar.Action onClick={onMoveDown} label="Select Next">
-          <ChevronDown size={16} />
-        </ActionBar.Action>
-      ),
-    [index, zoneContentIds?.length]
+    () => (
+      <ActionBar.Action
+        onClick={onMoveDown}
+        label="Move Down"
+        disabled={isLast}
+      >
+        <MoveDown size={16} />
+      </ActionBar.Action>
+    ),
+    [index, isLast]
   );
 
   const nextContextValue = useMemo<DropZoneContext>(

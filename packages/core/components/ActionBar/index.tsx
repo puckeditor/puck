@@ -28,10 +28,12 @@ export const ActionBar = ({
 export const Action = ({
   children,
   label,
+  disabled,
   onClick,
 }: {
   children: ReactNode;
   label?: string;
+  disabled?: boolean;
   onClick: (e: SyntheticEvent) => void;
 }) => (
   <button
@@ -39,6 +41,7 @@ export const Action = ({
     className={getClassName("action")}
     onClick={onClick}
     title={label}
+    disabled={disabled}
   >
     {children}
   </button>
