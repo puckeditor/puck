@@ -196,6 +196,7 @@ export const ExternalInput = ({
                   {hasFilterFields && (
                     <div className={getClassNameModal("searchActionIcon")}>
                       <IconButton
+                        type="button"
                         title="Toggle filters"
                         onClick={(e) => {
                           e.preventDefault();

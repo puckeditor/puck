@@ -1,6 +1,6 @@
 {
   "name": "@measured/puck",
-  "version": "0.19.1",
+  "version": "0.19.3",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
   "bugs": "https://github.com/measuredco/puck/issues",
@@ -27,6 +27,7 @@
       "require": "./dist/rsc.js"
     },
     "./puck.css": "./dist/index.css",
+    "./no-external.css": "./dist/no-external.css",
     "./dist/index.css": "./dist/index.css",
     "./package.json": "./package.json"
   },
@@ -40,7 +41,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup index.ts rsc.tsx",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts",
     "test": "jest",
     "prepare": "cp ../../README.md . && yarn build",
     "postpublish": "rm README.md"

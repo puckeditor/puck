@@ -1,4 +1,4 @@
-import { Config, Data } from "../../types";
+import { Config, Data, Slot } from "../../types";
 import { migrate } from "../migrate";
 
 jest.spyOn(console, "warn").mockImplementation(() => {});
@@ -75,6 +75,158 @@ describe("migrate method", () => {
     };
 
     expect(migrate(input, config)).toEqual(output);
+  });
+
+  it("should migrate dynamic arrays of zones to slots when a user provides a migration function", () => {
+    const input: Data = {
+      root: {
+        props: {
+          title: "Legacy Zones Migration",
+        },
+      },
+      content: [
+        {
+          type: "Columns",
+          props: {
+            columns: [{}, {}, {}, {}],
+            id: "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be",
+          },
+        },
+      ],
+      zones: {
+        "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be:column-0": [
+          {
+            type: "Text",
+            props: {
+              text: "Drop zone 1",
+              id: "Text-c2b5c0a5-d76b-4120-8bb3-99934e119967",
+            },
+          },
+        ],
+        "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be:column-1": [
+          {
+            type: "Text",
+            props: {
+              text: "Drop zone 2",
+              id: "Text-8bdcf6ef-ba8c-4d5e-8010-e505a773e8d8",
+            },
+          },
+        ],
+        "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be:column-2": [
+          {
+            type: "Text",
+            props: {
+              text: "Drop zone 3",
+              id: "Text-2f8f393a-d4ed-4714-9552-89defa056ed9",
+            },
+          },
+        ],
+        "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be:column-3": [
+          {
+            type: "Text",
+            props: {
+              text: "Drop zone 4",
+              id: "Text-af41f55a-8af0-4e0c-8972-d54935301474",
+            },
+          },
+        ],
+      },
+    };
+
+    const config: Config<{ Columns: { columns: { column: Slot } } }> = {
+      components: {
+        Columns: {
+          fields: {
+            columns: {
+              type: "array",
+              arrayFields: {
+                column: {
+                  type: "slot",
+                },
+              },
+            },
+          },
+          render: () => <div />,
+        },
+      },
+    };
+
+    const output: Data = {
+      root: {
+        props: {
+          title: "Legacy Zones Migration",
+        },
+      },
+      content: [
+        {
+          type: "Columns",
+          props: {
+            columns: [
+              {
+                column: [
+                  {
+                    type: "Text",
+                    props: {
+                      text: "Drop zone 1",
+                      id: "Text-c2b5c0a5-d76b-4120-8bb3-99934e119967",
+                    },
+                  },
+                ],
+              },
+              {
+                column: [
+                  {
+                    type: "Text",
+                    props: {
+                      text: "Drop zone 2",
+                      id: "Text-8bdcf6ef-ba8c-4d5e-8010-e505a773e8d8",
+                    },
+                  },
+                ],
+              },
+              {
+                column: [
+                  {
+                    type: "Text",
+                    props: {
+                      text: "Drop zone 3",
+                      id: "Text-2f8f393a-d4ed-4714-9552-89defa056ed9",
+                    },
+                  },
+                ],
+              },
+              {
+                column: [
+                  {
+                    type: "Text",
+                    props: {
+                      text: "Drop zone 4",
+                      id: "Text-af41f55a-8af0-4e0c-8972-d54935301474",
+                    },
+                  },
+                ],
+              },
+            ],
+            id: "Columns-eb9dfe22-4408-44e6-b8e5-fbaedbbdb3be",
+          },
+        },
+      ],
+    };
+
+    expect(
+      migrate(input, config, {
+        migrateDynamicZonesForComponent: {
+          Columns: (props, zones) => {
+            return {
+              ...props,
+              columns: Object.values(zones).map((zone) => ({
+                column: zone,
+              })),
+            };
+          },
+        },
+      })
+    ).toEqual(output);
   });
 
   it("should throw if matching slots aren't defined", () => {

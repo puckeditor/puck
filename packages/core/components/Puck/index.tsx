@@ -36,7 +36,6 @@ import {
   defaultAppState,
   useAppStore,
   appStoreContext,
-  AppStore,
 } from "../../store";
 import styles from "./styles.module.css";
 import { Fields } from "./components/Fields";

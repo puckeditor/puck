@@ -216,31 +216,24 @@ function AutoFieldInternal<
     return null;
   }
 
+  let children = null;
+  let FieldComponent: React.ComponentType<any>;
+
   if (field.type === "custom") {
     if (!field.render) {
       return null;
     }
-
-    const CustomField = field.render as any;
-
-    return (
-      <div className={getClassNameWrapper()} onFocus={onFocus} onBlur={onBlur}>
-        <div className={getClassName()}>
-          <CustomField {...mergedProps} />
-        </div>
-      </div>
-    );
+    FieldComponent = field.render as any;
+  } else {
+    children = defaultFields[field.type](mergedProps);
+    FieldComponent = render[field.type] as (props: FieldProps) => ReactElement;
   }
-
-  const children = defaultFields[field.type](mergedProps);
-
-  const Render = render[field.type] as (props: FieldProps) => ReactElement;
 
   return (
     <NestedFieldContext.Provider
       value={{
         readOnlyFields: nestedFieldContext.readOnlyFields || readOnly || {},
-        localName: nestedFieldContext.localName,
+        localName: nestedFieldContext.localName ?? mergedProps.name,
       }}
     >
       <div
@@ -254,7 +247,7 @@ function AutoFieldInternal<
           e.stopPropagation();
         }}
       >
-        <Render {...mergedProps}>{children}</Render>
+        <FieldComponent {...mergedProps}>{children}</FieldComponent>
       </div>
     </NestedFieldContext.Provider>
   );

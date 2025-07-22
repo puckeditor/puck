@@ -470,6 +470,7 @@ const DragDropContextClient = ({
                     type: "insert",
                     index: targetIndex,
                     zone: targetZone,
+                    element: source.element,
                     props: {
                       id: source.id.toString(),
                     },
@@ -498,6 +499,7 @@ const DragDropContextClient = ({
                       index: targetIndex,
                       zone: targetZone,
                       props: item.props,
+                      element: source.element,
                     },
                   },
                 });
@@ -531,6 +533,7 @@ const DragDropContextClient = ({
                       index: sourceData.index,
                       zone: sourceData.zone,
                       props: item.props,
+                      element: source.element,
                     },
                   },
                 });

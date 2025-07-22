@@ -1,4 +1,4 @@
 import { defineConfig } from "tsup";
 import tsupconfig from "../tsup-config";
 
-export default defineConfig(tsupconfig);
+export default defineConfig({ ...tsupconfig });
