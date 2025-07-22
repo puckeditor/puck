@@ -47,8 +47,10 @@ export type Overrides = OverridesGeneric<{
     readOnly?: boolean;
     className?: string;
   }>;
-  components: RenderFunc;
-  componentItem: RenderFunc<{ children: ReactNode; name: string }>;
+  components: RenderFunc; // DEPRECATED
+  componentItem: RenderFunc<{ children: ReactNode; name: string }>; // DEPRECATED
+  drawer: RenderFunc;
+  drawerItem: RenderFunc<{ children: ReactNode; name: string }>;
   iframe: RenderFunc<{ children: ReactNode; document?: Document }>;
   outline: RenderFunc;
   componentOverlay: RenderFunc<{

@@ -210,7 +210,7 @@ function PuckProvider<
       Object.keys(initialData?.root || {}).length > 0 &&
       !initialData?.root?.props
     ) {
-      console.error(
+      console.warn(
         "Warning: Defining props on `root` is deprecated. Please use `root.props`, or republish this page to migrate automatically."
       );
     }

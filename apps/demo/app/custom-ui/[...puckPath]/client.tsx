@@ -459,7 +459,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
               </ActionBar>
             );
           },
-          components: () => <CustomDrawer />,
+          drawer: () => <CustomDrawer />,
           puck: () => <CustomPuck dataKey={key} />,
         }}
       />

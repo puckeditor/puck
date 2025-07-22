@@ -1,14 +1,14 @@
 ---
-title: componentItem
+title: drawerItem
 ---
 
-# componentItem
+# drawerItem
 
-Override an individual item within the component list.
+Override an item within the component drawer.
 
 ```tsx copy
 const overrides = {
-  componentItem: ({ name }) => <div>{name}</div>,
+  drawerItem: ({ name }) => <div>{name}</div>,
 };
 ```
 
@@ -21,8 +21,8 @@ const overrides = {
 
 ### `children`
 
-The default node for the component item.
+The default node for the drawer item.
 
 ### `name`
 
-The name of the component item.
+The name of the drawer item.
