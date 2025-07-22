@@ -32,9 +32,14 @@ export function Editor() {
 
 ## Params
 
-| Prop                      | Example                                | Type                                       | Status |
-| ------------------------- | -------------------------------------- | ------------------------------------------ | ------ |
-| [`overrides`](#overrides) | `overrides: { fields: () => <div /> }` | [Overrides](/docs/api-reference/overrides) | -      |
+| Prop                                  | Example                                    | Type                                                    | Status |
+| ------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ------ |
+| [`fieldTransforms`](#fieldtransforms) | `fieldTransforms: { text: () => <div /> }` | [FieldTransforms](/docs/api-reference/field-transforms) | -      |
+| [`overrides`](#overrides)             | `overrides: { fields: () => <div /> }`     | [Overrides](/docs/api-reference/overrides)              | -      |
+
+### `fieldTransforms`
+
+Transform the value of a field before rendering in the editor.Implements the [Field Transforms API](/docs/api-reference/field-transforms).
 
 ### `overrides`
 
