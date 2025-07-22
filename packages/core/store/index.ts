@@ -34,7 +34,7 @@ import { walkAppState } from "../lib/data/walk-app-state";
 import { toRoot } from "../lib/data/to-root";
 import { generateId } from "../lib/generate-id";
 import { defaultAppState } from "./default-app-state";
-import { Transforms } from "../types/API/Transforms";
+import { FieldTransforms } from "../types/API/FieldTransforms";
 
 export { defaultAppState };
 
@@ -86,7 +86,7 @@ export type AppStore<
   history: HistorySlice;
   nodes: NodesSlice;
   permissions: PermissionsSlice;
-  transforms: Transforms;
+  fieldTransforms: FieldTransforms;
 };
 
 export type AppStoreApi = StoreApi<AppStore>;
@@ -112,7 +112,7 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
       status: "LOADING",
       iframe: {},
       metadata: {},
-      transforms: {},
+      fieldTransforms: {},
       ...initialAppStore,
       fields: createFieldsSlice(set, get),
       history: createHistorySlice(set, get),

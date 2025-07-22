@@ -2,20 +2,12 @@ import { ComponentData, Config, Field, UserGenerics } from "../../types";
 import { useMemo } from "react";
 import { RootData } from "../../types";
 import { mapFields, MapFnParams, Mappers } from "../data/map-fields";
-import { Transforms } from "../../types/API/Transforms";
+import { FieldTransforms } from "../../types/API/FieldTransforms";
 
-export type TransformPropsFn = <
-  UserConfig extends Config = Config,
-  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
->(
-  componentData: G["UserComponentData"],
-  config: UserConfig
-) => G["UserComponentData"]["props"];
-
-export function useTransformedProps<T extends ComponentData | RootData>(
+export function useFieldTransforms<T extends ComponentData | RootData>(
   config: Config,
   item: T,
-  transforms: Transforms,
+  transforms: FieldTransforms,
   readOnly?: T["readOnly"],
   forceReadOnly?: boolean
 ): T["props"] {

@@ -2,14 +2,14 @@ import { ReactNode } from "react";
 import { DropZoneProps } from "../../components/DropZone/types";
 import { Content, TextField } from "../../types";
 import { InlineTextField } from "../../components/InlineTextField";
-import { Transforms } from "../../types/API/Transforms";
+import { FieldTransforms } from "../../types/API/FieldTransforms";
 
 export const getSlotTransform = (
   renderSlotEdit: (dzProps: DropZoneProps & { content: Content }) => ReactNode,
   renderSlotRender: (
     dzProps: DropZoneProps & { content: Content }
   ) => ReactNode = renderSlotEdit
-): Transforms => ({
+): FieldTransforms => ({
   slot: ({ value: content, propName, field, isReadOnly }) => {
     const render = isReadOnly ? renderSlotRender : renderSlotEdit;
 
@@ -26,7 +26,7 @@ export const getSlotTransform = (
   },
 });
 
-export const getInlineTextTransform = (): Transforms => ({
+export const getInlineTextTransform = (): FieldTransforms => ({
   text: ({ value, parentId, field: _field, propPath, isReadOnly }) => {
     const field = _field as TextField;
 

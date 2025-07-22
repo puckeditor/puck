@@ -43,12 +43,12 @@ import { renderContext } from "../Render";
 import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
-import { useTransformedProps } from "../../lib/transforms/use-transformed-props";
+import { useFieldTransforms } from "../../lib/field-transforms/use-field-transforms";
 import {
   getInlineTextTransform,
   getSlotTransform,
-} from "../../lib/transforms/default-transforms";
-import { Transforms } from "../../types/API/Transforms";
+} from "../../lib/field-transforms/default-transforms";
+import { FieldTransforms } from "../../types/API/FieldTransforms";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -193,19 +193,19 @@ const DropZoneChild = ({
   const config = useAppStore((s) => s.config);
 
   const plugins = useAppStore((s) => s.plugins);
-  const userTransforms = useAppStore((s) => s.transforms);
-  const combinedTransforms = useMemo(
+  const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
+  const combinedFieldTransforms = useMemo(
     () => ({
-      ...plugins.reduce<Transforms>(
+      ...plugins.reduce<FieldTransforms>(
         (acc, plugin) => ({ ...acc, ...plugin.transforms }),
         {}
       ),
-      ...userTransforms,
+      ...userFieldTransforms,
     }),
-    [plugins, userTransforms]
+    [plugins, userFieldTransforms]
   );
 
-  const transformedProps = useTransformedProps(
+  const transformedProps = useFieldTransforms(
     config,
     defaultedNode,
     {
@@ -213,7 +213,7 @@ const DropZoneChild = ({
         <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
       )),
       ...getInlineTextTransform(),
-      ...combinedTransforms,
+      ...combinedFieldTransforms,
     },
     nodeReadOnly,
     isLoading

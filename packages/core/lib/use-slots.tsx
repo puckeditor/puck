@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import { ComponentData, Config, Content, RootData } from "../types";
 import { DropZoneProps } from "../components/DropZone/types";
-import { useTransformedProps } from "./transforms/use-transformed-props";
-import { getSlotTransform } from "./transforms/default-transforms";
+import { useFieldTransforms } from "./field-transforms/use-field-transforms";
+import { getSlotTransform } from "./field-transforms/default-transforms";
 
 export function useSlots<T extends ComponentData | RootData>(
   config: Config,
@@ -14,7 +14,7 @@ export function useSlots<T extends ComponentData | RootData>(
   readOnly?: T["readOnly"],
   forceReadOnly?: boolean
 ): T["props"] {
-  return useTransformedProps(
+  return useFieldTransforms(
     config,
     item,
     getSlotTransform(renderSlotEdit, renderSlotRender),
