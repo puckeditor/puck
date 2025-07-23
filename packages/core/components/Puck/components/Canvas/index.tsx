@@ -92,14 +92,12 @@ export const Canvas = () => {
 
   // Auto zoom
   useEffect(() => {
-    if (!isResettingZoomRef.current) {
-      isResettingZoomRef.current = true;
-      setShowTransition(false);
-      resetAutoZoom(viewports);
-      setTimeout(() => {
-        isResettingZoomRef.current = false;
-      }, 0);
-    }
+    resetAutoZoom({
+      isResettingRef: isResettingZoomRef,
+      setShowTransition,
+      showTransition: false,
+      viewports: viewports
+    });
   }, [
     frameRef,
     leftSideBarVisible,
@@ -124,27 +122,24 @@ export const Canvas = () => {
 
   // Zoom whenever state changes, even if external driver
   useEffect(() => {
-    if (ZOOM_ON_CHANGE && !isResettingZoomRef.current) {
-      isResettingZoomRef.current = true;
-      setShowTransition(true);
-      resetAutoZoom(viewports);
-      setTimeout(() => {
-        isResettingZoomRef.current = false;
-      }, 0);
+    if (ZOOM_ON_CHANGE) {
+      resetAutoZoom({
+        isResettingRef: isResettingZoomRef,
+        setShowTransition,
+        showTransition: true,
+        viewports: viewports
+      });
     }
   }, [viewports.current.width, resetAutoZoom, viewports]);
 
   // Resize based on window size
   useEffect(() => {
     const cb = () => {
-      if (!isResettingZoomRef.current) {
-        isResettingZoomRef.current = true;
-        setShowTransition(false);
-        resetAutoZoom();
-        setTimeout(() => {
-          isResettingZoomRef.current = false;
-        }, 0);
-      }
+      resetAutoZoom({
+        isResettingRef: isResettingZoomRef,
+        setShowTransition,
+        showTransition: false
+      });
     };
 
     window.addEventListener("resize", cb);
@@ -198,7 +193,12 @@ export const Canvas = () => {
               setUi(newUi);
 
               if (ZOOM_ON_CHANGE) {
-                resetAutoZoom({ ...viewports, current: uiViewport });
+                resetAutoZoom({
+                isResettingRef: isResettingZoomRef,
+                setShowTransition,
+                showTransition: true,
+                viewports: { ...viewports, current: uiViewport }
+              });
               }
             }}
             onZoom={(zoom) => {
@@ -224,13 +224,9 @@ export const Canvas = () => {
           suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
           id="puck-canvas-root"
           onTransitionEnd={() => {
-            if (!isResettingZoomRef.current) {
-              isResettingZoomRef.current = true;
-              resetAutoZoom();
-              setTimeout(() => {
-                isResettingZoomRef.current = false;
-              }, 0);
-            }
+            resetAutoZoom({
+              isResettingRef: isResettingZoomRef
+            });
           }}
         >
           <CustomPreview>
