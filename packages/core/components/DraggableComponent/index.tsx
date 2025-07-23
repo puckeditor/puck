@@ -622,7 +622,7 @@ export const DraggableComponent = ({
 
   const moveUpAction = useMemo(
     () => (
-      <ActionBar.Action onClick={onMoveUp} label="Move Down" disabled={!index}>
+      <ActionBar.Action onClick={onMoveUp} label="Move Up" disabled={!index}>
         <MoveUp size={16} />
       </ActionBar.Action>
     ),
@@ -702,8 +702,8 @@ export const DraggableComponent = ({
               >
                 <CustomActionBar
                   parentAction={parentAction}
-                  moveUpAction={moveUpAction}
-                  moveDownAction={moveDownAction}
+                  moveUpAction={permissions.drag && moveUpAction}
+                  moveDownAction={permissions.drag && moveDownAction}
                   label={DEBUG ? id : label}
                 >
                   {permissions.duplicate && (
