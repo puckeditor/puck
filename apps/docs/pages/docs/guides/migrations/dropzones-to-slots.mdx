@@ -117,6 +117,25 @@ const newData = migrate(legacyData, config);
 
 This will migrate any existing zone in `zones` where you have defined a `slot` with the same name.
 
+### Migrating dynamic zones to slots
+
+To migrate DropZone data with dynamic zone names (e.g., those generated when rendering DropZones in a loop), use the [`migrateDynamicZonesForComponent`](/docs/api-reference/functions/migrate#migratedynamiczonesforcomponent) option in the [`migrate()` helper](/docs/api-reference/functions/migrate).
+
+```tsx
+const newData = migrate(legacyData, config, {
+  migrateDynamicZonesForComponent: {
+    Columns: (props, zones) => {
+      return {
+        ...props,
+        columns: Object.values(zones).map((zone) => ({
+          column: zone,
+        })),
+      };
+    },
+  },
+});
+```
+
 ## Further reading
 
 - [The `slot` field API](/docs/api-reference/fields/slot)
