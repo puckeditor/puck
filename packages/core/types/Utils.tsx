@@ -4,6 +4,7 @@ import { PuckContext } from "./Props";
 import { ComponentData, Data } from "./Data";
 import { PrivateAppState } from "./Internal";
 import { AppState } from "./AppState";
+import { Field } from "./Fields";
 
 export type WithId<Props> = Props & {
   id: string;
@@ -55,3 +56,5 @@ export type UserGenerics<
   UserPublicAppState: UserPublicAppState;
   UserComponentData: UserComponentData;
 };
+
+export type ExtractField<T extends Field["type"]> = Extract<Field, { type: T }>;

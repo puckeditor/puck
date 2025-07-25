@@ -1,9 +1,13 @@
 import { MapFnParams } from "../../lib/data/map-fields";
-import { Field } from "../../types";
+import { ExtractField, Field } from "../../types";
 
-export type FieldTransformFnParams = Omit<MapFnParams, "parentId"> & {
+export type FieldTransformFnParams<T> = Omit<MapFnParams<T>, "parentId"> & {
   isReadOnly: boolean;
   componentId: string;
 };
-export type FieldTransformFn<T = any> = (params: FieldTransformFnParams) => T;
-export type FieldTransforms = Partial<Record<Field["type"], FieldTransformFn>>;
+export type FieldTransformFn<T = any> = (
+  params: FieldTransformFnParams<T>
+) => any;
+export type FieldTransforms = Partial<{
+  [FieldType in Field["type"]]: FieldTransformFn<ExtractField<FieldType>>;
+}>;

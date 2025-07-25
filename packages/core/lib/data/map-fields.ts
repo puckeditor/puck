@@ -8,11 +8,11 @@ import {
 } from "../../types";
 import { defaultSlots } from "./default-slots";
 
-export type MapFnParams = {
+export type MapFnParams<ThisField = Field> = {
   value: any;
   parentId: string;
   propName: string;
-  field: Field;
+  field: ThisField;
   propPath: string;
 };
 
