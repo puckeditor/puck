@@ -46,12 +46,7 @@ The name of this prop provided to the [component field](/docs/api-reference/conf
 
 The path of this prop within the props object.
 
-Uses dot-notation and square brackets:
-
-- `.` deliminates sub-props in an [object field](/docs/api-reference/fields/object) (i.e. `a.b` represents `b` where `a` is `{b: "Value"}`)
-- `[*]` which donate an index in an [array field](/docs/api-reference/fields/array) where `*` is an integer (i.e. `a[0].b` represents `b` in the first item in array `a` with the value `[{b: "Value"}]`)
-
-Uses dot-notation to denote sub-props, and square brackets to den
+Use in conjunction with the [`setDeep`](/docs/api-reference/functions/set-deep) utility to set data for a key deep within an object or array, normally [ComponentData](/docs/api-reference/data-model/component-data).
 
 ### `value`
 
