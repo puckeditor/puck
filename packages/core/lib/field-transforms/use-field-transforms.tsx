@@ -1,8 +1,11 @@
-import { ComponentData, Config, Field, UserGenerics } from "../../types";
+import { ComponentData, Config, ExtractField, Field } from "../../types";
 import { useMemo } from "react";
 import { RootData } from "../../types";
 import { mapFields, MapFnParams, Mappers } from "../data/map-fields";
-import { FieldTransforms } from "../../types/API/FieldTransforms";
+import {
+  FieldTransformFn,
+  FieldTransforms,
+} from "../../types/API/FieldTransforms";
 
 export function useFieldTransforms<T extends ComponentData | RootData>(
   config: Config,
@@ -19,7 +22,10 @@ export function useFieldTransforms<T extends ComponentData | RootData>(
 
       return {
         ...acc,
-        [fieldType]: ({ parentId, ...params }: MapFnParams) => {
+        [fieldType]: ({
+          parentId,
+          ...params
+        }: MapFnParams<ExtractField<Field["type"]>>) => {
           const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
           const isReadOnly =
             readOnly?.[params.propPath] ||
@@ -27,7 +33,11 @@ export function useFieldTransforms<T extends ComponentData | RootData>(
             forceReadOnly ||
             false;
 
-          return transforms[fieldType]?.({
+          const fn = transforms[fieldType] as FieldTransformFn<
+            ExtractField<Field["type"]>
+          >;
+
+          return fn?.({
             ...params,
             isReadOnly,
             componentId: parentId,

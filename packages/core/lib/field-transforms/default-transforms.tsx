@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { DropZoneProps } from "../../components/DropZone/types";
-import { Content, TextField } from "../../types";
+import { Content } from "../../types";
 import { InlineTextField } from "../../components/InlineTextField";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 
@@ -27,9 +27,7 @@ export const getSlotTransform = (
 });
 
 export const getInlineTextTransform = (): FieldTransforms => ({
-  text: ({ value, componentId, field: _field, propPath, isReadOnly }) => {
-    const field = _field as TextField;
-
+  text: ({ value, componentId, field, propPath, isReadOnly }) => {
     if (field.contentEditable) {
       return (
         <InlineTextField
@@ -44,9 +42,7 @@ export const getInlineTextTransform = (): FieldTransforms => ({
 
     return value;
   },
-  textarea: ({ value, componentId, field: _field, propPath, isReadOnly }) => {
-    const field = _field as TextField;
-
+  textarea: ({ value, componentId, field, propPath, isReadOnly }) => {
     if (field.contentEditable) {
       return (
         <InlineTextField
