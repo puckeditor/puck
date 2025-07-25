@@ -3,27 +3,31 @@
 import { memo, useEffect, useRef } from "react";
 import { registerOverlayPortal } from "../../lib/overlay-portal";
 import { useAppStoreApi } from "../../store";
-import { ComponentData } from "../../types";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../lib";
 
 const getClassName = getClassNameFactory("InlineTextField", styles);
 
-const setDeep = (node: ComponentData, path: string, newVal: any) => {
+function setDeep<T extends Record<string, any>>(
+  node: T,
+  path: string,
+  newVal: any
+): T {
   const parts = path.split(".");
-  const newProps = { ...node.props };
+  const newNode = { ...node };
 
-  let cur = newProps;
+  let cur: Record<string, any> = newNode;
 
   for (let i = 0; i < parts.length; i++) {
     // Separate the “prop” piece and an optional “[index]” part.
     const [prop, idxStr] = parts[i].replace("]", "").split("[");
     const isLast = i === parts.length - 1;
 
-    // --- Handle the *array* form (prop[index]) ----------------------------
     if (idxStr !== undefined) {
-      // Ensure the property exists and is an array.
-      if (!Array.isArray(cur[prop])) cur[prop] = [];
+      if (!Array.isArray(cur[prop])) {
+        cur[prop] = [];
+      }
+
       const idx = Number(idxStr);
 
       if (isLast) {
@@ -34,23 +38,26 @@ const setDeep = (node: ComponentData, path: string, newVal: any) => {
 
       // Ensure the next level container exists.
       if (cur[prop][idx] === undefined) cur[prop][idx] = {};
+
       cur = cur[prop][idx];
+
       continue;
     }
 
-    // --- Handle the plain “prop” form -------------------------------------
     if (isLast) {
       cur[prop] = newVal;
       continue;
     }
 
-    // Ensure the next level container exists.
-    if (cur[prop] === undefined) cur[prop] = {};
+    if (cur[prop] === undefined) {
+      cur[prop] = {};
+    }
+
     cur = cur[prop];
   }
 
-  return { ...node, props: newProps };
-};
+  return { ...node, ...newNode };
+}
 
 const InlineTextFieldInternal = ({
   propPath,
@@ -97,10 +104,10 @@ const InlineTextFieldInternal = ({
             componentId
           );
 
-        const newData = setDeep(node.data, propPath, e.target.innerText);
+        const newProps = setDeep(node.data.props, propPath, e.target.innerText);
 
         const resolvedData = await appStore.resolveComponentData(
-          newData,
+          { ...node.data, props: newProps },
           "replace"
         );
 
