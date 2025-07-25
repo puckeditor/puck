@@ -56,11 +56,13 @@ const InlineTextFieldInternal = ({
   propPath,
   componentId,
   value,
+  isReadOnly,
   opts = {},
 }: {
   propPath: string;
   value: string;
   componentId: string;
+  isReadOnly: boolean;
   opts?: { disableLineBreaks?: boolean };
 }) => {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -135,7 +137,7 @@ const InlineTextFieldInternal = ({
         e.stopPropagation();
       }}
       onKeyDown={(e) => {
-        if (disableLineBreaks && e.key === "Enter") {
+        if ((disableLineBreaks && e.key === "Enter") || isReadOnly) {
           e.preventDefault();
         }
       }}
