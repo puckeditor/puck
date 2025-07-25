@@ -19,7 +19,7 @@ export function useFieldTransforms<T extends ComponentData | RootData>(
 
       return {
         ...acc,
-        [fieldType]: (params: MapFnParams) => {
+        [fieldType]: ({ parentId, ...params }: MapFnParams) => {
           const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
           const isReadOnly =
             readOnly?.[params.propPath] ||
@@ -27,7 +27,11 @@ export function useFieldTransforms<T extends ComponentData | RootData>(
             forceReadOnly ||
             false;
 
-          return transforms[fieldType]?.({ ...params, isReadOnly });
+          return transforms[fieldType]?.({
+            ...params,
+            isReadOnly,
+            componentId: parentId,
+          });
         },
       };
     }, {});

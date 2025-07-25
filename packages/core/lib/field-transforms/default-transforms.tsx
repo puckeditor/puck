@@ -27,14 +27,14 @@ export const getSlotTransform = (
 });
 
 export const getInlineTextTransform = (): FieldTransforms => ({
-  text: ({ value, parentId, field: _field, propPath, isReadOnly }) => {
+  text: ({ value, componentId, field: _field, propPath, isReadOnly }) => {
     const field = _field as TextField;
 
     if (field.contentEditable) {
       return (
         <InlineTextField
           propPath={propPath}
-          componentId={parentId}
+          componentId={componentId}
           value={value}
           opts={{ disableLineBreaks: true }}
         />
@@ -43,14 +43,14 @@ export const getInlineTextTransform = (): FieldTransforms => ({
 
     return value;
   },
-  textarea: ({ value, parentId, field: _field, propPath, isReadOnly }) => {
+  textarea: ({ value, componentId, field: _field, propPath, isReadOnly }) => {
     const field = _field as TextField;
 
     if (field.contentEditable) {
       return (
         <InlineTextField
           propPath={propPath}
-          componentId={parentId}
+          componentId={componentId}
           value={value}
         />
       );
