@@ -162,7 +162,7 @@ const DropZoneChild = ({
 
         return (
           <DrawerItemInner name={label}>
-            {overrides.componentItem}
+            {overrides.componentItem ?? overrides.drawerItem}
           </DrawerItemInner>
         );
       },
