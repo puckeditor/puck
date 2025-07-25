@@ -5,7 +5,6 @@ import {
   Field,
   Fields,
   RootData,
-  SlotField,
 } from "../../types";
 import { defaultSlots } from "./default-slots";
 
