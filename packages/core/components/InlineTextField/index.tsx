@@ -111,7 +111,6 @@ const InlineTextFieldInternal = ({
       };
 
       ref.current.addEventListener("input", handleInput);
-      ref.current.addEventListener("keypress", handleInput);
 
       return () => {
         ref.current?.removeEventListener("input", handleInput);
