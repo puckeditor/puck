@@ -183,8 +183,10 @@ export const PuckPreview = ({
 };
 
 const ConfigPreviewInner = ({
+  children,
   componentConfig,
 }: {
+  children?: ReactNode;
   componentConfig: ComponentConfig;
 }) => {
   const appState = usePuck((s) => s.appState);
@@ -193,15 +195,16 @@ const ConfigPreviewInner = ({
     <div>
       {componentConfig.render && (
         <div className={getClassNamePreview("preview")}>
-          {componentConfig.render({
-            ...appState.data["content"][0]?.props,
-            puck: {
-              renderDropZone: () => <div />,
-              isEditing: false,
-              metadata: {},
-              dragRef: null,
-            },
-          })}
+          {children ??
+            componentConfig.render({
+              ...appState.data["content"][0]?.props,
+              puck: {
+                renderDropZone: () => <div />,
+                isEditing: false,
+                metadata: {},
+                dragRef: null,
+              },
+            })}
         </div>
       )}
     </div>
@@ -220,9 +223,11 @@ export const CodeBlockDrawer = ({
 };
 
 export const ConfigPreview = ({
+  children,
   componentConfig,
   label,
 }: {
+  children?: ReactNode;
   componentConfig: ComponentConfig;
   label: string;
 }) => {
@@ -247,6 +252,7 @@ export const ConfigPreview = ({
           <Puck.Fields />
         </div>
       )}
+      permissions={{ drag: false }}
       renderDrawer={() => (
         <CodeBlockDrawer
           getCode={(appState) => {
@@ -256,9 +262,12 @@ export const ConfigPreview = ({
           }}
         />
       )}
+      overrides={{ actionBar: () => null, componentOverlay: () => null }}
       style={{ padding: 0 }}
     >
-      <ConfigPreviewInner componentConfig={componentConfig} />
+      <ConfigPreviewInner componentConfig={componentConfig}>
+        {children}
+      </ConfigPreviewInner>
     </PuckPreview>
   );
 };
