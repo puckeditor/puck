@@ -96,7 +96,7 @@ export const Canvas = () => {
       isResettingRef: isResettingZoomRef,
       setShowTransition,
       showTransition: false,
-      viewports: viewports
+      viewports: viewports,
     });
   }, [
     frameRef,
@@ -127,7 +127,7 @@ export const Canvas = () => {
         isResettingRef: isResettingZoomRef,
         setShowTransition,
         showTransition: true,
-        viewports: viewports
+        viewports: viewports,
       });
     }
   }, [viewports.current.width, resetAutoZoom, viewports]);
@@ -138,7 +138,7 @@ export const Canvas = () => {
       resetAutoZoom({
         isResettingRef: isResettingZoomRef,
         setShowTransition,
-        showTransition: false
+        showTransition: false,
       });
     };
 
@@ -194,11 +194,11 @@ export const Canvas = () => {
 
               if (ZOOM_ON_CHANGE) {
                 resetAutoZoom({
-                isResettingRef: isResettingZoomRef,
-                setShowTransition,
-                showTransition: true,
-                viewports: { ...viewports, current: uiViewport }
-              });
+                  isResettingRef: isResettingZoomRef,
+                  setShowTransition,
+                  showTransition: true,
+                  viewports: { ...viewports, current: uiViewport },
+                });
               }
             }}
             onZoom={(zoom) => {
@@ -225,7 +225,7 @@ export const Canvas = () => {
           id="puck-canvas-root"
           onTransitionEnd={() => {
             resetAutoZoom({
-              isResettingRef: isResettingZoomRef
+              isResettingRef: isResettingZoomRef,
             });
           }}
         >
