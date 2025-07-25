@@ -126,8 +126,14 @@ const InlineTextFieldInternal = ({
       ref={ref}
       contentEditable="plaintext-only"
       style={{ cursor: "text" }}
-      onClick={(e) => e.stopPropagation()}
-      onClickCapture={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onClickCapture={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
       onKeyDown={(e) => {
         if (disableLineBreaks && e.key === "Enter") {
           e.preventDefault();
