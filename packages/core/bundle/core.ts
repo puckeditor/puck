@@ -21,6 +21,7 @@ export * from "../lib/migrate";
 export * from "../lib/transform-props";
 export { registerOverlayPortal } from "../lib/overlay-portal";
 export * from "../lib/resolve-all-data";
+export { setDeep } from "../lib/data/set-deep";
 export { walkTree } from "../lib/data/walk-tree";
 export {
   createUsePuck,
