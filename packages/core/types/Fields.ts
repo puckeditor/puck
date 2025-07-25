@@ -121,6 +121,7 @@ export type CustomFieldRender<Value extends any> = (props: {
 export type CustomField<Value extends any> = BaseField & {
   type: "custom";
   render: CustomFieldRender<Value>;
+  contentEditable?: boolean;
 };
 
 export type SlotField = BaseField & {
