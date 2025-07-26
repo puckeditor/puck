@@ -42,6 +42,9 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           iframe={{
             enabled: params.get("disableIframe") === "true" ? false : true,
           }}
+          fieldTransforms={{
+            userField: ({ value }) => value, // Included to check types
+          }}
           overrides={{
             fieldTypes: {
               // Example of user field provided via overrides

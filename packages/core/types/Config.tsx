@@ -2,7 +2,13 @@ import type { JSX, ReactNode } from "react";
 import { Fields } from "./Fields";
 import { ComponentData, Metadata, RootData } from "./Data";
 
-import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
+import {
+  AsFieldProps,
+  TypeExtensions,
+  WithChildren,
+  WithId,
+  WithPuckProps,
+} from "./Utils";
 import { AppState } from "./AppState";
 import { DefaultComponentProps } from "./Props";
 import { Permissions } from "./API";
@@ -26,10 +32,6 @@ type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   "props"
 > & {
   props?: Partial<Props>;
-};
-
-type TypeExtensions = {
-  Field?: { type: string };
 };
 
 type ComponentConfigInternal<

@@ -5,6 +5,7 @@ import { AppState } from "./../AppState";
 import { ComponentDataOptionalId, Content, Data } from "./../Data";
 import { Overrides } from "./Overrides";
 import { FieldTransforms } from "./FieldTransforms";
+import { ConfigWithExtensions } from "../Config";
 
 export type Permissions = {
   drag: boolean;
@@ -25,9 +26,11 @@ export type OnAction<UserData extends Data = Data> = (
   prevAppState: AppState<UserData>
 ) => void;
 
-export type Plugin = {
-  overrides?: Partial<Overrides>;
-  fieldTransforms?: FieldTransforms;
+export type Plugin<
+  UserConfig extends ConfigWithExtensions = ConfigWithExtensions
+> = {
+  overrides?: Partial<Overrides<UserConfig>>;
+  fieldTransforms?: FieldTransforms<UserConfig>;
 };
 
 export type History<D = any> = {

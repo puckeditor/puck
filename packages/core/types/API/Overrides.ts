@@ -1,6 +1,8 @@
 import { ReactElement, ReactNode } from "react";
 import { Field, FieldProps } from "../Fields";
 import { ItemSelector } from "../../lib/data/get-item";
+import { TypeExtensions, UserGenerics } from "../Utils";
+import { ConfigWithExtensions } from "../Config";
 
 // Plugins can use `usePuck` instead of relying on props
 type RenderFunc<
@@ -25,8 +27,10 @@ export type OverrideKey = (typeof overrideKeys)[number];
 
 type OverridesGeneric<Shape extends { [key in OverrideKey]: any }> = Shape;
 
-export type Overrides = OverridesGeneric<{
-  fieldTypes: Partial<FieldRenderFunctions>;
+export type Overrides<
+  UserConfig extends ConfigWithExtensions = ConfigWithExtensions
+> = OverridesGeneric<{
+  fieldTypes: Partial<FieldRenderFunctions<UserConfig>>;
   header: RenderFunc<{ actions: ReactNode; children: ReactNode }>;
   actionBar: RenderFunc<{
     label?: string;
@@ -64,21 +68,17 @@ export type Overrides = OverridesGeneric<{
   puck: RenderFunc;
 }>;
 
-export type FieldRenderFunctions = Omit<
+export type FieldRenderFunctions<
+  UserConfig extends ConfigWithExtensions = ConfigWithExtensions,
+  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+> = Omit<
   {
-    [Type in Field["type"]]: React.FunctionComponent<
-      FieldProps<Extract<Field, { type: Type }>, any> & {
+    [Type in G["UserField"]["type"]]: React.FunctionComponent<
+      FieldProps<Extract<G["UserField"], { type: Type }>, any> & {
         children: ReactNode;
         name: string;
       }
     >;
   },
   "custom"
-> & {
-  [key: string]: React.FunctionComponent<
-    FieldProps<any> & {
-      children: ReactNode;
-      name: string;
-    }
-  >;
-};
+>;

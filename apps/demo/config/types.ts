@@ -1,4 +1,4 @@
-import { Config, ConfigWithExtensions, Data } from "@/core";
+import { ConfigWithExtensions, Data } from "@/core";
 import { ButtonProps } from "./blocks/Button";
 import { CardProps } from "./blocks/Card";
 import { GridProps } from "./blocks/Grid";

@@ -148,7 +148,7 @@ export type Fields<
   UserField extends {} = {}
 > = {
   [PropName in keyof Omit<ComponentProps, "editMode">]: UserField extends {
-    type: string;
+    type: PropertyKey;
   }
     ? Field<ComponentProps[PropName]> | UserField
     : Field<ComponentProps[PropName]>;
