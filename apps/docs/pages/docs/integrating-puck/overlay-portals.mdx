@@ -12,15 +12,19 @@ Overlay Portals enable you to disable the Puck overlay when hovering over specif
 Use the [`registerOverlayPortal` API](/docs/api-reference/functions/register-overlay-portal) to mark an element as a portal.
 
 ```tsx
-const ref = useRef<HTMLButtonElement>(null);
+import { registerOverlayPortal } from "@measured/puck";
 
-useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
+const Example = () => {
+  const ref = useRef<HTMLButtonElement>(null);
 
-return (
-  <button ref={ref} onClick={() => alert("Click")}>
-    Clickable
-  </button>
-);
+  useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
+
+  return (
+    <button ref={ref} onClick={() => alert("Click")}>
+      Clickable
+    </button>
+  );
+};
 ```
 
 <PuckPreview
