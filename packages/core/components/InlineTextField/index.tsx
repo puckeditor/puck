@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { registerOverlayPortal } from "../../lib/overlay-portal";
 import { useAppStoreApi } from "../../store";
 import styles from "./styles.module.css";
@@ -79,11 +79,17 @@ const InlineTextFieldInternal = ({
     }
   }, [appStoreApi, ref.current, value]);
 
+  // We disable contentEditable when not hovering or already focused,
+  // otherwise Safari focuses the element during drag. Related:
+  // https://bugs.webkit.org/show_bug.cgi?id=112854
+  const [isHovering, setIsHovering] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <span
       className={getClassName()}
       ref={ref}
-      contentEditable="plaintext-only"
+      contentEditable={isHovering || isFocused ? "plaintext-only" : "false"}
       style={{ cursor: "text" }}
       onClick={(e) => {
         e.preventDefault();
@@ -98,6 +104,10 @@ const InlineTextFieldInternal = ({
           e.preventDefault();
         }
       }}
+      onMouseOverCapture={() => setIsHovering(true)}
+      onMouseOutCapture={() => setIsHovering(false)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
     />
   );
 };
