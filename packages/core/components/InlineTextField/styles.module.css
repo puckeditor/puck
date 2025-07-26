@@ -1,3 +1,4 @@
 .InlineTextField {
+  cursor: text;
   display: inline-block;
 }
