@@ -278,7 +278,7 @@ export const OverlayPortalPreview = () => {
   useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
 
   return (
-    <span ref={ref}>
+    <span ref={ref} style={{ display: "inline-block" }}>
       <Button onClick={() => alert("Click")}>Clickable</Button>
     </span>
   );
