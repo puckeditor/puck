@@ -197,7 +197,7 @@ const DropZoneChild = ({
   const combinedFieldTransforms = useMemo(
     () => ({
       ...plugins.reduce<FieldTransforms>(
-        (acc, plugin) => ({ ...acc, ...plugin.transforms }),
+        (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
         {}
       ),
       ...userFieldTransforms,

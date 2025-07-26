@@ -27,7 +27,7 @@ export type OnAction<UserData extends Data = Data> = (
 
 export type Plugin = {
   overrides: Partial<Overrides>;
-  transforms?: FieldTransforms;
+  fieldTransforms?: FieldTransforms;
 };
 
 export type History<D = any> = {
