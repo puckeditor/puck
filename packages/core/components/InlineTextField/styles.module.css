@@ -2,3 +2,13 @@
   cursor: text;
   display: inline-block;
 }
+
+/* Safari fixes for https://bugs.webkit.org/show_bug.cgi?id=112854 */
+[data-dnd-dragging] .InlineTextField {
+  cursor: none;
+  caret-color: transparent;
+}
+
+[data-dnd-dragging] .InlineTextField::selection {
+  display: none;
+}
