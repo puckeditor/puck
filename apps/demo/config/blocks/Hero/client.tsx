@@ -80,7 +80,7 @@ export const Hero: ComponentConfig<HeroProps> = {
       max: 4,
       getItemSummary: (item) => item.label || "Button",
       arrayFields: {
-        label: { type: "text" },
+        label: { type: "text", contentEditable: true },
         href: { type: "text" },
         variant: {
           type: "select",

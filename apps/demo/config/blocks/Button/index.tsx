@@ -11,7 +11,11 @@ export type ButtonProps = {
 export const Button: ComponentConfig<ButtonProps> = {
   label: "Button",
   fields: {
-    label: { type: "text", placeholder: "Lorem ipsum..." },
+    label: {
+      type: "text",
+      placeholder: "Lorem ipsum...",
+      contentEditable: true,
+    },
     href: { type: "text" },
     variant: {
       type: "radio",
