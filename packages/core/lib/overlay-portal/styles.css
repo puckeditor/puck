@@ -4,7 +4,7 @@
 }
 
 [data-puck-overlay-portal]:hover {
-  outline: 2px var(--puck-color-azure-09) solid;
+  outline: 2px var(--puck-color-azure-09) dashed;
   outline-offset: 2px;
 }
 
