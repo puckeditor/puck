@@ -57,6 +57,7 @@
 }
 
 .PreviewFrame-codeblock pre {
+  white-space: break-spaces;
   height: 100%;
   padding: 24px;
 }

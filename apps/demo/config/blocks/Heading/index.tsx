@@ -37,6 +37,7 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
   fields: {
     text: {
       type: "textarea",
+      contentEditable: true,
     },
     size: {
       type: "select",

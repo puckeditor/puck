@@ -1,0 +1,53 @@
+---
+title: FieldTransforms
+---
+
+# FieldTransforms
+
+Transform the data for each [field type](/docs/api-reference/fields) before rendering in the editor.
+
+```tsx copy
+const fieldTransforms = {
+  text: ({ value }) => <p>{value}</p>,
+  // ...
+};
+```
+
+You can specify a custom render method for each known [field type](/docs/api-reference/fields), or introduce completely new ones.
+
+## Render Props
+
+| Prop                          | Example              | Type                                |
+| ----------------------------- | -------------------- | ----------------------------------- |
+| [`componentId`](#componentid) | `"Heading-12345"`    | string                              |
+| [`field`](#field)             | `{ type: "text" }`   | [Field](/docs/api-reference/fields) |
+| [`isReadOnly`](#isreadonly)   | `false`              | boolean                             |
+| [`propName`](#propname)       | `"title"`            | string                              |
+| [`propPath`](#proppath)       | `"obj.arr[2].title"` | string                              |
+| [`value`](#value)             | `"Value"`            | any                                 |
+
+### `componentId`
+
+The id of the component containing this prop
+
+### `field`
+
+The component's field definition for this prop.
+
+### `isReadOnly`
+
+Whether or not this field is currently set to read-only.
+
+### `propName`
+
+The name of this prop provided to the [component field](/docs/api-reference/configuration/component-config#fields) config.
+
+### `propPath`
+
+The path of this prop within the props object.
+
+Use in conjunction with the [`setDeep`](/docs/api-reference/functions/set-deep) utility to set data for a key deep within an object or array, normally [ComponentData](/docs/api-reference/data-model/component-data).
+
+### `value`
+
+The value of the prop.

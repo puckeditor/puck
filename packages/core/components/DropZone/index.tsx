@@ -43,6 +43,12 @@ import { renderContext } from "../Render";
 import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
+import { useFieldTransforms } from "../../lib/field-transforms/use-field-transforms";
+import {
+  getInlineTextTransform,
+  getSlotTransform,
+} from "../../lib/field-transforms/default-transforms";
+import { FieldTransforms } from "../../types/API/FieldTransforms";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -186,13 +192,29 @@ const DropZoneChild = ({
 
   const config = useAppStore((s) => s.config);
 
-  const defaultedPropsWithSlots = useSlots(
+  const plugins = useAppStore((s) => s.plugins);
+  const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
+  const combinedFieldTransforms = useMemo(
+    () => ({
+      ...plugins.reduce<FieldTransforms>(
+        (acc, plugin) => ({ ...acc, ...plugin.transforms }),
+        {}
+      ),
+      ...userFieldTransforms,
+    }),
+    [plugins, userFieldTransforms]
+  );
+
+  const transformedProps = useFieldTransforms(
     config,
     defaultedNode,
-    DropZoneEditPure,
-    (slotProps) => (
-      <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
-    ),
+    {
+      ...getSlotTransform(DropZoneEditPure, (slotProps) => (
+        <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
+      )),
+      ...getInlineTextTransform(),
+      ...combinedFieldTransforms,
+    },
     nodeReadOnly,
     isLoading
   );
@@ -234,16 +256,16 @@ const DropZoneChild = ({
         componentConfig?.inline && !isInserting ? (
           <>
             <Render
-              {...defaultedPropsWithSlots}
+              {...transformedProps}
               puck={{
-                ...defaultedPropsWithSlots.puck,
+                ...transformedProps.puck,
                 dragRef,
               }}
             />
           </>
         ) : (
           <div ref={dragRef}>
-            <Render {...defaultedPropsWithSlots} />
+            <Render {...transformedProps} />
           </div>
         )
       }

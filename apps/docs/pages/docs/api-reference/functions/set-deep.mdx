@@ -1,0 +1,57 @@
+---
+title: setDeep
+---
+
+# setDeep
+
+A convenience utility for setting the value of a key deep within an object.
+
+Useful when implementing [field transforms](/docs/api-reference/field-transforms).
+
+```tsx
+import { setDeep } from "@measured/puck";
+
+const newData = setDeep(
+  {
+    object: {
+      array: [{ key: "Hello, world" }],
+    },
+  },
+  "object.array[0].key",
+  "Goodbye, world"
+);
+
+console.log(newData);
+// {
+//   object: {
+//     array: [{ key: "Goodbye, world" }],
+//   },
+// }
+```
+
+## Args
+
+| Param             | Example                 | Type            |
+| ----------------- | ----------------------- | --------------- |
+| [`input`](#input) | `{}`                    | Object \| Array |
+| [`path`](#path)   | `"object.array[0].key"` | String          |
+| [`value`](#value) | `"Hello, world"`        | Any             |
+
+### `input`
+
+The input object or array that contains the key to be updated.
+
+### `path`
+
+A dot-notated path that describes a key deep within an object or array.
+
+Uses dot-notation and square brackets:
+
+- `.` deliminates sub-props in an [object field](/docs/api-reference/fields/object) (i.e. `a.b` represents `b` where `a` is `{b: "Value"}`)
+- `[*]` which donate an index in an [array field](/docs/api-reference/fields/array) where `*` is an integer (i.e. `a[0].b` represents `b` in the first item in array `a` with the value `[{b: "Value"}]`)
+
+Commonly provided by the [propPath parameter](/docs/api-reference/field-transforms#proppath) for field transforms.
+
+### `value`
+
+The value to set the key to.

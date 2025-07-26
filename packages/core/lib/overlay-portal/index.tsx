@@ -2,11 +2,11 @@ import "./styles.css";
 
 export const registerOverlayPortal = (
   el: HTMLElement | null | undefined,
-  opts: { disableDrag?: boolean } = {}
+  opts: { disableDrag?: boolean; disableDragOnFocus?: boolean } = {}
 ) => {
   if (!el) return;
 
-  const { disableDrag = true } = opts;
+  const { disableDrag = false, disableDragOnFocus = true } = opts;
 
   const stopPropagation = (e: MouseEvent) => {
     e.stopPropagation();
@@ -16,8 +16,24 @@ export const registerOverlayPortal = (
     capture: true,
   });
 
-  // Disables dnd PointerSensor
-  if (disableDrag) {
+  const onFocus = () => {
+    setTimeout(() => {
+      el.addEventListener("pointerdown", stopPropagation, {
+        capture: true,
+      });
+    }, 200);
+  };
+
+  const onBlur = () => {
+    el.removeEventListener("pointerdown", stopPropagation, {
+      capture: true,
+    });
+  };
+
+  if (disableDragOnFocus) {
+    el.addEventListener("focus", onFocus, { capture: true });
+    el.addEventListener("blur", onBlur, { capture: true });
+  } else if (disableDrag) {
     el.addEventListener("pointerdown", stopPropagation, {
       capture: true,
     });
@@ -30,7 +46,10 @@ export const registerOverlayPortal = (
       capture: true,
     });
 
-    if (disableDrag) {
+    if (disableDragOnFocus) {
+      el.removeEventListener("focus", onFocus, { capture: true });
+      el.removeEventListener("blur", onFocus, { capture: true });
+    } else if (disableDrag) {
       el.removeEventListener("pointerdown", stopPropagation, {
         capture: true,
       });

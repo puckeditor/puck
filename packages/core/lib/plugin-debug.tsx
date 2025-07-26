@@ -4,6 +4,7 @@ import { Plugin } from "../types";
 import { ActionBar } from "../components/ActionBar";
 import { IconButton } from "../components/IconButton";
 import { LogsIcon } from "lucide-react";
+import { useAppStore } from "../store";
 
 const usePuck = createUsePuck();
 
@@ -28,7 +29,7 @@ export const debugPlugin: Plugin = {
       );
     },
     headerActions: ({ children }) => {
-      const appState = usePuck((s) => s.appState);
+      const appState = useAppStore((s) => s.state);
 
       return (
         <>

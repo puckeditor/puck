@@ -31,13 +31,18 @@ The element to turn into a portal. Will do nothing if `null` or `undefined`.
 
 ### `opts`
 
-| Param         | Example | Type    | Status |
-| ------------- | ------- | ------- | ------ |
-| `disableDrag` | `false` | boolean | -      |
+| Param                | Example | Type    | Status |
+| -------------------- | ------- | ------- | ------ |
+| `disableDrag`        | `false` | boolean | -      |
+| `disableDragOnFocus` | `false` | boolean | -      |
 
 #### `opts.disableDrag`
 
-Disable triggering a drag of the parent component when this element is dragged. Defaults to `false`.
+Disable triggering a drag of the parent component when interacting with this element. Defaults to `false`.
+
+#### `opts.disableDragOnFocus`
+
+Disable triggering a drag of the parent component when interacting with this element once it is focused. Drag is disabled following a short delay after focusing. Defaults to `true`.
 
 ## Returns
 

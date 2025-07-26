@@ -1,4 +1,5 @@
-import { ConfigPreview } from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
 
 # Custom
 
@@ -63,10 +64,11 @@ const config = {
 
 ## Params
 
-| Param                       | Example                   | Type     | Status   |
-| --------------------------- | ------------------------- | -------- | -------- |
-| [`type`](#type)             | `type: "custom"`          | "custom" | Required |
-| [`render()`](#renderparams) | `render: () => <input />` | Function | Required |
+| Param                                 | Example                   | Type     | Status   |
+| ------------------------------------- | ------------------------- | -------- | -------- |
+| [`type`](#type)                       | `type: "custom"`          | "custom" | Required |
+| [`render()`](#renderparams)           | `render: () => <input />` | Function | Required |
+| [`contentEditable`](#contentEditable) | `contentEditable: true`   | Boolean  | -        |
 
 ## Required params
 
@@ -142,6 +144,67 @@ Set the value of the field and optionally update the [Puck UI state](/docs/api-r
 | ------- | ----------------------------- | ------------------------------------------------------ | -------- |
 | `value` | `"Hello, world"`              | Any                                                    | Required |
 | `ui`    | `{leftSideBarVisible: false}` | [UiState](/docs/api-reference/data-model/app-state#ui) |          |
+
+## Optional params
+
+### contentEditable
+
+Enable inline text editing for this field. Only works if the value is a string. Defaults to `false`.
+
+```tsx {7, 10} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        title: {
+          type: "custom",
+          contentEditable: true,
+          render: ({ name, onChange, value }) => (
+            <input
+              value={value} // Bind to value for 2-way binding
+              name={name}
+              onChange={(e) => onChange(e.currentTarget.value)}
+            />
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      title: {
+        type: "custom",
+        contentEditable: true,
+        render: ({ name, onChange, value }) => (
+          <input
+            value={value}
+            name={name}
+            onChange={(e) => onChange(e.currentTarget.value)}
+            style={{
+              background: "white",
+              border: "1px solid black",
+              padding: 4,
+            }}
+          />
+        ),
+      },
+    },
+    defaultProps: {
+      title: "Edit me inline",
+    },
+    render: ({ title }) => {
+      return <div>{title}</div>;
+    },
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
 
 ## Further reading
 

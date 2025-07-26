@@ -16,7 +16,10 @@ export type TextProps = WithLayout<{
 
 const TextInner: ComponentConfig<TextProps> = {
   fields: {
-    text: { type: "textarea" },
+    text: {
+      type: "textarea",
+      contentEditable: true,
+    },
     size: {
       type: "select",
       labelIcon: <ALargeSmall size={16} />,
