@@ -90,7 +90,6 @@ const InlineTextFieldInternal = ({
       className={getClassName()}
       ref={ref}
       contentEditable={isHovering || isFocused ? "plaintext-only" : "false"}
-      style={{ cursor: "text" }}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
