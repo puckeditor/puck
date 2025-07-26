@@ -17,6 +17,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
     },
   },
   "dispatch": [Function],
+  "fieldTransforms": {},
   "fields": {
     "fields": {
       "title": {
