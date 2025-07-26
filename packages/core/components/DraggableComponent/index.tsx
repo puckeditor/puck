@@ -14,7 +14,7 @@ import {
 import styles from "./styles.module.css";
 import "./styles.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Copy, CornerLeftUp, Trash } from "lucide-react";
+import { MoveDown, MoveUp, Copy, CornerLeftUp, Trash } from "lucide-react";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { Loader } from "../Loader";
 import { ActionBar } from "../ActionBar";
@@ -33,6 +33,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
+import { getZoneContentIds } from "../../lib/data/get-zone-items";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -48,16 +49,26 @@ const DefaultActionBar = ({
   label,
   children,
   parentAction,
+  moveUpAction,
+  moveDownAction,
 }: {
   label: string | undefined;
   children: ReactNode;
   parentAction: ReactNode;
+  moveUpAction: ReactNode;
+  moveDownAction: ReactNode;
 }) => (
   <ActionBar>
     <ActionBar.Group>
       {parentAction}
       {label && <ActionBar.Label label={label} />}
     </ActionBar.Group>
+    {Boolean(moveUpAction || moveDownAction) && (
+      <ActionBar.Group>
+        {moveUpAction}
+        {moveDownAction}
+      </ActionBar.Group>
+    )}
     <ActionBar.Group>{children}</ActionBar.Group>
   </ActionBar>
 );
@@ -152,6 +163,12 @@ export const DraggableComponent = ({
       });
     },
     [setLocalZones]
+  );
+
+  const isLast = useAppStore(
+    (s) =>
+      getZoneContentIds(zoneCompound, s.state)?.slice(-1)?.[0] === id ||
+      getZoneContentIds(zoneCompound, s.state)?.length === 0
   );
 
   const containsActiveZone =
@@ -394,6 +411,54 @@ export const DraggableComponent = ({
     });
   }, [ctx, path]);
 
+  const onMoveUp = useCallback(() => {
+    if (index === 0) {
+      return;
+    }
+
+    dispatch({
+      type: "move",
+      sourceIndex: index,
+      sourceZone: zoneCompound,
+      destinationIndex: index - 1,
+      destinationZone: zoneCompound,
+    });
+
+    dispatch({
+      type: "setUi",
+      ui: {
+        itemSelector: {
+          zone: zoneCompound,
+          index: index - 1,
+        },
+      },
+    });
+  }, [zoneCompound, index, id]);
+
+  const onMoveDown = useCallback(() => {
+    if (isLast) {
+      return;
+    }
+
+    dispatch({
+      type: "move",
+      sourceIndex: index,
+      sourceZone: zoneCompound,
+      destinationIndex: index + 1,
+      destinationZone: zoneCompound,
+    });
+
+    dispatch({
+      type: "setUi",
+      ui: {
+        itemSelector: {
+          zone: zoneCompound,
+          index: index + 1,
+        },
+      },
+    });
+  }, [zoneCompound, index, id, isLast]);
+
   const onDuplicate = useCallback(() => {
     dispatch({
       type: "duplicate",
@@ -574,6 +639,28 @@ export const DraggableComponent = ({
     [ctx?.areaId]
   );
 
+  const moveUpAction = useMemo(
+    () => (
+      <ActionBar.Action onClick={onMoveUp} label="Move Up" disabled={!index}>
+        <MoveUp size={16} />
+      </ActionBar.Action>
+    ),
+    [index]
+  );
+
+  const moveDownAction = useMemo(
+    () => (
+      <ActionBar.Action
+        onClick={onMoveDown}
+        label="Move Down"
+        disabled={isLast}
+      >
+        <MoveDown size={16} />
+      </ActionBar.Action>
+    ),
+    [index, isLast]
+  );
+
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
       ...ctx!,
@@ -634,6 +721,8 @@ export const DraggableComponent = ({
               >
                 <CustomActionBar
                   parentAction={parentAction}
+                  moveUpAction={permissions.drag && moveUpAction}
+                  moveDownAction={permissions.drag && moveDownAction}
                   label={DEBUG ? id : label}
                 >
                   {permissions.duplicate && (
