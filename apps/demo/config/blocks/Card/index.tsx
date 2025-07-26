@@ -34,8 +34,14 @@ export type CardProps = WithLayout<{
 
 const CardInner: ComponentConfig<CardProps> = {
   fields: {
-    title: { type: "text" },
-    description: { type: "textarea" },
+    title: {
+      type: "text",
+      contentEditable: true,
+    },
+    description: {
+      type: "textarea",
+      contentEditable: true,
+    },
     icon: {
       type: "select",
       options: iconOptions,
