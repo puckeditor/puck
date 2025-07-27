@@ -26,7 +26,7 @@ export type OnAction<UserData extends Data = Data> = (
 ) => void;
 
 export type Plugin = {
-  overrides: Partial<Overrides>;
+  overrides?: Partial<Overrides>;
   fieldTransforms?: FieldTransforms;
 };
 
