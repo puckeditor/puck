@@ -294,6 +294,19 @@ function PuckProvider<
     plugins: plugins,
   });
 
+  const loadedFieldTransforms = useMemo(() => {
+    const _plugins: Plugin[] = plugins || [];
+    const pluginFieldTransforms = _plugins.reduce<FieldTransforms>(
+      (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
+      {}
+    );
+
+    return {
+      ...pluginFieldTransforms,
+      ...fieldTransforms,
+    };
+  }, [fieldTransforms, plugins]);
+
   const generateAppStore = useCallback(
     (state?: PrivateAppState) => {
       return {
@@ -305,7 +318,7 @@ function PuckProvider<
         iframe,
         onAction,
         metadata,
-        fieldTransforms,
+        fieldTransforms: loadedFieldTransforms,
       };
     },
     [
@@ -317,7 +330,7 @@ function PuckProvider<
       iframe,
       onAction,
       metadata,
-      fieldTransforms,
+      loadedFieldTransforms,
     ]
   );
 

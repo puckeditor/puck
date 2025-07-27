@@ -33,6 +33,62 @@ export function Editor() {
 }
 ```
 
+## Overriding field types
+
+You can override all fields of certain type by specifying the [`fieldTypes` override](/docs/api-reference/overrides/field-types).
+
+```tsx showLineNumbers copy {8-18}
+import { Puck } from "@measured/puck";
+
+export function Editor() {
+  return (
+    <Puck
+      // ...
+      overrides={{
+        fieldTypes: {
+          // Override all text fields with a custom input
+          text: ({ name, onChange, value }) => (
+            <input
+              defaultValue={value}
+              name={name}
+              onChange={(e) => onChange(e.currentTarget.value)}
+              style={{ border: "1px solid black", padding: 4 }}
+            />
+          ),
+        },
+      }}
+    />
+  );
+}
+```
+
+## Introducing new field types
+
+Specify new field types to expose new fields to your components.
+
+```tsx showLineNumbers copy {9}
+import { Puck } from "@measured/puck";
+
+export function Editor() {
+  return (
+    <Puck
+      // ...
+      overrides={{
+        fieldTypes: {
+          myField: ({ name, onChange, value }) => <div />,
+        },
+      }}
+    />
+  );
+}
+```
+
+<Callout type="info">
+  <b>TypeScript consideration</b>: When introducing new field types with
+  TypeScript, you'll need to extend the available field types with the
+  `ConfigWithExtensions` type.
+</Callout>
+
 ## Examples
 
 ### Custom publish button
@@ -70,35 +126,6 @@ export function Editor() {
               {/*{children}*/}
             </>
           );
-        },
-      }}
-    />
-  );
-}
-```
-
-### Custom field type
-
-An advanced use case is overriding all fields of a certain type by specifying the [`fieldTypes` override](/docs/api-reference/overrides/field-types).
-
-```tsx showLineNumbers copy {8-18}
-import { Puck } from "@measured/puck";
-
-export function Editor() {
-  return (
-    <Puck
-      // ...
-      overrides={{
-        fieldTypes: {
-          // Override all text fields with a custom input
-          text: ({ name, onChange, value }) => (
-            <input
-              defaultValue={value}
-              name={name}
-              onChange={(e) => onChange(e.currentTarget.value)}
-              style={{ border: "1px solid black", padding: 4 }}
-            />
-          ),
         },
       }}
     />
