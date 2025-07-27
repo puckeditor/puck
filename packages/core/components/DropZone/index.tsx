@@ -196,6 +196,10 @@ const DropZoneChild = ({
   const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
   const combinedFieldTransforms = useMemo(
     () => ({
+      ...getSlotTransform(DropZoneEditPure, (slotProps) => (
+        <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
+      )),
+      ...getInlineTextTransform(),
       ...plugins.reduce<FieldTransforms>(
         (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
         {}
@@ -208,13 +212,7 @@ const DropZoneChild = ({
   const transformedProps = useFieldTransforms(
     config,
     defaultedNode,
-    {
-      ...getSlotTransform(DropZoneEditPure, (slotProps) => (
-        <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
-      )),
-      ...getInlineTextTransform(),
-      ...combinedFieldTransforms,
-    },
+    combinedFieldTransforms,
     nodeReadOnly,
     isLoading
   );
