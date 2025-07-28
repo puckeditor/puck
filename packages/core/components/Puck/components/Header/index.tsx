@@ -79,7 +79,7 @@ const HeaderInner = <
     }
 
     return DefaultOverride;
-  }, [renderHeader, renderHeaderActions]);
+  }, [renderHeaderActions]);
 
   const CustomHeader = useAppStore(
     (s) => s.overrides.header || defaultHeaderRender
