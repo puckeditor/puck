@@ -33,8 +33,6 @@
   z-index: 2;
 }
 
-/* Puck Layout */
-
 .PuckLayout-inner {
   --puck-frame-width: auto;
   --puck-side-bar-width: 0px;
