@@ -9,6 +9,7 @@
   background: var(--puck-color-grey-12);
   border-inline-end: 1px solid var(--puck-color-grey-09);
   grid-area: left;
+  padding: 16px;
 }
 
 .Sidebar--right {
