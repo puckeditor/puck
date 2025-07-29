@@ -20,6 +20,8 @@ import { useSidebarResize } from "../../../../lib/use-sidebar-resize";
 import { FrameProvider } from "../../../../lib/frame-context";
 import { Sidebar } from "../Sidebar";
 import { useDeleteHotkeys } from "../../../../lib/use-delete-hotkeys";
+import { Nav } from "../Nav";
+import { Hammer, Heading1, Layers } from "lucide-react";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -147,6 +149,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
   }
 
+  const [view, setView] = useState<"blocks" | "outline" | "headings">("blocks");
+
   return (
     <div className={`Puck ${getClassName()}`}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
@@ -165,6 +169,41 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                   style={layoutOptions}
                 >
                   <Header />
+                  <div className={getLayoutClassName("nav")}>
+                    <Nav
+                      slim
+                      navigation={{
+                        main: {
+                          items: {
+                            build: {
+                              label: "Blocks",
+                              icon: <Hammer />,
+                              onClick: () => {
+                                setView("blocks");
+                              },
+                              isActive: view === "blocks",
+                            },
+                            outline: {
+                              label: "Outline",
+                              icon: <Layers />,
+                              onClick: () => {
+                                setView("outline");
+                              },
+                              isActive: view === "outline",
+                            },
+                            headings: {
+                              label: "Headings",
+                              icon: <Heading1 />,
+                              onClick: () => {
+                                setView("headings");
+                              },
+                              isActive: view === "headings",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </div>
                   <Sidebar
                     position="left"
                     sidebarRef={leftSidebarRef}
@@ -172,12 +211,12 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                     onResize={setLeftWidth}
                     onResizeEnd={handleLeftSidebarResizeEnd}
                   >
-                    <SidebarSection title="Components" noBorderTop>
-                      <Components />
-                    </SidebarSection>
-                    <SidebarSection title="Outline">
-                      <Outline />
-                    </SidebarSection>
+                    {leftSideBarVisible && (
+                      <>
+                        {view === "blocks" && <Components />}
+                        {view === "outline" && <Outline />}
+                      </>
+                    )}
                   </Sidebar>
                   <Canvas />
                   <Sidebar
