@@ -1,0 +1,106 @@
+.Nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.NavSection {
+  padding: 16px;
+}
+
+.NavSection:first-of-type {
+  padding-top: 32px;
+}
+
+.Nav--slim .NavSection {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.Nav--slim .NavSection + .NavSection {
+  border-top: 1px solid var(--puck-color-grey-09);
+}
+
+.NavSection-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Nav--slim .NavSection-list {
+  gap: 16px;
+}
+
+.NavSection-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.Nav--slim .NavSection-title {
+  opacity: 0;
+}
+
+.NavItem-link {
+  align-items: center;
+  color: var(--puck-color-grey-03);
+  display: flex;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+
+  border-radius: 4px;
+  padding: 8px 4px;
+}
+
+.Nav--slim .NavItem-link {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-radius: 0;
+  flex-direction: column;
+  font-size: var(--puck-font-size-xxxs);
+}
+
+.NavItem-linkIcon {
+  height: 24px;
+  width: 24px;
+}
+
+.NavItem--active > .NavItem-link {
+  background-color: var(--puck-color-azure-10);
+  color: var(--puck-color-azure-04);
+  font-weight: 600;
+}
+
+.Nav--slim .NavItem--active > .NavItem-link {
+  background-color: transparent;
+  border-right-color: var(--puck-color-azure-04);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  font-weight: 600;
+}
+
+.NavItem:not(.NavItem--active) > .NavItem-link:hover {
+  background-color: var(--puck-color-azure-11);
+  color: var(--puck-color-azure-04);
+}
+
+.NavItem-list {
+  border-left: 1px solid var(--puck-color-grey-09);
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin-top: 8px;
+  margin-left: 4px;
+  padding: 0;
+  padding-left: 8px;
+}
+
+.Nav--slim .NavItem-list {
+  border-left: 0;
+  padding-left: 0;
+  margin-left: 0;
+}
