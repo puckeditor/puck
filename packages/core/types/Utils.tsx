@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
-import { Config, ConfigWithExtensions } from "./Config";
-import { PuckContext } from "./Props";
+import { Config } from "./Config";
+import { DefaultRootFieldProps, PuckContext } from "./Props";
 import { ComponentData, Data } from "./Data";
-import { PrivateAppState } from "./Internal";
+import { ExtractConfigParams, PrivateAppState } from "./Internal";
 import { AppState } from "./AppState";
 import { BaseField, Field } from "./Fields";
 
@@ -20,61 +20,30 @@ export type WithChildren<Props> = Props & {
   children: ReactNode;
 };
 
-export type ExtractPropsFromConfig<UserConfig> = UserConfig extends Config<
-  infer P,
-  any,
-  any
->
-  ? P
-  : never;
-
-export type ExtractRootPropsFromConfig<UserConfig> = UserConfig extends Config<
-  any,
-  infer P,
-  any
->
-  ? P
-  : never;
-
-export type ExtractTypeExtensions<UserConfig> =
-  UserConfig extends ConfigWithExtensions<infer P> ? P : never;
-
 export type UserGenerics<
-  UserConfig extends ConfigWithExtensions = ConfigWithExtensions,
-  UserProps extends ExtractPropsFromConfig<UserConfig> = ExtractPropsFromConfig<UserConfig>,
-  UserRootProps extends ExtractRootPropsFromConfig<UserConfig> = ExtractRootPropsFromConfig<UserConfig>,
-  UserData extends Data<UserProps, UserRootProps> | Data = Data<
-    UserProps,
-    UserRootProps
-  >,
+  UserConfig extends Config = Config,
+  UserParams extends ExtractConfigParams<UserConfig> = ExtractConfigParams<UserConfig>,
+  UserData extends
+    | Data<UserParams["props"], UserParams["rootProps"]>
+    | Data = Data<UserParams["props"], UserParams["rootProps"]>,
   UserAppState extends PrivateAppState<UserData> = PrivateAppState<UserData>,
   UserPublicAppState extends AppState<UserData> = AppState<UserData>,
-  UserComponentData extends ComponentData = UserData["content"][0],
-  UserTypeExtensions extends ExtractTypeExtensions<UserConfig> = ExtractTypeExtensions<UserConfig>,
-  UserField extends {
-    type: PropertyKey;
-  } = UserTypeExtensions["Field"] extends {
-    type: PropertyKey;
-  }
-    ? (UserTypeExtensions["Field"] & BaseField) | Field
-    : Field
+  UserComponentData extends ComponentData = UserData["content"][0]
 > = {
   UserConfig: UserConfig;
-  UserProps: UserProps;
-  UserRootProps: UserRootProps;
+  UserParams: UserParams;
+  UserProps: UserParams["props"];
+  UserRootProps: UserParams["rootProps"] & DefaultRootFieldProps;
   UserData: UserData;
   UserAppState: UserAppState;
   UserPublicAppState: UserPublicAppState;
   UserComponentData: UserComponentData;
-  UserTypeExtensions: UserTypeExtensions;
-  UserField: UserField;
+  UserField:
+    | (UserParams["fields"][keyof UserParams["fields"]] & BaseField)
+    | Field;
 };
 
 export type ExtractField<
   UserField extends { type: PropertyKey },
   T extends UserField["type"]
 > = Extract<UserField, { type: T }>;
-
-export type TypeExtensions = {
-  Field?: { type: string };
-};

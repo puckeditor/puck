@@ -45,19 +45,18 @@ export type RadioField = BaseField & {
   options: FieldOptions;
 };
 
-export type ArrayField<Props extends any = { [key: string]: any }> =
-  Props extends { [key: string]: any }
-    ? BaseField & {
-        type: "array";
-        arrayFields: {
-          [SubPropName in keyof Props[0]]: Field<Props[0][SubPropName]>;
-        };
-        defaultItemProps?: Props[0];
-        getItemSummary?: (item: Props[0], index?: number) => string;
-        max?: number;
-        min?: number;
-      }
-    : never;
+export type ArrayField<
+  Props extends { [key: string]: any } = { [key: string]: any }
+> = BaseField & {
+  type: "array";
+  arrayFields: {
+    [SubPropName in keyof Props[0]]: Field<Props[0][SubPropName]>;
+  };
+  defaultItemProps?: Props[0];
+  getItemSummary?: (item: Props[0], index?: number) => string;
+  max?: number;
+  min?: number;
+};
 
 export type ObjectField<Props extends any = { [key: string]: any }> =
   BaseField & {
@@ -136,7 +135,7 @@ export type Field<ValueType = any> =
   | TextareaField
   | SelectField
   | RadioField
-  | ArrayField<ValueType>
+  | ArrayField<ValueType extends { [key: string]: any } ? ValueType : {}>
   | ObjectField<ValueType>
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>

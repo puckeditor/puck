@@ -1,4 +1,4 @@
-import { ConfigWithExtensions, Data } from "@/core";
+import { Config, Data } from "@/core";
 import { ButtonProps } from "./blocks/Button";
 import { CardProps } from "./blocks/Card";
 import { GridProps } from "./blocks/Grid";
@@ -15,7 +15,7 @@ import { RootProps } from "./root";
 
 export type { RootProps } from "./root";
 
-export type Props = {
+export type Components = {
   Button: ButtonProps;
   Card: CardProps;
   Grid: GridProps;
@@ -29,19 +29,16 @@ export type Props = {
   Space: SpaceProps;
 };
 
-// Optional type extension for user-defined fields
-export type Extensions = {
-  Field: {
-    type: "userField";
-    option: boolean;
+export type UserConfig = Config<{
+  components: Components;
+  root: RootProps;
+  categories: ["layout", "typography", "interactive"];
+  fields: {
+    userField: {
+      type: "userField";
+      option: boolean;
+    };
   };
-};
+}>;
 
-export type UserConfig = ConfigWithExtensions<
-  Extensions,
-  Props,
-  RootProps,
-  "layout" | "typography" | "interactive"
->;
-
-export type UserData = Data<Props, RootProps>;
+export type UserData = Data<Components, RootProps>;

@@ -25,7 +25,6 @@ import type {
   Config,
   Data,
   Metadata,
-  ConfigWithExtensions,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -87,7 +86,7 @@ const FieldSideBar = () => {
 };
 
 type PuckProps<
-  UserConfig extends ConfigWithExtensions = ConfigWithExtensions,
+  UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 > = {
   children?: ReactNode;
@@ -137,7 +136,7 @@ export const usePropsContext = () =>
   useContext<PuckProps>(propsContext as Context<PuckProps>);
 
 function PuckProvider<
-  UserConfig extends ConfigWithExtensions = ConfigWithExtensions,
+  UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >({ children }: PropsWithChildren) {
   const {
@@ -396,7 +395,7 @@ function PuckProvider<
 }
 
 function PuckLayout<
-  UserConfig extends ConfigWithExtensions = ConfigWithExtensions,
+  UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >({ children }: PropsWithChildren) {
   const {
@@ -559,7 +558,7 @@ function PuckLayout<
 }
 
 export function Puck<
-  UserConfig extends ConfigWithExtensions = ConfigWithExtensions,
+  UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >(props: PuckProps<UserConfig>) {
   return (

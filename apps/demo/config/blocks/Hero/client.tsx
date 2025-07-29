@@ -1,13 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
-import { ComponentConfigWithExtensions } from "@/core/types";
+import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
 import { AutoField, FieldLabel } from "@/core";
 import { Link2 } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
-import { Extensions } from "../../types";
 
-export const Hero: ComponentConfigWithExtensions<Extensions, HeroProps> = {
+export const Hero: ComponentConfig<{
+  props: HeroProps;
+  fields: {
+    userField: {
+      type: "userField";
+      option: boolean;
+    };
+  };
+}> = {
   fields: {
     quote: {
       type: "external",

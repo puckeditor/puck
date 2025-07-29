@@ -1,7 +1,9 @@
 import { Slot } from "./API";
 import { AppState } from "./AppState";
+import { ComponentConfig, Config, DefaultComponents } from "./Config";
 import { ComponentData, Data } from "./Data";
-import { DefaultComponentProps } from "./Props";
+import { Field } from "./Fields";
+import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 
 export type ZoneType = "root" | "dropzone" | "slot";
 
@@ -28,8 +30,6 @@ export type PrivateAppState<UserData extends Data = Data> =
       zones: ZoneIndex;
     };
   };
-
-export type DefaultAllProps = Record<string, DefaultComponentProps>;
 
 type BuiltinTypes =
   | Date
@@ -59,3 +59,54 @@ export type WithDeepSlots<T, SlotType = T> =
     T extends object
     ? { [K in keyof T]: WithDeepSlots<T[K], SlotType> }
     : T;
+
+export type ConfigParams<
+  Components extends DefaultComponents = DefaultComponents,
+  RootProps extends DefaultComponentProps = any,
+  CategoryNames extends string[] = [],
+  UserFields extends FieldsExtension = {}
+> = {
+  components?: Components;
+  root?: RootProps;
+  categoryNames?: CategoryNames;
+  fields?: UserFields;
+};
+
+export type FieldsExtension = { [Type in string]: { type: Type } };
+
+export type ComponentConfigParams<
+  Props extends DefaultComponentProps = DefaultComponentProps,
+  UserField extends FieldsExtension = FieldsExtension
+> = {
+  props: Props;
+  fields?: UserField;
+};
+
+export type ExtractConfigParams<UserConfig extends Config> =
+  UserConfig extends Config<
+    infer PropsOrParams,
+    infer RootProps,
+    infer CategoryName
+  >
+    ? {
+        props: PropsOrParams extends ConfigParams<infer Props> ? Props : never;
+        rootProps: PropsOrParams extends ConfigParams<any, infer ParamRootProps>
+          ? ParamRootProps & DefaultRootFieldProps
+          : RootProps & DefaultRootFieldProps;
+        categoryNames: PropsOrParams extends ConfigParams<
+          any,
+          any,
+          infer ParamCategoryName
+        >
+          ? ParamCategoryName[keyof ParamCategoryName] // Convert to union
+          : CategoryName;
+        fields: PropsOrParams extends ConfigParams<
+          any,
+          any,
+          any,
+          infer ParamField
+        >
+          ? ParamField
+          : never;
+      }
+    : never;
