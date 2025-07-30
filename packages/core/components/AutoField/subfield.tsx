@@ -27,7 +27,8 @@ const SubFieldInternal = ({
     typeof index !== "undefined"
       ? `${localName}[${index}]`
       : localName ?? subName;
-  const localWildcardName = `${localName}[*]`;
+  const localWildcardName =
+    typeof index !== "undefined" ? `${localName}[*]` : localName;
   const localSubPath = `${localIndexName}.${subName}`;
   const localWildcardSubPath = `${localWildcardName}.${subName}`;
 
