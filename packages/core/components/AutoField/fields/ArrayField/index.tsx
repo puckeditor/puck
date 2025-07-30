@@ -17,84 +17,20 @@ import {
   ArrayField as ArrayFieldType,
   ArrayState,
   Content,
-  Field,
   ItemWithId,
 } from "../../../../types";
 import { useAppStore, useAppStoreApi } from "../../../../store";
 import { Sortable, SortableProvider } from "../../../Sortable";
-import { NestedFieldProvider, useNestedFieldContext } from "../../context";
+import { useNestedFieldContext } from "../../context";
 import { walkField } from "../../../../lib/data/map-fields";
 import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
 import { useShallow } from "zustand/react/shallow";
 import { getDeep } from "../../../../lib/data/get-deep";
+import { SubField } from "../../subfield";
 
 const getClassName = getClassNameFactory("ArrayField", styles);
 const getClassNameItem = getClassNameFactory("ArrayFieldItem", styles);
-
-const SubField = ({
-  field,
-  id,
-  subName,
-  subPath,
-  localIndexName,
-  localWildcardName,
-  localSubPath,
-  localWildcardSubPath,
-  onChange,
-}: {
-  id: string;
-  field: Field;
-  subName: string;
-  subPath: string;
-  localIndexName: string;
-  localWildcardName: string;
-  localSubPath: string;
-  localWildcardSubPath: string;
-  onChange: (val: any, ui: any, subName: string) => void;
-}) => {
-  const { readOnlyFields } = useNestedFieldContext();
-
-  const canEdit = useAppStore(
-    (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
-  );
-
-  const forceReadOnly = !canEdit;
-
-  const subReadOnly = forceReadOnly
-    ? forceReadOnly
-    : typeof readOnlyFields[subPath] !== "undefined"
-    ? readOnlyFields[localSubPath]
-    : readOnlyFields[localWildcardSubPath];
-
-  const label = field.label || subName;
-
-  return (
-    <NestedFieldProvider
-      key={subPath}
-      name={localIndexName}
-      wildcardName={localWildcardName}
-      subName={subName}
-      readOnlyFields={readOnlyFields}
-    >
-      <AutoFieldPrivate
-        name={subPath}
-        label={label}
-        id={id}
-        readOnly={subReadOnly}
-        field={{
-          ...field,
-          label, // May be used by custom fields
-        }}
-        onChange={(val, ui) => {
-          onChange(val, ui, subName);
-        }}
-      />
-    </NestedFieldProvider>
-  );
-};
-
-const SubFieldMemo = memo(SubField);
 
 const ArrayFieldItemInternal = ({
   id,
@@ -177,23 +113,15 @@ const ArrayFieldItemInternal = ({
               <fieldset className={getClassNameItem("fieldset")}>
                 {Object.keys(field.arrayFields!).map((subName) => {
                   const subField = field.arrayFields![subName];
-                  const indexName = `${name}[${index}]`;
-                  const subPath = `${indexName}.${subName}`;
-                  const localIndexName = `${localName}[${index}]`;
-                  const localWildcardName = `${localName}[*]`;
-                  const localSubPath = `${localIndexName}.${subName}`;
-                  const localWildcardSubPath = `${localWildcardName}.${subName}`;
 
                   return (
-                    <SubFieldMemo
+                    <SubField
                       key={subName}
                       id={`${id}_${subName}`}
+                      name={name}
                       subName={subName}
-                      subPath={subPath}
-                      localIndexName={localIndexName}
-                      localWildcardName={localWildcardName}
-                      localSubPath={localSubPath}
-                      localWildcardSubPath={localWildcardSubPath}
+                      localName={localName}
+                      index={index}
                       field={subField}
                       onChange={onChange}
                     />

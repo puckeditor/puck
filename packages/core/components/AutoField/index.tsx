@@ -308,7 +308,10 @@ export function AutoFieldPrivate<
 
   const onChangeLocal = useCallback(
     (val: any, ui?: Partial<UiState>) => {
-      if (props.field.type !== "array") {
+      // Exclude array and object fields as they handle rendering independently
+      const excludedFields = ["array", "object"];
+
+      if (!excludedFields.includes(props.field.type)) {
         setLocalValue(val);
       }
 
