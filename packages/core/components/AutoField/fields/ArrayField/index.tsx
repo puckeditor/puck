@@ -330,58 +330,63 @@ export const ArrayField = ({
                           </div>
                         </div>
                         <div className={getClassNameItem("body")}>
-                          <fieldset className={getClassNameItem("fieldset")}>
-                            {Object.keys(field.arrayFields!).map((subName) => {
-                              const subField = field.arrayFields![subName];
+                          {arrayState.openId === _arrayId && (
+                            <fieldset className={getClassNameItem("fieldset")}>
+                              {Object.keys(field.arrayFields!).map(
+                                (subName) => {
+                                  const subField = field.arrayFields![subName];
 
-                              const indexName = `${name}[${i}]`;
-                              const subPath = `${indexName}.${subName}`;
+                                  const indexName = `${name}[${i}]`;
+                                  const subPath = `${indexName}.${subName}`;
 
-                              const localIndexName = `${localName}[${i}]`;
-                              const localWildcardName = `${localName}[*]`;
-                              const localSubPath = `${localIndexName}.${subName}`;
-                              const localWildcardSubPath = `${localWildcardName}.${subName}`;
+                                  const localIndexName = `${localName}[${i}]`;
+                                  const localWildcardName = `${localName}[*]`;
+                                  const localSubPath = `${localIndexName}.${subName}`;
+                                  const localWildcardSubPath = `${localWildcardName}.${subName}`;
 
-                              const subReadOnly = forceReadOnly
-                                ? forceReadOnly
-                                : typeof readOnlyFields[subPath] !== "undefined"
-                                ? readOnlyFields[localSubPath]
-                                : readOnlyFields[localWildcardSubPath];
+                                  const subReadOnly = forceReadOnly
+                                    ? forceReadOnly
+                                    : typeof readOnlyFields[subPath] !==
+                                      "undefined"
+                                    ? readOnlyFields[localSubPath]
+                                    : readOnlyFields[localWildcardSubPath];
 
-                              const label = subField.label || subName;
+                                  const label = subField.label || subName;
 
-                              return (
-                                <NestedFieldProvider
-                                  key={subPath}
-                                  name={localIndexName}
-                                  wildcardName={localWildcardName}
-                                  subName={subName}
-                                  readOnlyFields={readOnlyFields}
-                                >
-                                  <AutoFieldPrivate
-                                    name={subPath}
-                                    label={label}
-                                    id={`${_arrayId}_${subName}`}
-                                    readOnly={subReadOnly}
-                                    field={{
-                                      ...subField,
-                                      label, // May be used by custom fields
-                                    }}
-                                    value={data[subName]}
-                                    onChange={(val, ui) => {
-                                      onChange(
-                                        replace(value, i, {
-                                          ...data,
-                                          [subName]: val,
-                                        }),
-                                        ui
-                                      );
-                                    }}
-                                  />
-                                </NestedFieldProvider>
-                              );
-                            })}
-                          </fieldset>
+                                  return (
+                                    <NestedFieldProvider
+                                      key={subPath}
+                                      name={localIndexName}
+                                      wildcardName={localWildcardName}
+                                      subName={subName}
+                                      readOnlyFields={readOnlyFields}
+                                    >
+                                      <AutoFieldPrivate
+                                        name={subPath}
+                                        label={label}
+                                        id={`${_arrayId}_${subName}`}
+                                        readOnly={subReadOnly}
+                                        field={{
+                                          ...subField,
+                                          label, // May be used by custom fields
+                                        }}
+                                        value={data[subName]}
+                                        onChange={(val, ui) => {
+                                          onChange(
+                                            replace(value, i, {
+                                              ...data,
+                                              [subName]: val,
+                                            }),
+                                            ui
+                                          );
+                                        }}
+                                      />
+                                    </NestedFieldProvider>
+                                  );
+                                }
+                              )}
+                            </fieldset>
+                          )}
                         </div>
                       </div>
                     )}
