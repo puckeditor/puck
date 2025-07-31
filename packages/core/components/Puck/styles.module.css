@@ -38,6 +38,15 @@
 .PuckLayout-inner {
   --puck-frame-width: auto;
   --puck-side-bar-width: 0px;
+  --puck-left-side-bar-width: var(
+    --puck-user-left-side-bar-width,
+    var(--puck-side-bar-width)
+  );
+  --puck-right-side-bar-width: var(
+    --puck-user-right-side-bar-width,
+    var(--puck-side-bar-width)
+  );
+
   display: grid;
   grid-template-areas: "header header header" "left editor right";
   grid-template-columns: 0 var(--puck-frame-width) 0;
@@ -53,21 +62,21 @@
 
 .PuckLayout--leftSideBarVisible .PuckLayout-inner {
   grid-template-columns:
-    var(--puck-side-bar-width) var(--puck-frame-width)
+    var(--puck-left-side-bar-width) var(--puck-frame-width)
     0;
 }
 
 .PuckLayout--rightSideBarVisible .PuckLayout-inner {
   grid-template-columns:
-    0 var(--puck-frame-width)
-    var(--puck-side-bar-width);
+    var(--puck-left-side-bar-width) var(--puck-frame-width)
+    var(--puck-right-side-bar-width);
 }
 
 .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
   .PuckLayout-inner {
   grid-template-columns:
-    var(--puck-side-bar-width) var(--puck-frame-width)
-    var(--puck-side-bar-width);
+    var(--puck-left-side-bar-width) var(--puck-frame-width)
+    var(--puck-right-side-bar-width);
 }
 
 @media (min-width: 458px) {

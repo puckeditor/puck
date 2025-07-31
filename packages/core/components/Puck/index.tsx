@@ -494,6 +494,16 @@ function PuckLayout<
 
   usePreviewModeHotkeys();
 
+  const layoutOptions: Record<string, any> = {};
+
+  if (leftWidth) {
+    layoutOptions["--puck-user-left-side-bar-width"] = `${leftWidth}px`;
+  }
+
+  if (rightWidth) {
+    layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
+  }
+
   return (
     <div className={`Puck ${getClassName()}`}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
@@ -509,32 +519,13 @@ function PuckLayout<
               >
                 <div
                   className={getLayoutClassName("inner")}
-                  style={{
-                    gridTemplateColumns: `
-                    ${
-                      leftSideBarVisible
-                        ? leftWidth
-                          ? `${leftWidth}px`
-                          : "var(--puck-side-bar-width)"
-                        : "0"
-                    } 
-                    var(--puck-frame-width) 
-                    ${
-                      rightSideBarVisible
-                        ? rightWidth
-                          ? `${rightWidth}px`
-                          : "var(--puck-side-bar-width)"
-                        : "0"
-                    }
-                  `,
-                  }}
+                  style={layoutOptions}
                 >
                   <Header />
                   <Sidebar
                     position="left"
                     sidebarRef={leftSidebarRef}
                     isVisible={leftSideBarVisible}
-                    width={leftWidth}
                     onResize={setLeftWidth}
                     onResizeEnd={handleLeftSidebarResizeEnd}
                   >
@@ -550,7 +541,6 @@ function PuckLayout<
                     position="right"
                     sidebarRef={rightSidebarRef}
                     isVisible={rightSideBarVisible}
-                    width={rightWidth}
                     onResize={setRightWidth}
                     onResizeEnd={handleRightSidebarResizeEnd}
                   >
