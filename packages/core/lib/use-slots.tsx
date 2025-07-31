@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { ComponentData, Config, Content, RootData } from "../types";
 import { DropZoneProps } from "../components/DropZone/types";
 import { useFieldTransforms } from "./field-transforms/use-field-transforms";
-import { getSlotTransform } from "./field-transforms/default-transforms";
+import { getSlotTransform } from "./field-transforms/default-transforms/slot-transform";
 
 export function useSlots<T extends ComponentData | RootData>(
   config: Config,
