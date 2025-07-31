@@ -516,7 +516,7 @@ function PuckLayout<
                         ? leftWidth
                           ? `${leftWidth}px`
                           : "var(--puck-side-bar-width)"
-                        : "0"
+                        : "auto"
                     } 
                     var(--puck-frame-width) 
                     ${
@@ -524,7 +524,7 @@ function PuckLayout<
                         ? rightWidth
                           ? `${rightWidth}px`
                           : "var(--puck-side-bar-width)"
-                        : "0"
+                        : "auto"
                     }
                   `,
                   }}
