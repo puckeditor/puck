@@ -67,7 +67,7 @@ const ArrayFieldItemInternal = ({
     return s.state.ui.arrayState[arrayId]?.openId === id;
   });
 
-  const itemSummary = useMemo(() => {
+  const itemSummary = useAppStore(() => {
     const data = getValue();
 
     if (data && field.getItemSummary) {
@@ -75,7 +75,7 @@ const ArrayFieldItemInternal = ({
     }
 
     return `Item #${originalIndex}`;
-  }, [getValue, field.getItemSummary, index]);
+  });
 
   // NB this will prevent array fields from being used outside of Puck
   const canEdit = useAppStore(
