@@ -20,6 +20,7 @@ import { useCanvasFrame } from "../../../../lib/frame-context";
 const getClassName = getClassNameFactory("PuckCanvas", styles);
 
 const ZOOM_ON_CHANGE = true;
+const TRANSITION_DURATION = 150;
 
 export const Canvas = () => {
   const { frameRef } = useCanvasFrame();
@@ -61,7 +62,7 @@ export const Canvas = () => {
   );
 
   const [showTransition, setShowTransition] = useState(false);
-  const isResettingZoomRef = useRef(false);
+  const isResizingRef = useRef(false);
 
   const defaultRender = useMemo<
     React.FunctionComponent<{ children?: ReactNode }>
@@ -92,19 +93,13 @@ export const Canvas = () => {
 
   // Auto zoom
   useEffect(() => {
-    resetAutoZoom({
-      isResettingRef: isResettingZoomRef,
-      setShowTransition,
-      showTransition: false,
-      viewports: viewports,
-    });
+    resetAutoZoom();
   }, [
     frameRef,
     leftSideBarVisible,
     rightSideBarVisible,
     leftSideBarWidth,
     rightSideBarWidth,
-    resetAutoZoom,
     viewports,
   ]);
 
@@ -123,31 +118,26 @@ export const Canvas = () => {
   // Zoom whenever state changes, even if external driver
   useEffect(() => {
     if (ZOOM_ON_CHANGE) {
-      resetAutoZoom({
-        isResettingRef: isResettingZoomRef,
-        setShowTransition,
-        showTransition: true,
-        viewports: viewports,
-      });
+      resetAutoZoom();
     }
-  }, [viewports.current.width, resetAutoZoom, viewports]);
+  }, [viewports.current.width, viewports]);
 
-  // Resize based on window size
+  // Resize based on frame size
   useEffect(() => {
-    const cb = () => {
-      resetAutoZoom({
-        isResettingRef: isResettingZoomRef,
-        setShowTransition,
-        showTransition: false,
-      });
-    };
+    if (!frameRef.current) return;
 
-    window.addEventListener("resize", cb);
+    const resizeObserver = new ResizeObserver(() => {
+      if (!isResizingRef.current) {
+        resetAutoZoom();
+      }
+    });
+
+    resizeObserver.observe(frameRef.current);
 
     return () => {
-      window.removeEventListener("resize", cb);
+      resizeObserver.disconnect();
     };
-  }, [resetAutoZoom]);
+  }, [frameRef.current]);
 
   const [showLoader, setShowLoader] = useState(false);
 
@@ -185,6 +175,7 @@ export const Canvas = () => {
             zoom={zoomConfig.zoom}
             onViewportChange={(viewport) => {
               setShowTransition(true);
+              isResizingRef.current = true;
 
               const uiViewport = {
                 ...viewport,
@@ -201,15 +192,13 @@ export const Canvas = () => {
 
               if (ZOOM_ON_CHANGE) {
                 resetAutoZoom({
-                  isResettingRef: isResettingZoomRef,
-                  setShowTransition,
-                  showTransition: true,
                   viewports: { ...viewports, current: uiViewport },
                 });
               }
             }}
             onZoom={(zoom) => {
               setShowTransition(true);
+              isResizingRef.current = true;
 
               setZoomConfig({ ...zoomConfig, zoom });
             }}
@@ -224,16 +213,15 @@ export const Canvas = () => {
             height: zoomConfig.rootHeight,
             transform: iframe.enabled ? `scale(${zoomConfig.zoom})` : undefined,
             transition: showTransition
-              ? "width 150ms ease-out, height 150ms ease-out, transform 150ms ease-out"
+              ? `width ${TRANSITION_DURATION}ms ease-out, height ${TRANSITION_DURATION}ms ease-out, transform ${TRANSITION_DURATION}ms ease-out`
               : "",
             overflow: iframe.enabled ? undefined : "auto",
           }}
           suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
           id="puck-canvas-root"
           onTransitionEnd={() => {
-            resetAutoZoom({
-              isResettingRef: isResettingZoomRef,
-            });
+            setShowTransition(false);
+            isResizingRef.current = false;
           }}
         >
           <CustomPreview>

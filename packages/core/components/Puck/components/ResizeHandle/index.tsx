@@ -65,7 +65,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
     onResizeEnd(finalWidth);
 
     resetAutoZoom();
-  }, [onResizeEnd, resetAutoZoom]);
+  }, [onResizeEnd]);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {

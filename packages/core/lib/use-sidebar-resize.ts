@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppStore } from "../store";
 import { PuckAction } from "../reducer";
-import { UiState } from "../types";
 
 /**
  * Custom hook for managing sidebar resize functionality
@@ -30,14 +29,14 @@ export function useSidebarResize(
         if (savedWidths) {
           const widths = JSON.parse(savedWidths);
           const savedWidth = widths[position];
+          const key =
+            position === "left" ? "leftSideBarWidth" : "rightSideBarWidth";
 
           if (savedWidth) {
             dispatch({
               type: "setUi",
               ui: {
-                [position === "left"
-                  ? "leftSideBarWidth"
-                  : "rightSideBarWidth"]: savedWidth,
+                [key]: savedWidth,
               },
             });
           }
