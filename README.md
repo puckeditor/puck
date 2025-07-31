@@ -11,13 +11,13 @@
 
 _The visual editor for React_
 
-[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=top_links&utm_campaign=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=top_links&utm_campaign=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md?utm_source=readme&utm_medium=top_links&utm_campaign=contributing_link)
+[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=top_links&utm_campaign=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=top_links&utm_campaign=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
 
-⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck?utm_source=readme&utm_medium=star_cta&utm_campaign=github_link)!
+⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
 
 <br />
 
-[![GIF showing a page being created in the Puck Editor, with components being added, arranged, and customized in real time](https://github.com/user-attachments/assets/25e1ae25-ca5e-450f-afa0-01816830b731)](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=puck_demo&utm_campaign=demo_link)
+[![GIF showing a page being created in the Puck Editor, with components being added, arranged, and customized in real time](https://github.com/user-attachments/assets/25e1ae25-ca5e-450f-afa0-01816830b731)](https://demo.puckeditor.com/edit)
 
 </div>
 
@@ -27,7 +27,7 @@ Puck is a modular, open-source visual editor for React.js. You can use Puck to b
 
 Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there’s no vendor lock-in.
 
-Puck is also [licensed under MIT](https://github.com/puckeditor/puck?utm_source=readme&utm_medium=what_is_puck&utm_campaign=license_link&tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
+Puck is also [licensed under MIT](https://github.com/puckeditor/puck?&tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
 
 ## Quick start
 
@@ -86,7 +86,7 @@ export function Page() {
 
 ## Recipes
 
-Use `create-puck-app` to quickly spin up a a pre-configured app based on our provided [recipes](https://github.com/puckeditor/puck/tree/main/recipes?utm_source=readme&utm_medium=recipes&utm_campaign=recipes_list_link):
+Use `create-puck-app` to quickly spin up a a pre-configured app based on our provided [recipes](https://github.com/puckeditor/puck/tree/main/recipes):
 
 ```sh
 npx create-puck-app my-app
@@ -94,21 +94,21 @@ npx create-puck-app my-app
 
 Available recipes include:
 
-- [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next?utm_source=readme&utm_medium=recipes&utm_campaign=next_link): Next.js example, using App Router and static page generation
-- [**remix**](https://github.com/puckeditor/puck/tree/main/recipes/remix?utm_source=readme&utm_medium=recipes&utm_campaign=remix_link): Remix Run v2 example, using dynamic routes at root-level
-- [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router?utm_source=readme&utm_medium=recipes&utm_campaign=react_router_link): React Router v7 app example, using dynamic routes to create pages at any level
+- [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
+- [**remix**](https://github.com/puckeditor/puck/tree/main/recipes/remix): Remix Run v2 example, using dynamic routes at root-level
+- [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
 
 ## Community
 
 - [Discord server](https://discord.gg/D9e4E3MQVZ) for discussions
-- [awesome-puck](https://github.com/puckeditor/awesome-puck?utm_source=readme&utm_medium=community&utm_campaign=awesome_puck_link) community repo for plugins, custom fields & more
+- [awesome-puck](https://github.com/puckeditor/awesome-puck) community repo for plugins, custom fields & more
 
 ## Get support
 
-If you have any questions about Puck, please open a [GitHub issue](https://github.com/puckeditor/puck/issues?utm_source=readme&utm_medium=get_support&utm_campaign=issue_link) or join us on [Discord](https://discord.gg/D9e4E3MQVZ).
+If you have any questions about Puck, please open a [GitHub issue](https://github.com/puckeditor/puck/issues) or join us on [Discord](https://discord.gg/D9e4E3MQVZ).
 
 Or [book a discovery call](https://app.cal.com/chrisvxd/puck-enquiry/) for hands-on support and consultancy.
 
 ## License
 
-MIT © [The Puck Contributors](https://github.com/puckeditor/puck/graphs/contributors?utm_source=readme&utm_medium=license&utm_campaign=contributors_link)
+MIT © [The Puck Contributors](https://github.com/puckeditor/puck/graphs/contributors)
