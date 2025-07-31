@@ -9,7 +9,6 @@ import {
   ReactNode,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -26,7 +25,6 @@ import { useNestedFieldContext } from "../../context";
 import { walkField } from "../../../../lib/data/map-fields";
 import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
-import { useShallow } from "zustand/react/shallow";
 import { getDeep } from "../../../../lib/data/get-deep";
 import { SubField } from "../../subfield";
 
@@ -411,7 +409,7 @@ export const ArrayField = ({
                     localName={localName}
                     getValue={() => {
                       const value = getValue();
-                      return value[index];
+                      return value[_currentIndex];
                     }}
                     onChange={(val, ui, subName) => {
                       const value = getValue();
