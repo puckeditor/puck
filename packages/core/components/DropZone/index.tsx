@@ -44,10 +44,8 @@ import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransforms } from "../../lib/field-transforms/use-field-transforms";
-import {
-  getInlineTextTransform,
-  getSlotTransform,
-} from "../../lib/field-transforms/default-transforms";
+import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
+import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 
 const getClassName = getClassNameFactory("DropZone", styles);
