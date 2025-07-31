@@ -128,12 +128,6 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     [overrides]
   );
 
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const ready = useAppStore((s) => s.status === "READY");
 
   useMonitorHotkeys();
@@ -199,7 +193,6 @@ export const Layout = ({ children }: { children: ReactNode }) => {
               <div
                 className={getLayoutClassName({
                   leftSideBarVisible,
-                  mounted,
                   rightSideBarVisible,
                 })}
               >
