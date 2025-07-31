@@ -1,7 +1,7 @@
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 import { Copy, List, Plus, Trash } from "lucide-react";
-import { AutoFieldPrivate, FieldPropsInternal } from "../..";
+import { FieldPropsInternal } from "../..";
 import { IconButton } from "../../../IconButton";
 import { reorder, replace } from "../../../../lib";
 import {
@@ -9,6 +9,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -45,6 +46,7 @@ const ArrayFieldItemInternal = ({
   actions,
   name,
   localName,
+  getValue,
 }: {
   id: string;
   arrayId: string;
@@ -58,21 +60,26 @@ const ArrayFieldItemInternal = ({
   actions: ReactNode;
   name?: string;
   localName?: string;
+  getValue: () => any;
 }) => {
+  // NB this will prevent array fields from being used outside of Puck
   const isExpanded = useAppStore((s) => {
     return s.state.ui.arrayState[arrayId]?.openId === id;
   });
 
-  const itemSummary = useAppStore(
-    useShallow((s) => {
-      const data = name ? s.selectedItem?.props[name] : null;
+  const itemSummary = useMemo(() => {
+    const data = getValue();
 
-      if (data && data[index] && field.getItemSummary) {
-        return field.getItemSummary(data[index], index);
-      }
+    if (data && field.getItemSummary) {
+      return field.getItemSummary(data, index);
+    }
 
-      return `Item #${originalIndex}`;
-    })
+    return `Item #${originalIndex}`;
+  }, [getValue, field.getItemSummary, index]);
+
+  // NB this will prevent array fields from being used outside of Puck
+  const canEdit = useAppStore(
+    (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
   );
 
   return (
@@ -124,6 +131,7 @@ const ArrayFieldItemInternal = ({
                       index={index}
                       field={subField}
                       onChange={onChange}
+                      forceReadOnly={!canEdit}
                     />
                   );
                 })}
@@ -147,18 +155,20 @@ export const ArrayField = ({
   readOnly,
   id,
   Label = (props) => <div {...props} />,
+  value,
 }: FieldPropsInternal) => {
   const setUi = useAppStore((s) => s.setUi);
   const appStoreApi = useAppStoreApi();
   const { localName = name } = useNestedFieldContext();
 
   const getValue = useCallback(() => {
+    if (typeof value !== "undefined") return value;
+
     const { selectedItem } = appStoreApi.getState();
     const props = (name ? selectedItem?.props : {}) ?? {};
-    const value = name ? getDeep(props, name) : [];
 
-    return value;
-  }, [appStoreApi, name]);
+    return name ? getDeep(props, name) : [];
+  }, [appStoreApi, name, value]);
 
   const getArrayState = useCallback(() => {
     const { state } = appStoreApi.getState();
@@ -399,6 +409,10 @@ export const ArrayField = ({
                     field={field}
                     name={name}
                     localName={localName}
+                    getValue={() => {
+                      const value = getValue();
+                      return value[index];
+                    }}
                     onChange={(val, ui, subName) => {
                       const value = getValue();
 

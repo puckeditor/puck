@@ -3,9 +3,10 @@ import styles from "./styles.module.css";
 import { MoreVertical } from "lucide-react";
 import { FieldPropsInternal } from "../..";
 import { useNestedFieldContext } from "../../context";
-import { useAppStoreApi } from "../../../../store";
+import { useAppStore, useAppStoreApi } from "../../../../store";
 import { getDeep } from "../../../../lib/data/get-deep";
 import { SubField } from "../../subfield";
+import { useCallback } from "react";
 
 const getClassName = getClassNameFactory("ObjectField", styles);
 
@@ -18,10 +19,24 @@ export const ObjectField = ({
   Label,
   readOnly,
   id,
+  value,
 }: FieldPropsInternal) => {
   const { localName = name } = useNestedFieldContext();
 
   const appStoreApi = useAppStoreApi();
+
+  const canEdit = useAppStore(
+    (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
+  );
+
+  const getValue = useCallback(() => {
+    if (typeof value !== "undefined") return value;
+
+    const { selectedItem } = appStoreApi.getState();
+    const props = (name ? selectedItem?.props : {}) ?? {};
+
+    return name ? getDeep(props, name) : [];
+  }, [appStoreApi, name, value]);
 
   if (field.type !== "object" || !field.objectFields) {
     return null;
@@ -48,13 +63,12 @@ export const ObjectField = ({
                 subName={subName}
                 localName={localName}
                 field={subField}
+                forceReadOnly={!canEdit}
                 onChange={(subValue, ui, subName) => {
-                  const { selectedItem } = appStoreApi.getState();
+                  const value = getValue();
 
-                  if (selectedItem && name) {
-                    const data = getDeep(selectedItem.props, name);
-
-                    onChange({ ...data, [subName]: subValue }, ui);
+                  if (value && name) {
+                    onChange({ ...value, [subName]: subValue }, ui);
                   }
                 }}
               />

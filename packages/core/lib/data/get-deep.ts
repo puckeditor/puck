@@ -8,7 +8,7 @@ export const getDeep = (node: Record<string, any>, path: string): any => {
 
     const val = acc[prop];
 
-    if (indexStr) {
+    if (indexStr && val) {
       return val[parseInt(indexStr)];
     }
 

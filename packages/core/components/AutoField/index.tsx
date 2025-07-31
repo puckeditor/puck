@@ -138,11 +138,13 @@ const defaultFields = {
 function AutoFieldInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
-    Label?: React.FC<FieldLabelPropsInternal>;
-  }
-) {
+>({
+  provideValue,
+  ...props
+}: FieldPropsInternalOptional<ValueType, FieldType> & {
+  Label?: React.FC<FieldLabelPropsInternal>;
+  provideValue?: boolean;
+}) {
   const dispatch = useAppStore((s) => s.dispatch);
   const overrides = useAppStore((s) => s.overrides);
   const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
@@ -248,6 +250,10 @@ function AutoFieldInternal<
       value={{
         readOnlyFields: nestedFieldContext.readOnlyFields || readOnly || {},
         localName: nestedFieldContext.localName ?? mergedProps.name,
+        value:
+          provideValue && mergedProps.name
+            ? { [mergedProps.name]: mergedProps.value }
+            : undefined, // Optionally provide value if this is used outside of app fields (i.e. external field filters)
       }}
     >
       <div
@@ -275,17 +281,18 @@ export function AutoFieldPrivate<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(
-  props: Omit<
-    FieldPropsInternalOptional<ValueType, FieldType> & {
-      Label?: React.FC<FieldLabelPropsInternal>;
-    },
-    "value"
-  >
+  props: Omit<FieldPropsInternalOptional<ValueType, FieldType>, "value"> & {
+    Label?: React.FC<FieldLabelPropsInternal>;
+    value?: any;
+    provideValue?: boolean;
+  }
 ) {
   const isFocused = useAppStore((s) => s.state.ui.field.focus === props.name);
   const { onChange } = props;
 
   const value = useAppStore((s) => {
+    if (typeof props.value !== "undefined") return props.value;
+
     const { name, field } = props;
 
     if (!name) return;
@@ -337,10 +344,11 @@ export function AutoFieldPrivate<
 
   const localProps = useMemo(
     () => ({
-      value: localValue,
+      // localValue is sometimes undefined when using outside of Fields context
+      value: localValue ?? value,
       onChange: onChangeLocal,
     }),
-    [localValue, onChangeLocal]
+    [value, localValue, onChangeLocal]
   );
 
   return <AutoFieldInternal<ValueType, FieldType> {...props} {...localProps} />;
@@ -366,6 +374,10 @@ export function AutoField<
   }
 
   return (
-    <AutoFieldInternal<ValueType, FieldType> {...props} Label={DefaultLabel} />
+    <AutoFieldInternal<ValueType, FieldType>
+      {...props}
+      Label={DefaultLabel}
+      provideValue
+    />
   );
 }

@@ -3,6 +3,7 @@ import { AutoFieldPrivate } from ".";
 import { useAppStore } from "../../store";
 import { NestedFieldProvider, useNestedFieldContext } from "./context";
 import { Field } from "../../types";
+import { getDeep } from "../../lib/data/get-deep";
 
 const SubFieldInternal = ({
   field,
@@ -12,6 +13,7 @@ const SubFieldInternal = ({
   subName,
   localName,
   onChange,
+  forceReadOnly,
 }: {
   id: string;
   index?: number;
@@ -20,6 +22,7 @@ const SubFieldInternal = ({
   name?: string;
   localName?: string;
   onChange: (val: any, ui: any, subName: string) => void;
+  forceReadOnly: boolean;
 }) => {
   const indexName = typeof index !== "undefined" ? `${name}[${index}]` : name;
   const subPath = `${indexName}.${subName}`;
@@ -32,13 +35,7 @@ const SubFieldInternal = ({
   const localSubPath = `${localIndexName}.${subName}`;
   const localWildcardSubPath = `${localWildcardName}.${subName}`;
 
-  const { readOnlyFields } = useNestedFieldContext();
-
-  const canEdit = useAppStore(
-    (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
-  );
-
-  const forceReadOnly = !canEdit;
+  const { readOnlyFields, value } = useNestedFieldContext();
 
   const subReadOnly = forceReadOnly
     ? forceReadOnly
@@ -68,6 +65,11 @@ const SubFieldInternal = ({
         onChange={(val, ui) => {
           onChange(val, ui, subName);
         }}
+        // Optionally cascade value if used outside of app fields (i.e. filters)
+        provideValue={typeof value !== "undefined"}
+        value={
+          typeof value !== "undefined" ? getDeep(value, subPath) : undefined
+        }
       />
     </NestedFieldProvider>
   );
