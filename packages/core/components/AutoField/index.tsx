@@ -25,6 +25,8 @@ import { ObjectField } from "./fields/ObjectField";
 import { useAppStore } from "../../store";
 import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
+import { useShallow } from "zustand/react/shallow";
+import { getDeep } from "../../lib/data/get-deep";
 
 const getClassName = getClassNameFactory("Input", styles);
 const getClassNameWrapper = getClassNameFactory("InputWrapper", styles);
@@ -122,17 +124,30 @@ export type FieldPropsInternal<ValueType = any, F = Field<any>> = FieldProps<
   name?: string;
 };
 
+const defaultFields = {
+  array: ArrayField,
+  external: ExternalField,
+  object: ObjectField,
+  select: SelectField,
+  textarea: TextareaField,
+  radio: RadioField,
+  text: DefaultField,
+  number: DefaultField,
+};
+
 function AutoFieldInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
-    Label?: React.FC<FieldLabelPropsInternal>;
-  }
-) {
+>({
+  provideValue,
+  ...props
+}: FieldPropsInternalOptional<ValueType, FieldType> & {
+  Label?: React.FC<FieldLabelPropsInternal>;
+  provideValue?: boolean;
+}) {
   const dispatch = useAppStore((s) => s.dispatch);
   const overrides = useAppStore((s) => s.overrides);
-  const readOnly = useAppStore((s) => s.selectedItem?.readOnly);
+  const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
   const nestedFieldContext = useContext(NestedFieldContext);
 
   const { id, Label = FieldLabelInternal } = props;
@@ -144,37 +159,32 @@ function AutoFieldInternal<
   const defaultId = useSafeId();
   const resolvedId = id || defaultId;
 
-  const defaultFields = {
-    array: ArrayField,
-    external: ExternalField,
-    object: ObjectField,
-    select: SelectField,
-    textarea: TextareaField,
-    radio: RadioField,
-    text: DefaultField,
-    number: DefaultField,
-  };
+  const render = useMemo(
+    () => ({
+      ...overrides.fieldTypes,
+      array: overrides.fieldTypes?.array || defaultFields.array,
+      external: overrides.fieldTypes?.external || defaultFields.external,
+      object: overrides.fieldTypes?.object || defaultFields.object,
+      select: overrides.fieldTypes?.select || defaultFields.select,
+      textarea: overrides.fieldTypes?.textarea || defaultFields.textarea,
+      radio: overrides.fieldTypes?.radio || defaultFields.radio,
+      text: overrides.fieldTypes?.text || defaultFields.text,
+      number: overrides.fieldTypes?.number || defaultFields.number,
+    }),
+    [overrides, defaultFields]
+  );
 
-  const render = {
-    ...overrides.fieldTypes,
-    array: overrides.fieldTypes?.array || defaultFields.array,
-    external: overrides.fieldTypes?.external || defaultFields.external,
-    object: overrides.fieldTypes?.object || defaultFields.object,
-    select: overrides.fieldTypes?.select || defaultFields.select,
-    textarea: overrides.fieldTypes?.textarea || defaultFields.textarea,
-    radio: overrides.fieldTypes?.radio || defaultFields.radio,
-    text: overrides.fieldTypes?.text || defaultFields.text,
-    number: overrides.fieldTypes?.number || defaultFields.number,
-  };
-
-  const mergedProps = {
-    ...props,
-    field,
-    label,
-    labelIcon,
-    Label,
-    id: resolvedId,
-  };
+  const mergedProps = useMemo(
+    () => ({
+      ...props,
+      field,
+      label,
+      labelIcon,
+      Label,
+      id: resolvedId,
+    }),
+    [props, field, label, labelIcon, Label, resolvedId]
+  );
 
   const onFocus = useCallback(
     (e: React.FocusEvent) => {
@@ -206,7 +216,26 @@ function AutoFieldInternal<
     }
   }, []);
 
+  let FieldComponent: React.ComponentType<any> = useMemo(() => {
+    if (field.type === "custom") {
+      if (!field.render) {
+        return null;
+      }
+      return field.render as any;
+    } else {
+      return render[field.type] as (props: FieldProps) => ReactElement;
+    }
+  }, [field, defaultFields, render]);
+
   const { visible = true } = props.field;
+
+  let Children = useMemo(() => {
+    if (field.type !== "custom" && field.type !== "slot") {
+      return defaultFields[field.type];
+    }
+
+    return () => null;
+  }, [field]);
 
   if (!visible) {
     return null;
@@ -216,24 +245,15 @@ function AutoFieldInternal<
     return null;
   }
 
-  let children = null;
-  let FieldComponent: React.ComponentType<any>;
-
-  if (field.type === "custom") {
-    if (!field.render) {
-      return null;
-    }
-    FieldComponent = field.render as any;
-  } else {
-    children = defaultFields[field.type](mergedProps);
-    FieldComponent = render[field.type] as (props: FieldProps) => ReactElement;
-  }
-
   return (
     <NestedFieldContext.Provider
       value={{
         readOnlyFields: nestedFieldContext.readOnlyFields || readOnly || {},
         localName: nestedFieldContext.localName ?? mergedProps.name,
+        value:
+          provideValue && mergedProps.name
+            ? { [mergedProps.name]: mergedProps.value }
+            : undefined, // Optionally provide value if this is used outside of app fields (i.e. external field filters)
       }}
     >
       <div
@@ -247,7 +267,9 @@ function AutoFieldInternal<
           e.stopPropagation();
         }}
       >
-        <FieldComponent {...mergedProps}>{children}</FieldComponent>
+        <FieldComponent {...mergedProps}>
+          <Children {...mergedProps} />
+        </FieldComponent>
       </div>
     </NestedFieldContext.Provider>
   );
@@ -259,22 +281,50 @@ export function AutoFieldPrivate<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
+  props: Omit<FieldPropsInternalOptional<ValueType, FieldType>, "value"> & {
     Label?: React.FC<FieldLabelPropsInternal>;
+    value?: any;
+    provideValue?: boolean;
   }
 ) {
   const isFocused = useAppStore((s) => s.state.ui.field.focus === props.name);
-  const { value, onChange } = props;
+  const { onChange } = props;
+
+  const value = useAppStore((s) => {
+    if (typeof props.value !== "undefined") return props.value;
+
+    const { name, field } = props;
+
+    if (!name) return;
+
+    // Exclude array and object fields as they handle rendering independently
+    const excludedFields = ["array", "object"];
+
+    if (!excludedFields.includes(field.type)) {
+      const rootProps = s.state.data.root.props || s.state.data.root;
+
+      const props = s.selectedItem ? s.selectedItem.props : rootProps;
+
+      if (props) {
+        return getDeep(props, name);
+      }
+    }
+  });
 
   const [localValue, setLocalValue] = useState(value);
 
   const onChangeLocal = useCallback(
     (val: any, ui?: Partial<UiState>) => {
-      setLocalValue(val);
+      // Exclude array and object fields as they handle rendering independently
+      const excludedFields = ["array", "object"];
+
+      if (!excludedFields.includes(props.field.type)) {
+        setLocalValue(val);
+      }
 
       onChange(val, ui);
     },
-    [onChange]
+    [props.field.type]
   );
 
   useEffect(() => {
@@ -292,10 +342,14 @@ export function AutoFieldPrivate<
     }
   }, [isFocused, value, localValue]);
 
-  const localProps = {
-    value: localValue,
-    onChange: onChangeLocal,
-  };
+  const localProps = useMemo(
+    () => ({
+      // localValue is sometimes undefined when using outside of Fields context
+      value: localValue ?? value,
+      onChange: onChangeLocal,
+    }),
+    [value, localValue, onChangeLocal]
+  );
 
   return <AutoFieldInternal<ValueType, FieldType> {...props} {...localProps} />;
 }
@@ -320,6 +374,10 @@ export function AutoField<
   }
 
   return (
-    <AutoFieldInternal<ValueType, FieldType> {...props} Label={DefaultLabel} />
+    <AutoFieldInternal<ValueType, FieldType>
+      {...props}
+      Label={DefaultLabel}
+      provideValue
+    />
   );
 }
