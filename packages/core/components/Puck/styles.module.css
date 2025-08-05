@@ -68,7 +68,7 @@
 
 .PuckLayout--rightSideBarVisible .PuckLayout-inner {
   grid-template-columns:
-    var(--puck-left-side-bar-width) var(--puck-frame-width)
+    0 var(--puck-frame-width)
     var(--puck-right-side-bar-width);
 }
 
