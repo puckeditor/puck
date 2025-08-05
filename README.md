@@ -27,7 +27,7 @@ Puck is a modular, open-source visual editor for React.js. You can use Puck to b
 
 Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there’s no vendor lock-in.
 
-Puck is also [licensed under MIT](https://github.com/puckeditor/puck?&tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
+Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
 
 ## Quick start
 
