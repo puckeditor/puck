@@ -11,7 +11,7 @@
 
 _The visual editor for React_
 
-[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=top_links&utm_campaign=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=top_links&utm_campaign=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
+[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
 
 ⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
 
