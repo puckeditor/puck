@@ -9,7 +9,6 @@ interface SidebarProps {
   position: "left" | "right";
   sidebarRef: { current: HTMLDivElement | null };
   isVisible: boolean;
-  width: number | null;
   onResize: (width: number) => void;
   onResizeEnd: (width: number) => void;
   children: React.ReactNode;
@@ -19,7 +18,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   position,
   sidebarRef,
   isVisible,
-  width,
   onResize,
   onResizeEnd,
   children,
