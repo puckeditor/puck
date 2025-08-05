@@ -99,9 +99,15 @@ const InlineTextFieldInternal = ({
         e.stopPropagation();
       }}
       onKeyDown={(e) => {
+        e.stopPropagation();
+
         if ((disableLineBreaks && e.key === "Enter") || isReadOnly) {
           e.preventDefault();
         }
+      }}
+      onKeyUp={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
       }}
       onMouseOverCapture={() => setIsHovering(true)}
       onMouseOutCapture={() => setIsHovering(false)}
