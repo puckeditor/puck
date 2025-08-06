@@ -6,6 +6,7 @@ import { useAppStoreApi } from "../../store";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../lib";
 import { setDeep } from "../../lib/data/set-deep";
+import { getSelectorForId } from "../../lib/get-selector-for-id";
 
 const getClassName = getClassNameFactory("InlineTextField", styles);
 
@@ -97,6 +98,13 @@ const InlineTextFieldInternal = ({
       onClickCapture={(e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        const itemSelector = getSelectorForId(
+          appStoreApi.getState().state,
+          componentId
+        );
+
+        appStoreApi.getState().setUi({ itemSelector });
       }}
       onKeyDown={(e) => {
         e.stopPropagation();

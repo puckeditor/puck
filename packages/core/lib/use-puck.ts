@@ -9,6 +9,7 @@ import { HistorySlice } from "../store/slices/history";
 import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
+import { getSelectorForId } from "./get-selector-for-id";
 
 export type UsePuckData<
   UserConfig extends Config = Config,
@@ -67,18 +68,7 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     selectedItem: store.selectedItem || null,
     getItemBySelector: (selector) => getItem(selector, store.state),
     getItemById: (id) => store.state.indexes.nodes[id].data,
-    getSelectorForId: (id) => {
-      const node = store.state.indexes.nodes[id];
-
-      if (!node) return;
-
-      const zoneCompound = `${node.parentId}:${node.zone}`;
-
-      const index =
-        store.state.indexes.zones[zoneCompound].contentIds.indexOf(id);
-
-      return { zone: zoneCompound, index };
-    },
+    getSelectorForId: (id) => getSelectorForId(store.state, id),
   };
 
   return storeData;
