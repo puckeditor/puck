@@ -1,5 +1,5 @@
 import type { JSX, ReactNode } from "react";
-import { BaseField, Field, Fields } from "./Fields";
+import { BaseField, Fields } from "./Fields";
 import { ComponentData, Metadata, RootData } from "./Data";
 
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";

@@ -1,8 +1,7 @@
 import { Slot } from "./API";
 import { AppState } from "./AppState";
-import { ComponentConfig, Config, DefaultComponents } from "./Config";
+import { Config, DefaultComponents } from "./Config";
 import { ComponentData, Data } from "./Data";
-import { Field } from "./Fields";
 import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 
 export type ZoneType = "root" | "dropzone" | "slot";
