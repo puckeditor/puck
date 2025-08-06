@@ -37,6 +37,9 @@ export type UiState = {
     options: Viewport[];
   };
   field: { focus?: string | null; metadata?: Record<string, any> };
+  plugin: {
+    current: string | null;
+  };
 };
 
 export type AppState<UserData extends Data = Data> = {
