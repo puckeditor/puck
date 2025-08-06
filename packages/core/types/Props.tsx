@@ -20,4 +20,4 @@ export type DefaultRootRenderProps<
 
 export type DefaultRootProps = DefaultRootRenderProps; // Deprecated
 
-export type DefaultComponentProps = { [key: string]: unknown };
+export type DefaultComponentProps = { [key: string]: any };
