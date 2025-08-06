@@ -40,7 +40,6 @@ const Item = ({
       {...props}
       puck={{
         ...props.puck,
-        renderDropZone: DropZoneRender,
         metadata: metadata || {},
       }}
     />
