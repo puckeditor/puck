@@ -30,6 +30,7 @@ The current state of the Puck editor interface.
 | [`itemSelector`](#uiitemselector)               | `{ index: 0, zone: "my-content" }`                    | [ItemSelector](item-selector) |
 | [`leftSideBarVisible`](#uileftsidebarvisible)   | `false`                                               | Boolean                       |
 | [`leftSideBarWidth`](#uileftsidebarwidth)       | `200`                                                 | Number                        |
+| [`plugin`](#uiplugin)                           | `{ current: "blocks" }`                               | Object                        |
 | [`previewMode`](#uipreviewmode)                 | `"edit"`                                              | String                        |
 | [`rightSideBarVisible`](#uirightsidebarvisible) | `false`                                               | Boolean                       |
 | [`rightSideBarWidth`](#uirightsidebarwidth)     | `200`                                                 | Number                        |
@@ -92,6 +93,18 @@ Whether or not the left side bar is visible.
 ### `ui.leftSideBarWidth`
 
 Current width of the left side bar in pixels.
+
+---
+
+### `ui.plugin`
+
+| Param                         | Example    | Type   |
+| ----------------------------- | ---------- | ------ |
+| [`current`](#uiplugincurrent) | `"blocks:` | String |
+
+#### `ui.plugin.current`
+
+The currently visible plugin. Matches the plugin `name` parameter.
 
 ---
 
