@@ -4,7 +4,7 @@ import { IframeConfig, Plugin, UiState } from "../../../../types";
 import { usePropsContext } from "../..";
 import styles from "./styles.module.css";
 import { useInjectGlobalCss } from "../../../../lib/use-inject-css";
-import { useAppStore } from "../../../../store";
+import { useAppStore, useAppStoreApi } from "../../../../store";
 import { DefaultOverride } from "../../../DefaultOverride";
 import { monitorHotkeys, useMonitorHotkeys } from "../../../../lib/use-hotkey";
 import { getFrame } from "../../../../lib/get-frame";
@@ -160,7 +160,9 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
   }
 
-  const [view, setView] = useState<"blocks" | "outline" | string>();
+  const setUi = useAppStore((s) => s.setUi);
+  const currentPlugin = useAppStore((s) => s.state.ui.plugin?.current);
+  const appStoreApi = useAppStoreApi();
 
   const pluginItems = useMemo(() => {
     const details: Record<string, MenuItem & { render: () => ReactElement }> =
@@ -181,24 +183,37 @@ export const Layout = ({ children }: { children: ReactNode }) => {
           label: plugin.label ?? plugin.name,
           icon: plugin.icon ?? <ToyBrick />,
           onClick: () => {
-            setView(plugin.name!);
+            if (plugin.name === currentPlugin) {
+              if (leftSideBarVisible) {
+                setUi({ leftSideBarVisible: false });
+              } else {
+                setUi({ leftSideBarVisible: true });
+              }
+            } else {
+              if (plugin.name) {
+                setUi({
+                  plugin: { current: plugin.name },
+                  leftSideBarVisible: true,
+                });
+              }
+            }
           },
-          isActive: view === plugin.name,
+          isActive: leftSideBarVisible && currentPlugin === plugin.name,
           render: plugin.render,
         };
       }
     });
 
     return details;
-  }, [plugins, view]);
+  }, [plugins, currentPlugin, appStoreApi, leftSideBarVisible]);
 
   useEffect(() => {
-    if (!view) {
+    if (!currentPlugin) {
       const names = Object.keys(pluginItems);
 
-      setView(names[0]);
+      setUi({ plugin: { current: names[0] } });
     }
-  }, [pluginItems, view]);
+  }, [pluginItems, currentPlugin]);
 
   return (
     <div className={`Puck ${getClassName()}`}>
@@ -237,7 +252,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                   >
                     {Object.entries(pluginItems).map(
                       ([id, { render: Render }]) => (
-                        <PluginTab key={id} visible={view === id}>
+                        <PluginTab key={id} visible={currentPlugin === id}>
                           <Render />
                         </PluginTab>
                       )
