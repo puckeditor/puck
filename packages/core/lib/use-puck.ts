@@ -20,8 +20,10 @@ export type UsePuckData<
   getPermissions: GetPermissions<UserConfig>;
   refreshPermissions: RefreshPermissions<UserConfig>;
   selectedItem: G["UserComponentData"] | null;
-  getItemBySelector: (selector: ItemSelector) => ComponentData | undefined;
-  getItemById: (id: string) => ComponentData | undefined;
+  getItemBySelector: (
+    selector: ItemSelector
+  ) => G["UserComponentData"] | undefined;
+  getItemById: (id: string) => G["UserComponentData"] | undefined;
   getSelectorForId: (id: string) => Required<ItemSelector> | undefined;
   history: {
     back: HistorySlice["back"];
