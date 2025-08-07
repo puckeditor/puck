@@ -10,7 +10,6 @@ import { DropZoneProps } from "../components/DropZone/types";
 import {
   ComponentConfigParams,
   ConfigParams,
-  Exact,
   ExactComponentConfigParams,
   ExactConfigParams,
   FieldsExtension,
@@ -95,16 +94,17 @@ export type ComponentConfig<
     ? RenderPropsOrParams["props"]
     : RenderPropsOrParams,
   DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
-> = ComponentConfigInternal<
-  RenderPropsOrParams extends ComponentConfigParams
-    ? RenderPropsOrParams["props"]
-    : RenderPropsOrParams,
-  FieldProps,
-  DataShape,
-  RenderPropsOrParams extends { fields: FieldsExtension }
-    ? RenderPropsOrParams["fields"][keyof RenderPropsOrParams["fields"]] // Combine fields into union
-    : {}
->;
+> = RenderPropsOrParams extends ComponentConfigParams<
+  infer ParamsRenderProps,
+  infer ParamsFields
+>
+  ? ComponentConfigInternal<
+      ParamsRenderProps,
+      FieldProps,
+      DataShape,
+      ParamsFields
+    >
+  : ComponentConfigInternal<RenderPropsOrParams, FieldProps, DataShape>;
 
 type RootConfigInternal<
   RootProps extends DefaultComponentProps = DefaultComponentProps,
@@ -126,18 +126,17 @@ export type RootConfig<
         : DefaultComponentProps)
     | (ComponentConfigParams &
         ExactComponentConfigParams<RootPropsOrParams>) = DefaultComponentProps
-> = Partial<
-  RootConfigInternal<
-    WithChildren<
-      RootPropsOrParams extends ComponentConfigParams<infer Props>
-        ? Props
-        : RootPropsOrParams
-    >,
-    RootPropsOrParams extends { fields: FieldsExtension }
-      ? RootPropsOrParams["fields"][keyof RootPropsOrParams["fields"]] // Combine fields into union
-      : {}
-  >
->;
+> = RootPropsOrParams extends ComponentConfigParams<
+  infer Props,
+  infer UserFields
+>
+  ? Partial<
+      RootConfigInternal<
+        WithChildren<Props>,
+        UserFields[keyof UserFields] // Combine fields into union
+      >
+    >
+  : Partial<RootConfigInternal<WithChildren<RootPropsOrParams>>>;
 
 type Category<ComponentName> = {
   components?: ComponentName[];
@@ -181,20 +180,18 @@ export type Config<
     | (ConfigParams & ExactConfigParams<PropsOrParams>) =
     | DefaultComponents
     | ConfigParams,
-  RootProps extends DefaultComponentProps &
-    Exact<RootProps, DefaultComponentProps> = DefaultComponentProps,
+  RootProps extends DefaultComponentProps = DefaultComponentProps,
   CategoryName extends string = string
-> = ConfigInternal<
-  PropsOrParams extends ConfigParams<infer Props> ? Props : PropsOrParams,
-  PropsOrParams extends ConfigParams<any, infer ParamRootProps>
-    ? ParamRootProps
-    : RootProps,
-  PropsOrParams extends ConfigParams<any, any, infer ParamCategoryName>
-    ? ParamCategoryName[number]
-    : CategoryName,
-  PropsOrParams extends ConfigParams<any, any, any, infer UserFields>
-    ? UserFields[keyof UserFields] // Combine fields into union
-    : {}
-> & {
-  params?: PropsOrParams; // Add params to type to prevent type erasure
-};
+> = PropsOrParams extends ConfigParams<
+  infer ParamComponents,
+  infer ParamRoot,
+  infer ParamCategoryName,
+  infer ParamField
+>
+  ? ConfigInternal<
+      ParamComponents,
+      ParamRoot,
+      ParamCategoryName[number],
+      ParamField
+    >
+  : ConfigInternal<PropsOrParams, RootProps, CategoryName, FieldsExtension>;
