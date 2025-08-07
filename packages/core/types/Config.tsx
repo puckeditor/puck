@@ -10,6 +10,7 @@ import { DropZoneProps } from "../components/DropZone/types";
 import {
   ComponentConfigParams,
   ConfigParams,
+  Exact,
   ExactComponentConfigParams,
   ExactConfigParams,
   FieldsExtension,
@@ -36,8 +37,8 @@ type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
 };
 
 type ComponentConfigInternal<
-  RenderProps extends DefaultComponentProps = DefaultComponentProps,
-  FieldProps extends DefaultComponentProps = RenderProps,
+  RenderProps extends DefaultComponentProps,
+  FieldProps extends DefaultComponentProps,
   DataShape = Omit<ComponentData<FieldProps>, "type">, // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
   UserField extends {} = {}
 > = {
@@ -105,28 +106,38 @@ export type ComponentConfig<
     : {}
 >;
 
+type RootConfigInternal<
+  RootProps extends DefaultComponentProps = DefaultComponentProps,
+  UserField extends {} = {}
+> = Partial<
+  ComponentConfigInternal<
+    WithChildren<RootProps>,
+    AsFieldProps<RootProps>,
+    RootData<AsFieldProps<RootProps>>,
+    UserField
+  >
+>;
+
+// DEPRECATED - remove old generics in favour of Params
 export type RootConfig<
-  RootPropsOrParams extends DefaultComponentProps | ComponentConfigParams = any
-> = RootPropsOrParams extends ComponentConfigParams<infer ParamProps>
-  ? Partial<
-      ComponentConfigInternal<
-        WithChildren<ParamProps>,
-        AsFieldProps<ParamProps>,
-        RootData<AsFieldProps<ParamProps>>,
-        RootPropsOrParams extends { fields: FieldsExtension }
-          ? RootPropsOrParams["fields"][keyof RootPropsOrParams["fields"]] // Combine fields into union
-          : {}
-      >
-    >
-  : RootPropsOrParams extends DefaultComponentProps
-  ? Partial<
-      ComponentConfigInternal<
-        WithChildren<RootPropsOrParams>,
-        AsFieldProps<RootPropsOrParams>,
-        RootData<AsFieldProps<RootPropsOrParams>>
-      >
-    >
-  : never;
+  RootPropsOrParams extends
+    | (DefaultComponentProps & RootPropsOrParams extends ComponentConfigParams
+        ? ExactComponentConfigParams<RootPropsOrParams>
+        : DefaultComponentProps)
+    | (ComponentConfigParams &
+        ExactComponentConfigParams<RootPropsOrParams>) = DefaultComponentProps
+> = Partial<
+  RootConfigInternal<
+    WithChildren<
+      RootPropsOrParams extends ComponentConfigParams<infer Props>
+        ? Props
+        : RootPropsOrParams
+    >,
+    RootPropsOrParams extends { fields: FieldsExtension }
+      ? RootPropsOrParams["fields"][keyof RootPropsOrParams["fields"]] // Combine fields into union
+      : {}
+  >
+>;
 
 type Category<ComponentName> = {
   components?: ComponentName[];
@@ -137,7 +148,7 @@ type Category<ComponentName> = {
 
 type ConfigInternal<
   Props extends DefaultComponents = DefaultComponents,
-  RootProps extends DefaultComponentProps = any,
+  RootProps extends DefaultComponentProps = DefaultComponentProps,
   CategoryName extends string = string,
   UserField extends {} = {}
 > = {
@@ -155,7 +166,7 @@ type ConfigInternal<
       "type"
     >;
   };
-  root?: RootConfig<RootProps>;
+  root?: RootConfigInternal<RootProps, UserField>;
 };
 
 // This _deliberately_ casts as any so the user can pass in something that widens the types
@@ -170,7 +181,8 @@ export type Config<
     | (ConfigParams & ExactConfigParams<PropsOrParams>) =
     | DefaultComponents
     | ConfigParams,
-  RootProps extends DefaultComponentProps = any,
+  RootProps extends DefaultComponentProps &
+    Exact<RootProps, DefaultComponentProps> = DefaultComponentProps,
   CategoryName extends string = string
 > = ConfigInternal<
   PropsOrParams extends ConfigParams<infer Props> ? Props : PropsOrParams,
