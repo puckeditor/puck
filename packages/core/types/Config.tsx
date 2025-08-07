@@ -175,7 +175,9 @@ export type Config<
 > = ConfigInternal<
   PropsOrParams extends ConfigParams<infer Props> ? Props : PropsOrParams,
   RootProps,
-  CategoryName,
+  PropsOrParams extends ConfigParams<any, any, infer ParamCategoryName>
+    ? ParamCategoryName[number]
+    : CategoryName,
   PropsOrParams extends ConfigParams<any, any, any, infer UserFields>
     ? UserFields[keyof UserFields] // Combine fields into union
     : {}
