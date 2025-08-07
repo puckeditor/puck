@@ -174,7 +174,9 @@ export type Config<
   CategoryName extends string = string
 > = ConfigInternal<
   PropsOrParams extends ConfigParams<infer Props> ? Props : PropsOrParams,
-  RootProps,
+  PropsOrParams extends ConfigParams<any, infer ParamRootProps>
+    ? ParamRootProps
+    : RootProps,
   PropsOrParams extends ConfigParams<any, any, infer ParamCategoryName>
     ? ParamCategoryName[number]
     : CategoryName,
