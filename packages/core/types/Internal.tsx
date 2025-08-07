@@ -110,6 +110,11 @@ export type ExtractConfigParams<UserConfig extends Config> =
       }
     : never;
 
+// Check the keys of T do not introduce additional ones to Target
 export type Exact<T, Target> = Record<Exclude<keyof T, keyof Target>, never>;
-export type ExactConfigParams<T> = Exact<T, ConfigParams>;
-export type ExactComponentConfigParams<T> = Exact<T, ComponentConfigParams>;
+
+// Ensures the union either extends the left type, or is exactly the right type
+// This prevents type widening
+export type LeftOrExactRight<Union, Left, Right> =
+  | (Left & Union extends Right ? Exact<Union, Right> : Left)
+  | (Right & Exact<Union, Right>);

@@ -10,9 +10,8 @@ import { DropZoneProps } from "../components/DropZone/types";
 import {
   ComponentConfigParams,
   ConfigParams,
-  ExactComponentConfigParams,
-  ExactConfigParams,
   FieldsExtension,
+  LeftOrExactRight,
   WithDeepSlots,
 } from "./Internal";
 
@@ -84,12 +83,11 @@ type ComponentConfigInternal<
 
 // DEPRECATED - remove old generics in favour of Params
 export type ComponentConfig<
-  RenderPropsOrParams extends
-    | (DefaultComponentProps & RenderPropsOrParams extends ComponentConfigParams
-        ? ExactComponentConfigParams<RenderPropsOrParams>
-        : DefaultComponentProps)
-    | (ComponentConfigParams &
-        ExactComponentConfigParams<RenderPropsOrParams>) = DefaultComponentProps,
+  RenderPropsOrParams extends LeftOrExactRight<
+    RenderPropsOrParams,
+    DefaultComponentProps,
+    ComponentConfigParams
+  > = DefaultComponentProps,
   FieldProps extends DefaultComponentProps = RenderPropsOrParams extends ComponentConfigParams
     ? RenderPropsOrParams["props"]
     : RenderPropsOrParams,
@@ -120,12 +118,11 @@ type RootConfigInternal<
 
 // DEPRECATED - remove old generics in favour of Params
 export type RootConfig<
-  RootPropsOrParams extends
-    | (DefaultComponentProps & RootPropsOrParams extends ComponentConfigParams
-        ? ExactComponentConfigParams<RootPropsOrParams>
-        : DefaultComponentProps)
-    | (ComponentConfigParams &
-        ExactComponentConfigParams<RootPropsOrParams>) = DefaultComponentProps
+  RootPropsOrParams extends LeftOrExactRight<
+    RootPropsOrParams,
+    DefaultComponentProps,
+    ComponentConfigParams
+  > = DefaultComponentProps | ComponentConfigParams
 > = RootPropsOrParams extends ComponentConfigParams<
   infer Props,
   infer UserFields
@@ -173,13 +170,11 @@ export type DefaultComponents = Record<string, any>;
 
 // DEPRECATED - remove old generics in favour of Params
 export type Config<
-  PropsOrParams extends
-    | (DefaultComponents & PropsOrParams extends ConfigParams // Catch any type widening
-        ? ExactConfigParams<PropsOrParams>
-        : DefaultComponents)
-    | (ConfigParams & ExactConfigParams<PropsOrParams>) =
-    | DefaultComponents
-    | ConfigParams,
+  PropsOrParams extends LeftOrExactRight<
+    PropsOrParams,
+    DefaultComponents,
+    ConfigParams
+  > = DefaultComponents | ConfigParams,
   RootProps extends DefaultComponentProps = DefaultComponentProps,
   CategoryName extends string = string
 > = PropsOrParams extends ConfigParams<
