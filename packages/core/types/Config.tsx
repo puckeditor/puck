@@ -10,6 +10,8 @@ import { DropZoneProps } from "../components/DropZone/types";
 import {
   ComponentConfigParams,
   ConfigParams,
+  ExactComponentConfigParams,
+  ExactConfigParams,
   FieldsExtension,
   WithDeepSlots,
 } from "./Internal";
@@ -83,8 +85,11 @@ type ComponentConfigInternal<
 // DEPRECATED - remove old generics in favour of Params
 export type ComponentConfig<
   RenderPropsOrParams extends
-    | DefaultComponentProps
-    | ComponentConfigParams = DefaultComponentProps,
+    | (DefaultComponentProps & RenderPropsOrParams extends ComponentConfigParams
+        ? ExactComponentConfigParams<RenderPropsOrParams>
+        : DefaultComponentProps)
+    | (ComponentConfigParams &
+        ExactComponentConfigParams<RenderPropsOrParams>) = DefaultComponentProps,
   FieldProps extends DefaultComponentProps = RenderPropsOrParams extends ComponentConfigParams
     ? RenderPropsOrParams["props"]
     : RenderPropsOrParams,
@@ -158,7 +163,13 @@ export type DefaultComponents = Record<string, any>;
 
 // DEPRECATED - remove old generics in favour of Params
 export type Config<
-  PropsOrParams extends DefaultComponents | ConfigParams = DefaultComponents,
+  PropsOrParams extends
+    | (DefaultComponents & PropsOrParams extends ConfigParams // Catch any type widening
+        ? ExactConfigParams<PropsOrParams>
+        : DefaultComponents)
+    | (ConfigParams & ExactConfigParams<PropsOrParams>) =
+    | DefaultComponents
+    | ConfigParams,
   RootProps extends DefaultComponentProps = any,
   CategoryName extends string = string
 > = ConfigInternal<

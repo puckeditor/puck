@@ -109,3 +109,7 @@ export type ExtractConfigParams<UserConfig extends Config> =
           : never;
       }
     : never;
+
+export type Exact<T, Target> = Record<Exclude<keyof T, keyof Target>, never>;
+export type ExactConfigParams<T> = Exact<T, ConfigParams>;
+export type ExactComponentConfigParams<T> = Exact<T, ComponentConfigParams>;
