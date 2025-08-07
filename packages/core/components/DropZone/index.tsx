@@ -27,6 +27,7 @@ import {
   DragAxis,
   Metadata,
   PuckContext,
+  WithPuckProps,
 } from "../../types";
 
 import { useDroppable, UseDroppableInput } from "@dnd-kit/react";
@@ -517,7 +518,7 @@ const DropZoneRenderItem = ({
 
   const props = useSlots(config, item, (slotProps) => (
     <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
-  ));
+  )) as WithPuckProps<ComponentData["props"]>;
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({

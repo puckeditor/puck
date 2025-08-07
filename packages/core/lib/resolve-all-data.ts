@@ -3,7 +3,7 @@ import {
   Config,
   Content,
   Data,
-  DefaultComponentProps,
+  DefaultComponents,
   DefaultRootFieldProps,
   Metadata,
   RootData,
@@ -14,7 +14,7 @@ import { toComponent } from "./data/to-component";
 import { mapFields } from "./data/map-fields";
 
 export async function resolveAllData<
-  Props extends DefaultComponentProps = DefaultComponentProps,
+  Components extends DefaultComponents = DefaultComponents,
   RootProps extends Record<string, any> = DefaultRootFieldProps
 >(
   data: Partial<Data>,
@@ -77,5 +77,5 @@ export async function resolveAllData<
     dynamic.zones![zoneKey] = await processContent(content);
   }, {});
 
-  return dynamic as Data<Props, RootProps>;
+  return dynamic as Data<Components, RootProps>;
 }

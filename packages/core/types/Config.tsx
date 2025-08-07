@@ -1,5 +1,5 @@
 import type { JSX, ReactNode } from "react";
-import { Fields } from "./Fields";
+import { BaseField, Fields } from "./Fields";
 import { ComponentData, Metadata, RootData } from "./Data";
 
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
@@ -7,7 +7,15 @@ import { AppState } from "./AppState";
 import { DefaultComponentProps } from "./Props";
 import { Permissions } from "./API";
 import { DropZoneProps } from "../components/DropZone/types";
-import { WithDeepSlots } from "./Internal";
+import {
+  ComponentConfigParams,
+  ConfigParams,
+  Exact,
+  ExactComponentConfigParams,
+  ExactConfigParams,
+  FieldsExtension,
+  WithDeepSlots,
+} from "./Internal";
 
 export type SlotComponent = (props?: Omit<DropZoneProps, "zone">) => ReactNode;
 
@@ -28,15 +36,16 @@ type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   props?: Partial<Props>;
 };
 
-export type ComponentConfig<
-  RenderProps extends DefaultComponentProps = DefaultComponentProps,
-  FieldProps extends DefaultComponentProps = RenderProps,
-  DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
+type ComponentConfigInternal<
+  RenderProps extends DefaultComponentProps,
+  FieldProps extends DefaultComponentProps,
+  DataShape = Omit<ComponentData<FieldProps>, "type">, // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
+  UserField extends {} = {}
 > = {
   render: PuckComponent<RenderProps>;
   label?: string;
   defaultProps?: FieldProps;
-  fields?: Fields<FieldProps>;
+  fields?: Fields<FieldProps, UserField & BaseField>;
   permissions?: Partial<Permissions>;
   inline?: boolean;
   resolveFields?: (
@@ -74,11 +83,59 @@ export type ComponentConfig<
   metadata?: Metadata;
 };
 
-export type RootConfig<RootProps extends DefaultComponentProps = any> = Partial<
-  ComponentConfig<
+// DEPRECATED - remove old generics in favour of Params
+export type ComponentConfig<
+  RenderPropsOrParams extends
+    | (DefaultComponentProps & RenderPropsOrParams extends ComponentConfigParams
+        ? ExactComponentConfigParams<RenderPropsOrParams>
+        : DefaultComponentProps)
+    | (ComponentConfigParams &
+        ExactComponentConfigParams<RenderPropsOrParams>) = DefaultComponentProps,
+  FieldProps extends DefaultComponentProps = RenderPropsOrParams extends ComponentConfigParams
+    ? RenderPropsOrParams["props"]
+    : RenderPropsOrParams,
+  DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
+> = ComponentConfigInternal<
+  RenderPropsOrParams extends ComponentConfigParams
+    ? RenderPropsOrParams["props"]
+    : RenderPropsOrParams,
+  FieldProps,
+  DataShape,
+  RenderPropsOrParams extends { fields: FieldsExtension }
+    ? RenderPropsOrParams["fields"][keyof RenderPropsOrParams["fields"]] // Combine fields into union
+    : {}
+>;
+
+type RootConfigInternal<
+  RootProps extends DefaultComponentProps = DefaultComponentProps,
+  UserField extends {} = {}
+> = Partial<
+  ComponentConfigInternal<
     WithChildren<RootProps>,
     AsFieldProps<RootProps>,
-    RootData<AsFieldProps<RootProps>>
+    RootData<AsFieldProps<RootProps>>,
+    UserField
+  >
+>;
+
+// DEPRECATED - remove old generics in favour of Params
+export type RootConfig<
+  RootPropsOrParams extends
+    | (DefaultComponentProps & RootPropsOrParams extends ComponentConfigParams
+        ? ExactComponentConfigParams<RootPropsOrParams>
+        : DefaultComponentProps)
+    | (ComponentConfigParams &
+        ExactComponentConfigParams<RootPropsOrParams>) = DefaultComponentProps
+> = Partial<
+  RootConfigInternal<
+    WithChildren<
+      RootPropsOrParams extends ComponentConfigParams<infer Props>
+        ? Props
+        : RootPropsOrParams
+    >,
+    RootPropsOrParams extends { fields: FieldsExtension }
+      ? RootPropsOrParams["fields"][keyof RootPropsOrParams["fields"]] // Combine fields into union
+      : {}
   >
 >;
 
@@ -89,19 +146,55 @@ type Category<ComponentName> = {
   defaultExpanded?: boolean;
 };
 
-export type Config<
-  Props extends DefaultComponentProps = DefaultComponentProps,
-  RootProps extends DefaultComponentProps = any,
-  CategoryName extends string = string
+type ConfigInternal<
+  Props extends DefaultComponents = DefaultComponents,
+  RootProps extends DefaultComponentProps = DefaultComponentProps,
+  CategoryName extends string = string,
+  UserField extends {} = {}
 > = {
   categories?: Record<CategoryName, Category<keyof Props>> & {
     other?: Category<keyof Props>;
   };
   components: {
     [ComponentName in keyof Props]: Omit<
-      ComponentConfig<Props[ComponentName], Props[ComponentName]>,
+      ComponentConfigInternal<
+        Props[ComponentName],
+        Props[ComponentName],
+        Omit<ComponentData<Props[ComponentName]>, "type">,
+        UserField
+      >,
       "type"
     >;
   };
-  root?: RootConfig<RootProps>;
+  root?: RootConfigInternal<RootProps, UserField>;
+};
+
+// This _deliberately_ casts as any so the user can pass in something that widens the types
+export type DefaultComponents = Record<string, any>;
+
+// DEPRECATED - remove old generics in favour of Params
+export type Config<
+  PropsOrParams extends
+    | (DefaultComponents & PropsOrParams extends ConfigParams // Catch any type widening
+        ? ExactConfigParams<PropsOrParams>
+        : DefaultComponents)
+    | (ConfigParams & ExactConfigParams<PropsOrParams>) =
+    | DefaultComponents
+    | ConfigParams,
+  RootProps extends DefaultComponentProps &
+    Exact<RootProps, DefaultComponentProps> = DefaultComponentProps,
+  CategoryName extends string = string
+> = ConfigInternal<
+  PropsOrParams extends ConfigParams<infer Props> ? Props : PropsOrParams,
+  PropsOrParams extends ConfigParams<any, infer ParamRootProps>
+    ? ParamRootProps
+    : RootProps,
+  PropsOrParams extends ConfigParams<any, any, infer ParamCategoryName>
+    ? ParamCategoryName[number]
+    : CategoryName,
+  PropsOrParams extends ConfigParams<any, any, any, infer UserFields>
+    ? UserFields[keyof UserFields] // Combine fields into union
+    : {}
+> & {
+  params?: PropsOrParams; // Add params to type to prevent type erasure
 };

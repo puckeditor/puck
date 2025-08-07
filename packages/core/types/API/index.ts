@@ -1,10 +1,11 @@
 import { PuckAction } from "../../reducer";
-import { DefaultAllProps, WithDeepSlots } from "../Internal";
+import { WithDeepSlots } from "../Internal";
 import { DefaultComponentProps } from "../Props";
 import { AppState } from "./../AppState";
 import { ComponentDataOptionalId, Content, Data } from "./../Data";
 import { Overrides } from "./Overrides";
 import { FieldTransforms } from "./FieldTransforms";
+import { Config, DefaultComponents } from "../Config";
 
 export type Permissions = {
   drag: boolean;
@@ -25,9 +26,9 @@ export type OnAction<UserData extends Data = Data> = (
   prevAppState: AppState<UserData>
 ) => void;
 
-export type Plugin = {
-  overrides?: Partial<Overrides>;
-  fieldTransforms?: FieldTransforms;
+export type Plugin<UserConfig extends Config = Config> = {
+  overrides?: Partial<Overrides<UserConfig>>;
+  fieldTransforms?: FieldTransforms<UserConfig>;
 };
 
 export type History<D = any> = {
@@ -64,8 +65,8 @@ export type Slot<
 
 export type WithSlotProps<
   Target extends Record<string, any>,
-  AllProps extends DefaultAllProps = DefaultAllProps,
-  SlotType extends Content<AllProps> = Content<AllProps>
+  Components extends DefaultComponents = DefaultComponents,
+  SlotType extends Content<Components> = Content<Components>
 > = WithDeepSlots<Target, SlotType>;
 
 export * from "./DropZone";

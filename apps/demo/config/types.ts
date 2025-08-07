@@ -15,7 +15,7 @@ import { RootProps } from "./root";
 
 export type { RootProps } from "./root";
 
-export type Props = {
+export type Components = {
   Button: ButtonProps;
   Card: CardProps;
   Grid: GridProps;
@@ -29,10 +29,16 @@ export type Props = {
   Space: SpaceProps;
 };
 
-export type UserConfig = Config<
-  Props,
-  RootProps,
-  "layout" | "typography" | "interactive"
->;
+export type UserConfig = Config<{
+  components: Components;
+  root: RootProps;
+  categories: ["layout", "typography", "interactive"];
+  fields: {
+    userField: {
+      type: "userField";
+      option: boolean;
+    };
+  };
+}>;
 
-export type UserData = Data<Props, RootProps>;
+export type UserData = Data<Components, RootProps>;

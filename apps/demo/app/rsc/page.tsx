@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import config from "../../config/server";
 import { initialData } from "../../config/initial-data";
-import { Props, RootProps } from "../../config/types";
+import { Components, RootProps } from "../../config/types";
 
 import { Config } from "@/core";
 import { Render, resolveAllData } from "@/core/bundle/rsc";
@@ -22,7 +22,7 @@ export default async function Page() {
     example: "Hello, world",
   };
 
-  const resolvedData = await resolveAllData<Props, RootProps>(
+  const resolvedData = await resolveAllData<Components, RootProps>(
     data,
     conf,
     metadata

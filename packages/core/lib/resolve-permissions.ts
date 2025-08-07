@@ -1,21 +1,8 @@
-import {
-  AppState,
-  ComponentData,
-  Config,
-  Data,
-  ExtractPropsFromConfig,
-  ExtractRootPropsFromConfig,
-  Permissions,
-} from "../types";
+import { AppState, Config, Permissions, UserGenerics } from "../types";
 
 export const resolvePermissions = <
   UserConfig extends Config = Config,
-  UserProps extends ExtractPropsFromConfig<UserConfig> = ExtractPropsFromConfig<UserConfig>,
-  UserRootProps extends ExtractRootPropsFromConfig<UserConfig> = ExtractRootPropsFromConfig<UserConfig>,
-  UserData extends Data<UserProps, UserRootProps> | Data = Data<
-    UserProps,
-    UserRootProps
-  >
+  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >({
   data,
   lastData,
@@ -25,13 +12,13 @@ export const resolvePermissions = <
   permissions,
   appState,
 }: {
-  data: UserData["content"][0] | undefined;
-  lastData: UserData["content"][0] | null;
+  data: G["UserData"]["content"][0] | undefined;
+  lastData: G["UserData"]["content"][0] | null;
   config: UserConfig;
   changed: Record<string, boolean>;
   lastPermissions: Partial<Permissions>;
   permissions: Partial<Permissions>;
-  appState: AppState<UserData>;
+  appState: AppState<G["UserData"]>;
 }) => {
   const componentConfig = data ? config.components[data.type] : null;
 

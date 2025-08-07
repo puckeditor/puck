@@ -4,7 +4,7 @@ import { Footer } from "./components/Footer";
 
 export type RootProps = DefaultRootProps;
 
-export const Root: RootConfig<RootProps> = {
+export const Root: RootConfig<{ props: RootProps }> = {
   defaultProps: {
     title: "My Page",
   },

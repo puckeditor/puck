@@ -1,4 +1,10 @@
-import { ComponentData, Config, ExtractField, Field } from "../../types";
+import {
+  ComponentData,
+  Config,
+  ExtractField,
+  Field,
+  UserGenerics,
+} from "../../types";
 import { useMemo } from "react";
 import { RootData } from "../../types";
 import { mapFields, MapFnParams, Mappers } from "../data/map-fields";
@@ -7,8 +13,12 @@ import {
   FieldTransforms,
 } from "../../types/API/FieldTransforms";
 
-export function useFieldTransforms<T extends ComponentData | RootData>(
-  config: Config,
+export function useFieldTransforms<
+  T extends ComponentData | RootData,
+  UserConfig extends Config,
+  G extends UserGenerics<UserConfig>
+>(
+  config: UserConfig,
   item: T,
   transforms: FieldTransforms,
   readOnly?: T["readOnly"],
@@ -25,7 +35,7 @@ export function useFieldTransforms<T extends ComponentData | RootData>(
         [fieldType]: ({
           parentId,
           ...params
-        }: MapFnParams<ExtractField<Field["type"]>>) => {
+        }: MapFnParams<ExtractField<G["UserField"], Field["type"]>>) => {
           const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
           const isReadOnly =
             readOnly?.[params.propPath] ||
@@ -34,7 +44,7 @@ export function useFieldTransforms<T extends ComponentData | RootData>(
             false;
 
           const fn = transforms[fieldType] as FieldTransformFn<
-            ExtractField<Field["type"]>
+            ExtractField<G["UserField"], Field["type"]>
           >;
 
           return fn?.({

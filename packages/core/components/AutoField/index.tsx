@@ -226,7 +226,7 @@ function AutoFieldInternal<
         return null;
       }
       return field.render as any;
-    } else {
+    } else if (field.type !== "slot") {
       return render[field.type] as (props: FieldProps) => ReactElement;
     }
   }, [field.type, render]);
@@ -239,6 +239,10 @@ function AutoFieldInternal<
 
   if (field.type === "slot") {
     return null;
+  }
+
+  if (!FieldComponent) {
+    throw new Error(`Field type for ${field.type} did not exist.`);
   }
 
   return (

@@ -1,8 +1,13 @@
 import { forwardRef } from "react";
 import { DropZoneProps } from "../DropZone/types";
-import { ComponentData, Config, Content, Metadata, Slot } from "../../types";
+import {
+  ComponentData,
+  Config,
+  Content,
+  Metadata,
+  WithPuckProps,
+} from "../../types";
 import { useSlots } from "../../lib/use-slots";
-import { DropZoneRender } from "../ServerRender";
 
 type SlotRenderProps = DropZoneProps & {
   content: Content;
@@ -28,14 +33,13 @@ const Item = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const props = useSlots(config, item, (slotProps) => (
     <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
-  ));
+  )) as WithPuckProps<ComponentData["props"]>;
 
   return (
     <Component.render
       {...props}
       puck={{
         ...props.puck,
-        renderDropZone: DropZoneRender,
         metadata: metadata || {},
       }}
     />

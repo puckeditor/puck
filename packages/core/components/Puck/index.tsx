@@ -97,9 +97,9 @@ type PuckProps<
   onPublish?: (data: G["UserData"]) => void;
   onAction?: OnAction<G["UserData"]>;
   permissions?: Partial<Permissions>;
-  plugins?: Plugin[];
-  overrides?: Partial<Overrides>;
-  fieldTransforms?: FieldTransforms;
+  plugins?: Plugin<UserConfig>[];
+  overrides?: Partial<Overrides<UserConfig>>;
+  fieldTransforms?: FieldTransforms<UserConfig>;
   renderHeader?: (props: {
     children: ReactNode;
     dispatch: (action: PuckAction) => void;
