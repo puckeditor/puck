@@ -88,12 +88,10 @@ Layout.displayName = "Layout";
 export { Layout };
 
 export function withLayout<
-  Props extends DefaultComponentProps = DefaultComponentProps
->(
-  componentConfig: ComponentConfig<Props>
-): ComponentConfig<Props & { layout?: LayoutFieldProps }> {
+  ThisComponentConfig extends ComponentConfig<any> = ComponentConfig
+>(componentConfig: ThisComponentConfig): ThisComponentConfig {
   return {
-    ...(componentConfig as any),
+    ...componentConfig,
     fields: {
       ...componentConfig.fields,
       layout: layoutField,

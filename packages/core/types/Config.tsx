@@ -1,16 +1,15 @@
 import type { JSX, ReactNode } from "react";
-import { BaseField, Fields } from "./Fields";
+import { BaseField, Field, Fields } from "./Fields";
 import { ComponentData, Metadata, RootData } from "./Data";
 
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
 import { AppState } from "./AppState";
-import { DefaultComponentProps } from "./Props";
+import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 import { Permissions } from "./API";
 import { DropZoneProps } from "../components/DropZone/types";
 import {
   ComponentConfigParams,
   ConfigParams,
-  FieldsExtension,
   LeftOrExactRight,
   WithDeepSlots,
 } from "./Internal";
@@ -38,12 +37,12 @@ type ComponentConfigInternal<
   RenderProps extends DefaultComponentProps,
   FieldProps extends DefaultComponentProps,
   DataShape = Omit<ComponentData<FieldProps>, "type">, // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
-  UserField extends {} = {}
+  UserField extends BaseField = {}
 > = {
   render: PuckComponent<RenderProps>;
   label?: string;
   defaultProps?: FieldProps;
-  fields?: Fields<FieldProps, UserField & BaseField>;
+  fields?: Fields<FieldProps, UserField>;
   permissions?: Partial<Permissions>;
   inline?: boolean;
   resolveFields?: (
@@ -88,7 +87,9 @@ export type ComponentConfig<
     DefaultComponentProps,
     ComponentConfigParams
   > = DefaultComponentProps,
-  FieldProps extends DefaultComponentProps = RenderPropsOrParams extends ComponentConfigParams
+  FieldProps extends DefaultComponentProps = RenderPropsOrParams extends {
+    props: any;
+  }
     ? RenderPropsOrParams["props"]
     : RenderPropsOrParams,
   DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
@@ -100,13 +101,13 @@ export type ComponentConfig<
       ParamsRenderProps,
       FieldProps,
       DataShape,
-      ParamsFields
+      ParamsFields[keyof ParamsFields] & BaseField
     >
   : ComponentConfigInternal<RenderPropsOrParams, FieldProps, DataShape>;
 
 type RootConfigInternal<
   RootProps extends DefaultComponentProps = DefaultComponentProps,
-  UserField extends {} = {}
+  UserField extends BaseField = {}
 > = Partial<
   ComponentConfigInternal<
     WithChildren<RootProps>,
@@ -130,7 +131,7 @@ export type RootConfig<
   ? Partial<
       RootConfigInternal<
         WithChildren<Props>,
-        UserFields[keyof UserFields] // Combine fields into union
+        UserFields[keyof UserFields] & BaseField
       >
     >
   : Partial<RootConfigInternal<WithChildren<RootPropsOrParams>>>;
@@ -181,12 +182,27 @@ export type Config<
   infer ParamComponents,
   infer ParamRoot,
   infer ParamCategoryName,
-  infer ParamField
+  infer ParamFields
 >
   ? ConfigInternal<
       ParamComponents,
       ParamRoot,
       ParamCategoryName[number],
-      ParamField
+      (ParamFields[keyof ParamFields] & BaseField) | Field
     >
-  : ConfigInternal<PropsOrParams, RootProps, CategoryName, FieldsExtension>;
+  : ConfigInternal<PropsOrParams, RootProps, CategoryName, Field>;
+
+export type ExtractConfigParams<UserConfig extends ConfigInternal> =
+  UserConfig extends ConfigInternal<
+    infer PropsOrParams,
+    infer RootProps,
+    infer CategoryName,
+    infer UserField
+  >
+    ? {
+        props: PropsOrParams;
+        rootProps: RootProps & DefaultRootFieldProps;
+        categoryNames: CategoryName;
+        field: UserField;
+      }
+    : never;

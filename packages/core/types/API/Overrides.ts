@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from "react";
-import { FieldProps } from "../Fields";
+import { Field, FieldProps } from "../Fields";
 import { ItemSelector } from "../../lib/data/get-item";
 import { ExtractField, UserGenerics } from "../Utils";
 import { Config } from "../Config";

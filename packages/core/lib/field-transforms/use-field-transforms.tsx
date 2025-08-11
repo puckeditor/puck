@@ -28,7 +28,7 @@ export function useFieldTransforms<
   // This converts transformers to mappers by adding the `isReadOnly` param
   const mappers = useMemo<Mappers>(() => {
     return Object.keys(transforms).reduce<Mappers>((acc, _fieldType) => {
-      const fieldType = _fieldType as Field["type"];
+      const fieldType = _fieldType as G["UserField"]["type"];
 
       return {
         ...acc,
@@ -43,7 +43,10 @@ export function useFieldTransforms<
             forceReadOnly ||
             false;
 
-          const fn = transforms[fieldType] as FieldTransformFn<
+          // Side-step annoying type issue with some TS configs, such as for the docs site
+          const _transforms = transforms as any;
+
+          const fn = _transforms[fieldType] as FieldTransformFn<
             ExtractField<G["UserField"], Field["type"]>
           >;
 

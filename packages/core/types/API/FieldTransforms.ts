@@ -9,7 +9,7 @@ export type FieldTransformFnParams<T> = Omit<MapFnParams<T>, "parentId"> & {
 export type FieldTransformFn<T> = (params: FieldTransformFnParams<T>) => any;
 
 export type FieldTransforms<
-  UserConfig extends Config = { components: {}; fields: {} },
+  UserConfig extends Config = Config<{ fields: {} }>, // Setting fields: {} helps TS choose default field types
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 > = Partial<{
   [Type in G["UserField"]["type"]]: FieldTransformFn<

@@ -1,10 +1,9 @@
 import { ReactNode } from "react";
-import { Config } from "./Config";
+import { Config, ExtractConfigParams } from "./Config";
 import { DefaultRootFieldProps, PuckContext } from "./Props";
 import { ComponentData, Data } from "./Data";
-import { ExtractConfigParams, PrivateAppState } from "./Internal";
+import { PrivateAppState } from "./Internal";
 import { AppState } from "./AppState";
-import { BaseField, Field } from "./Fields";
 
 export type WithId<Props> = Props & {
   id: string;
@@ -38,9 +37,7 @@ export type UserGenerics<
   UserAppState: UserAppState;
   UserPublicAppState: UserPublicAppState;
   UserComponentData: UserComponentData;
-  UserField:
-    | (UserParams["fields"][keyof UserParams["fields"]] & BaseField)
-    | Field;
+  UserField: UserParams["field"];
 };
 
 export type ExtractField<

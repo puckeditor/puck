@@ -46,7 +46,7 @@ export type RadioField = BaseField & {
 };
 
 export type ArrayField<
-  Props extends { [key: string]: any } = { [key: string]: any }
+  Props extends { [key: string]: any }[] = { [key: string]: any }[]
 > = BaseField & {
   type: "array";
   arrayFields: {
@@ -135,7 +135,7 @@ export type Field<ValueType = any> =
   | TextareaField
   | SelectField
   | RadioField
-  | ArrayField<ValueType extends { [key: string]: any } ? ValueType : {}>
+  | ArrayField<ValueType extends { [key: string]: any }[] ? ValueType : {}[]>
   | ObjectField<ValueType>
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>

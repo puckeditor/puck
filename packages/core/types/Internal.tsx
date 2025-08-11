@@ -81,35 +81,6 @@ export type ComponentConfigParams<
   fields?: UserField;
 };
 
-export type ExtractConfigParams<UserConfig extends Config> =
-  UserConfig extends Config<
-    infer PropsOrParams,
-    infer RootProps,
-    infer CategoryName
-  >
-    ? {
-        props: PropsOrParams extends ConfigParams<infer Props> ? Props : never;
-        rootProps: PropsOrParams extends ConfigParams<any, infer ParamRootProps>
-          ? ParamRootProps & DefaultRootFieldProps
-          : RootProps & DefaultRootFieldProps;
-        categoryNames: PropsOrParams extends ConfigParams<
-          any,
-          any,
-          infer ParamCategoryName
-        >
-          ? ParamCategoryName[keyof ParamCategoryName] // Convert to union
-          : CategoryName;
-        fields: PropsOrParams extends ConfigParams<
-          any,
-          any,
-          any,
-          infer ParamField
-        >
-          ? ParamField
-          : never;
-      }
-    : never;
-
 // Check the keys of T do not introduce additional ones to Target
 export type Exact<T, Target> = Record<Exclude<keyof T, keyof Target>, never>;
 
