@@ -46,11 +46,14 @@ export type RadioField = BaseField & {
 };
 
 export type ArrayField<
-  Props extends { [key: string]: any }[] = { [key: string]: any }[]
+  Props extends { [key: string]: any }[] = { [key: string]: any }[],
+  UserField extends {} = {}
 > = BaseField & {
   type: "array";
   arrayFields: {
-    [SubPropName in keyof Props[0]]: Field<Props[0][SubPropName]>;
+    [SubPropName in keyof Props[0]]: UserField extends { type: PropertyKey }
+      ? Field<Props[0][SubPropName], UserField> | UserField
+      : Field<Props[0][SubPropName], UserField>;
   };
   defaultItemProps?: Props[0];
   getItemSummary?: (item: Props[0], index?: number) => string;
@@ -58,13 +61,17 @@ export type ArrayField<
   min?: number;
 };
 
-export type ObjectField<Props extends any = { [key: string]: any }> =
-  BaseField & {
-    type: "object";
-    objectFields: {
-      [SubPropName in keyof Props]: Field<Props[SubPropName]>;
-    };
+export type ObjectField<
+  Props extends any = { [key: string]: any },
+  UserField extends {} = {}
+> = BaseField & {
+  type: "object";
+  objectFields: {
+    [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
+      ? Field<Props[SubPropName]> | UserField
+      : Field<Props[SubPropName]>;
   };
+};
 
 // DEPRECATED
 export type Adaptor<
@@ -129,14 +136,17 @@ export type SlotField = BaseField & {
   disallow?: string[];
 };
 
-export type Field<ValueType = any> =
+export type Field<ValueType = any, UserField extends {} = {}> =
   | TextField
   | NumberField
   | TextareaField
   | SelectField
   | RadioField
-  | ArrayField<ValueType extends { [key: string]: any }[] ? ValueType : {}[]>
-  | ObjectField<ValueType>
+  | ArrayField<
+      ValueType extends { [key: string]: any }[] ? ValueType : {}[],
+      UserField
+    >
+  | ObjectField<ValueType, UserField>
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>
   | CustomField<ValueType>
@@ -149,7 +159,7 @@ export type Fields<
   [PropName in keyof Omit<ComponentProps, "editMode">]: UserField extends {
     type: PropertyKey;
   }
-    ? Field<ComponentProps[PropName]> | UserField
+    ? Field<ComponentProps[PropName], UserField> | UserField
     : Field<ComponentProps[PropName]>;
 };
 
