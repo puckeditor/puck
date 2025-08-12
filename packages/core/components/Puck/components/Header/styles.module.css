@@ -15,7 +15,6 @@
 
 .PuckHeader-inner {
   align-items: end;
-  border-left: 1px solid var(--puck-color-grey-09);
   display: grid;
   gap: var(--puck-space-px);
   grid-template-areas: "left middle right";
@@ -40,6 +39,18 @@
 .PuckHeader--rightSideBarVisible .PuckHeader-rightSideBarToggle,
 .PuckHeader--leftSideBarVisible .PuckHeader-leftSideBarToggle {
   color: var(--puck-color-black);
+}
+
+.PuckHeader-rightSideBarToggle,
+.PuckHeader-leftSideBarToggle {
+  display: none;
+}
+
+@media (min-width: 638px) {
+  .PuckHeader-rightSideBarToggle,
+  .PuckHeader-leftSideBarToggle {
+    display: block;
+  }
 }
 
 .PuckHeader-title {

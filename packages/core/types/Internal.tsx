@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from "react";
-import { Slot } from "./API";
+import { Plugin, Slot } from "./API";
 import { AppState } from "./AppState";
 import { ComponentData, Data } from "./Data";
 import { DefaultComponentProps } from "./Props";
@@ -65,3 +65,5 @@ export type WithDeepSlots<T, SlotType = T> =
 export type RenderFunc<
   Props extends { [key: string]: any } = { children: ReactNode }
 > = (props: Props) => ReactElement;
+
+export type PluginInternal = Plugin & { mobileOnly?: boolean };

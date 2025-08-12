@@ -1,15 +1,25 @@
 .Nav-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-.NavSection {
-  padding: 16px;
+@media (min-width: 638px) {
+  .Nav-list {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
-.NavSection:first-of-type {
-  padding-top: 32px;
+@media (min-width: 638px) {
+  .NavSection {
+    padding: 16px;
+  }
+
+  .NavSection:first-of-type {
+    padding-top: 32px;
+  }
 }
 
 .Nav--slim .NavSection {
@@ -23,14 +33,25 @@
 
 .NavSection-list {
   display: flex;
-  flex-direction: column;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+@media (min-width: 638px) {
+  .NavSection-list {
+    flex-direction: column;
+  }
+}
+
 .Nav--slim .NavSection-list {
-  gap: 16px;
+  gap: 8px;
+}
+
+@media (min-width: 638px) {
+  .Nav--slim .NavSection-list {
+    gap: 16px;
+  }
 }
 
 .NavSection-title {
@@ -51,17 +72,32 @@
   gap: 8px;
   text-decoration: none;
   cursor: pointer;
-
   border-radius: 4px;
   padding: 8px 4px;
+  width: 64px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 638px) {
+  .NavItem-link {
+    width: auto;
+  }
 }
 
 .Nav--slim .NavItem-link {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
   border-radius: 0;
   flex-direction: column;
   font-size: var(--puck-font-size-xxxs);
+}
+
+@media (min-width: 638px) {
+  .Nav--slim .NavItem-link {
+    border: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+  }
 }
 
 .NavItem-linkIcon {
@@ -77,10 +113,17 @@
 
 .Nav--slim .NavItem--active > .NavItem-link {
   background-color: transparent;
-  border-right-color: var(--puck-color-azure-04);
+  border-top-color: var(--puck-color-azure-04);
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   font-weight: 600;
+}
+
+@media (min-width: 638px) {
+  .Nav--slim .NavItem--active > .NavItem-link {
+    border-top-color: transparent;
+    border-right-color: var(--puck-color-azure-04);
+  }
 }
 
 .NavItem:not(.NavItem--active) > .NavItem-link:hover {
@@ -103,4 +146,35 @@
   border-left: 0;
   padding-left: 0;
   margin-left: 0;
+}
+
+.Nav {
+  display: flex;
+}
+
+@media (min-width: 638px) {
+  .Nav {
+    display: block;
+  }
+}
+
+@media (min-width: 638px) {
+  .NavItem--mobileOnly {
+    display: none;
+  }
+}
+
+.Nav-mobileActions {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-inline-start: auto;
+  padding: 4px 16px;
+  border-inline-start: 1px solid var(--puck-color-grey-09);
+}
+
+@media (min-width: 638px) {
+  .Nav-mobileActions {
+    display: none;
+  }
 }
