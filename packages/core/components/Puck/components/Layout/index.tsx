@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
 import { getClassNameFactory } from "../../../../lib";
-import { IframeConfig, Plugin, UiState } from "../../../../types";
+import { IframeConfig, UiState } from "../../../../types";
 import { usePropsContext } from "../..";
 import styles from "./styles.module.css";
 import { useInjectGlobalCss } from "../../../../lib/use-inject-css";
@@ -19,8 +19,14 @@ import { FrameProvider } from "../../../../lib/frame-context";
 import { Sidebar } from "../Sidebar";
 import { useDeleteHotkeys } from "../../../../lib/use-delete-hotkeys";
 import { MenuItem, Nav } from "../Nav";
-import { ToyBrick } from "lucide-react";
-import { blocksPlugin, outlinePlugin } from "../../../../bundle";
+import { IconButton } from "../../../IconButton";
+import { Maximize2, Minimize2, ToyBrick } from "lucide-react";
+import {
+  blocksPlugin,
+  fieldsPlugin,
+  outlinePlugin,
+} from "../../../../lib/default-plugins";
+import { PluginInternal } from "../../../../types/Internal";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -44,11 +50,17 @@ const FieldSideBar = () => {
 const PluginTab = ({
   children,
   visible,
+  mobileOnly,
 }: {
   children: ReactNode;
   visible: boolean;
+  mobileOnly?: boolean;
 }) => {
-  return <div className={getPluginTabClassName({ visible })}>{children}</div>;
+  return (
+    <div className={getPluginTabClassName({ visible, mobileOnly })}>
+      <div className={getPluginTabClassName("body")}>{children}</div>
+    </div>
+  );
 };
 
 export const Layout = ({ children }: { children: ReactNode }) => {
@@ -168,9 +180,16 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     const details: Record<string, MenuItem & { render: () => ReactElement }> =
       {};
 
-    const defaultPlugins: Plugin[] = [blocksPlugin(), outlinePlugin()];
+    const defaultPlugins: PluginInternal[] = [blocksPlugin(), outlinePlugin()];
 
-    const combinedPlugins = [...defaultPlugins, ...(plugins ?? [])];
+    const combinedPlugins: PluginInternal[] = [
+      ...defaultPlugins,
+      ...(plugins ?? []),
+    ];
+
+    if (!plugins?.some((p) => p.name === "fields")) {
+      combinedPlugins.push(fieldsPlugin());
+    }
 
     combinedPlugins?.forEach((plugin) => {
       if (plugin.name && plugin.render) {
@@ -200,6 +219,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
           },
           isActive: leftSideBarVisible && currentPlugin === plugin.name,
           render: plugin.render,
+          mobileOnly: plugin.mobileOnly,
         };
       }
     });
@@ -215,6 +235,11 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     }
   }, [pluginItems, currentPlugin]);
 
+  const hasDesktopFieldsPlugin =
+    pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <div className={`Puck ${getClassName()}`}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
@@ -225,14 +250,18 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                 className={getLayoutClassName({
                   leftSideBarVisible,
                   mounted,
-                  rightSideBarVisible,
+                  rightSideBarVisible:
+                    !hasDesktopFieldsPlugin && rightSideBarVisible,
+                  isExpanded,
                 })}
               >
                 <div
                   className={getLayoutClassName("inner")}
                   style={layoutOptions}
                 >
-                  <Header />
+                  <div className={getLayoutClassName("header")}>
+                    <Header />
+                  </div>
                   <div className={getLayoutClassName("nav")}>
                     <Nav
                       slim
@@ -241,6 +270,23 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                           items: pluginItems,
                         },
                       }}
+                      mobileActions={
+                        leftSideBarVisible && (
+                          <IconButton
+                            type="button"
+                            title="maximize"
+                            onClick={() => {
+                              setIsExpanded((s) => !s);
+                            }}
+                          >
+                            {isExpanded ? (
+                              <Minimize2 size={21} />
+                            ) : (
+                              <Maximize2 size={21} />
+                            )}
+                          </IconButton>
+                        )
+                      }
                     />
                   </div>
                   <Sidebar
@@ -251,23 +297,29 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                     onResizeEnd={handleLeftSidebarResizeEnd}
                   >
                     {Object.entries(pluginItems).map(
-                      ([id, { render: Render }]) => (
-                        <PluginTab key={id} visible={currentPlugin === id}>
+                      ([id, { mobileOnly, render: Render, label }]) => (
+                        <PluginTab
+                          key={id}
+                          visible={currentPlugin === id}
+                          mobileOnly={mobileOnly}
+                        >
                           <Render />
                         </PluginTab>
                       )
                     )}
                   </Sidebar>
                   <Canvas />
-                  <Sidebar
-                    position="right"
-                    sidebarRef={rightSidebarRef}
-                    isVisible={rightSideBarVisible}
-                    onResize={setRightWidth}
-                    onResizeEnd={handleRightSidebarResizeEnd}
-                  >
-                    <FieldSideBar />
-                  </Sidebar>
+                  {!hasDesktopFieldsPlugin && (
+                    <Sidebar
+                      position="right"
+                      sidebarRef={rightSidebarRef}
+                      isVisible={rightSideBarVisible}
+                      onResize={setRightWidth}
+                      onResizeEnd={handleRightSidebarResizeEnd}
+                    >
+                      <FieldSideBar />
+                    </Sidebar>
+                  )}
                 </div>
               </div>
             </FrameProvider>

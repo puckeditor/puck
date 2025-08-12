@@ -12,6 +12,7 @@ export type MenuItem = {
   icon?: ReactNode;
   items?: Record<string, MenuItem>;
   isActive?: boolean;
+  mobileOnly?: boolean;
 };
 
 export type NavSection = {
@@ -25,11 +26,12 @@ export const MenuItem = ({
   items,
   onClick,
   isActive,
+  mobileOnly,
 }: MenuItem) => {
   const showChildren = isActive;
 
   return (
-    <li className={getClassNameItem({ active: isActive })}>
+    <li className={getClassNameItem({ active: isActive, mobileOnly })}>
       {onClick && (
         <div className={getClassNameItem("link")} onClick={onClick}>
           {icon && <span className={getClassNameItem("linkIcon")}>{icon}</span>}
@@ -63,9 +65,11 @@ export const NavSection = ({ title, items }: NavSection) => {
 export const Nav = ({
   navigation,
   slim,
+  mobileActions,
 }: {
   navigation: Record<string, NavSection>;
   slim?: boolean;
+  mobileActions?: ReactNode;
 }) => {
   return (
     <nav className={getClassName({ slim })}>
@@ -76,6 +80,9 @@ export const Nav = ({
           );
         })}
       </ul>
+      {mobileActions && (
+        <div className={getClassName("mobileActions")}>{mobileActions}</div>
+      )}
     </nav>
   );
 };
