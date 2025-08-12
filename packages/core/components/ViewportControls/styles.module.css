@@ -5,10 +5,7 @@
   border-inline-start: 2px solid var(--puck-color-grey-11);
   justify-content: center;
   gap: 8px;
-  min-width: 358px;
   padding-bottom: 16px;
-  padding-inline-start: var(--puck-space-px);
-  padding-inline-end: var(--puck-space-px);
   z-index: 1;
 }
 
