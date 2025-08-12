@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from "react";
-import { Slot } from "./API";
+import { Plugin, Slot } from "./API";
 import { AppState } from "./AppState";
 import { Config, DefaultComponents } from "./Config";
 import { ComponentData, Data } from "./Data";
@@ -101,3 +101,5 @@ export type AssertHasValue<T, True = T, False = never> = [keyof T] extends [
 export type RenderFunc<
   Props extends { [key: string]: any } = { children: ReactNode }
 > = (props: Props) => ReactElement;
+
+export type PluginInternal = Plugin & { mobileOnly?: boolean };
