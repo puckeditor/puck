@@ -2,6 +2,7 @@
 import {
   Context,
   createContext,
+  CSSProperties,
   PropsWithChildren,
   ReactElement,
   ReactNode,
@@ -86,6 +87,7 @@ type PuckProps<
   };
   initialHistory?: InitialHistory;
   metadata?: Metadata;
+  height?: CSSProperties["height"];
 };
 
 const propsContext = createContext<Partial<PuckProps>>({});

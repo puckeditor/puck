@@ -291,7 +291,7 @@ const DragDropContextClient = ({
   );
 
   return (
-    <div id={id}>
+    <div id={id} style={{ display: "contents" }}>
       <dragListenerContext.Provider
         value={{
           dragListeners,

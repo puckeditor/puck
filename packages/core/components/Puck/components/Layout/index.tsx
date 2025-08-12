@@ -69,6 +69,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     dnd,
     initialHistory: _initialHistory,
     plugins,
+    height,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -254,6 +255,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                     !hasDesktopFieldsPlugin && rightSideBarVisible,
                   isExpanded,
                 })}
+                style={{ height }}
               >
                 <div
                   className={getLayoutClassName("inner")}
