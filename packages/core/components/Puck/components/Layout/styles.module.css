@@ -33,6 +33,10 @@
   z-index: 2;
 }
 
+.PuckLayout {
+  height: 100%;
+}
+
 .PuckLayout-inner {
   --puck-frame-width: auto;
   --puck-side-nav-width: min-content;
@@ -50,7 +54,7 @@
   grid-template-areas: "header" "editor" "left" "right" "sidenav";
   grid-template-columns: var(--puck-frame-width);
   grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
-  height: 100dvh;
+  height: 100%;
   position: relative;
   transition: grid-template-rows 150ms ease-in;
   z-index: 0;
