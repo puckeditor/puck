@@ -35,7 +35,7 @@
 
 .PuckLayout-inner {
   --puck-frame-width: auto;
-  --puck-side-nav-width: 68px;
+  --puck-side-nav-width: min-content;
   --puck-side-bar-width: 0px;
   --puck-left-side-bar-width: var(
     --puck-user-left-side-bar-width,
@@ -45,13 +45,25 @@
     --puck-user-right-side-bar-width,
     var(--puck-side-bar-width)
   );
+  background-color: var(--puck-color-grey-12);
   display: grid;
-  grid-template-areas: "header header header header" "sidenav left editor right";
-  grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
-  grid-template-rows: min-content auto;
+  grid-template-areas: "header" "editor" "left" "right" "sidenav";
+  grid-template-columns: var(--puck-frame-width);
+  grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
   height: 100dvh;
   position: relative;
+  transition: grid-template-rows 150ms ease-in;
   z-index: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 638px) {
+  .PuckLayout-inner {
+    --puck-side-nav-width: 67.5px; /* Rely on sub-pixel rounding to keep border aligned with header */
+    grid-template-areas: "header header header header" "sidenav left editor right";
+    grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
+    grid-template-rows: min-content auto;
+  }
 }
 
 .PuckLayout--mounted .PuckLayout-inner {
@@ -59,26 +71,43 @@
 }
 
 .PuckLayout--leftSideBarVisible .PuckLayout-inner {
-  grid-template-columns:
-    var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
-      --puck-frame-width
-    )
-    0;
+  /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
+  grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
 }
 
-.PuckLayout--rightSideBarVisible .PuckLayout-inner {
-  grid-template-columns:
-    var(--puck-side-nav-width) 0 var(--puck-frame-width)
-    var(--puck-right-side-bar-width);
+.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded .PuckLayout-inner {
+  /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
+  grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
 }
 
-.PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
-  .PuckLayout-inner {
-  grid-template-columns:
-    var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
-      --puck-frame-width
-    )
-    var(--puck-right-side-bar-width);
+@media (min-width: 638px) {
+  .PuckLayout--leftSideBarVisible .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+        --puck-frame-width
+      )
+      0;
+    grid-template-rows: min-content auto;
+  }
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--rightSideBarVisible .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) 0 var(--puck-frame-width)
+      var(--puck-right-side-bar-width);
+  }
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
+    .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+        --puck-frame-width
+      )
+      var(--puck-right-side-bar-width);
+  }
 }
 
 @media (min-width: 458px) {
@@ -124,15 +153,42 @@
 }
 
 .PuckLayout-nav {
-  border-right: 1px solid var(--puck-color-grey-09);
+  border-top: 1px solid var(--puck-color-grey-09);
   background-color: var(--puck-color-grey-12);
+  grid-area: sidenav;
+}
+
+@media (min-width: 638px) {
+  .PuckLayout-nav {
+    border-top: 0;
+    border-right: 1px solid var(--puck-color-grey-09);
+  }
+}
+
+.PuckLayout-header {
+  grid-area: header;
+}
+
+.PuckLayout--leftSideBarVisible .PuckLayout-header {
+  overflow: hidden;
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--leftSideBarVisible .PuckLayout-header {
+    overflow: auto;
+  }
 }
 
 .PuckPluginTab {
   display: none;
-  height: 100%;
+  flex-grow: 1;
 }
 
 .PuckPluginTab--visible {
-  display: block;
+  display: flex;
+  flex-direction: column;
+}
+
+.PuckPluginTab-body {
+  flex-grow: 1;
 }
