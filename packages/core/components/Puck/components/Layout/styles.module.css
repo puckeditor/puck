@@ -161,6 +161,8 @@
   border-top: 1px solid var(--puck-color-grey-09);
   background-color: var(--puck-color-grey-12);
   grid-area: sidenav;
+  overflow: hidden;
+  width: 100%;
 }
 
 @media (min-width: 638px) {
