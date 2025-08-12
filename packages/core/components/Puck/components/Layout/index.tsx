@@ -69,6 +69,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     dnd,
     initialHistory: _initialHistory,
     plugins,
+    height = "100dvh",
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -241,7 +242,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={`Puck ${getClassName()}`}>
+    <div className={`Puck ${getClassName()}`} style={{ height }}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
           {children || (
