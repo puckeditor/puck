@@ -19,6 +19,7 @@
 .Puck {
   --puck-space-px: 16px;
   font-family: var(--puck-font-family);
+  height: 100%;
   overflow-x: hidden;
 }
 
@@ -31,6 +32,10 @@
 .Puck-portal {
   position: relative;
   z-index: 2;
+}
+
+.PuckLayout {
+  height: 100dvh;
 }
 
 .PuckLayout-inner {
@@ -50,7 +55,7 @@
   grid-template-areas: "header" "editor" "left" "right" "sidenav";
   grid-template-columns: var(--puck-frame-width);
   grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
-  height: 100dvh;
+  height: 100%;
   position: relative;
   transition: grid-template-rows 150ms ease-in;
   z-index: 0;
