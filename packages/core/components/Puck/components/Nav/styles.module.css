@@ -1,15 +1,8 @@
 .Nav-list {
   list-style: none;
   margin: 0;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-
-@media (min-width: 638px) {
-  .Nav-list {
-    padding-left: 0;
-    padding-right: 0;
-  }
+  padding: 0;
+  overflow-x: auto;
 }
 
 @media (min-width: 638px) {
@@ -41,6 +34,7 @@
 @media (min-width: 638px) {
   .NavSection-list {
     flex-direction: column;
+    padding: 0;
   }
 }
 
@@ -81,6 +75,21 @@
 @media (min-width: 638px) {
   .NavItem-link {
     width: auto;
+  }
+}
+
+.NavItem:first-of-type {
+  padding-left: 16px;
+}
+
+.NavItem:last-of-type {
+  padding-right: 16px;
+}
+
+@media (min-width: 638px) {
+  .NavItem:first-of-type,
+  .NavItem:last-of-type {
+    padding: 0;
   }
 }
 
