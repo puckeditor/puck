@@ -3,6 +3,7 @@ import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 type NestedFieldContext = {
   localName?: string;
   readOnlyFields?: Partial<Record<string | number | symbol, boolean>>;
+  value?: any;
 };
 
 export const NestedFieldContext = createContext<NestedFieldContext>({});
@@ -22,11 +23,13 @@ export const NestedFieldProvider = ({
   subName,
   wildcardName = name,
   readOnlyFields,
+  value,
 }: PropsWithChildren<{
   name: string;
   subName: string;
   wildcardName?: string;
   readOnlyFields: Partial<Record<string | number | symbol, boolean>>;
+  value?: any;
 }>) => {
   const subPath = `${name}.${subName}`;
   const wildcardSubPath = `${wildcardName}.${subName}`;
@@ -62,7 +65,7 @@ export const NestedFieldProvider = ({
 
   return (
     <NestedFieldContext.Provider
-      value={{ readOnlyFields: subReadOnlyFields, localName: subName }}
+      value={{ readOnlyFields: subReadOnlyFields, localName: subName, value }}
     >
       {children}
     </NestedFieldContext.Provider>
