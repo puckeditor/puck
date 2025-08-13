@@ -32,4 +32,6 @@ export {
   type PuckApi,
 } from "../lib/use-puck";
 
-export * from "../lib/default-plugins";
+export * from "../plugins/blocks";
+export * from "../plugins/fields";
+export * from "../plugins/outline";
