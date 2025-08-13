@@ -1,0 +1,19 @@
+.FieldsPlugin {
+  background: white;
+  min-height: 100%;
+}
+
+.FieldsPlugin-header {
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  font-weight: 600;
+  padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+}
+
+@media (min-width: 638px) {
+  .FieldsPlugin-header {
+    padding: 16px;
+  }
+}
