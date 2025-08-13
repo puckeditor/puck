@@ -21,12 +21,9 @@ import { useDeleteHotkeys } from "../../../../lib/use-delete-hotkeys";
 import { MenuItem, Nav } from "../Nav";
 import { IconButton } from "../../../IconButton";
 import { Maximize2, Minimize2, ToyBrick } from "lucide-react";
-import {
-  blocksPlugin,
-  fieldsPlugin,
-  outlinePlugin,
-} from "../../../../lib/default-plugins";
+import { blocksPlugin, outlinePlugin } from "../../../../lib/default-plugins";
 import { PluginInternal } from "../../../../types/Internal";
+import { fieldsPlugin } from "../../../../plugins/fields";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
