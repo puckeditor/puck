@@ -63,22 +63,22 @@ export type ConfigParams<
   Components extends DefaultComponents = DefaultComponents,
   RootProps extends DefaultComponentProps = DefaultComponentProps,
   CategoryNames extends string[] = string[],
-  UserFields extends FieldsExtension = {}
+  UserFields extends FieldsExtension = FieldsExtension
 > = {
   components?: Components;
   root?: RootProps;
   categories?: CategoryNames;
-  fields?: UserFields;
+  fields?: AssertHasValue<UserFields, UserFields, {}>;
 };
 
 export type FieldsExtension = { [Type in string]: { type: Type } };
 
 export type ComponentConfigParams<
   Props extends DefaultComponentProps = DefaultComponentProps,
-  UserField extends FieldsExtension = FieldsExtension
+  UserFields extends FieldsExtension = never
 > = {
   props: Props;
-  fields?: UserField;
+  fields?: AssertHasValue<UserFields>;
 };
 
 // Check the keys of T do not introduce additional ones to Target
@@ -89,3 +89,9 @@ export type Exact<T, Target> = Record<Exclude<keyof T, keyof Target>, never>;
 export type LeftOrExactRight<Union, Left, Right> =
   | (Left & Union extends Right ? Exact<Union, Right> : Left)
   | (Right & Exact<Union, Right>);
+
+export type AssertHasValue<T, True = T, False = never> = [keyof T] extends [
+  never
+]
+  ? False
+  : True;

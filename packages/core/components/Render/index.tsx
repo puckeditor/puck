@@ -38,7 +38,7 @@ export function Render<
     ...data,
     root: data.root || {},
     content: data.content || [],
-  };
+  } as G["UserData"];
 
   // DEPRECATED
   const rootProps =

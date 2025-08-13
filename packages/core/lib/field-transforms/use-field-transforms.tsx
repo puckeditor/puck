@@ -14,7 +14,7 @@ import {
 } from "../../types/API/FieldTransforms";
 
 export function useFieldTransforms<
-  T extends ComponentData | RootData,
+  T extends ComponentData,
   UserConfig extends Config,
   G extends UserGenerics<UserConfig>
 >(
@@ -37,16 +37,14 @@ export function useFieldTransforms<
           ...params
         }: MapFnParams<ExtractField<G["UserField"], Field["type"]>>) => {
           const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
+
           const isReadOnly =
             readOnly?.[params.propPath] ||
             readOnly?.[wildcardPath] ||
             forceReadOnly ||
             false;
 
-          // Side-step annoying type issue with some TS configs, such as for the docs site
-          const _transforms = transforms as any;
-
-          const fn = _transforms[fieldType] as FieldTransformFn<
+          const fn = transforms[fieldType] as FieldTransformFn<
             ExtractField<G["UserField"], Field["type"]>
           >;
 

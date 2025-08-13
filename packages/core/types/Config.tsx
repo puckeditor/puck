@@ -95,8 +95,13 @@ export type ComponentConfig<
   DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
 > = RenderPropsOrParams extends ComponentConfigParams<
   infer ParamsRenderProps,
-  infer ParamsFields
+  never
 >
+  ? ComponentConfigInternal<ParamsRenderProps, FieldProps, DataShape, {}>
+  : RenderPropsOrParams extends ComponentConfigParams<
+      infer ParamsRenderProps,
+      infer ParamsFields
+    >
   ? ComponentConfigInternal<
       ParamsRenderProps,
       FieldProps,
@@ -123,11 +128,13 @@ export type RootConfig<
     RootPropsOrParams,
     DefaultComponentProps,
     ComponentConfigParams
-  > = DefaultComponentProps | ComponentConfigParams
-> = RootPropsOrParams extends ComponentConfigParams<
-  infer Props,
-  infer UserFields
->
+  > = DefaultComponentProps
+> = RootPropsOrParams extends ComponentConfigParams<infer Props, never>
+  ? Partial<RootConfigInternal<WithChildren<Props>, {}>>
+  : RootPropsOrParams extends ComponentConfigParams<
+      infer Props,
+      infer UserFields
+    >
   ? Partial<
       RootConfigInternal<
         WithChildren<Props>,
@@ -182,8 +189,15 @@ export type Config<
   infer ParamComponents,
   infer ParamRoot,
   infer ParamCategoryName,
-  infer ParamFields
+  never
 >
+  ? ConfigInternal<ParamComponents, ParamRoot, ParamCategoryName[number], Field>
+  : PropsOrParams extends ConfigParams<
+      infer ParamComponents,
+      infer ParamRoot,
+      infer ParamCategoryName,
+      infer ParamFields
+    >
   ? ConfigInternal<
       ParamComponents,
       ParamRoot,

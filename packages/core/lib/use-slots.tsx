@@ -19,7 +19,7 @@ export function useSlots<
 ): T["props"] {
   return useFieldTransforms(
     config,
-    item,
+    item as ComponentData,
     getSlotTransform(renderSlotEdit, renderSlotRender),
     readOnly,
     forceReadOnly
