@@ -54,16 +54,6 @@ const fieldTransforms = {
 const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 ```
 
-## Define new fields
-
-As with [field type overrides](/docs/extending-puck/ui-overrides#introducing-new-field-types), field transforms let you define your own field types:
-
-```tsx
-const fieldTransforms = {
-  example: () => <div />,
-};
-```
-
 ## Distributing field transforms as plugins
 
 Distribute transforms as plugins to package up custom behavior.
@@ -71,13 +61,14 @@ Distribute transforms as plugins to package up custom behavior.
 ```tsx
 const plugin = {
   fieldTransforms: {
-    example: ({ value }) => <div>{value}</div>, // Wrap all example fields with divs
+    text: ({ value }) => <div>{value}</div>, // Wrap all text fields with divs
   },
 
   // This example combines transforms with overrides
   overrides: {
     fieldTypes: {
-      example: () => <input />, // Define a field interface
+      // Override the default text field
+      text: () => <input onChange={(e) => onChange(e.currentTarget.value)} />,
     },
   },
 };
