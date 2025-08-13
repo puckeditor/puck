@@ -79,37 +79,6 @@ This may result in some incompatible plugin combinations. To improve your chance
 
 </Callout>
 
-### Introducing new field types
-
-Both the field transforms and overrides let you introduce [entirely new field types](/docs/extending-puck/ui-overrides#introducing-new-field-types). Plugins can combine this functionality to bundle up new field behavior in a convenient package.
-
-This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can modified directly in the editor preview.
-
-```tsx showLineNumbers copy {6-8, 12-20}
-import { registerOverlayPortal } from "@measured/puck";
-
-const plugin = {
-  overrides: {
-    // Add a richText field type
-    fieldTypes: {
-      richText: ({ name, value }) => <input name={name} value={value} />,
-    },
-  },
-  fieldTransforms: {
-    // Wrap the value in a span, create an overlay portal, and make it editable
-    richText: ({ value }) => {
-      const handleInput = useCallback(() => {}, []); // Implement your input behavior
-
-      return (
-        <span ref={registerOverlayPortal} contentEditable onInput={handleInput}>
-          {value}
-        </span>
-      );
-    },
-  },
-};
-```
-
 ## Further reading
 
 - [Plugin API reference](/docs/api-reference/plugin)
