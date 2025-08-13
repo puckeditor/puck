@@ -154,7 +154,7 @@ type ConfigInternal<
   Props extends DefaultComponents = DefaultComponents,
   RootProps extends DefaultComponentProps = DefaultComponentProps,
   CategoryName extends string = string,
-  UserField extends {} = {}
+  UserField extends {} = Field
 > = {
   categories?: Record<CategoryName, Category<keyof Props>> & {
     other?: Category<keyof Props>;
@@ -191,7 +191,7 @@ export type Config<
   infer ParamCategoryName,
   never
 >
-  ? ConfigInternal<ParamComponents, ParamRoot, ParamCategoryName[number], Field>
+  ? ConfigInternal<ParamComponents, ParamRoot, ParamCategoryName[number]>
   : PropsOrParams extends ConfigParams<
       infer ParamComponents,
       infer ParamRoot,
@@ -202,7 +202,7 @@ export type Config<
       ParamComponents,
       ParamRoot,
       ParamCategoryName[number],
-      (ParamFields[keyof ParamFields] & BaseField) | Field
+      ParamFields[keyof ParamFields] & BaseField
     >
   : ConfigInternal<PropsOrParams, RootProps, CategoryName, Field>;
 

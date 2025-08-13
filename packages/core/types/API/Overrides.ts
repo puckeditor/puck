@@ -68,11 +68,12 @@ export type Overrides<UserConfig extends Config = Config> = OverridesGeneric<{
 
 export type FieldRenderFunctions<
   UserConfig extends Config = Config,
-  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>,
+  UserField extends { type: string } = Field | G["UserField"]
 > = Omit<
   {
-    [Type in G["UserField"]["type"]]: React.FunctionComponent<
-      FieldProps<ExtractField<G["UserField"], Type>, any> & {
+    [Type in UserField["type"]]: React.FunctionComponent<
+      FieldProps<ExtractField<UserField, Type>, any> & {
         children: ReactNode;
         name: string;
       }

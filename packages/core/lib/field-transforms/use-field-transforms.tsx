@@ -6,7 +6,6 @@ import {
   UserGenerics,
 } from "../../types";
 import { useMemo } from "react";
-import { RootData } from "../../types";
 import { mapFields, MapFnParams, Mappers } from "../data/map-fields";
 import {
   FieldTransformFn,
