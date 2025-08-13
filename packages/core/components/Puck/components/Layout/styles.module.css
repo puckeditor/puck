@@ -64,7 +64,7 @@
 
 @media (min-width: 638px) {
   .PuckLayout-inner {
-    --puck-side-nav-width: 67.5px; /* Rely on sub-pixel rounding to keep border aligned with header */
+    --puck-side-nav-width: 68px;
     grid-template-areas: "header header header header" "sidenav left editor right";
     grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
     grid-template-rows: min-content auto;
@@ -169,6 +169,7 @@
   .PuckLayout-nav {
     border-top: 0;
     border-right: 1px solid var(--puck-color-grey-09);
+    box-sizing: border-box;
   }
 }
 
