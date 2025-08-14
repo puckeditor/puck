@@ -68,7 +68,7 @@ export type ConfigParams<
   components?: Components;
   root?: RootProps;
   categories?: CategoryNames;
-  fields?: AssertHasValue<UserFields, UserFields, {}>;
+  fields?: AssertHasValue<UserFields>;
 };
 
 export type FieldsExtension = { [Type in string]: { type: Type } };

@@ -218,24 +218,12 @@ export type ExtractConfigParams<UserConfig extends ConfigInternal> =
     infer PropsOrParams,
     infer RootProps,
     infer CategoryName,
-    never
+    infer UserField
   >
     ? {
         props: PropsOrParams;
         rootProps: RootProps & DefaultRootFieldProps;
         categoryNames: CategoryName;
-        field: Field;
-      }
-    : UserConfig extends ConfigInternal<
-        infer PropsOrParams,
-        infer RootProps,
-        infer CategoryName,
-        infer UserField
-      >
-    ? {
-        props: PropsOrParams;
-        rootProps: RootProps & DefaultRootFieldProps;
-        categoryNames: CategoryName;
-        field: UserField;
+        field: UserField extends { type: string } ? UserField : Field;
       }
     : never;
