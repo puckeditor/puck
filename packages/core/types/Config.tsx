@@ -204,6 +204,13 @@ export type Config<
       ParamCategoryName[number],
       ParamFields[keyof ParamFields] & BaseField
     >
+  : PropsOrParams extends ConfigParams<
+      infer ParamComponents,
+      infer ParamRoot,
+      infer ParamCategoryName,
+      any
+    >
+  ? ConfigInternal<ParamComponents, ParamRoot, ParamCategoryName[number], {}>
   : ConfigInternal<PropsOrParams, RootProps, CategoryName, Field>;
 
 export type ExtractConfigParams<UserConfig extends ConfigInternal> =
