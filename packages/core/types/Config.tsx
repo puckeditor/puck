@@ -211,7 +211,7 @@ export type Config<
       any
     >
   ? ConfigInternal<ParamComponents, ParamRoot, ParamCategoryName[number], {}>
-  : ConfigInternal<PropsOrParams, RootProps, CategoryName, Field>;
+  : ConfigInternal<PropsOrParams, RootProps, CategoryName>;
 
 export type ExtractConfigParams<UserConfig extends ConfigInternal> =
   UserConfig extends ConfigInternal<
