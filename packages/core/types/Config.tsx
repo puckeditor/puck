@@ -154,7 +154,7 @@ type ConfigInternal<
   Props extends DefaultComponents = DefaultComponents,
   RootProps extends DefaultComponentProps = DefaultComponentProps,
   CategoryName extends string = string,
-  UserField extends {} = Field
+  UserField extends {} = {}
 > = {
   categories?: Record<CategoryName, Category<keyof Props>> & {
     other?: Category<keyof Props>;
@@ -211,8 +211,20 @@ export type ExtractConfigParams<UserConfig extends ConfigInternal> =
     infer PropsOrParams,
     infer RootProps,
     infer CategoryName,
-    infer UserField
+    never
   >
+    ? {
+        props: PropsOrParams;
+        rootProps: RootProps & DefaultRootFieldProps;
+        categoryNames: CategoryName;
+        field: Field;
+      }
+    : UserConfig extends ConfigInternal<
+        infer PropsOrParams,
+        infer RootProps,
+        infer CategoryName,
+        infer UserField
+      >
     ? {
         props: PropsOrParams;
         rootProps: RootProps & DefaultRootFieldProps;
