@@ -2,6 +2,56 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.20.0](https://github.com/measuredco/puck/compare/v0.19.3...v0.20.0) (2025-08-14)
+
+
+### Features
+
+* add componentOverlay override ([1a47857](https://github.com/measuredco/puck/commit/1a47857137a1fb7a4c52579e4687a6ae06606e99))
+* add fieldTransform API for modifying field values rendering in canvas ([e67152b](https://github.com/measuredco/puck/commit/e67152bd3e9ef85e3550ee184a0238d6c0ae8da8))
+* add inline text editing to custom fields ([042f4b2](https://github.com/measuredco/puck/commit/042f4b2fc06175d6ded53c83fd653c1eb9095c6a))
+* add inline text editing to text and textarea fields ([ed7c12e](https://github.com/measuredco/puck/commit/ed7c12e3398e76f3c680344bfa6be87abb803afb))
+* add no-external.css bundle without external fonts ([d97af5e](https://github.com/measuredco/puck/commit/d97af5ee2eb5ecd9c704b2b5c3f3c2cde6f660a5))
+* add overlay portals for interactive UI under overlay ([7d50c23](https://github.com/measuredco/puck/commit/7d50c2325a16166021c0c99520816c55682a272b))
+* add setDeep convenience utility ([676e2ab](https://github.com/measuredco/puck/commit/676e2aba846c0182d1079e0290e124255b9db0a8))
+* enable resizing the sidebars ([8909f8c](https://github.com/measuredco/puck/commit/8909f8cc1451a1bf5bc0abe51a564f4a0daa6d75))
+* export SlotComponent type ([d12fc3a](https://github.com/measuredco/puck/commit/d12fc3a9f4edbac5a556e9714bcf2118cc441f4d))
+* extend migrate function to support dynamic DropZones to slots ([3da831b](https://github.com/measuredco/puck/commit/3da831b0975b065e0b9a0062a4c2ae8e8cc9d94a))
+* make overrides optional in plugins ([baed208](https://github.com/measuredco/puck/commit/baed208b685639f3f1104def34408d8252b38dbe))
+* rename components & componentList overrides to drawer & drawerItem ([e40fdfe](https://github.com/measuredco/puck/commit/e40fdfe14c366258ea6b83e415d1c510cf7b0e46))
+* simplify generic type API on Config and ComponentConfig ([04fc574](https://github.com/measuredco/puck/commit/04fc574bc08129f60863fd4ca23f634f616ba6bb))
+* support object, null and undefined in select/radio options ([6dace1c](https://github.com/measuredco/puck/commit/6dace1cf3d49c6fd78eaf2e397399dc38f53412c))
+* support theming of font family ([6cf56a8](https://github.com/measuredco/puck/commit/6cf56a8a7cd7211490d2549cc7ae2af76becef1d))
+
+
+### Bug Fixes
+
+* add missing tiny-invariant dependency in remix recipe ([d405985](https://github.com/measuredco/puck/commit/d405985b80527ae633f7f472af73cfca4acb1cef))
+* address error when using disallow on a slot in root ([93d525c](https://github.com/measuredco/puck/commit/93d525c57f513260f0a60cbb710308e820becd1d))
+* don't revert custom Drawer.Items during drag ([0578004](https://github.com/measuredco/puck/commit/057800431be6530bfef8e2c8ea3d79245f2bdb14))
+* ensure nested name is propagated to custom fields ([f09540d](https://github.com/measuredco/puck/commit/f09540db9e5ad9ff0bd0987a38c0e586f7fa8965))
+* prevent field zoom on mobile devices ([660fd08](https://github.com/measuredco/puck/commit/660fd08af21841d52804e37a3a4503bbbc019ea0))
+* prevent iframe hanging when stylesheets empty ([ea0610a](https://github.com/measuredco/puck/commit/ea0610acbaa47f5a20627afabebaf6b98630d9a3))
+* reattach inline ref if element changes ([ba585f9](https://github.com/measuredco/puck/commit/ba585f93711b55bd100a2ebb7560d5d6b20fa28d))
+* remove erroneous get() API from usePuck ([c119ed0](https://github.com/measuredco/puck/commit/c119ed0d0d707aefa1003efb9448ef736f7ce60c))
+* respect user generic in usePuck hook ([6760121](https://github.com/measuredco/puck/commit/6760121f9f2a37ac990477e5b67c8d9f17cb9601))
+* respect user types in getItemBySelector and getItemById ([f2d031f](https://github.com/measuredco/puck/commit/f2d031fb1285bb31989943e3090461ebc150180f))
+* retain DropZone content in interactive mode ([d2e09bd](https://github.com/measuredco/puck/commit/d2e09bdc1ddd8d1973c08dbe9e75cdf232e9c259))
+* retain metadata in interactive preview mode ([68dd73b](https://github.com/measuredco/puck/commit/68dd73b8a1209923e1c2b2efca0c36fd935a207c))
+* support user-defined fields in overrides ([5cb4cc6](https://github.com/measuredco/puck/commit/5cb4cc652e5db3a54580eb0215932ddc6a648fc9))
+* type object, array, and external field types correctly ([f768aab](https://github.com/measuredco/puck/commit/f768aab935ed9c5955dd558f249f29e347bc52f7))
+* type user fields in overrides ([54d71e3](https://github.com/measuredco/puck/commit/54d71e34017c3319b6db2352fd4551277501d0ee))
+
+
+
+
+### Performance Improvements
+
+* don't render array fields unless open ([14d9681](https://github.com/measuredco/puck/commit/14d968176a62b68af7fab764138a9d7e0b1f74ec))
+
+
+
+
 ## [0.19.3](https://github.com/measuredco/puck/compare/v0.19.2...v0.19.3) (2025-07-15)
 
 
