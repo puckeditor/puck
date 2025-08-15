@@ -1,18 +1,81 @@
 .ViewportControls {
+  position: relative;
+}
+
+.ViewportControls--fullScreen {
+  border-radius: 32px;
   display: flex;
-  background: var(--puck-color-grey-11);
-  box-sizing: border-box;
-  border-inline-start: 2px solid var(--puck-color-grey-11);
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  overflow: hidden;
+}
+
+.ViewportControls-toggleButton {
+  display: none;
+}
+
+.ViewportControls--fullScreen .ViewportControls-toggleButton {
+  align-items: center;
+  background-color: var(--puck-color-grey-02);
+  border: 1px solid var(--puck-color-grey-04);
+  border-radius: 30px;
+  cursor: pointer;
+  color: var(--puck-color-grey-11);
+  display: flex;
   justify-content: center;
-  gap: 8px;
-  padding-bottom: 16px;
+  width: 42px;
+  height: 42px;
   z-index: 1;
+}
+
+.ViewportControls--fullScreen .ViewportControls-toggleButton:hover {
+  background-color: var(--puck-color-grey-02);
+  border: 1px solid var(--puck-color-azure-04);
+  color: var(--puck-color-azure-07);
+}
+
+.ViewportControls--isExpanded .ViewportControls-toggleButton {
+  background-color: var(--puck-color-grey-03);
+}
+
+.ViewportControls-actions {
+  display: flex;
+}
+
+.ViewportControls-actionsInner {
+  display: flex;
+  box-sizing: border-box;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ViewportControls--fullScreen .ViewportControls-actionsInner {
+  background: var(--puck-color-grey-11);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 30px;
+  margin-left: none;
+  margin-right: none;
+  padding-right: 42px;
+}
+
+.ViewportControls--fullScreen .ViewportControls-actionsInner {
+  transform: translateX(100%);
+  transition: transform 150ms ease-in-out;
+}
+
+.ViewportControls--fullScreen.ViewportControls--isExpanded
+  .ViewportControls-actionsInner {
+  transform: translateX(42px);
 }
 
 .ViewportControls-divider {
   border-inline-end: 1px solid var(--puck-color-grey-09);
-  margin-inline-start: 8px;
-  margin-inline-end: 8px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .ViewportControls-zoomSelect {
@@ -25,11 +88,32 @@
   border: 0;
   font-size: var(--puck-font-size-xxxs);
   padding: 0;
+  padding-left: 8px;
   width: 96px;
+}
+
+.ViewportControls--fullScreen .ViewportControls-zoom {
+  display: none;
+}
+
+@media (min-width: 638px) {
+  .ViewportControls-zoom,
+  .ViewportControls--fullScreen .ViewportControls-zoom {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .ViewportControls-zoomSelect:dir(rtl) {
   background-position: 12px calc(50% + 3px);
+}
+
+.ViewportButton-inner {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
 }
 
 .ViewportButton--isActive .ViewportButton-inner {
