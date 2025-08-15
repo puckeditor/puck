@@ -266,12 +266,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                   </div>
                   <div className={getLayoutClassName("nav")}>
                     <Nav
-                      slim
-                      navigation={{
-                        main: {
-                          items: pluginItems,
-                        },
-                      }}
+                      items={pluginItems}
                       mobileActions={
                         leftSideBarVisible && (
                           <IconButton

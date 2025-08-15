@@ -1,62 +1,38 @@
+.Nav {
+  display: flex;
+}
+
 .Nav-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow-x: auto;
-}
-
-@media (min-width: 638px) {
-  .NavSection {
-    padding: 16px;
-  }
-
-  .NavSection:first-of-type {
-    padding-top: 32px;
-  }
-}
-
-.Nav--slim .NavSection {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.Nav--slim .NavSection + .NavSection {
-  border-top: 1px solid var(--puck-color-grey-09);
-}
-
-.NavSection-list {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-@media (min-width: 638px) {
-  .NavSection-list {
-    flex-direction: column;
-    padding: 0;
-  }
-}
-
-.Nav--slim .NavSection-list {
+  overflow-x: auto;
   gap: 8px;
 }
 
 @media (min-width: 638px) {
-  .Nav--slim .NavSection-list {
+  .Nav-list {
+    padding-top: 32px;
+    flex-direction: column;
     gap: 16px;
+    width: 100%;
   }
 }
 
-.NavSection-title {
-  font-weight: 700;
-  margin-bottom: 8px;
-  padding-left: 8px;
-  padding-right: 8px;
+.Nav-mobileActions {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-inline-start: auto;
+  padding: 4px 16px;
+  border-inline-start: 1px solid var(--puck-color-grey-09);
 }
 
-.Nav--slim .NavSection-title {
-  opacity: 0;
+@media (min-width: 638px) {
+  .Nav-mobileActions {
+    display: none;
+  }
 }
 
 .NavItem-link {
@@ -93,7 +69,7 @@
   }
 }
 
-.Nav--slim .NavItem-link {
+.NavItem-link {
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-radius: 0;
@@ -102,7 +78,7 @@
 }
 
 @media (min-width: 638px) {
-  .Nav--slim .NavItem-link {
+  .NavItem-link {
     border: 0;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
@@ -120,7 +96,7 @@
   font-weight: 600;
 }
 
-.Nav--slim .NavItem--active > .NavItem-link {
+.NavItem--active > .NavItem-link {
   background-color: transparent;
   border-top-color: var(--puck-color-azure-04);
   border-top-right-radius: 0;
@@ -129,7 +105,7 @@
 }
 
 @media (min-width: 638px) {
-  .Nav--slim .NavItem--active > .NavItem-link {
+  .NavItem--active > .NavItem-link {
     border-top-color: transparent;
     border-right-color: var(--puck-color-azure-04);
   }
@@ -140,50 +116,8 @@
   color: var(--puck-color-azure-04);
 }
 
-.NavItem-list {
-  border-left: 1px solid var(--puck-color-grey-09);
-  display: flex;
-  flex-direction: column;
-  list-style: none;
-  margin-top: 8px;
-  margin-left: 4px;
-  padding: 0;
-  padding-left: 8px;
-}
-
-.Nav--slim .NavItem-list {
-  border-left: 0;
-  padding-left: 0;
-  margin-left: 0;
-}
-
-.Nav {
-  display: flex;
-}
-
-@media (min-width: 638px) {
-  .Nav {
-    display: block;
-  }
-}
-
 @media (min-width: 638px) {
   .NavItem--mobileOnly {
-    display: none;
-  }
-}
-
-.Nav-mobileActions {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  margin-inline-start: auto;
-  padding: 4px 16px;
-  border-inline-start: 1px solid var(--puck-color-grey-09);
-}
-
-@media (min-width: 638px) {
-  .Nav-mobileActions {
     display: none;
   }
 }
