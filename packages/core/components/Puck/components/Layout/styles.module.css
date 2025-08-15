@@ -190,6 +190,7 @@
 .PuckPluginTab {
   display: none;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 .PuckPluginTab--visible {
@@ -199,4 +200,5 @@
 
 .PuckPluginTab-body {
   flex-grow: 1;
+  overflow: hidden;
 }
