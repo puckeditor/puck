@@ -111,9 +111,8 @@ const DragDropContextClient = ({
   disableAutoScroll,
 }: DragDropContextProps) => {
   const dispatch = useAppStore((s) => s.dispatch);
+  const instanceId = useAppStore((s) => s.instanceId);
   const appStore = useAppStoreApi();
-
-  const id = useSafeId();
 
   const debouncedParamsRef = useRef<DeepestParams | null>(null);
 
@@ -133,7 +132,7 @@ const DragDropContextClient = ({
   );
 
   const getChanged = useCallback(
-    (params: DeepestParams, id: string) => {
+    (params: DeepestParams) => {
       const { zoneDepthIndex = {}, areaDepthIndex = {} } =
         zoneStore.getState() || {};
 
@@ -162,7 +161,7 @@ const DragDropContextClient = ({
 
   const setDeepestAndCollide = useCallback(
     (params: DeepestParams, manager: DragDropManager) => {
-      const { zoneChanged, areaChanged } = getChanged(params, id);
+      const { zoneChanged, areaChanged } = getChanged(params);
 
       if (!zoneChanged && !areaChanged) return;
 
@@ -216,7 +215,7 @@ const DragDropContextClient = ({
         onChange: (params, manager) => {
           const state = zoneStore.getState();
 
-          const { zoneChanged, areaChanged } = getChanged(params, id);
+          const { zoneChanged, areaChanged } = getChanged(params);
 
           const isDragging = manager.dragOperation.status.dragging;
 
@@ -269,7 +268,7 @@ const DragDropContextClient = ({
           cancelDb();
         },
       },
-      id
+      instanceId
     ),
   ]);
 
@@ -291,301 +290,298 @@ const DragDropContextClient = ({
   );
 
   return (
-    <div id={id} style={{ display: "contents" }}>
-      <dragListenerContext.Provider
-        value={{
-          dragListeners,
-          setDragListeners,
-        }}
-      >
-        <DragDropProvider
-          plugins={plugins}
-          sensors={sensors}
-          onDragEnd={(event, manager) => {
-            const entryEl = getFrame()?.querySelector("[data-puck-entry]");
-            entryEl?.removeAttribute("data-puck-dragging");
+    <dragListenerContext.Provider
+      value={{
+        dragListeners,
+        setDragListeners,
+      }}
+    >
+      <DragDropProvider
+        plugins={plugins}
+        sensors={sensors}
+        onDragEnd={(event, manager) => {
+          const entryEl = getFrame()?.querySelector("[data-puck-entry]");
+          entryEl?.removeAttribute("data-puck-dragging");
 
-            const { source, target } = event.operation;
+          const { source, target } = event.operation;
 
-            if (!source) {
-              zoneStore.setState({ draggedItem: null });
+          if (!source) {
+            zoneStore.setState({ draggedItem: null });
 
-              return;
-            }
+            return;
+          }
 
-            const { zone, index } = source.data as ComponentDndData;
+          const { zone, index } = source.data as ComponentDndData;
 
-            const { previewIndex = {} } = zoneStore.getState() || {};
+          const { previewIndex = {} } = zoneStore.getState() || {};
 
-            const thisPreview: Preview | null =
-              previewIndex[zone]?.props.id === source.id
-                ? previewIndex[zone]
-                : null;
+          const thisPreview: Preview | null =
+            previewIndex[zone]?.props.id === source.id
+              ? previewIndex[zone]
+              : null;
 
-            const onAnimationEnd = () => {
-              zoneStore.setState({ draggedItem: null });
+          const onAnimationEnd = () => {
+            zoneStore.setState({ draggedItem: null });
 
-              // Tidy up cancellation
-              if (event.canceled || target?.type === "void") {
-                zoneStore.setState({ previewIndex: {} });
-
-                dragListeners.dragend?.forEach((fn) => {
-                  fn(event, manager);
-                });
-
-                dispatch({
-                  type: "setUi",
-                  ui: {
-                    itemSelector: null,
-                    isDragging: false,
-                  },
-                });
-
-                return;
-              }
-
-              // Finalise the drag
-              if (thisPreview) {
-                zoneStore.setState({ previewIndex: {} });
-
-                if (thisPreview.type === "insert") {
-                  insertComponent(
-                    thisPreview.componentType,
-                    thisPreview.zone,
-                    thisPreview.index,
-                    appStore
-                  );
-                } else if (initialSelector.current) {
-                  dispatch({
-                    type: "move",
-                    sourceIndex: initialSelector.current.index,
-                    sourceZone: initialSelector.current.zone,
-                    destinationIndex: thisPreview.index,
-                    destinationZone: thisPreview.zone,
-                    recordHistory: false,
-                  });
-                }
-              }
-
-              dispatch({
-                type: "setUi",
-                ui: {
-                  itemSelector: { index, zone },
-                  isDragging: false,
-                },
-                recordHistory: true,
-              });
+            // Tidy up cancellation
+            if (event.canceled || target?.type === "void") {
+              zoneStore.setState({ previewIndex: {} });
 
               dragListeners.dragend?.forEach((fn) => {
                 fn(event, manager);
               });
-            };
 
-            // Delay insert until animation has finished
-            let dispose: () => void | undefined;
-
-            dispose = effect(() => {
-              if (source.status === "idle") {
-                onAnimationEnd();
-                dispose?.();
-              }
-            });
-          }}
-          onDragOver={(event, manager) => {
-            // Prevent the optimistic re-ordering
-            event.preventDefault();
-
-            const draggedItem = zoneStore.getState()?.draggedItem;
-
-            // Drag end can sometimes trigger after drag
-            if (!draggedItem) return;
-
-            // Cancel any stale debounces
-            cancelDb();
-
-            const { source, target } = event.operation;
-
-            if (!target || !source || target.type === "void") return;
-
-            const [sourceId] = (source.id as string).split(":");
-            const [targetId] = (target.id as string).split(":");
-
-            const sourceData = source.data as ComponentDndData;
-
-            let sourceZone = sourceData.zone;
-            let sourceIndex = sourceData.index;
-
-            let targetZone = "";
-            let targetIndex = 0;
-
-            if (target.type === "component") {
-              const targetData = target.data as ComponentDndData;
-
-              targetZone = targetData.zone;
-              targetIndex = targetData.index;
-
-              const collisionData =
-                manager.collisionObserver.collisions[0]?.data;
-
-              const dir = getDeepDir(target.element);
-
-              const collisionPosition =
-                collisionData?.direction === "up" ||
-                (dir === "ltr" && collisionData?.direction === "left") ||
-                (dir === "rtl" && collisionData?.direction === "right")
-                  ? "before"
-                  : "after";
-
-              if (targetIndex >= sourceIndex && sourceZone === targetZone) {
-                targetIndex = targetIndex - 1;
-              }
-
-              if (collisionPosition === "after") {
-                targetIndex = targetIndex + 1;
-              }
-            } else {
-              targetZone = target.id.toString();
-              targetIndex = 0;
-            }
-
-            const path =
-              appStore.getState().state.indexes.nodes[target.id]?.path || [];
-
-            // Abort if dragging over self or descendant
-            if (
-              targetId === sourceId ||
-              path.find((path) => {
-                const [pathId] = (path as string).split(":");
-                return pathId === sourceId;
-              })
-            ) {
-              return;
-            }
-
-            if (dragMode.current === "new") {
-              zoneStore.setState({
-                previewIndex: {
-                  [targetZone]: {
-                    componentType: sourceData.componentType,
-                    type: "insert",
-                    index: targetIndex,
-                    zone: targetZone,
-                    element: source.element,
-                    props: {
-                      id: source.id.toString(),
-                    },
-                  },
-                },
-              });
-            } else {
-              if (!initialSelector.current) {
-                initialSelector.current = {
-                  zone: sourceData.zone,
-                  index: sourceData.index,
-                };
-              }
-
-              const item = getItem(
-                initialSelector.current,
-                appStore.getState().state
-              );
-
-              if (item) {
-                zoneStore.setState({
-                  previewIndex: {
-                    [targetZone]: {
-                      componentType: sourceData.componentType,
-                      type: "move",
-                      index: targetIndex,
-                      zone: targetZone,
-                      props: item.props,
-                      element: source.element,
-                    },
-                  },
-                });
-              }
-            }
-
-            dragListeners.dragover?.forEach((fn) => {
-              fn(event, manager);
-            });
-          }}
-          onDragStart={(event, manager) => {
-            const { source } = event.operation;
-
-            if (source && source.type !== "void") {
-              const sourceData = source.data as ComponentDndData;
-
-              const item = getItem(
-                {
-                  zone: sourceData.zone,
-                  index: sourceData.index,
-                },
-                appStore.getState().state
-              );
-
-              if (item) {
-                zoneStore.setState({
-                  previewIndex: {
-                    [sourceData.zone]: {
-                      componentType: sourceData.componentType,
-                      type: "move",
-                      index: sourceData.index,
-                      zone: sourceData.zone,
-                      props: item.props,
-                      element: source.element,
-                    },
-                  },
-                });
-              }
-            }
-
-            dragListeners.dragstart?.forEach((fn) => {
-              fn(event, manager);
-            });
-          }}
-          onBeforeDragStart={(event) => {
-            const isNewComponent = event.operation.source?.type === "drawer";
-
-            dragMode.current = isNewComponent ? "new" : "existing";
-            initialSelector.current = undefined;
-
-            zoneStore.setState({ draggedItem: event.operation.source });
-
-            if (
-              appStore.getState().selectedItem?.props.id !==
-              event.operation.source?.id
-            ) {
               dispatch({
                 type: "setUi",
                 ui: {
                   itemSelector: null,
-                  isDragging: true,
+                  isDragging: false,
                 },
-                recordHistory: false,
               });
-            } else {
-              dispatch({
-                type: "setUi",
-                ui: {
-                  isDragging: true,
-                },
-                recordHistory: false,
-              });
+
+              return;
             }
 
-            const entryEl = getFrame()?.querySelector("[data-puck-entry]");
-            entryEl?.setAttribute("data-puck-dragging", "true");
-          }}
-        >
-          <ZoneStoreProvider store={zoneStore}>
-            <DropZoneProvider value={nextContextValue}>
-              {children}
-            </DropZoneProvider>
-          </ZoneStoreProvider>
-        </DragDropProvider>
-      </dragListenerContext.Provider>
-    </div>
+            // Finalise the drag
+            if (thisPreview) {
+              zoneStore.setState({ previewIndex: {} });
+
+              if (thisPreview.type === "insert") {
+                insertComponent(
+                  thisPreview.componentType,
+                  thisPreview.zone,
+                  thisPreview.index,
+                  appStore
+                );
+              } else if (initialSelector.current) {
+                dispatch({
+                  type: "move",
+                  sourceIndex: initialSelector.current.index,
+                  sourceZone: initialSelector.current.zone,
+                  destinationIndex: thisPreview.index,
+                  destinationZone: thisPreview.zone,
+                  recordHistory: false,
+                });
+              }
+            }
+
+            dispatch({
+              type: "setUi",
+              ui: {
+                itemSelector: { index, zone },
+                isDragging: false,
+              },
+              recordHistory: true,
+            });
+
+            dragListeners.dragend?.forEach((fn) => {
+              fn(event, manager);
+            });
+          };
+
+          // Delay insert until animation has finished
+          let dispose: () => void | undefined;
+
+          dispose = effect(() => {
+            if (source.status === "idle") {
+              onAnimationEnd();
+              dispose?.();
+            }
+          });
+        }}
+        onDragOver={(event, manager) => {
+          // Prevent the optimistic re-ordering
+          event.preventDefault();
+
+          const draggedItem = zoneStore.getState()?.draggedItem;
+
+          // Drag end can sometimes trigger after drag
+          if (!draggedItem) return;
+
+          // Cancel any stale debounces
+          cancelDb();
+
+          const { source, target } = event.operation;
+
+          if (!target || !source || target.type === "void") return;
+
+          const [sourceId] = (source.id as string).split(":");
+          const [targetId] = (target.id as string).split(":");
+
+          const sourceData = source.data as ComponentDndData;
+
+          let sourceZone = sourceData.zone;
+          let sourceIndex = sourceData.index;
+
+          let targetZone = "";
+          let targetIndex = 0;
+
+          if (target.type === "component") {
+            const targetData = target.data as ComponentDndData;
+
+            targetZone = targetData.zone;
+            targetIndex = targetData.index;
+
+            const collisionData = manager.collisionObserver.collisions[0]?.data;
+
+            const dir = getDeepDir(target.element);
+
+            const collisionPosition =
+              collisionData?.direction === "up" ||
+              (dir === "ltr" && collisionData?.direction === "left") ||
+              (dir === "rtl" && collisionData?.direction === "right")
+                ? "before"
+                : "after";
+
+            if (targetIndex >= sourceIndex && sourceZone === targetZone) {
+              targetIndex = targetIndex - 1;
+            }
+
+            if (collisionPosition === "after") {
+              targetIndex = targetIndex + 1;
+            }
+          } else {
+            targetZone = target.id.toString();
+            targetIndex = 0;
+          }
+
+          const path =
+            appStore.getState().state.indexes.nodes[target.id]?.path || [];
+
+          // Abort if dragging over self or descendant
+          if (
+            targetId === sourceId ||
+            path.find((path) => {
+              const [pathId] = (path as string).split(":");
+              return pathId === sourceId;
+            })
+          ) {
+            return;
+          }
+
+          if (dragMode.current === "new") {
+            zoneStore.setState({
+              previewIndex: {
+                [targetZone]: {
+                  componentType: sourceData.componentType,
+                  type: "insert",
+                  index: targetIndex,
+                  zone: targetZone,
+                  element: source.element,
+                  props: {
+                    id: source.id.toString(),
+                  },
+                },
+              },
+            });
+          } else {
+            if (!initialSelector.current) {
+              initialSelector.current = {
+                zone: sourceData.zone,
+                index: sourceData.index,
+              };
+            }
+
+            const item = getItem(
+              initialSelector.current,
+              appStore.getState().state
+            );
+
+            if (item) {
+              zoneStore.setState({
+                previewIndex: {
+                  [targetZone]: {
+                    componentType: sourceData.componentType,
+                    type: "move",
+                    index: targetIndex,
+                    zone: targetZone,
+                    props: item.props,
+                    element: source.element,
+                  },
+                },
+              });
+            }
+          }
+
+          dragListeners.dragover?.forEach((fn) => {
+            fn(event, manager);
+          });
+        }}
+        onDragStart={(event, manager) => {
+          const { source } = event.operation;
+
+          if (source && source.type !== "void") {
+            const sourceData = source.data as ComponentDndData;
+
+            const item = getItem(
+              {
+                zone: sourceData.zone,
+                index: sourceData.index,
+              },
+              appStore.getState().state
+            );
+
+            if (item) {
+              zoneStore.setState({
+                previewIndex: {
+                  [sourceData.zone]: {
+                    componentType: sourceData.componentType,
+                    type: "move",
+                    index: sourceData.index,
+                    zone: sourceData.zone,
+                    props: item.props,
+                    element: source.element,
+                  },
+                },
+              });
+            }
+          }
+
+          dragListeners.dragstart?.forEach((fn) => {
+            fn(event, manager);
+          });
+        }}
+        onBeforeDragStart={(event) => {
+          const isNewComponent = event.operation.source?.type === "drawer";
+
+          dragMode.current = isNewComponent ? "new" : "existing";
+          initialSelector.current = undefined;
+
+          zoneStore.setState({ draggedItem: event.operation.source });
+
+          if (
+            appStore.getState().selectedItem?.props.id !==
+            event.operation.source?.id
+          ) {
+            dispatch({
+              type: "setUi",
+              ui: {
+                itemSelector: null,
+                isDragging: true,
+              },
+              recordHistory: false,
+            });
+          } else {
+            dispatch({
+              type: "setUi",
+              ui: {
+                isDragging: true,
+              },
+              recordHistory: false,
+            });
+          }
+
+          const entryEl = getFrame()?.querySelector("[data-puck-entry]");
+          entryEl?.setAttribute("data-puck-dragging", "true");
+        }}
+      >
+        <ZoneStoreProvider store={zoneStore}>
+          <DropZoneProvider value={nextContextValue}>
+            {children}
+          </DropZoneProvider>
+        </ZoneStoreProvider>
+      </DragDropProvider>
+    </dragListenerContext.Provider>
   );
 };
 
