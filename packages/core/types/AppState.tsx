@@ -29,7 +29,7 @@ export type UiState = {
   isDragging: boolean;
   viewports: {
     current: {
-      width: number;
+      width: number | "100%";
       height: number | "auto";
     };
     controlsVisible: boolean;
