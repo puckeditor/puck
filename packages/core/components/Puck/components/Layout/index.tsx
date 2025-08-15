@@ -87,6 +87,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     (s) => s.state.ui.rightSideBarVisible
   );
 
+  const instanceId = useAppStore((s) => s.instanceId);
+
   const {
     width: leftWidth,
     setWidth: setLeftWidth,
@@ -240,7 +242,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={`Puck ${getClassName()}`}>
+    <div className={`Puck ${getClassName()}`} id={instanceId}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
           {children || (

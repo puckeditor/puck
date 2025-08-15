@@ -53,6 +53,7 @@ import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
 import { toComponent } from "../../lib/data/to-component";
 import { Layout } from "./components/Layout";
+import { useSafeId } from "../../lib/use-safe-id";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -301,9 +302,12 @@ function PuckProvider<
     };
   }, [fieldTransforms, plugins]);
 
+  const instanceId = useSafeId();
+
   const generateAppStore = useCallback(
     (state?: PrivateAppState) => {
       return {
+        instanceId,
         state,
         config,
         plugins: plugins || [],
@@ -316,6 +320,7 @@ function PuckProvider<
       };
     },
     [
+      instanceId,
       initialAppState,
       config,
       plugins,
