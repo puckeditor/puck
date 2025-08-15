@@ -177,6 +177,10 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const currentPlugin = useAppStore((s) => s.state.ui.plugin?.current);
   const appStoreApi = useAppStoreApi();
 
+  const [mobilePanelHeightMode, setMobilePanelHeightMode] = useState<
+    "toggle" | "min-content"
+  >("toggle");
+
   const pluginItems = useMemo(() => {
     const details: Record<string, MenuItem & { render: () => ReactElement }> =
       {};
@@ -203,6 +207,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
           label: plugin.label ?? plugin.name,
           icon: plugin.icon ?? <ToyBrick />,
           onClick: () => {
+            setMobilePanelHeightMode(plugin.mobilePanelHeight ?? "toggle");
+
             if (plugin.name === currentPlugin) {
               if (leftSideBarVisible) {
                 setUi({ leftSideBarVisible: false });
@@ -239,7 +245,9 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const hasDesktopFieldsPlugin =
     pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const mobilePanelExpanded = useAppStore(
+    (s) => s.state.ui.mobilePanelExpanded ?? false
+  );
 
   return (
     <div className={`Puck ${getClassName()}`} id={instanceId}>
@@ -253,7 +261,10 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                   mounted,
                   rightSideBarVisible:
                     !hasDesktopFieldsPlugin && rightSideBarVisible,
-                  isExpanded,
+                  isExpanded: mobilePanelExpanded,
+                  mobilePanelHeightToggle: mobilePanelHeightMode === "toggle",
+                  mobilePanelHeightMinContent:
+                    mobilePanelHeightMode === "min-content",
                 })}
                 style={{ height }}
               >
@@ -268,15 +279,18 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                     <Nav
                       items={pluginItems}
                       mobileActions={
-                        leftSideBarVisible && (
+                        leftSideBarVisible &&
+                        mobilePanelHeightMode === "toggle" && (
                           <IconButton
                             type="button"
                             title="maximize"
                             onClick={() => {
-                              setIsExpanded((s) => !s);
+                              setUi({
+                                mobilePanelExpanded: !mobilePanelExpanded,
+                              });
                             }}
                           >
-                            {isExpanded ? (
+                            {mobilePanelExpanded ? (
                               <Minimize2 size={21} />
                             ) : (
                               <Maximize2 size={21} />
