@@ -434,7 +434,7 @@ export function Editor() {
 
 | Param               | Example           | Type                                                     | Status   |
 | ------------------- | ----------------- | -------------------------------------------------------- | -------- |
-| [`width`](#width)   | `width: 1440`     | number                                                   | Required |
+| [`width`](#width)   | `width: 1440`     | number \| `"100%"`                                       | Required |
 | [`height`](#height) | `height: 968`     | number \| `"auto"`                                       | -        |
 | [`icon`](#icon)     | `icon: "Monitor"` | `"Smartphone"` \| `"Tablet"` \| `"Monitor"` \| ReactNode | -        |
 | [`label`](#label)   | `label: "iPhone"` | string                                                   | -        |
@@ -485,6 +485,12 @@ By default, Puck exposes small, medium and large viewports based on common viewp
     "height": "auto",
     "icon": "Monitor",
     "label": "Large"
+  },
+  {
+    "width": "100%",
+    "height": "auto",
+    "icon": "FullWidth",
+    "label": "Full-width"
   }
 ]
 ```

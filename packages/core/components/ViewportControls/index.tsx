@@ -1,4 +1,11 @@
-import { Monitor, Smartphone, Tablet, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  Expand,
+  Monitor,
+  Smartphone,
+  Tablet,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import { IconButton } from "../IconButton";
 import { useAppStore } from "../../store";
 import { ReactNode, useEffect, useMemo, useState } from "react";
@@ -11,6 +18,7 @@ const icons = {
   Smartphone: <Smartphone size={16} />,
   Tablet: <Tablet size={16} />,
   Monitor: <Monitor size={16} />,
+  FullWidth: <Expand size={16} />,
 };
 
 const getClassName = getClassNameFactory("ViewportControls", styles);
