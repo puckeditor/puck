@@ -54,6 +54,7 @@ export type AppStore<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 > = {
+  instanceId: string;
   state: G["UserAppState"];
   dispatch: (action: PuckAction) => void;
   config: UserConfig;
@@ -108,6 +109,7 @@ const defaultPageFields: Record<string, Field> = {
 export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
   create<AppStore>()(
     subscribeWithSelector((set, get) => ({
+      instanceId: generateId(),
       state: defaultAppState,
       config: { components: {} },
       componentState: {},
