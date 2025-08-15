@@ -75,18 +75,47 @@
   --puck-side-bar-width: 186px;
 }
 
-.PuckLayout--leftSideBarVisible .PuckLayout-inner {
+.PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
+  .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
   grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
 }
 
-.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded .PuckLayout-inner {
+.PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+  .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
   grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
 }
 
 @media (min-width: 638px) {
-  .PuckLayout--leftSideBarVisible .PuckLayout-inner {
+  .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
+    .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+        --puck-frame-width
+      )
+      0;
+    grid-template-rows: min-content auto;
+  }
+}
+
+.PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible
+  .PuckLayout-inner,
+.PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+  .PuckLayout-inner {
+  /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
+  grid-template-rows: 0 auto min-content 0 var(--puck-side-nav-width);
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
+    .PuckLayout-inner,
+  .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+    .PuckLayout-inner,
+  .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible
+    .PuckLayout-inner,
+  .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+    .PuckLayout-inner {
     grid-template-columns:
       var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
         --puck-frame-width
