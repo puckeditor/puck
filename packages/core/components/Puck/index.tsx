@@ -152,17 +152,33 @@ function PuckProvider<
 
       const viewportWidth = window.innerWidth;
 
+      const fullWidthViewport = Object.values(viewports).find(
+        (v) => v.width === "100%"
+      );
+
+      const containsFullWidthViewport = !!fullWidthViewport;
+
       const viewportDifferences = Object.entries(viewports)
+        .filter(([_, value]) => value.width !== "100%")
         .map(([key, value]) => ({
           key,
           diff: Math.abs(
             viewportWidth -
               (typeof value.width === "string" ? viewportWidth : viewportWidth)
           ),
+          value,
         }))
         .sort((a, b) => (a.diff > b.diff ? 1 : -1));
 
-      const closestViewport = viewportDifferences[0].key as any;
+      let closestViewport = viewportDifferences[0].value;
+
+      // Select full width viewport if it exists, and the closest viewport is smaller than the window
+      if (
+        (closestViewport.width as number) > viewportWidth &&
+        containsFullWidthViewport
+      ) {
+        closestViewport = fullWidthViewport;
+      }
 
       if (iframe.enabled) {
         clientUiState = {
@@ -174,11 +190,10 @@ function PuckProvider<
               ...initial.viewports.current,
               height:
                 initialUi?.viewports?.current?.height ||
-                viewports[closestViewport]?.height ||
+                closestViewport?.height ||
                 "auto",
               width:
-                initialUi?.viewports?.current?.width ||
-                viewports[closestViewport]?.width,
+                initialUi?.viewports?.current?.width || closestViewport?.width,
             },
           },
         };
