@@ -83,6 +83,7 @@ type PuckProps<
   initialHistory?: InitialHistory;
   metadata?: Metadata;
   height?: CSSProperties["height"];
+  _experimentalFullScreenCanvas?: boolean;
 };
 
 const propsContext = createContext<Partial<PuckProps>>({});
@@ -149,7 +150,10 @@ function PuckProvider<
       const viewportDifferences = Object.entries(viewports)
         .map(([key, value]) => ({
           key,
-          diff: Math.abs(viewportWidth - value.width),
+          diff: Math.abs(
+            viewportWidth -
+              (typeof value.width === "string" ? viewportWidth : viewportWidth)
+          ),
         }))
         .sort((a, b) => (a.diff > b.diff ? 1 : -1));
 

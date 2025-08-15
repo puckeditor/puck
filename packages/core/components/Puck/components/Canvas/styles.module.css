@@ -4,17 +4,29 @@
   grid-area: editor;
   flex-direction: column;
   padding: var(--puck-space-px);
+  position: relative;
   overflow: auto;
 }
 
 @media (min-width: 1198px) {
   .PuckCanvas {
     padding: calc(var(--puck-space-px) * 1.5);
-    padding-top: var(--puck-space-px);
+    padding-top: calc(var(--puck-space-px) * 0.5);
   }
 
   .PuckCanvas:not(.PuckCanvas:has(.PuckCanvas-controls)) {
     padding-top: calc(var(--puck-space-px) * 1.5);
+  }
+}
+
+.PuckCanvas--fullScreen {
+  padding: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 1198px) {
+  .PuckCanvas--fullScreen {
+    padding: 0;
   }
 }
 
@@ -29,7 +41,7 @@
 
 .PuckCanvas-root {
   background: white;
-  border: 1px solid var(--puck-color-grey-09);
+  outline: 1px solid var(--puck-color-grey-09);
   box-sizing: content-box;
   min-width: 321px;
   position: absolute;
@@ -75,4 +87,13 @@
   opacity: 0;
   height: 0;
   transition: none;
+}
+
+.PuckCanvas-controls {
+  padding-bottom: calc(var(--puck-space-px) * 0.5);
+}
+
+.PuckCanvas--fullScreen .PuckCanvas-controls {
+  padding-bottom: 0;
+  z-index: 1;
 }
