@@ -34,6 +34,7 @@ export type Plugin<UserConfig extends Config = Config> = {
   render?: () => ReactElement;
   overrides?: Partial<Overrides<UserConfig>>;
   fieldTransforms?: FieldTransforms<UserConfig>;
+  mobilePanelHeight?: "toggle" | "min-content";
 };
 
 export type History<D = any> = {

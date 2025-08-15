@@ -14,6 +14,7 @@ export type UiState = {
   rightSideBarVisible: boolean;
   leftSideBarWidth?: number | null;
   rightSideBarWidth?: number | null;
+  mobilePanelExpanded?: boolean;
   itemSelector: ItemSelector | null;
   arrayState: Record<string, ArrayState | undefined>;
   previewMode: "interactive" | "edit";
