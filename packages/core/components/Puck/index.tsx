@@ -48,6 +48,7 @@ import { PrivateAppState } from "../../types/Internal";
 import fdeq from "fast-deep-equal";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { Layout } from "./components/Layout";
+import { useSafeId } from "../../lib/use-safe-id";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -291,9 +292,12 @@ function PuckProvider<
     };
   }, [fieldTransforms, plugins]);
 
+  const instanceId = useSafeId();
+
   const generateAppStore = useCallback(
     (state?: PrivateAppState) => {
       return {
+        instanceId,
         state,
         config,
         plugins: plugins || [],
@@ -306,6 +310,7 @@ function PuckProvider<
       };
     },
     [
+      instanceId,
       initialAppState,
       config,
       plugins,
