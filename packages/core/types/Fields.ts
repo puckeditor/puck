@@ -143,7 +143,7 @@ export type Field<ValueType = any, UserField extends {} = {}> =
   | SelectField
   | RadioField
   | ArrayField<
-      ValueType extends { [key: string]: any }[] ? ValueType : {}[],
+      ValueType extends { [key: string]: any }[] ? ValueType : never,
       UserField
     >
   | ObjectField<ValueType, UserField>
