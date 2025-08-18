@@ -84,7 +84,7 @@ export type Adaptor<
   mapProp?: (value: TableShape) => PropShape;
 };
 
-type NotUndefined<T> = T extends undefined ? Record<string, any> : T;
+type NotUndefined<T> = T extends undefined ? never : T;
 
 // DEPRECATED
 export type ExternalFieldWithAdaptor<
