@@ -1,9 +1,13 @@
 .Sidebar {
   border-block-start: 1px solid var(--puck-color-grey-09);
   position: relative;
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow-y: auto;
+}
+
+.Sidebar--isVisible {
+  display: flex;
 }
 
 .Sidebar--left {
