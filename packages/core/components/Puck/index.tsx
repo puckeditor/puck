@@ -160,7 +160,7 @@ function PuckProvider<
           key,
           diff: Math.abs(
             viewportWidth -
-              (typeof value.width === "string" ? viewportWidth : viewportWidth)
+              (typeof value.width === "string" ? viewportWidth : value.width)
           ),
           value,
         }))
@@ -170,7 +170,7 @@ function PuckProvider<
 
       // Select full width viewport if it exists, and the closest viewport is smaller than the window
       if (
-        (closestViewport.width as number) > viewportWidth &&
+        (closestViewport.width as number) < viewportWidth &&
         containsFullWidthViewport
       ) {
         closestViewport = fullWidthViewport;
