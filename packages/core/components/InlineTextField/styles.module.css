@@ -1,6 +1,7 @@
 .InlineTextField {
   cursor: text;
   display: inline-block;
+  white-space: pre-wrap;
 }
 
 /* Safari fixes for https://bugs.webkit.org/show_bug.cgi?id=112854 */
