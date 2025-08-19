@@ -55,7 +55,13 @@ const InlineTextFieldInternal = ({
             componentId
           );
 
-        const newProps = setDeep(node.data.props, propPath, e.target.innerText);
+        let value = e.target.innerText;
+
+        if (disableLineBreaks) {
+          value = value.replaceAll(/\n/gm, "");
+        }
+
+        const newProps = setDeep(node.data.props, propPath, value);
 
         const resolvedData = await appStore.resolveComponentData(
           { ...node.data, props: newProps },
@@ -78,7 +84,7 @@ const InlineTextFieldInternal = ({
         cleanupPortal?.();
       };
     }
-  }, [appStoreApi, ref.current, value]);
+  }, [appStoreApi, ref.current, value, disableLineBreaks]);
 
   // We disable contentEditable when not hovering or already focused,
   // otherwise Safari focuses the element during drag. Related:
