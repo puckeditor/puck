@@ -2,6 +2,21 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.20.1](https://github.com/measuredco/puck/compare/v0.20.0...v0.20.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* address type issues when using root ([38076a9](https://github.com/measuredco/puck/commit/38076a94bcafbb9905d197195a750928ade757ab))
+* don't widen getItemSummary type for array fields ([92112b9](https://github.com/measuredco/puck/commit/92112b9f1e012cdd1ec9fdfe62e4573da36327f4))
+* don't widen getItemSummary type for external fields ([e58ac42](https://github.com/measuredco/puck/commit/e58ac425398ec115456eda9b4650031359fffa6d))
+* fix slots within array and object fields ([b7fba1b](https://github.com/measuredco/puck/commit/b7fba1b46ba2678e775632a4f5be4a9a1e5be7cf))
+* render spaces/line breaks consistently in inline text fields ([6c58995](https://github.com/measuredco/puck/commit/6c58995b9db7897bd8994a3f2fb1b2456ef32b2f))
+* strip line breaks when pasting into inline text field ([2533c55](https://github.com/measuredco/puck/commit/2533c552a3222e47ffcfb1450ecf95fc4e78fb4a))
+
+
+
+
 ## [0.20.0](https://github.com/measuredco/puck/compare/v0.19.3...v0.20.0) (2025-08-14)
 
 
