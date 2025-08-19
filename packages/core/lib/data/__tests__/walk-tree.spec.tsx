@@ -299,4 +299,70 @@ describe("walk-tree", () => {
       }
     `);
   });
+
+  it("should trigger a function for each array slot for a given Data", () => {
+    const config: Config = {
+      components: {
+        Comp: {
+          fields: {
+            prop: { type: "text" },
+            array: {
+              type: "array",
+              arrayFields: { arraySlot: { type: "slot" } },
+            },
+          },
+          render: () => <div />,
+        },
+      },
+    };
+
+    const testData: Data = {
+      root: { props: {} },
+      content: [
+        {
+          type: "Comp",
+          props: {
+            id: "my-component",
+            array: [
+              {
+                arraySlot: [
+                  {
+                    type: "Comp",
+                    props: {
+                      id: "slotted-array-id",
+                      prop: "Inside array slot",
+                      slotA: [],
+                      slotB: [],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      zones: {},
+    };
+
+    const mockMap = jest.fn();
+
+    const data = walkTree(testData, config, mockMap);
+
+    expect(data).toEqual(testData);
+
+    expect(mockMap).toHaveBeenCalledWith(
+      [
+        {
+          props: {
+            id: "slotted-array-id",
+            prop: "Inside array slot",
+            slotA: [],
+            slotB: [],
+          },
+          type: "Comp",
+        },
+      ],
+      { parentId: "my-component", propName: "array[0].arraySlot" }
+    );
+  });
 });

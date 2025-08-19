@@ -97,7 +97,7 @@ export const walkField = ({
     return map({
       value: mappedContent,
       parentId: id,
-      propName: propKey,
+      propName: propPath,
       field: fields[propKey],
       propPath,
     });
