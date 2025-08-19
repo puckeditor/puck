@@ -183,7 +183,7 @@ export type Config<
     DefaultComponents,
     ConfigParams
   > = DefaultComponents | ConfigParams,
-  RootProps extends DefaultComponentProps = DefaultComponentProps,
+  RootProps extends DefaultComponentProps = any,
   CategoryName extends string = string
 > = PropsOrParams extends ConfigParams<
   infer ParamComponents,

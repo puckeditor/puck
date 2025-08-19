@@ -61,7 +61,7 @@ export type WithDeepSlots<T, SlotType = T> =
 
 export type ConfigParams<
   Components extends DefaultComponents = DefaultComponents,
-  RootProps extends DefaultComponentProps = DefaultComponentProps,
+  RootProps extends DefaultComponentProps = any,
   CategoryNames extends string[] = string[],
   UserFields extends FieldsExtension = FieldsExtension
 > = {
