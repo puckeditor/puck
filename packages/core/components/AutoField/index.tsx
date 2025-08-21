@@ -25,6 +25,8 @@ import { ObjectField } from "./fields/ObjectField";
 import { useAppStore } from "../../store";
 import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
+import { useShallow } from "zustand/react/shallow";
+import { getDeep } from "../../lib/data/get-deep";
 
 const getClassName = getClassNameFactory("Input", styles);
 const getClassNameWrapper = getClassNameFactory("InputWrapper", styles);
@@ -136,14 +138,16 @@ const defaultFields = {
 function AutoFieldInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
-    Label?: React.FC<FieldLabelPropsInternal>;
-  }
-) {
+>({
+  provideValue,
+  ...props
+}: FieldPropsInternalOptional<ValueType, FieldType> & {
+  Label?: React.FC<FieldLabelPropsInternal>;
+  provideValue?: boolean;
+}) {
   const dispatch = useAppStore((s) => s.dispatch);
   const overrides = useAppStore((s) => s.overrides);
-  const readOnly = useAppStore((s) => s.selectedItem?.readOnly);
+  const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
   const nestedFieldContext = useContext(NestedFieldContext);
 
   const { id, Label = FieldLabelInternal } = props;
@@ -250,6 +254,10 @@ function AutoFieldInternal<
       value={{
         readOnlyFields: nestedFieldContext.readOnlyFields || readOnly || {},
         localName: nestedFieldContext.localName ?? mergedProps.name,
+        value:
+          provideValue && mergedProps.name
+            ? { [mergedProps.name]: mergedProps.value }
+            : undefined, // Optionally provide value if this is used outside of app fields (i.e. external field filters)
       }}
     >
       <div
@@ -277,22 +285,50 @@ export function AutoFieldPrivate<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
+  props: Omit<FieldPropsInternalOptional<ValueType, FieldType>, "value"> & {
     Label?: React.FC<FieldLabelPropsInternal>;
+    value?: any;
+    provideValue?: boolean;
   }
 ) {
   const isFocused = useAppStore((s) => s.state.ui.field.focus === props.name);
-  const { value, onChange } = props;
+  const { onChange } = props;
+
+  const value = useAppStore((s) => {
+    if (typeof props.value !== "undefined") return props.value;
+
+    const { name, field } = props;
+
+    if (!name) return;
+
+    // Exclude array and object fields as they handle rendering independently
+    const excludedFields = ["array", "object"];
+
+    if (!excludedFields.includes(field.type)) {
+      const rootProps = s.state.data.root.props || s.state.data.root;
+
+      const props = s.selectedItem ? s.selectedItem.props : rootProps;
+
+      if (props) {
+        return getDeep(props, name);
+      }
+    }
+  });
 
   const [localValue, setLocalValue] = useState(value);
 
   const onChangeLocal = useCallback(
     (val: any, ui?: Partial<UiState>) => {
-      setLocalValue(val);
+      // Exclude array and object fields as they handle rendering independently
+      const excludedFields = ["array", "object"];
+
+      if (!excludedFields.includes(props.field.type)) {
+        setLocalValue(val);
+      }
 
       onChange(val, ui);
     },
-    [onChange]
+    [props.field.type]
   );
 
   useEffect(() => {
@@ -310,10 +346,14 @@ export function AutoFieldPrivate<
     }
   }, [isFocused, value, localValue]);
 
-  const localProps = {
-    value: localValue,
-    onChange: onChangeLocal,
-  };
+  const localProps = useMemo(
+    () => ({
+      // localValue is sometimes undefined when using outside of Fields context
+      value: localValue ?? value,
+      onChange: onChangeLocal,
+    }),
+    [value, localValue, onChangeLocal]
+  );
 
   return <AutoFieldInternal<ValueType, FieldType> {...props} {...localProps} />;
 }
@@ -338,6 +378,10 @@ export function AutoField<
   }
 
   return (
-    <AutoFieldInternal<ValueType, FieldType> {...props} Label={DefaultLabel} />
+    <AutoFieldInternal<ValueType, FieldType>
+      {...props}
+      Label={DefaultLabel}
+      provideValue
+    />
   );
 }
