@@ -1,4 +1,5 @@
 @import url("https://rsms.me/inter/inter.css");
+@import "@/core/dist/index.css";
 
 body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI,
