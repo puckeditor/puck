@@ -2,10 +2,8 @@ import { ReactNode } from "react";
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Heading } from "../Heading";
-import { ChevronRight } from "lucide-react";
-import { useBreadcrumbs } from "../../lib/use-breadcrumbs";
-import { useAppStore } from "../../store";
 import { Loader } from "../Loader";
+import { Breadcrumbs } from "../Breadcrumbs";
 
 const getClassName = getClassNameFactory("SidebarSection", styles);
 
@@ -26,9 +24,6 @@ export const SidebarSection = ({
   noPadding?: boolean;
   isLoading?: boolean | null;
 }) => {
-  const setUi = useAppStore((s) => s.setUi);
-  const breadcrumbs = useBreadcrumbs(1);
-
   return (
     <div
       className={getClassName({ noBorderTop, noPadding })}
@@ -36,20 +31,7 @@ export const SidebarSection = ({
     >
       <div className={getClassName("title")}>
         <div className={getClassName("breadcrumbs")}>
-          {showBreadcrumbs
-            ? breadcrumbs.map((breadcrumb, i) => (
-                <div key={i} className={getClassName("breadcrumb")}>
-                  <button
-                    type="button"
-                    className={getClassName("breadcrumbLabel")}
-                    onClick={() => setUi({ itemSelector: breadcrumb.selector })}
-                  >
-                    {breadcrumb.label}
-                  </button>
-                  <ChevronRight size={16} />
-                </div>
-              ))
-            : null}
+          {showBreadcrumbs && <Breadcrumbs />}
           <div className={getClassName("heading")}>
             <Heading rank="2" size="xs">
               {title}
