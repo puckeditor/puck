@@ -99,7 +99,7 @@
   gap: 8px;
   align-items: center;
   margin: 8px 4px;
-  overflow-x: hidden;
+  min-width: max-content;
 }
 
 .Layer-name {
