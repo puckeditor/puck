@@ -50,6 +50,7 @@ import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
 import { DefaultOverride } from "../DefaultOverride";
 import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
+import { useCopyPasteHotkeys } from "../../lib/use-copy-paste-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
 import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
@@ -493,6 +494,7 @@ function PuckLayout<
   }, [ready, iframe.enabled]);
 
   usePreviewModeHotkeys();
+  useCopyPasteHotkeys();
 
   const layoutOptions: Record<string, any> = {};
 

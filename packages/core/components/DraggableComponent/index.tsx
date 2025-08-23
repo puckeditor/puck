@@ -14,7 +14,7 @@ import {
 import styles from "./styles.module.css";
 import "./styles.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Copy, CornerLeftUp, Trash } from "lucide-react";
+import { Copy, CornerLeftUp, Trash, Clipboard, Files, Scissors } from "lucide-react";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { Loader } from "../Loader";
 import { ActionBar } from "../ActionBar";
@@ -32,6 +32,7 @@ import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
+import { useClipboardStore } from "../../lib/clipboard-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
@@ -117,6 +118,7 @@ export const DraggableComponent = ({
   );
   const overrides = useAppStore((s) => s.overrides);
   const dispatch = useAppStore((s) => s.dispatch);
+  const appStoreApi = useAppStoreApi();
   const iframe = useAppStore((s) => s.iframe);
 
   const ctx = useContext(dropZoneContext);
@@ -410,6 +412,64 @@ export const DraggableComponent = ({
     });
   }, [index, zoneCompound]);
 
+  const onCopy = useCallback(() => {
+    dispatch({
+      type: "copy",
+      sourceIndex: index,
+      sourceZone: zoneCompound,
+    });
+  }, [index, zoneCompound]);
+
+  const onPaste = useCallback(() => {
+    const { selectedItem } = appStoreApi.getState();
+    
+    // Check if the current component (this DraggableComponent) is selected and has slot fields
+    if (selectedItem && selectedItem.props.id === id) {
+      const config = appStoreApi.getState().config;
+      const componentConfig = config.components[selectedItem.type];
+      const hasSlotFields = componentConfig?.fields && Object.values(componentConfig.fields).some(
+        (field: any) => field.type === 'slot'
+      );
+      
+      if (hasSlotFields && componentConfig?.fields) {
+        // Find the first slot field and paste into it
+        const slotField = Object.entries(componentConfig.fields).find(
+          ([_, field]: any) => field.type === 'slot'
+        );
+        
+        if (slotField) {
+          const [slotFieldName] = slotField;
+          const targetZone = `${selectedItem.props.id}:${slotFieldName}`;
+          
+          // Paste at the beginning of the slot
+          dispatch({
+            type: "paste",
+            destinationIndex: 0,
+            destinationZone: targetZone,
+          });
+          return;
+        }
+      }
+    }
+    
+    // Default behavior: paste after the current item
+    dispatch({
+      type: "paste",
+      destinationIndex: index + 1,
+      destinationZone: zoneCompound,
+    });
+  }, [id, index, zoneCompound, dispatch, appStoreApi]);
+
+  const onCut = useCallback(() => {
+    dispatch({
+      type: "cut",
+      sourceIndex: index,
+      sourceZone: zoneCompound,
+    });
+  }, [index, zoneCompound]);
+
+  const clipboardData = useClipboardStore((s) => s.clipboardData);
+
   const [hover, setHover] = useState(false);
 
   const indicativeHover = useContextStore(
@@ -636,6 +696,21 @@ export const DraggableComponent = ({
                   parentAction={parentAction}
                   label={DEBUG ? id : label}
                 >
+                  {permissions.duplicate && (
+                    <ActionBar.Action onClick={onCopy} label="Copy">
+                      <Files size={16} />
+                    </ActionBar.Action>
+                  )}
+                  {permissions.delete && (
+                    <ActionBar.Action onClick={onCut} label="Cut">
+                      <Scissors size={16} />
+                    </ActionBar.Action>
+                  )}
+                  {clipboardData.component && (
+                    <ActionBar.Action onClick={onPaste} label="Paste">
+                      <Clipboard size={16} />
+                    </ActionBar.Action>
+                  )}
                   {permissions.duplicate && (
                     <ActionBar.Action onClick={onDuplicate} label="Duplicate">
                       <Copy size={16} />
