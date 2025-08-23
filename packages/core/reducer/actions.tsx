@@ -15,6 +15,24 @@ export type DuplicateAction = {
   sourceZone: string;
 };
 
+export type CopyAction = {
+  type: "copy";
+  sourceIndex: number;
+  sourceZone: string;
+};
+
+export type CutAction = {
+  type: "cut";
+  sourceIndex: number;
+  sourceZone: string;
+};
+
+export type PasteAction = {
+  type: "paste";
+  destinationIndex: number;
+  destinationZone: string;
+};
+
 export type ReplaceAction<UserData extends Data = Data> = {
   type: "replace";
   destinationIndex: number;
@@ -87,6 +105,9 @@ export type PuckAction = { recordHistory?: boolean } & (
   | ReplaceRootAction
   | RemoveAction
   | DuplicateAction
+  | CopyAction
+  | CutAction
+  | PasteAction
   | SetAction
   | SetDataAction
   | SetUiAction

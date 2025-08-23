@@ -9,6 +9,9 @@ import { insertAction } from "./actions/insert";
 import { replaceAction } from "./actions/replace";
 import { replaceRootAction } from "./actions/replace-root";
 import { duplicateAction } from "./actions/duplicate";
+import { copyAction } from "./actions/copy";
+import { cutAction } from "./actions/cut";
+import { pasteAction } from "./actions/paste";
 import { reorderAction } from "./actions/reorder";
 import { moveAction } from "./actions/move";
 import { removeAction } from "./actions/remove";
@@ -46,6 +49,7 @@ function storeInterceptor<UserData extends Data = Data>(
       "setData",
       "setUi",
       "set",
+      "copy",
     ].includes(action.type);
 
     if (
@@ -91,6 +95,18 @@ export function createReducer<UserData extends Data>({
 
       if (action.type === "duplicate") {
         return duplicateAction(state, action, appStore);
+      }
+
+      if (action.type === "copy") {
+        return copyAction(state, action, appStore);
+      }
+
+      if (action.type === "cut") {
+        return cutAction(state, action, appStore);
+      }
+
+      if (action.type === "paste") {
+        return pasteAction(state, action, appStore);
       }
 
       if (action.type === "reorder") {
