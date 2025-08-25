@@ -32,6 +32,8 @@ const keys = [
   "x",
   "y",
   "z",
+  "delete",
+  "backspace",
 ] as const;
 
 type KeyStrict = (typeof keys)[number];
@@ -72,6 +74,8 @@ const keyCodeMap: KeyCodeMap = {
   KeyX: "x",
   KeyY: "y",
   KeyZ: "z",
+  Delete: "delete",
+  Backspace: "backspace",
 };
 
 const useHotkeyStore = create<{
@@ -110,10 +114,13 @@ export const monitorHotkeys = (doc: Document) => {
             ([key, value]) => value === !!(combo as KeyMap)[key]
           );
 
-        if (conditionMet) {
-          e.preventDefault();
-          cb();
-        }
+          // Call hotkey with event; skip preventDefault if callback returns false to allow native input behavior.
+          if (conditionMet) {
+            const handled = cb(e);
+            if (handled !== false) {
+              e.preventDefault();
+            }
+          }
       });
 
       // Only retain hold on modifiers
