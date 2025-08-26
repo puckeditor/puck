@@ -162,6 +162,9 @@ export const ViewportControls = ({
       <select
         className={getClassName("zoomSelect")}
         value={zoom.toString()}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
         onChange={(e) => {
           onZoom(parseFloat(e.currentTarget.value));
         }}
