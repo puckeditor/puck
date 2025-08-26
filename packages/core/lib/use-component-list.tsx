@@ -15,10 +15,18 @@ export const useComponentList = () => {
 
       _componentList = Object.entries(uiComponentList).map(
         ([categoryKey, category]) => {
-          if (category.visible === false || !category.components) {
+          if (!category.components) {
             return null;
           }
-
+      
+          category.components.forEach((componentName) => {
+            matchedComponents.push(componentName as string);
+          });
+      
+          if (category.visible === false) {
+            return null;
+          }
+      
           return (
             <ComponentList
               id={categoryKey}
@@ -26,10 +34,8 @@ export const useComponentList = () => {
               title={category.title || categoryKey}
             >
               {category.components.map((componentName, i) => {
-                matchedComponents.push(componentName as string);
-
                 const componentConf = config.components[componentName] || {};
-
+      
                 return (
                   <ComponentList.Item
                     key={componentName}
