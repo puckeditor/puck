@@ -18,15 +18,15 @@ export const useComponentList = () => {
           if (!category.components) {
             return null;
           }
-      
+
           category.components.forEach((componentName) => {
             matchedComponents.push(componentName as string);
           });
-      
+
           if (category.visible === false) {
             return null;
           }
-      
+
           return (
             <ComponentList
               id={categoryKey}
@@ -35,7 +35,7 @@ export const useComponentList = () => {
             >
               {category.components.map((componentName, i) => {
                 const componentConf = config.components[componentName] || {};
-      
+
                 return (
                   <ComponentList.Item
                     key={componentName}
