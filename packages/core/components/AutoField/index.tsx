@@ -229,7 +229,7 @@ function AutoFieldInternal<
     } else if (field.type !== "slot") {
       return render[field.type] as (props: FieldProps) => ReactElement;
     }
-  }, [field.type, render]);
+  }, [field, render]);
 
   const { visible = true } = props.field;
 
