@@ -114,13 +114,13 @@ export const monitorHotkeys = (doc: Document) => {
             ([key, value]) => value === !!(combo as KeyMap)[key]
           );
 
-          // Call hotkey with event; skip preventDefault if callback returns false to allow native input behavior.
-          if (conditionMet) {
-            const handled = cb(e);
-            if (handled !== false) {
-              e.preventDefault();
-            }
+        // Call hotkey with event; skip preventDefault if callback returns false to allow native input behavior.
+        if (conditionMet) {
+          const handled = cb(e);
+          if (handled !== false) {
+            e.preventDefault();
           }
+        }
       });
 
       // Only retain hold on modifiers
