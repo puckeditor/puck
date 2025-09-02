@@ -1,5 +1,5 @@
 import { ComponentData } from "../types";
-import fdeq from "fast-deep-equal";
+import { deepEqual } from "fast-equals";
 
 export const getChanged = (
   newItem: Omit<Partial<ComponentData<any>>, "type"> | undefined,
@@ -12,7 +12,7 @@ export const getChanged = (
 
         return {
           ...acc,
-          [item]: !fdeq(oldItemProps[item], newItemProps[item]),
+          [item]: !deepEqual(oldItemProps[item], newItemProps[item]),
         };
       }, {})
     : {};
