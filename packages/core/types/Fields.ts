@@ -56,7 +56,7 @@ export type ArrayField<
       : Field<Props[0][SubPropName], UserField>;
   };
   defaultItemProps?: Props[0];
-  getItemSummary?: (item: Props[0], index?: number) => ReactNode;
+  getItemSummary?: (item: Props[0], index?: number) => string | ReactNode;
   max?: number;
   min?: number;
 };
@@ -94,7 +94,10 @@ export type ExternalFieldWithAdaptor<
   placeholder?: string;
   adaptor: Adaptor<any, any, Props>;
   adaptorParams?: object;
-  getItemSummary: (item: NotUndefined<Props>, index?: number) => ReactNode;
+  getItemSummary: (
+    item: NotUndefined<Props>,
+    index?: number
+  ) => string | ReactNode;
 };
 
 export type ExternalField<Props extends any = { [key: string]: any }> =
@@ -107,7 +110,10 @@ export type ExternalField<Props extends any = { [key: string]: any }> =
     }) => Promise<any[] | null>;
     mapProp?: (value: any) => Props;
     mapRow?: (value: any) => Record<string, string | number | ReactElement>;
-    getItemSummary?: (item: NotUndefined<Props>, index?: number) => ReactNode;
+    getItemSummary?: (
+      item: NotUndefined<Props>,
+      index?: number
+    ) => string | ReactNode;
     showSearch?: boolean;
     renderFooter?: (props: { items: any[] }) => ReactElement;
     initialQuery?: string;
