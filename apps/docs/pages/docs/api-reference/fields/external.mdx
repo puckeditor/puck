@@ -200,7 +200,7 @@ const config = {
 
 ### `getItemSummary(item)`
 
-Get the label to show once the item is selected.
+Get the label to show once the item is selected. Can return a string or ReactElement for rich content.
 
 ```tsx {13} copy
 const config = {
@@ -243,6 +243,110 @@ const config = {
       data: {
         title: "Hello, world",
         description: "Lorem ipsum 1",
+      },
+    },
+    render: ({ data }) => {
+      return <p>{data?.title || "No data selected"}</p>;
+    },
+  }}
+/>
+
+#### Using ReactElement for rich summaries
+
+The `getItemSummary` function can return a ReactElement for more complex item summaries with styling and additional information.
+
+```tsx {21-38} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        data: {
+          type: "external",
+          fetchList: async () => {
+            return [
+              {
+                title: "Hello, world",
+                description: "Lorem ipsum 1",
+                status: "published",
+              },
+              {
+                title: "Goodbye, world",
+                description: "Lorem ipsum 2",
+                status: "draft",
+              },
+            ];
+          },
+          getItemSummary: (item) => (
+            <>
+              {item.title}
+              <span
+                style={{
+                  marginLeft: "8px",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontSize: "11px",
+                  backgroundColor:
+                    item.status === "published" ? "#10b981" : "#f59e0b",
+                  color: "white",
+                }}
+              >
+                {item.status}
+              </span>
+            </>
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="External with ReactElement summary"
+  componentConfig={{
+    fields: {
+      data: {
+        type: "external",
+        fetchList: async () => {
+          return [
+            {
+              title: "Hello, world",
+              description: "Lorem ipsum 1",
+              status: "published",
+            },
+            {
+              title: "Goodbye, world",
+              description: "Lorem ipsum 2",
+              status: "draft",
+            },
+          ];
+        },
+        getItemSummary: (item) => (
+          <>
+            {item.title}
+            <span
+              style={{
+                marginLeft: "8px",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                fontSize: "11px",
+                backgroundColor:
+                  item.status === "published" ? "#10b981" : "#f59e0b",
+                color: "white",
+              }}
+            >
+              {item.status}
+            </span>
+          </>
+        ),
+      },
+    },
+    defaultProps: {
+      data: {
+        title: "Hello, world",
+        description: "Lorem ipsum 1",
+        status: "published",
       },
     },
     render: ({ data }) => {
