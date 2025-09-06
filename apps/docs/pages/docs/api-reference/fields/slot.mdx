@@ -182,15 +182,15 @@ const config = {
 
 Slot data is provided to `render()` as a render function (or component). Provide props to this function to customize the behavior of the slot at render-time.
 
-| Param                               | Example                      | Type          | Status |
-| ----------------------------------- | ---------------------------- | ------------- | ------ |
-| [`allow`](#allow-1)                 | `allow: ["HeadingBlock"]`    | Array         | -      |
-| [`className`](#classname)           | `className: "MyClass"`       | String        | -      |
-| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String        | -      |
-| [`disallow`](#disallow-1)           | `disallow: ["HeadingBlock"]` | Array         | -      |
-| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: 256`        | Number        | -      |
-| [`ref`](#ref)                       | `ref: ref`                   | Ref           | -      |
-| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties | -      |
+| Param                               | Example                      | Type                       | Status |
+| ----------------------------------- | ---------------------------- | -------------------------- | ------ |
+| [`allow`](#allow-1)                 | `allow: ["HeadingBlock"]`    | Array                      | -      |
+| [`className`](#classname)           | `className: "MyClass"`       | String                     | -      |
+| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String                     | -      |
+| [`disallow`](#disallow-1)           | `disallow: ["HeadingBlock"]` | Array                      | -      |
+| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: "256px"`    | CSSProperties["minHeight"] | -      |
+| [`ref`](#ref)                       | `ref: ref`                   | Ref                        | -      |
+| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties              | -      |
 
 ### `allow`
 
@@ -278,7 +278,7 @@ const config = {
   components: {
     Example: {
       render: () => {
-        return <Content minEmptyHeight={256} />;
+        return <Content minEmptyHeight="256px" />;
       },
     },
   },
