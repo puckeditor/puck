@@ -30,3 +30,5 @@ export {
   type UsePuckData,
   type PuckApi,
 } from "../lib/use-puck";
+export { useClipboardStore } from "../lib/clipboard-store";
+export { useCopyPasteHotkeys } from "../lib/use-copy-paste-hotkeys";
