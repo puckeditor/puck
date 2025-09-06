@@ -52,6 +52,7 @@ type ComponentConfigInternal<
       fields: Fields<FieldProps>;
       lastFields: Fields<FieldProps>;
       lastData: DataShape | null;
+      metadata: Metadata;
       appState: AppState;
       parent: ComponentData | null;
     }
