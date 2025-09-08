@@ -5,6 +5,7 @@ import { AutoFieldPrivate, FieldPropsInternal } from "../..";
 import { IconButton } from "../../../IconButton";
 import { reorder, replace } from "../../../../lib";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { DragIcon } from "../../../DragIcon";
 import { ArrayState, Content, ItemWithId } from "../../../../types";
 import { useAppStore, useAppStoreApi } from "../../../../store";
@@ -145,6 +146,29 @@ export const ArrayField = ({
       });
     },
     [appStore, field]
+  );
+
+  const debouncedDelete = useDebouncedCallback(
+    (e: React.SyntheticEvent, i: number) => {
+      e.stopPropagation();
+
+      const existingValue = [...(value || [])];
+
+      const existingItems = [...(arrayState.items || [])];
+
+      existingValue.splice(i, 1);
+      existingItems.splice(i, 1);
+
+      setUi(
+        mapArrayStateToUi({
+          items: existingItems,
+        }),
+        false
+      );
+
+      onChange(existingValue);
+    },
+    5
   );
 
   if (field.type !== "array" || !field.arrayFields) {
@@ -297,25 +321,7 @@ export const ArrayField = ({
                                         localState.arrayState.items.length
                                     }
                                     onClick={(e) => {
-                                      e.stopPropagation();
-
-                                      const existingValue = [...(value || [])];
-
-                                      const existingItems = [
-                                        ...(arrayState.items || []),
-                                      ];
-
-                                      existingValue.splice(i, 1);
-                                      existingItems.splice(i, 1);
-
-                                      setUi(
-                                        mapArrayStateToUi({
-                                          items: existingItems,
-                                        }),
-                                        false
-                                      );
-
-                                      onChange(existingValue);
+                                      debouncedDelete(e, i);
                                     }}
                                     title="Delete"
                                   >
