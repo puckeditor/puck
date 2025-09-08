@@ -234,15 +234,18 @@ export const ExternalInput = ({
                           id={`external_field_${fieldName}_filter`}
                           label={filterField.label || fieldName}
                           value={filters[fieldName]}
+                          provideValue
                           onChange={(value) => {
-                            const newFilters = {
-                              ...filters,
-                              [fieldName]: value,
-                            };
+                            setFilters((filters) => {
+                              const newFilters = {
+                                ...filters,
+                                [fieldName]: value,
+                              };
 
-                            setFilters(newFilters);
+                              search(searchQuery, newFilters);
 
-                            search(searchQuery, newFilters);
+                              return newFilters;
+                            });
                           }}
                         />
                       </div>
