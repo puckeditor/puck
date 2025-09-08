@@ -15,6 +15,7 @@ import {
 } from "../../types/Internal";
 import { mapFields } from "./map-fields";
 import { flattenNode } from "./flatten-node";
+import { generateId } from "../generate-id";
 
 /**
  * Walk the Puck state, generate indexes and make modifications to nodes.
@@ -102,7 +103,8 @@ export function walkAppState<UserData extends Data = Data>(
     // Only modify the item if the user has returned it, enabling us to prevent unnecessary mapping and creating new references, which results in re-renders
     if (!mappedItem) return item;
 
-    const id = mappedItem.props.id;
+    // Generate a unique ID for the item if it doesn't have one
+    const id = mappedItem.props.id || generateId(mappedItem.type);
 
     const newProps = {
       ...mapFields(
