@@ -149,6 +149,15 @@ const DropZoneChild = ({
   const isLoading = useAppStore(
     (s) => s.componentState[componentId]?.loadingCount > 0
   );
+
+  // refreshPermissions in DropZone so that slots maintain component permissions
+  const refreshPermissions = useAppStore(
+    (s) => s.permissions.refreshPermissions
+  );
+  useEffect(() => {
+    refreshPermissions({ item });
+  }, [item, refreshPermissions]);
+
   const isSelected = useAppStore(
     (s) => s.selectedItem?.props.id === componentId || false
   );
