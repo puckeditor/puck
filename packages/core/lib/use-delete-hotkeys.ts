@@ -2,6 +2,28 @@ import { useCallback } from "react";
 import { useHotkey } from "./use-hotkey";
 import { useAppStoreApi } from "../store";
 
+const isElementVisible = (element: HTMLElement): boolean => {
+  let current: HTMLElement | null = element;
+  
+  while (current && current !== document.body) {
+    const style = window.getComputedStyle(current);
+    
+    if (
+      style.display === 'none' ||
+      style.visibility === 'hidden' ||
+      style.opacity === '0' ||
+      current.getAttribute('aria-hidden') === 'true' ||
+      current.hasAttribute('hidden')
+    ) {
+      return false;
+    }
+    
+    current = current.parentElement;
+  }
+  
+  return true;
+};
+
 const shouldBlockDeleteHotkey = (e?: KeyboardEvent): boolean => {
   if (e?.defaultPrevented) return true;
 
@@ -28,11 +50,11 @@ const shouldBlockDeleteHotkey = (e?: KeyboardEvent): boolean => {
     }
   }
 
-  if (
-    document.querySelector(
-      'dialog[open], [aria-modal="true"], [role="dialog"]:not([aria-hidden="true"])'
-    )
-  ) {
+  const modal = document.querySelector(
+    'dialog[open], [aria-modal="true"], [role="dialog"], [role="alertdialog"], .Modal--isOpen'
+  );
+  
+  if (modal && isElementVisible(modal as HTMLElement)) {
     return true;
   }
 
