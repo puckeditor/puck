@@ -51,7 +51,7 @@ const shouldBlockDeleteHotkey = (e?: KeyboardEvent): boolean => {
   }
 
   const modal = document.querySelector(
-    'dialog[open], [aria-modal="true"], [role="dialog"], [role="alertdialog"], .Modal--isOpen'
+    'dialog[open], [aria-modal="true"], [role="dialog"], [role="alertdialog"]'
   );
 
   if (modal && isElementVisible(modal as HTMLElement)) {
