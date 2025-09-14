@@ -9,6 +9,7 @@ export const defaultAppState: PrivateAppState = {
     arrayState: {},
     itemSelector: null,
     componentList: {},
+    componentsQuery: undefined,
     isDragging: false,
     previewMode: "edit",
     viewports: {

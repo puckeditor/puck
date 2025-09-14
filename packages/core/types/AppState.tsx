@@ -26,6 +26,7 @@ export type UiState = {
       expanded?: boolean;
     }
   >;
+  componentsQuery?: string;
   isDragging: boolean;
   viewports: {
     current: {

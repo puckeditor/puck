@@ -53,3 +53,21 @@
 .ComponentList-titleIcon {
   margin-inline-start: auto;
 }
+
+/* Search Feature */
+.ComponentList-mark {
+  background: color-mix(in srgb, var(--puck-color-azure-04) 22%, transparent);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.ComponentList-empty {
+  border: 1px dashed var(--puck-color-grey-09);
+  background: var(--puck-color-grey-10);
+  color: var(--puck-color-grey-04);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+}
