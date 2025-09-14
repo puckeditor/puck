@@ -65,52 +65,6 @@ export const walkField = ({
 }: WalkFieldOpts): any | Promise<any> => {
   const fieldType = fields[propKey]?.type;
   const map = mappers[fieldType];
-
-  if (map && fieldType === "slot") {
-    const content = (value as Content) || [];
-
-    const mappedContent = recurseSlots
-      ? content.map((el) => {
-          const componentConfig = config.components[el.type];
-
-          if (!componentConfig) {
-            throw new Error(`Could not find component config for ${el.type}`);
-          }
-
-          const fields = componentConfig.fields ?? {};
-
-          return walkField({
-            value: { ...el, props: defaultSlots(el.props, fields) },
-            fields,
-            mappers,
-            id: el.props.id,
-            config,
-            recurseSlots,
-          });
-        })
-      : content;
-
-    if (containsPromise(mappedContent)) {
-      return Promise.all(mappedContent);
-    }
-
-    return map({
-      value: mappedContent,
-      parentId: id,
-      propName: propPath,
-      field: fields[propKey],
-      propPath,
-    });
-  } else if (map && fields[propKey]) {
-    return map({
-      value,
-      parentId: id,
-      propName: propKey,
-      field: fields[propKey],
-      propPath,
-    });
-  }
-
   if (value && typeof value === "object") {
     if (Array.isArray(value)) {
       const arrayFields =
@@ -143,7 +97,6 @@ export const walkField = ({
         fields[propKey]?.type === "object"
           ? fields[propKey].objectFields
           : fields;
-
       return walkObject({
         value,
         fields: objectFields,
@@ -154,6 +107,49 @@ export const walkField = ({
         recurseSlots,
       });
     }
+  }
+  if (map && fieldType === "slot") {
+    const content = (value as Content) || [];
+
+    const mappedContent = recurseSlots
+      ? content.map((el) => {
+          const componentConfig = config.components[el.type];
+
+          if (!componentConfig) {
+            throw new Error(`Could not find component config for ${el.type}`);
+          }
+
+          const fields = componentConfig.fields ?? {};
+
+          return walkField({
+            value: { ...el, props: defaultSlots(el.props, fields) },
+            fields,
+            mappers,
+            id: el.props.id,
+            config,
+            recurseSlots,
+          });
+        })
+      : content;
+    if (containsPromise(mappedContent)) {
+      return Promise.all(mappedContent);
+    }
+
+    return map({
+      value: mappedContent,
+      parentId: id,
+      propName: propPath,
+      field: fields[propKey],
+      propPath,
+    });
+  } else if (map && fields[propKey]) {
+    return map({
+      value,
+      parentId: id,
+      propName: propKey,
+      field: fields[propKey],
+      propPath,
+    });
   }
 
   return value;
