@@ -54,9 +54,9 @@ const DndProvidedContext = createContext<boolean>(false);
 
 /** Sortable "row" helper: attaches drag/overlay to the HEADER DIV only */
 function SortableRowHeader({
-                             id,
-                             children,
-                           }: {
+  id,
+  children,
+}: {
   id: string;
   children: (args: {
     rowDragOver: boolean;
@@ -109,10 +109,10 @@ function SortableRowHeader({
 
 /** Zone wrapper: droppable; highlight is opt-in (we disable it for root/main) */
 const DroppableZone = ({
-                         id,
-                         children,
-                         highlight = false,
-                       }: {
+  id,
+  children,
+  highlight = false,
+}: {
   id: string;
   children: React.ReactNode;
   highlight?: boolean;
@@ -124,11 +124,11 @@ const DroppableZone = ({
       style={
         highlight && isOver
           ? {
-            outline: "2px dashed var(--puck-accent, #3b82f6)",
-            outlineOffset: 2,
-            background: "rgba(59,130,246,0.06)",
-            borderRadius: 6,
-          }
+              outline: "2px dashed var(--puck-accent, #3b82f6)",
+              outlineOffset: 2,
+              background: "rgba(59,130,246,0.06)",
+              borderRadius: 6,
+            }
           : undefined
       }
     >
@@ -158,15 +158,15 @@ const DropSeparator = ({ zone, index }: { zone: string; index: number }) => {
 
 /** One full list item: header (sortable) + its child zones (inside same <li>) */
 const LayerItem = ({
-                     index,
-                     itemId,
-                     zoneCompound,
-                     rowDragOver,
-                     setHeaderRef,
-                     attributes,
-                     listeners,
-                     style,
-                   }: {
+  index,
+  itemId,
+  zoneCompound,
+  rowDragOver,
+  setHeaderRef,
+  attributes,
+  listeners,
+  style,
+}: {
   index: number;
   itemId: string;
   zoneCompound: string;
@@ -222,7 +222,8 @@ const LayerItem = ({
   const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
 
   // Open when: selected, child selected, or row drag-over (overlay)
-  const showSlots = containsZone && (isSelected || childIsSelected || rowDragOver);
+  const showSlots =
+    containsZone && (isSelected || childIsSelected || rowDragOver);
 
   return (
     <li
@@ -250,7 +251,9 @@ const LayerItem = ({
               return;
             }
             const frame = getFrame();
-            const el = frame?.querySelector(`[data-puck-component="${itemId}"]`);
+            const el = frame?.querySelector(
+              `[data-puck-component="${itemId}"]`
+            );
             if (!el) {
               setItemSelector({ index, zone: zoneCompound });
               return;
@@ -279,7 +282,8 @@ const LayerItem = ({
           )}
           <div className={getClassNameLayer("title")}>
             <div className={getClassNameLayer("icon")}>
-              {nodeData.data.type === "Text" || nodeData.data.type === "Heading" ? (
+              {nodeData.data.type === "Text" ||
+              nodeData.data.type === "Heading" ? (
                 <Type size="16" />
               ) : (
                 <LayoutGrid size="16" />
@@ -302,9 +306,9 @@ const LayerItem = ({
 };
 
 export const LayerTree = ({
-                            label: _label,
-                            zoneCompound,
-                          }: {
+  label: _label,
+  zoneCompound,
+}: {
   label?: string;
   zoneCompound: string;
 }) => {
@@ -355,29 +359,40 @@ export const LayerTree = ({
 
     if (s.startsWith("open:")) {
       const id = s.slice(5);
-      const hasZones = Object.keys(state.indexes.zones).some((z) => z.startsWith(id + ":"));
+      const hasZones = Object.keys(state.indexes.zones).some((z) =>
+        z.startsWith(id + ":")
+      );
       return hasZones ? id : null;
     }
     if (s.startsWith("sep:")) {
       const [, encZone] = s.split(":");
       const zone = decodeURIComponent(encZone);
       const [parentId] = zone.split(":");
-      const hasZones = Object.keys(state.indexes.zones).some((z) => z.startsWith(parentId + ":"));
+      const hasZones = Object.keys(state.indexes.zones).some((z) =>
+        z.startsWith(parentId + ":")
+      );
       return hasZones ? parentId : null;
     }
     if (state.indexes.zones[s]) {
       const [parentId] = s.split(":");
-      const hasZones = Object.keys(state.indexes.zones).some((z) => z.startsWith(parentId + ":"));
+      const hasZones = Object.keys(state.indexes.zones).some((z) =>
+        z.startsWith(parentId + ":")
+      );
       return hasZones ? parentId : null;
     }
     if (state.indexes.nodes[s]) {
-      const hasZones = Object.keys(state.indexes.zones).some((z) => z.startsWith(s + ":"));
+      const hasZones = Object.keys(state.indexes.zones).some((z) =>
+        z.startsWith(s + ":")
+      );
       return hasZones ? s : null;
     }
     return null;
   };
 
-  const isInsideExpandedSubtree = (overId: string | null, expandedId: string | null) => {
+  const isInsideExpandedSubtree = (
+    overId: string | null,
+    expandedId: string | null
+  ) => {
     if (!overId || !expandedId) return false;
     const { state } = storeApi.getState();
     const s = String(overId);
@@ -392,7 +407,9 @@ export const LayerTree = ({
     if (state.indexes.nodes[s]) {
       if (s === expandedId) return true;
       const node = state.indexes.nodes[s];
-      return node.path?.some((p: string) => p.startsWith(expandedId + ":")) ?? false;
+      return (
+        node.path?.some((p: string) => p.startsWith(expandedId + ":")) ?? false
+      );
     }
     return false;
   };
@@ -405,75 +422,90 @@ export const LayerTree = ({
     const list = state.indexes.zones[zone]?.contentIds ?? [];
     const index = list.indexOf(id);
     if (index < 0) return;
-    dispatch({ type: "setUi", ui: { itemSelector: { index, zone } }, recordHistory: false });
+    dispatch({
+      type: "setUi",
+      ui: { itemSelector: { index, zone } },
+      recordHistory: false,
+    });
   };
 
   const handleDragStart = useCallback((e: DragStartEvent) => {
     setActiveId(String(e.active.id));
   }, []);
 
-  const handleDragOver = useCallback((e: DragOverEvent) => {
-    const overId = e.over?.id ? String(e.over.id) : null;
+  const handleDragOver = useCallback(
+    (e: DragOverEvent) => {
+      const overId = e.over?.id ? String(e.over.id) : null;
 
-    // keep open if still inside expanded subtree
-    if (lastOpenedIdRef.current && isInsideExpandedSubtree(overId, lastOpenedIdRef.current)) {
-      clearOpenTimer();
-      return;
-    }
+      // keep open if still inside expanded subtree
+      if (
+        lastOpenedIdRef.current &&
+        isInsideExpandedSubtree(overId, lastOpenedIdRef.current)
+      ) {
+        clearOpenTimer();
+        return;
+      }
 
-    const candidate = candidateItemWithSlots(overId);
+      const candidate = candidateItemWithSlots(overId);
 
-    if (!candidate) {
-      // 🔒 Minimal change to keep sublayers open during the entire drag:
-      // Do NOT restore previous selection mid-drag if we momentarily leave a candidate.
-      clearOpenTimer();
-      return;
-    }
+      if (!candidate) {
+        // 🔒 Minimal change to keep sublayers open during the entire drag:
+        // Do NOT restore previous selection mid-drag if we momentarily leave a candidate.
+        clearOpenTimer();
+        return;
+      }
 
-    if (!lastOpenedIdRef.current) {
+      if (!lastOpenedIdRef.current) {
+        const { state } = storeApi.getState();
+        prevSelectionRef.current = state.ui.itemSelector ?? null;
+      }
+
+      if (lastOpenedIdRef.current === candidate) {
+        clearOpenTimer();
+        return;
+      }
+
+      const s = String(overId);
       const { state } = storeApi.getState();
-      prevSelectionRef.current = state.ui.itemSelector ?? null;
-    }
+      const isRowOverlay = s.startsWith("open:");
+      const isZone = !!state.indexes.zones[s];
+      const isSeparator = s.startsWith("sep:");
 
-    if (lastOpenedIdRef.current === candidate) {
       clearOpenTimer();
-      return;
-    }
-
-    const s = String(overId);
-    const { state } = storeApi.getState();
-    const isRowOverlay = s.startsWith("open:");
-    const isZone = !!state.indexes.zones[s];
-    const isSeparator = s.startsWith("sep:");
-
-    clearOpenTimer();
-    if (isRowOverlay || isZone || isSeparator) {
-      selectItemById(candidate);
-      lastOpenedIdRef.current = candidate;
-    } else {
-      openTimer.current = setTimeout(() => {
+      if (isRowOverlay || isZone || isSeparator) {
         selectItemById(candidate);
         lastOpenedIdRef.current = candidate;
-      }, 100);
-    }
-  }, [storeApi]);
+      } else {
+        openTimer.current = setTimeout(() => {
+          selectItemById(candidate);
+          lastOpenedIdRef.current = candidate;
+        }, 100);
+      }
+    },
+    [storeApi]
+  );
 
   // Prefer: row overlays → separators → zones → default
-  const preferOpenSepZonesCollision: CollisionDetection = useCallback((args) => {
-    const pri = pointerWithin(args).length ? pointerWithin(args) : rectIntersection(args);
-    const openHits = pri.filter((c) => String(c.id).startsWith("open:"));
-    if (openHits.length) return openHits;
-    const sepHits = pri.filter((c) => String(c.id).startsWith("sep:"));
-    if (sepHits.length) return sepHits;
-    const zoneHits = pri.filter(
-      (c) =>
-        String(c.id).includes(":") &&
-        !String(c.id).startsWith("open:") &&
-        !String(c.id).startsWith("sep:")
-    );
-    if (zoneHits.length) return zoneHits;
-    return pri.length ? pri : closestCenter(args);
-  }, []);
+  const preferOpenSepZonesCollision: CollisionDetection = useCallback(
+    (args) => {
+      const pri = pointerWithin(args).length
+        ? pointerWithin(args)
+        : rectIntersection(args);
+      const openHits = pri.filter((c) => String(c.id).startsWith("open:"));
+      if (openHits.length) return openHits;
+      const sepHits = pri.filter((c) => String(c.id).startsWith("sep:"));
+      if (sepHits.length) return sepHits;
+      const zoneHits = pri.filter(
+        (c) =>
+          String(c.id).includes(":") &&
+          !String(c.id).startsWith("open:") &&
+          !String(c.id).startsWith("sep:")
+      );
+      if (zoneHits.length) return zoneHits;
+      return pri.length ? pri : closestCenter(args);
+    },
+    []
+  );
 
   const resolveDropTarget = useCallback(
     (rawOverId: string, draggingId: string) => {
@@ -496,7 +528,9 @@ export const LayerTree = ({
         return { destinationZone: zone, destinationIndex };
       }
 
-      const overId = rawOverId.startsWith("open:") ? rawOverId.slice(5) : rawOverId;
+      const overId = rawOverId.startsWith("open:")
+        ? rawOverId.slice(5)
+        : rawOverId;
 
       if (state.indexes.zones[overId]) {
         const list = state.indexes.zones[overId].contentIds ?? [];
@@ -630,7 +664,9 @@ export const LayerTree = ({
       // This ensures the parent stays expanded (child is selected).
       dispatch({
         type: "setUi",
-        ui: { itemSelector: { zone: destinationZone, index: destinationIndex } },
+        ui: {
+          itemSelector: { zone: destinationZone, index: destinationIndex },
+        },
         recordHistory: false,
       });
 
@@ -642,20 +678,22 @@ export const LayerTree = ({
     [storeApi, resolveDropTarget]
   );
 
-
-  const onDragCancel = useCallback((_: DragCancelEvent) => {
-    clearOpenTimer();
-    if (lastOpenedIdRef.current !== null) {
-      const { dispatch } = storeApi.getState();
-      dispatch({
-        type: "setUi",
-        ui: { itemSelector: prevSelectionRef.current ?? null },
-        recordHistory: false,
-      });
-      lastOpenedIdRef.current = null;
-    }
-    setActiveId(null);
-  }, [storeApi]);
+  const onDragCancel = useCallback(
+    (_: DragCancelEvent) => {
+      clearOpenTimer();
+      if (lastOpenedIdRef.current !== null) {
+        const { dispatch } = storeApi.getState();
+        dispatch({
+          type: "setUi",
+          ui: { itemSelector: prevSelectionRef.current ?? null },
+          recordHistory: false,
+        });
+        lastOpenedIdRef.current = null;
+      }
+      setActiveId(null);
+    },
+    [storeApi]
+  );
 
   // Drag overlay preview
   const DragPreview: React.FC<{ id: string }> = ({ id }) => {
@@ -674,8 +712,7 @@ export const LayerTree = ({
           padding: "6px 10px",
           borderRadius: 6,
           background: "var(--puck-overlay-bg, #fff)",
-          boxShadow:
-            "0 6px 20px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)",
         }}
       >
         <div className={getClassNameLayer("title")}>
@@ -694,7 +731,10 @@ export const LayerTree = ({
 
   const list = (
     // 🚫 No dashed highlight on main layer; only on nested slots (see prop)
-    <DroppableZone id={zoneCompound} highlight={zoneCompound !== rootDroppableId}>
+    <DroppableZone
+      id={zoneCompound}
+      highlight={zoneCompound !== rootDroppableId}
+    >
       <ul className={getClassName()}>
         {contentIds.length === 0 && (
           <>
@@ -703,13 +743,22 @@ export const LayerTree = ({
             <DropSeparator zone={zoneCompound} index={0} />
           </>
         )}
-        <SortableContext items={contentIds} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={contentIds}
+          strategy={verticalListSortingStrategy}
+        >
           {contentIds.map((itemId, i) => (
             <Fragment key={itemId}>
               {/* precise insertion before each item */}
               <DropSeparator zone={zoneCompound} index={i} />
               <SortableRowHeader id={itemId}>
-                {({ rowDragOver, setHeaderRef, attributes, listeners, style }) => (
+                {({
+                  rowDragOver,
+                  setHeaderRef,
+                  attributes,
+                  listeners,
+                  style,
+                }) => (
                   <LayerItem
                     index={i}
                     itemId={itemId}
