@@ -17,8 +17,7 @@ export const flattenData = <
     (content) => content,
     (item) => {
       data.push(item);
-
-      return null;
+      return item;
     }
   );
 
