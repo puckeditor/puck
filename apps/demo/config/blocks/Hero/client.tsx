@@ -22,9 +22,9 @@ export const Hero: ComponentConfig<{
     return (
       <div className="flex items-center gap-2">
         <div
-          onClick={onClick}               // MouseEventHandler<HTMLElement>
-          onMouseEnter={onMouseEnter}     // MouseEventHandler<HTMLElement>
-          onMouseLeave={onMouseLeave}     // MouseEventHandler<HTMLElement>
+          onClick={onClick}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
           className="flex flex-1 items-center justify-between rounded-sm px-1 py-1 text-left hover:bg-muted/50"
         >
           <div className="flex items-center gap-2">
