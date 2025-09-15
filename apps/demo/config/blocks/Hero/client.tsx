@@ -3,7 +3,7 @@ import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
 import { AutoField, FieldLabel } from "@/core";
-import { Link2 } from "lucide-react";
+import { GripVertical, Link2 } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 
 export const Hero: ComponentConfig<{
@@ -15,6 +15,29 @@ export const Hero: ComponentConfig<{
     };
   };
 }> = {
+  getOutlineItem: ({ label, props, Icon, Chevron, onClick, onMouseEnter, onMouseLeave }) => {
+    const p = props as { align?: "left" | "center"; buttons?: { label?: string }[] };
+    const btnCount = Array.isArray(p?.buttons) ? p.buttons.length : 0;
+
+    return (
+      <div className="flex items-center gap-2">
+        <div
+          onClick={onClick}               // MouseEventHandler<HTMLElement>
+          onMouseEnter={onMouseEnter}     // MouseEventHandler<HTMLElement>
+          onMouseLeave={onMouseLeave}     // MouseEventHandler<HTMLElement>
+          className="flex flex-1 items-center justify-between rounded-sm px-1 py-1 text-left hover:bg-muted/50"
+        >
+          <div className="flex items-center gap-2">
+            {Icon}
+            <span className="font-medium">{label}</span>
+            <span className="opacity-70 text-xs">• align: {p?.align ?? "left"}</span>
+            <span className="opacity-70 text-xs">• buttons: {btnCount}</span>
+          </div>
+          {Chevron}
+        </div>
+      </div>
+    );
+  },
   fields: {
     quote: {
       type: "external",

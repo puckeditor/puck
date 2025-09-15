@@ -3,7 +3,7 @@
 
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { ComponentConfig } from "../../types";
+import { ComponentConfig, OutlineItemContext } from "../../types";
 import { ItemSelector } from "../../lib/data/get-item";
 import { scrollIntoView } from "../../lib/scroll-into-view";
 import { ChevronDown, LayoutGrid, Layers, Type } from "lucide-react";
@@ -52,11 +52,13 @@ const getClassNameLayer = getClassNameFactory("Layer", styles);
 
 const DndProvidedContext = createContext<boolean>(false);
 
+
+
 /** Sortable "row" helper: attaches drag/overlay to the HEADER DIV only */
 function SortableRowHeader({
-  id,
-  children,
-}: {
+                             id,
+                             children,
+                           }: {
   id: string;
   children: (args: {
     rowDragOver: boolean;
@@ -109,10 +111,10 @@ function SortableRowHeader({
 
 /** Zone wrapper: droppable; highlight is opt-in (we disable it for root/main) */
 const DroppableZone = ({
-  id,
-  children,
-  highlight = false,
-}: {
+                         id,
+                         children,
+                         highlight = false,
+                       }: {
   id: string;
   children: React.ReactNode;
   highlight?: boolean;
@@ -124,11 +126,11 @@ const DroppableZone = ({
       style={
         highlight && isOver
           ? {
-              outline: "2px dashed var(--puck-accent, #3b82f6)",
-              outlineOffset: 2,
-              background: "rgba(59,130,246,0.06)",
-              borderRadius: 6,
-            }
+            outline: "2px dashed var(--puck-accent, #3b82f6)",
+            outlineOffset: 2,
+            background: "rgba(59,130,246,0.06)",
+            borderRadius: 6,
+          }
           : undefined
       }
     >
@@ -158,15 +160,15 @@ const DropSeparator = ({ zone, index }: { zone: string; index: number }) => {
 
 /** One full list item: header (sortable) + its child zones (inside same <li>) */
 const LayerItem = ({
-  index,
-  itemId,
-  zoneCompound,
-  rowDragOver,
-  setHeaderRef,
-  attributes,
-  listeners,
-  style,
-}: {
+                     index,
+                     itemId,
+                     zoneCompound,
+                     rowDragOver,
+                     setHeaderRef,
+                     attributes,
+                     listeners,
+                     style,
+                   }: {
   index: number;
   itemId: string;
   zoneCompound: string;
@@ -221,6 +223,85 @@ const LayerItem = ({
     config.components[nodeData.data.type];
   const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
 
+  const iconEl = (
+    <div className={getClassNameLayer("icon")}>
+      {nodeData.data.type === "Text" || nodeData.data.type === "Heading" ? (
+        <Type size="16" />
+      ) : (
+        <LayoutGrid size="16" />
+      )}
+    </div>
+  );
+
+  const chevronEl = containsZone ? (
+    <div
+      className={getClassNameLayer("chevron")}
+      title={isSelected ? "Collapse" : "Expand"}
+    >
+      <ChevronDown size="12" />
+    </div>
+  ) : null;
+
+  // Correctly typed handlers for custom rows
+  const handleClick: React.MouseEventHandler<HTMLElement> = (e) => {
+    e.preventDefault();
+    if (isSelected) {
+      setItemSelector(null);
+      return;
+    }
+    const frame = getFrame();
+    const el = frame?.querySelector(`[data-puck-component="${itemId}"]`);
+    if (!el) {
+      setItemSelector({ index, zone: zoneCompound });
+      return;
+    }
+    scrollIntoView(el as HTMLElement);
+    onScrollEnd(frame, () => {
+      setItemSelector({ index, zone: zoneCompound });
+    });
+  };
+
+  const handleMouseEnter: React.MouseEventHandler<HTMLElement> = (e) => {
+    e.stopPropagation();
+    zoneStore.setState({ hoveringComponent: itemId });
+  };
+
+  const handleMouseLeave: React.MouseEventHandler<HTMLElement> = (e) => {
+    e.stopPropagation();
+    zoneStore.setState({ hoveringComponent: null });
+  };
+
+  // Build ctx for a component-defined outline row
+  const outlineCtx: OutlineItemContext = {
+    itemId,
+    type: nodeData.data.type,
+    props: nodeData.data.props,
+    label,
+    zone: zoneCompound,
+    index,
+    isSelected,
+    isHovering,
+    childIsSelected,
+    hasChildren: containsZone,
+    Icon: iconEl,
+    Chevron: chevronEl,
+    onClick: handleClick,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+  };
+
+  // Support both signatures: () => ReactNode and (ctx) => ReactNode
+  const maybeGet =
+    componentConfig?.getOutlineItem as
+      | ((ctx: OutlineItemContext) => React.ReactNode)
+      | (() => React.ReactNode)
+      | undefined;
+
+  const customRow =
+    maybeGet && (maybeGet.length > 0
+      ? (maybeGet as (ctx: OutlineItemContext) => React.ReactNode)(outlineCtx)
+      : (maybeGet as () => React.ReactNode)());
+
   // Open when: selected, child selected, or row drag-over (overlay)
   const showSlots =
     containsZone && (isSelected || childIsSelected || rowDragOver);
@@ -245,52 +326,23 @@ const LayerItem = ({
         <button
           type="button"
           className={getClassNameLayer("clickable")}
-          onClick={() => {
-            if (isSelected) {
-              setItemSelector(null);
-              return;
-            }
-            const frame = getFrame();
-            const el = frame?.querySelector(
-              `[data-puck-component="${itemId}"]`
-            );
-            if (!el) {
-              setItemSelector({ index, zone: zoneCompound });
-              return;
-            }
-            scrollIntoView(el as HTMLElement);
-            onScrollEnd(frame, () => {
-              setItemSelector({ index, zone: zoneCompound });
-            });
-          }}
-          onMouseEnter={(e) => {
-            e.stopPropagation();
-            zoneStore.setState({ hoveringComponent: itemId });
-          }}
-          onMouseLeave={(e) => {
-            e.stopPropagation();
-            zoneStore.setState({ hoveringComponent: null });
-          }}
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          {containsZone && (
-            <div
-              className={getClassNameLayer("chevron")}
-              title={isSelected ? "Collapse" : "Expand"}
-            >
-              <ChevronDown size="12" />
-            </div>
+          {customRow ? (
+            // Component-defined outline body
+            <div className={getClassNameLayer("customRow")}>{customRow}</div>
+          ) : (
+            // Default outline body
+            <>
+              {chevronEl}
+              <div className={getClassNameLayer("title")}>
+                {iconEl}
+                <div className={getClassNameLayer("name")}>{label}</div>
+              </div>
+            </>
           )}
-          <div className={getClassNameLayer("title")}>
-            <div className={getClassNameLayer("icon")}>
-              {nodeData.data.type === "Text" ||
-              nodeData.data.type === "Heading" ? (
-                <Type size="16" />
-              ) : (
-                <LayoutGrid size="16" />
-              )}
-            </div>
-            <div className={getClassNameLayer("name")}>{label}</div>
-          </div>
         </button>
       </div>
 
@@ -306,9 +358,9 @@ const LayerItem = ({
 };
 
 export const LayerTree = ({
-  label: _label,
-  zoneCompound,
-}: {
+                            label: _label,
+                            zoneCompound,
+                          }: {
   label?: string;
   zoneCompound: string;
 }) => {
@@ -449,7 +501,6 @@ export const LayerTree = ({
       const candidate = candidateItemWithSlots(overId);
 
       if (!candidate) {
-        // 🔒 Minimal change to keep sublayers open during the entire drag:
         // Do NOT restore previous selection mid-drag if we momentarily leave a candidate.
         clearOpenTimer();
         return;
@@ -506,16 +557,33 @@ export const LayerTree = ({
     },
     []
   );
+// 🔒 Prevent cycles: destination zone must not be inside the dragged node's subtree
+  const isZoneInsideDraggingSubtree = (draggingId: string, zoneCompound: string) => {
+    const { state } = storeApi.getState();
+    const destParentId = zoneCompound.split(":")[0];
 
+    if (destParentId === draggingId) return true; // direct child list of itself
+
+    const destParentNode = state.indexes.nodes[destParentId];
+    // A descendant's path contains entries like `${ancestorId}:slot`
+    return (
+      destParentNode?.path?.some((p: string) => p.startsWith(draggingId + ":")) ?? false
+    );
+  };
   const resolveDropTarget = useCallback(
     (rawOverId: string, draggingId: string) => {
       const { state } = storeApi.getState();
 
+      // --- Separator drop: sep:<encZone>:<index> ---
       if (rawOverId.startsWith("sep:")) {
         const parts = rawOverId.split(":");
         const encZone = parts[1];
         const idxStr = parts[2];
         const zone = decodeURIComponent(encZone);
+
+        // ❗ block: destination zone is in dragged subtree
+        if (isZoneInsideDraggingSubtree(draggingId, zone)) return null;
+
         const list = state.indexes.zones[zone]?.contentIds ?? [];
         let destinationIndex = Number.parseInt(idxStr, 10) || 0;
 
@@ -528,18 +596,27 @@ export const LayerTree = ({
         return { destinationZone: zone, destinationIndex };
       }
 
+      // Normalize id if row overlay "open:<id>"
       const overId = rawOverId.startsWith("open:")
         ? rawOverId.slice(5)
         : rawOverId;
 
+      // --- Dropping onto a zone directly ---
       if (state.indexes.zones[overId]) {
-        const list = state.indexes.zones[overId].contentIds ?? [];
-        return { destinationZone: overId, destinationIndex: list.length };
+        const zone = overId;
+
+        // ❗ block: destination zone is in dragged subtree
+        if (isZoneInsideDraggingSubtree(draggingId, zone)) return null;
+
+        const list = state.indexes.zones[zone].contentIds ?? [];
+        return { destinationZone: zone, destinationIndex: list.length };
       }
 
+      // --- Dropping onto a node (may redirect to one of its child zones) ---
       const overNode = state.indexes.nodes[overId];
       if (!overNode) return null;
 
+      // Prefer well-known child zones if present
       const childZones = Object.keys(state.indexes.zones).filter(
         (z) => z.split(":")[0] === overId
       );
@@ -548,11 +625,20 @@ export const LayerTree = ({
           childZones.find((z) => z.endsWith(":content")) ||
           childZones.find((z) => z.endsWith(":children")) ||
           childZones[0];
+
+        // ❗ block: destination zone is in dragged subtree
+        if (isZoneInsideDraggingSubtree(draggingId, preferred)) return null;
+
         const list = state.indexes.zones[preferred]?.contentIds ?? [];
         return { destinationZone: preferred, destinationIndex: list.length };
       }
 
+      // Otherwise, insert before/after this node in its parent zone
       const destinationZone = `${overNode.parentId}:${overNode.zone}`;
+
+      // ❗ block: destination zone is in dragged subtree
+      if (isZoneInsideDraggingSubtree(draggingId, destinationZone)) return null;
+
       const list = state.indexes.zones[destinationZone]?.contentIds ?? [];
       let destinationIndex = list.indexOf(overId);
       if (destinationIndex < 0) return null;
@@ -567,6 +653,7 @@ export const LayerTree = ({
     },
     [storeApi]
   );
+
 
   const onDragEnd = useCallback(
     (e: DragEndEvent) => {
@@ -643,15 +730,13 @@ export const LayerTree = ({
 
       // No-op move → keep current selection behavior unchanged
       if (sourceZone === destinationZone && sourceIndex === destinationIndex) {
-        // still clear overlay & timers
         setActiveId(null);
         clearOpenTimer();
-        // do NOT restore prevSelection; leave current open state as is
         lastOpenedIdRef.current = null;
         return;
       }
 
-      // --- Perform the move ---
+      // --- Perform the move (flat MoveAction) ---
       dispatch({
         type: "move",
         sourceZone,
@@ -661,7 +746,6 @@ export const LayerTree = ({
       });
 
       // --- Keep the sublist open: select the moved item in its NEW location ---
-      // This ensures the parent stays expanded (child is selected).
       dispatch({
         type: "setUi",
         ui: {
@@ -753,12 +837,12 @@ export const LayerTree = ({
               <DropSeparator zone={zoneCompound} index={i} />
               <SortableRowHeader id={itemId}>
                 {({
-                  rowDragOver,
-                  setHeaderRef,
-                  attributes,
-                  listeners,
-                  style,
-                }) => (
+                    rowDragOver,
+                    setHeaderRef,
+                    attributes,
+                    listeners,
+                    style,
+                  }) => (
                   <LayerItem
                     index={i}
                     itemId={itemId}
@@ -780,11 +864,6 @@ export const LayerTree = ({
         </SortableContext>
       </ul>
     </DroppableZone>
-  );
-
-  const sensors2 = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor)
   );
 
   if (useContext(DndProvidedContext)) {
@@ -814,7 +893,10 @@ export const LayerTree = ({
         </div>
       )}
       <DndContext
-        sensors={sensors2}
+        sensors={useSensors(
+          useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+          useSensor(TouchSensor)
+        )}
         collisionDetection={preferOpenSepZonesCollision}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}

@@ -1,4 +1,4 @@
-import type { JSX, ReactNode } from "react";
+import React, { JSX, MouseEventHandler, ReactNode } from "react";
 import { BaseField, Field, Fields } from "./Fields";
 import { ComponentData, Metadata, RootData } from "./Data";
 
@@ -13,6 +13,8 @@ import {
   LeftOrExactRight,
   WithDeepSlots,
 } from "./Internal";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 export type SlotComponent = (props?: Omit<DropZoneProps, "zone">) => ReactNode;
 
@@ -33,6 +35,36 @@ type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   props?: Partial<Props>;
 };
 
+
+export type DndHandleBindings = {
+  attributes: DraggableAttributes;
+  listeners?: SyntheticListenerMap;
+};
+/** Context passed into component configs that define a custom outline row */
+export type OutlineItemContext = {
+  itemId: string;
+  type: string;
+  props: unknown;
+  label: string;
+  zone: string;
+  index: number;
+
+  isSelected: boolean | null;
+  isHovering: boolean;
+  childIsSelected: boolean;
+  hasChildren: boolean;
+
+  /** Ready-to-use UI bits */
+  Icon: React.ReactNode;
+  Chevron: React.ReactNode | null;
+
+  /** Correctly typed handlers you can put on your clickable area */
+  onClick: React.MouseEventHandler<HTMLElement>;
+  onMouseEnter: React.MouseEventHandler<HTMLElement>;
+  onMouseLeave: React.MouseEventHandler<HTMLElement>;
+};
+
+export type GetOutlineItem = (ctx: OutlineItemContext) => ReactNode;
 type ComponentConfigInternal<
   RenderProps extends DefaultComponentProps,
   FieldProps extends DefaultComponentProps,
@@ -43,6 +75,7 @@ type ComponentConfigInternal<
   label?: string;
   defaultProps?: FieldProps;
   fields?: Fields<FieldProps, UserField>;
+  getOutlineItem?: GetOutlineItem;
   permissions?: Partial<Permissions>;
   inline?: boolean;
   resolveFields?: (
