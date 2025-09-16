@@ -125,14 +125,14 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
         return type && type !== "root"
           ? config.components[type]
           : selectedItem
-          ? config.components[selectedItem.type]
-          : ({ ...config.root, fields: rootFields } as ComponentConfig);
+            ? config.components[selectedItem.type]
+            : ({ ...config.root, fields: rootFields } as ComponentConfig);
       },
       selectedItem: initialAppStore?.state?.ui.itemSelector
         ? getItem(
-            initialAppStore?.state?.ui.itemSelector,
-            initialAppStore.state
-          )
+          initialAppStore?.state?.ui.itemSelector,
+          initialAppStore.state as any
+        )
         : null,
       dispatch: (action: PuckAction) =>
         set((s) => {
@@ -318,14 +318,20 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
     }))
   );
 
-export const appStoreContext = createContext(createAppStore());
+// ---- MINIMAL TYPING IMPROVEMENT BELOW ----
 
+// Bind the context to the actual bound store type so .getState() is typed
+export type BoundAppStore = ReturnType<typeof createAppStore>;
+
+export const appStoreContext = createContext<BoundAppStore>(createAppStore());
+
+// Reactive selector hook (unchanged usage)
 export function useAppStore<T>(selector: (state: AppStore) => T) {
-  const context = useContext(appStoreContext);
-
-  return useStore(context, selector);
+  const store = useContext(appStoreContext);
+  return useStore(store, selector);
 }
 
+// Imperative API (call .getState(), .setState(), .subscribe, ...)
 export function useAppStoreApi() {
   return useContext(appStoreContext);
 }
