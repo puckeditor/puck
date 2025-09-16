@@ -14,7 +14,7 @@ import {
 import styles from "./styles.module.css";
 import "./styles.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Copy, CornerLeftUp, Trash } from "lucide-react";
+import { Copy, CornerLeftUp, Trash, MoveUp, MoveDown } from "lucide-react";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { Loader } from "../Loader";
 import { ActionBar } from "../ActionBar";
@@ -33,6 +33,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
+import { getZoneContentIds } from "../../lib/get-zone-content-ids";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -48,14 +49,20 @@ const DefaultActionBar = ({
   label,
   children,
   parentAction,
+  moveUpAction,
+  moveDownAction,
 }: {
   label: string | undefined;
   children: ReactNode;
   parentAction: ReactNode;
+  moveUpAction: ReactNode;
+  moveDownAction: ReactNode;
 }) => (
   <ActionBar>
     <ActionBar.Group>
       {parentAction}
+      {moveUpAction}
+      {moveDownAction}
       {label && <ActionBar.Label label={label} />}
     </ActionBar.Group>
     <ActionBar.Group>{children}</ActionBar.Group>
@@ -166,6 +173,8 @@ export const DraggableComponent = ({
     })
   );
 
+  const isLast = useAppStore(s => getZoneContentIds(zoneCompound, s.state).length - 1 !== index);
+
   const zoneStore = useContext(ZoneStoreContext);
 
   const [dragAxis, setDragAxis] = useState(userDragAxis || autoDragAxis);
@@ -246,7 +255,7 @@ export const DraggableComponent = ({
       iframe.enabled
         ? ref.current?.ownerDocument.body
         : ref.current?.closest<HTMLElement>("[data-puck-preview]") ??
-            document.body
+        document.body
     );
   }, [iframe.enabled, ref.current]);
 
@@ -393,6 +402,54 @@ export const DraggableComponent = ({
       },
     });
   }, [ctx, path]);
+
+  const onMoveUp = useCallback(() => {
+    if (permissions.drag === false) {
+      return;
+    }
+
+    dispatch({
+      type: "move",
+      sourceIndex: index,
+      sourceZone: zoneCompound,
+      destinationIndex: index - 1,
+      destinationZone: zoneCompound,
+    });
+
+    dispatch({
+      type: "setUi",
+      ui: {
+        itemSelector: {
+          zone: zoneCompound,
+          index: index - 1,
+        },
+      },
+    });
+  }, [index, zoneCompound, permissions.drag]);
+
+  const onMoveDown = useCallback(() => {
+    if (permissions.drag === false) {
+      return;
+    }
+
+    dispatch({
+      type: "move",
+      sourceIndex: index,
+      sourceZone: zoneCompound,
+      destinationIndex: index + 1,
+      destinationZone: zoneCompound,
+    });
+
+    dispatch({
+      type: "setUi",
+      ui: {
+        itemSelector: {
+          zone: zoneCompound,
+          index: index + 1,
+        },
+      },
+    });
+  }, [index, zoneCompound, permissions.drag]);
 
   const onDuplicate = useCallback(() => {
     dispatch({
@@ -574,6 +631,22 @@ export const DraggableComponent = ({
     [ctx?.areaId]
   );
 
+  const moveUpAction = useMemo(
+    () =>
+      <ActionBar.Action onClick={onMoveUp} label="Move Up" disabled={!index || !permissions.drag}>
+        <MoveUp size={16} />
+      </ActionBar.Action>,
+    [index, zoneCompound]
+  )
+
+  const moveDownAction = useMemo(
+    () =>
+      <ActionBar.Action onClick={onMoveDown} label="Move Down" disabled={!isLast || !permissions.drag}>
+        <MoveDown size={16} />
+      </ActionBar.Action>,
+    [index, zoneCompound, isLast]
+  )
+
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
       ...ctx!,
@@ -634,6 +707,8 @@ export const DraggableComponent = ({
               >
                 <CustomActionBar
                   parentAction={parentAction}
+                  moveUpAction={moveUpAction}
+                  moveDownAction={moveDownAction}
                   label={DEBUG ? id : label}
                 >
                   {permissions.duplicate && (
