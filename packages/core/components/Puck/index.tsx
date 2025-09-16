@@ -50,6 +50,7 @@ import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
 import { DefaultOverride } from "../DefaultOverride";
 import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
+import { useDeleteHotkeys } from "../../lib/use-delete-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
 import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
@@ -481,6 +482,7 @@ function PuckLayout<
   const ready = useAppStore((s) => s.status === "READY");
 
   useMonitorHotkeys();
+  useDeleteHotkeys();
 
   useEffect(() => {
     if (ready && iframe.enabled) {
