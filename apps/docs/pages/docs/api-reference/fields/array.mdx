@@ -169,7 +169,7 @@ const config = {
 
 ### `getItemSummary(item, index)`
 
-Get a label of each item in the array.
+Get a label of each item in the array. Can return a string or ReactElement for rich content.
 
 ```tsx {10} copy
 const config = {
@@ -210,6 +210,90 @@ const config = {
             <li key={i}>{item.title}</li>
           ))}
         </ul>
+      );
+    },
+  }}
+/>
+
+#### Using ReactElement for rich summaries
+
+The `getItemSummary` function can return a ReactElement for more complex item summaries with styling and additional information.
+
+```tsx {11-18} copy
+const config = {
+  components: {
+    Stats: {
+      fields: {
+        items: {
+          type: "array",
+          arrayFields: {
+            title: { type: "text" },
+            description: { type: "text" },
+          },
+          getItemSummary: (item, i) =>
+            item.title && item.description ? (
+              <>
+                {item.title} ({item.description})
+              </>
+            ) : (
+              `Feature #${i}`
+            ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Stats with ReactElement summary"
+  componentConfig={{
+    fields: {
+      items: {
+        type: "array",
+        arrayFields: {
+          title: { type: "text" },
+          description: { type: "text" },
+        },
+        getItemSummary: (item, i) =>
+          item.title && item.description ? (
+            <>
+              {item.title} ({item.description})
+            </>
+          ) : (
+            `Feature #${i}`
+          ),
+      },
+    },
+    defaultProps: {
+      items: [
+        { title: "Users", description: "1,000" },
+        { title: "Revenue", description: "$50K" },
+      ],
+    },
+    render: ({ items }) => {
+      return (
+        <div style={{ display: "flex", gap: "20px" }}>
+          {items.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                textAlign: "center",
+                padding: "16px",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+              }}
+            >
+              <div style={{ fontSize: "24px", fontWeight: "bold" }}>
+                {item.description}
+              </div>
+              <div style={{ fontSize: "14px", color: "#666" }}>
+                {item.title}
+              </div>
+            </div>
+          ))}
+        </div>
       );
     },
   }}
