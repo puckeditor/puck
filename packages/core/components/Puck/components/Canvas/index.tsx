@@ -185,7 +185,6 @@ export const Canvas = () => {
 
               const newUi: Partial<UiState> = {
                 viewports: { ...viewports, current: uiViewport },
-                itemSelector: null,
               };
 
               setUi(newUi);

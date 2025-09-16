@@ -40,7 +40,7 @@ export const resolveComponentData = async <
   if (shouldRunResolver) {
     const { item: oldItem = null, resolved = {} } = cache.lastChange[id] || {};
 
-    if (item && deepEqual(item, oldItem)) {
+    if (trigger !== "force" && item && deepEqual(item, oldItem)) {
       return { node: resolved, didChange: false };
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "@measured/puck",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",

@@ -2,6 +2,19 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.20.2](https://github.com/measuredco/puck/compare/v0.20.1...v0.20.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* add CommonJS export to emotion cache package.json ([fbf3bd1](https://github.com/measuredco/puck/commit/fbf3bd1038a4c39d4e0c5079c3af33dd515c590b))
+* bypass resolveData cache when trigger is force ([eea53e0](https://github.com/measuredco/puck/commit/eea53e0464c15e7c2f964da973a16a04160224b8))
+* preserve selection when switching viewports and using zoom select ([38514a1](https://github.com/measuredco/puck/commit/38514a169592a3ffbaaedcfcb5b92767ba07b0e7))
+* prevent hidden category components from showing in 'Other' ([8333eaf](https://github.com/measuredco/puck/commit/8333eaf7e27d3225fb7133fe14326e1f8e93776a))
+
+
+
+
 ## [0.20.1](https://github.com/measuredco/puck/compare/v0.20.0...v0.20.1) (2025-08-19)
 
 
