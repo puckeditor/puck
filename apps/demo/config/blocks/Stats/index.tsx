@@ -4,6 +4,7 @@ import { ComponentConfig } from "@/core";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
+import { TrendingUp } from "lucide-react";
 
 const getClassName = getClassNameFactory("Stats", styles);
 
@@ -15,6 +16,7 @@ export type StatsProps = {
 };
 
 export const Stats: ComponentConfig<StatsProps> = {
+  icon: <TrendingUp size={16} />,
   fields: {
     items: {
       type: "array",

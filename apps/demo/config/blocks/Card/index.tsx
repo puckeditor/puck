@@ -6,6 +6,7 @@ import { getClassNameFactory } from "@/core/lib";
 import dynamic from "next/dynamic";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { withLayout, WithLayout } from "../../components/Layout";
+import { PanelBottom } from "lucide-react";
 
 const getClassName = getClassNameFactory("Card", styles);
 
@@ -33,6 +34,7 @@ export type CardProps = WithLayout<{
 }>;
 
 const CardInner: ComponentConfig<CardProps> = {
+  icon: <PanelBottom size={16} />,
   fields: {
     title: {
       type: "text",

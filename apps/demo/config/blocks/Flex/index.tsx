@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { StretchVertical } from "lucide-react";
 
 const getClassName = getClassNameFactory("Flex", styles);
 
@@ -16,6 +17,7 @@ export type FlexProps = WithLayout<{
 }>;
 
 const FlexInternal: ComponentConfig<FlexProps> = {
+  icon: <StretchVertical size={16} />,
   fields: {
     direction: {
       label: "Direction",

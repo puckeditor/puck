@@ -41,6 +41,7 @@ export const useComponentList = () => {
                     key={componentName}
                     label={(componentConf["label"] ?? componentName) as string}
                     name={componentName as string}
+                    icon={componentConf["icon"]}
                     index={i}
                   />
                 );
@@ -73,6 +74,7 @@ export const useComponentList = () => {
                   key={componentName}
                   name={componentName as string}
                   label={(componentConf["label"] ?? componentName) as string}
+                  icon={componentConf["icon"]}
                   index={i}
                 />
               );
