@@ -5,6 +5,7 @@ import { Heading as _Heading } from "@/core/components/Heading";
 import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { HeadingIcon } from "lucide-react";
 
 export type HeadingProps = WithLayout<{
   align: "left" | "center" | "right";
@@ -34,6 +35,7 @@ const levelOptions = [
 ];
 
 const HeadingInternal: ComponentConfig<HeadingProps> = {
+  icon: <HeadingIcon size={16} />,
   fields: {
     text: {
       type: "textarea",

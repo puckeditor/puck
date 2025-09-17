@@ -42,6 +42,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           iframe={{
             enabled: params.get("disableIframe") === "true" ? false : true,
           }}
+          // showComponentIconsInOutline={false}
           fieldTransforms={{
             userField: ({ value }) => value, // Included to check types
           }}
@@ -62,6 +63,48 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
                 </FieldLabel>
               ),
             },
+            // Example of customizing the Drawer Items
+            drawerContainer: (props) => {
+              return <div 
+                {...props}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(64px, 1fr))",
+                  gap: 16,
+                }}
+              >
+                {props.children}
+              </div>;
+            },
+            drawerItem: ({ children, name, icon }) => (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  aspectRatio: "1 / 1",
+                  gap: 8,
+                }}
+              >
+                <span
+                  style={{
+                    width: 32,
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "none",
+                    fontSize: 0,
+                    scale: 1.5,
+                  }}
+                >
+                  {icon || <Type size={24} />}
+                </span>
+                <div style={{ textAlign: "center", fontSize: "0.75rem" }}>{name}</div>
+              </div>
+            ),
             headerActions: ({ children }) => (
               <>
                 <div>
