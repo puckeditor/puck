@@ -15,6 +15,29 @@ export type TextProps = WithLayout<{
 }>;
 
 const TextInner: ComponentConfig<TextProps> = {
+  getOutlineItem: ({ label, props, Icon, Chevron, onClick, onMouseEnter, onMouseLeave }) => {
+    const p = props as { align?: "left" | "center"; buttons?: { label?: string }[] };
+    const btnCount = Array.isArray(p?.buttons) ? p.buttons.length : 0;
+
+    return (
+      <div className="flex items-center gap-2">
+        <div
+          onClick={onClick}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          className="flex flex-1 items-center justify-between rounded-sm px-1 py-1 text-left hover:bg-muted/50"
+        >
+          <div className="flex items-center gap-2">
+            {Icon}
+            <span className="font-medium">{label}</span>
+            <span className="opacity-70 text-xs">• align: {p?.align ?? "left"}</span>
+            <span className="opacity-70 text-xs">• buttons: {btnCount}</span>
+          </div>
+          {Chevron}
+        </div>
+      </div>
+    );
+  },
   fields: {
     text: {
       type: "textarea",
