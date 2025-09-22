@@ -31,6 +31,7 @@ const config = {
 | [`render()`](#renderprops)                               | `render: () => <div />`                         | Function | Required |
 | [`fields`](#fields)                                      | `fields: { title: { type: "text"} }`            | Object   | -        |
 | [`defaultProps`](#defaultprops)                          | `defaultProps: { title: "Hello, world" }`       | Object   | -        |
+| [`icon`](#icon)                                          | `icon: <MousePointer size={16} />`               | ReactNode| -        |
 | [`inline`](#inline)                                      | `inline: true`                                  | Boolean  | -        |
 | [`label`](#label)                                        | `label: "Heading Block"`                        | String   | -        |
 | [`metadata`](#metadata)                                  | `metadata: {}`                                  | Object   | -        |
@@ -202,6 +203,25 @@ const config = {
     },
   }}
 />
+
+### `icon`
+
+An icon to show in the component drawer and outline. Can be any React element.
+
+```tsx {4} copy showLineNumbers
+import { MousePointer } from "lucide-react";
+
+const config = {
+  components: {
+    HeadingBlock: {
+      icon: <MousePointer size={16} />,
+      render: () => <h1>Hello, World</h1>,
+    },
+  },
+};
+```
+
+When no icon is provided, Puck will fall back to default icons based on component type.
 
 ### `inline`
 
