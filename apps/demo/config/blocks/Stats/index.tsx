@@ -18,7 +18,14 @@ export const Stats: ComponentConfig<StatsProps> = {
   fields: {
     items: {
       type: "array",
-      getItemSummary: (item, i) => item.title || `Feature #${i}`,
+      getItemSummary: (item, i) =>
+        item.title && item.description ? (
+          <>
+            {item.title} ({item.description})
+          </>
+        ) : (
+          `Feature #${i}`
+        ),
       defaultItemProps: {
         title: "Stat",
         description: "1,000",
