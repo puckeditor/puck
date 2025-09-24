@@ -55,7 +55,7 @@ export type ArrayField<
       ? Field<Props[0][SubPropName], UserField> | UserField
       : Field<Props[0][SubPropName], UserField>;
   };
-  defaultItemProps?: Props[0];
+  defaultItemProps?: Props[0] | ((index: number) => Props[0]);
   getItemSummary?: (item: Props[0], index?: number) => string;
   max?: number;
   min?: number;
