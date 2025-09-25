@@ -81,6 +81,9 @@ exports[`Puck should generate the correct state on mount 1`] = `
             "isDragging": false,
             "itemSelector": null,
             "leftSideBarVisible": true,
+            "plugin": {
+              "current": null,
+            },
             "previewMode": "edit",
             "rightSideBarVisible": true,
             "viewports": {
@@ -140,6 +143,9 @@ exports[`Puck should generate the correct state on mount 1`] = `
         "isDragging": false,
         "itemSelector": null,
         "leftSideBarVisible": true,
+        "plugin": {
+          "current": null,
+        },
         "previewMode": "edit",
         "rightSideBarVisible": true,
         "viewports": {
@@ -238,6 +244,9 @@ exports[`Puck should generate the correct state on mount 1`] = `
       "isDragging": false,
       "itemSelector": null,
       "leftSideBarVisible": false,
+      "plugin": {
+        "current": "blocks",
+      },
       "previewMode": "edit",
       "rightSideBarVisible": false,
       "viewports": {

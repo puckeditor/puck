@@ -30,3 +30,7 @@ export {
   type UsePuckData,
   type PuckApi,
 } from "../lib/use-puck";
+
+export * from "../plugins/blocks";
+export * from "../plugins/fields";
+export * from "../plugins/outline";
