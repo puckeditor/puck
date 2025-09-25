@@ -45,6 +45,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           fieldTransforms={{
             userField: ({ value }) => value, // Included to check types
           }}
+          _experimentalFullScreenCanvas={false}
           overrides={{
             fieldTypes: {
               // Example of user field provided via overrides
