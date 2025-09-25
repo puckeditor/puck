@@ -112,7 +112,10 @@ export const ViewportControls = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={getClassName({ isExpanded, fullScreen })}>
+    <div
+      className={getClassName({ isExpanded, fullScreen })}
+      suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
+    >
       <div className={getClassName("actions")}>
         <div className={getClassName("actionsInner")}>
           {viewports.map((viewport, i) => (
