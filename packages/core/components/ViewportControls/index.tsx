@@ -39,12 +39,13 @@ const ActionButton = ({
   disabled?: boolean;
 }) => {
   return (
-    <span className={getClassNameButton({ isActive })}>
+    <span className={getClassNameButton({ isActive })} suppressHydrationWarning>
       <IconButton
         type="button"
         title={title}
         disabled={disabled || isActive}
         onClick={onClick}
+        suppressHydrationWarning
       >
         <span className={getClassNameButton("inner")}>{children}</span>
       </IconButton>
@@ -112,7 +113,10 @@ export const ViewportControls = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={getClassName({ isExpanded, fullScreen })}>
+    <div
+      className={getClassName({ isExpanded, fullScreen })}
+      suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
+    >
       <div className={getClassName("actions")}>
         <div className={getClassName("actionsInner")}>
           {viewports.map((viewport, i) => (
