@@ -14,7 +14,7 @@ export { Drawer } from "../components/Drawer";
 
 export { DropZone } from "../components/DropZone";
 export * from "../components/IconButton";
-export { Puck } from "../components/Puck";
+export { Puck,usePropsContext } from "../components/Puck";
 export * from "../components/Render";
 
 export * from "../lib/migrate";
