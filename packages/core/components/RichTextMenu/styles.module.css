@@ -1,0 +1,47 @@
+.RichTextMenu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.RichTextMenu--form {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  padding: 6px 6px;
+  background-color: var(--puck-color-grey-12);
+  position: relative;
+  scrollbar-width: none;
+  overflow-x: auto;
+}
+
+.RichTextMenu-group {
+  display: flex;
+  align-items: space-between;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  padding-inline: 6px;
+  gap: 2px;
+  position: relative;
+}
+
+.RichTextMenu-group:first-of-type {
+  padding-left: 0;
+}
+
+.RichTextMenu-group:last-of-type {
+  padding-right: 0;
+}
+
+.RichTextMenu--inline .RichTextMenu-group {
+  color: var(--puck-color-grey-08);
+  gap: 0px;
+  flex-wrap: nowrap;
+}
+
+.RichTextMenu-group + .RichTextMenu-group {
+  border-left: 1px solid var(--puck-color-grey-10);
+}
+
+.RichTextMenu--inline .RichTextMenu-group + .RichTextMenu-group {
+  border-left: 0.5px solid var(--puck-color-grey-05); /* Match actionbar separator */
+}

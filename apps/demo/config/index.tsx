@@ -9,6 +9,7 @@ import { Stats } from "./blocks/Stats";
 import { Template } from "./blocks/Template";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
+import { RichText } from "./blocks/RichText";
 
 import Root from "./root";
 import { UserConfig } from "./types";
@@ -22,7 +23,7 @@ export const conf: UserConfig = {
       components: ["Grid", "Flex", "Space"],
     },
     typography: {
-      components: ["Heading", "Text"],
+      components: ["Heading", "Text", "RichText"],
     },
     interactive: {
       title: "Actions",
@@ -45,6 +46,7 @@ export const conf: UserConfig = {
     Template,
     Text,
     Space,
+    RichText,
   },
 };
 

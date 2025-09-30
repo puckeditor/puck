@@ -19,6 +19,7 @@ import {
   ArrayField,
   DefaultField,
   TextareaField,
+  RichtextField,
 } from "./fields";
 import { Lock } from "lucide-react";
 import { ObjectField } from "./fields/ObjectField";
@@ -131,6 +132,7 @@ const defaultFields = {
   radio: RadioField,
   text: DefaultField,
   number: DefaultField,
+  richtext: RichtextField,
 };
 
 function AutoFieldInternal<
@@ -166,6 +168,7 @@ function AutoFieldInternal<
       radio: overrides.fieldTypes?.radio || defaultFields.radio,
       text: overrides.fieldTypes?.text || defaultFields.text,
       number: overrides.fieldTypes?.number || defaultFields.number,
+      richtext: overrides.fieldTypes?.richtext || defaultFields.richtext,
     }),
     [overrides]
   );

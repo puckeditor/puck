@@ -1,5 +1,11 @@
-import { ReactElement, ReactNode } from "react";
+import { CSSProperties, ReactElement, ReactNode } from "react";
 import { DefaultComponentProps, FieldMetadata, UiState } from ".";
+import { Editor, Extensions } from "@tiptap/react";
+import {
+  EditorState,
+  RichTextSelector,
+} from "../components/RichTextEditor/types";
+import { PuckRichTextOptions } from "../components/RichTextEditor/extensions";
 
 type FieldOption = {
   label: string;
@@ -43,6 +49,31 @@ export interface SelectField extends BaseField {
 export interface RadioField extends BaseField {
   type: "radio";
   options: FieldOptions;
+}
+
+export interface RichtextField<
+  UserSelector extends RichTextSelector = RichTextSelector
+> extends BaseField {
+  type: "richtext";
+  contentEditable?: boolean;
+  maxHeight?: CSSProperties["maxHeight"];
+  options?: Partial<PuckRichTextOptions>;
+  renderMenu?: (props: {
+    children: ReactNode;
+    editor: Editor;
+    editorState: EditorState<UserSelector>;
+    readOnly: boolean;
+  }) => ReactNode;
+  renderInlineMenu?: (props: {
+    children: ReactNode;
+    editor: Editor;
+    editorState: EditorState<UserSelector>;
+    readOnly: boolean;
+  }) => ReactNode;
+  tiptap?: {
+    selector?: UserSelector;
+    extensions?: Extensions;
+  };
 }
 
 export interface ArrayField<
@@ -144,6 +175,7 @@ export interface SlotField extends BaseField {
 
 export type Field<ValueType = any, UserField extends {} = {}> =
   | TextField
+  | RichtextField
   | NumberField
   | TextareaField
   | SelectField

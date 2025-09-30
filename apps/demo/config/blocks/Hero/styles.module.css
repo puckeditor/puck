@@ -44,6 +44,10 @@
   font-weight: 300;
 }
 
+.Hero-subtitle strong {
+  font-weight: 500;
+}
+
 .Hero--hasImageBackground .Hero-subtitle {
   color: var(--puck-color-grey-03);
 }

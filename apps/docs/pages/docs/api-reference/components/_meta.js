@@ -14,6 +14,9 @@ const menu = {
   "puck-outline": {},
   "puck-preview": {},
   render: {},
+  "rich-text-menu": {},
+  "rich-text-menu-group": {},
+  "rich-text-menu-control": {},
 };
 
 export default menu;

@@ -1,0 +1,119 @@
+---
+title: <RichTextMenu>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { RichTextMenu } from "@/puck";
+import { Bold, Italic, Underline } from "lucide-react";
+
+# \<RichTextMenu\>
+
+A menu of rich text controls for the [`richtext`](/docs/api-reference/fields/richtext) field.
+
+```tsx showLineNumbers copy
+<RichTextMenu>
+  <RichTextMenu.Group>
+    <RichTextMenu.Bold />
+    <RichTextMenu.Italic />
+    <RichTextMenu.Underline />
+  </RichTextMenu.Group>
+</RichTextMenu>
+```
+
+<PuckPreview>
+  <div style={{ display: "flex" }}>
+    <RichTextMenu>
+      <RichTextMenu.Group>
+        <RichTextMenu.Control icon={<Bold />} />
+        <RichTextMenu.Control icon={<Italic />} />
+        <RichTextMenu.Control icon={<Underline />} />
+      </RichTextMenu.Group>
+    </RichTextMenu>
+  </div>
+</PuckPreview>
+
+## Props
+
+| Prop                    | Example   | Type      | Status   |
+| ----------------------- | --------- | --------- | -------- |
+| [`children`](#children) | `<div />` | ReactNode | Required |
+
+## Required Props
+
+### `children`
+
+A fragment of [`<RichTextMenu.Group>`](/docs/api-reference/components/rich-text-group) components, each containing:
+
+- [included controls](#included-controls),
+- custom controls using [`<RichTextMenu.Control>`](rich-text-menu-control), or
+- additional custom UI
+
+## Included controls
+
+### \<RichTextMenu.AlignCenter\>
+
+Align the text to the center. Configured by the [`textAlign`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.AlignJustify\>
+
+Justify the text. Configured by the [`textAlign`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.AlignLeft\>
+
+Align the text to the left. Configured by the [`textAlign`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.AlignRight\>
+
+Align the text to the right. Configured by the [`textAlign`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.AlignSelect\>
+
+A select dropdown with all text alignment options. Configured by the [`textAlign`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.Blockquote\>
+
+Wrap the text with `<blockquote>`. Configured by the [`blockquote`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.Bold\>
+
+Mark the text as <strong>bold</strong>. Configured by the [`bold`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.BulletList\>
+
+Wrap the text with an unordered list (`<ul>`). Configured by the [`bulletList`](/docs/api-reference/fields/richtext#options) and [`listItem`](/docs/api-reference/fields/richtext#options) options.
+
+### \<RichTextMenu.CodeBlock\>
+
+Wrap the text with a code block (`<pre>` and `<code>`). Configured by the [`codeBlock`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.HeadingSelect\>
+
+A select dropdown to set the text as a heading (`h1`, `h2`, `h3`, etc). Configured by the [`heading`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.HorizontalRule\>
+
+Insert a horizontal rule (`<hr>`). Configured by the [`horizontalRule`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.InlineCode\>
+
+Wrap the text with `<code>`. Configured by the [`code`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.Italic\>
+
+Mark the text as <em>italic</em>. Configured by the [`italic`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.ListSelect\>
+
+A select dropdown with all list options (`ul`, `ol`). Configured by the [`bulletList`](/docs/api-reference/fields/richtext#options), [`orderedList`](/docs/api-reference/fields/richtext#options) and [`listItem`](/docs/api-reference/fields/richtext#options) options.
+
+### \<RichTextMenu.OrderedList\>
+
+Wrap the text with an ordered list (`<ol>`). Configured by the [`orderedList`](/docs/api-reference/fields/richtext#options) and [`listItem`](/docs/api-reference/fields/richtext#options) options.
+
+### \<RichTextMenu.Strikethrough\>
+
+Mark the text as <s>struck-through</s>. Configured by the [`strike`](/docs/api-reference/fields/richtext#options) option.
+
+### \<RichTextMenu.Underline\>
+
+Mark the text as <span style={{textDecoration: 'underline'}}>underlined</span>. Configured by the [`underline`](/docs/api-reference/fields/richtext#options) option.

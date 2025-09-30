@@ -25,6 +25,7 @@ import {
   ComponentData,
   Config,
   DragAxis,
+  Fields,
   Metadata,
   PuckContext,
   WithPuckProps,
@@ -47,7 +48,10 @@ import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransforms } from "../../lib/field-transforms/use-field-transforms";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
+import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { Render } from "../RichTextEditor/Render";
+import { useRichtextRenderer } from "../RichTextEditor/lib/use-richtext-renderer";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -199,6 +203,7 @@ const DropZoneChild = ({
         <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
       )),
       ...getInlineTextTransform(),
+      ...getRichTextTransform(),
       ...plugins.reduce<FieldTransforms>(
         (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
         {}
@@ -531,10 +536,13 @@ const DropZoneRenderItem = ({
     [props]
   );
 
+  const richTextRenderer = useRichtextRenderer(Component.fields, props);
+
   return (
     <DropZoneProvider key={props.id} value={nextContextValue}>
       <Component.render
         {...props}
+        {...richTextRenderer}
         puck={{
           ...props.puck,
           renderDropZone: DropZoneRenderPure,
@@ -577,7 +585,6 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     if (zoneCompound !== rootDroppableId) {
       content = setupZone(data, zoneCompound).zones[zoneCompound];
     }
-
     return (
       <El className={className} style={style} ref={ref}>
         {content.map((item) => {
