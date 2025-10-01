@@ -6,6 +6,7 @@ import { generateId } from "../../lib/generate-id";
 import { useDragListener } from "../DragDropContext";
 import { useSafeId } from "../../lib/use-safe-id";
 import { useDraggable, useDroppable } from "@dnd-kit/react";
+import { useAppStore } from "../../store";
 
 const getClassName = getClassNameFactory("Drawer", styles);
 const getClassNameItem = getClassNameFactory("DrawerItem", styles);
@@ -14,19 +15,21 @@ export const DrawerItemInner = ({
   children,
   name,
   label,
+  icon,
   dragRef,
   isDragDisabled,
 }: {
-  children?: (props: { children: ReactNode; name: string }) => ReactElement;
+  children?: (props: { children: ReactNode; name: string; icon?: ReactNode }) => ReactElement;
   name: string;
   label?: string;
+  icon?: ReactNode;
   dragRef?: Ref<any>;
   isDragDisabled?: boolean;
 }) => {
   const CustomInner = useMemo(
     () =>
       children ||
-      (({ children }: { children: ReactNode; name: string }) => (
+      (({ children }: { children: ReactNode; name: string; icon?: ReactNode }) => (
         <div className={getClassNameItem("default")}>{children}</div>
       )),
     [children]
@@ -40,9 +43,12 @@ export const DrawerItemInner = ({
       data-testid={dragRef ? `drawer-item:${name}` : ""}
       data-puck-drawer-item
     >
-      <CustomInner name={name}>
+      <CustomInner name={name} icon={icon}>
         <div className={getClassNameItem("draggableWrapper")}>
           <div className={getClassNameItem("draggable")}>
+            {icon && (
+              <div className={getClassNameItem("componentIcon")}>{icon}</div>
+            )}
             <div className={getClassNameItem("name")}>{label ?? name}</div>
             <div className={getClassNameItem("icon")}>
               <DragIcon />
@@ -63,12 +69,14 @@ const DrawerItemDraggable = ({
   children,
   name,
   label,
+  icon,
   id,
   isDragDisabled,
 }: {
-  children?: (props: { children: ReactNode; name: string }) => ReactElement;
+  children?: (props: { children: ReactNode; name: string; icon?: ReactNode }) => ReactElement;
   name: string;
   label?: string;
+  icon?: ReactNode;
   id: string;
   isDragDisabled?: boolean;
 }) => {
@@ -82,7 +90,7 @@ const DrawerItemDraggable = ({
   return (
     <div className={getClassName("draggable")}>
       <div className={getClassName("draggableBg")}>
-        <DrawerItemInner name={name} label={label}>
+        <DrawerItemInner name={name} label={label} icon={icon}>
           {children}
         </DrawerItemInner>
       </div>
@@ -90,6 +98,7 @@ const DrawerItemDraggable = ({
         <DrawerItemInner
           name={name}
           label={label}
+          icon={icon}
           dragRef={ref}
           isDragDisabled={isDragDisabled}
         >
@@ -105,13 +114,15 @@ const DrawerItem = ({
   children,
   id,
   label,
+  icon,
   index,
   isDragDisabled,
 }: {
   name: string;
-  children?: (props: { children: ReactNode; name: string }) => ReactElement;
+  children?: (props: { children: ReactNode; name: string; icon?: ReactNode }) => ReactElement;
   id?: string;
   label?: string;
+  icon?: ReactNode;
   index?: number; // TODO deprecate
   isDragDisabled?: boolean;
 }) => {
@@ -137,6 +148,7 @@ const DrawerItem = ({
       <DrawerItemDraggable
         name={name}
         label={label}
+        icon={icon}
         id={dynamicId}
         isDragDisabled={isDragDisabled}
       >
@@ -168,12 +180,32 @@ export const Drawer = ({
   }
 
   const id = useSafeId();
+  const overrides = useAppStore((s) => s.overrides);
 
   const { ref } = useDroppable({
     id,
     type: "void",
     collisionPriority: 0, // Never collide with this, but we use it so NestedDroppablePlugin respects the Drawer
   });
+
+  const DrawerContainer = useMemo(
+    () => overrides.drawerContainer,
+    [overrides]
+  );
+
+  if (DrawerContainer) {
+    return (
+      <DrawerContainer
+        className={getClassName()}
+        ref={ref}
+        data-puck-dnd={id}
+        data-puck-drawer
+        data-puck-dnd-void
+      >
+        {children}
+      </DrawerContainer>
+    );
+  }
 
   return (
     <div

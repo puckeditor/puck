@@ -5,6 +5,7 @@ import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
 
 import styles from "./styles.module.css";
+import { Minus } from "lucide-react";
 
 const getClassName = getClassNameFactory("Space", styles);
 
@@ -15,6 +16,7 @@ export type SpaceProps = {
 
 export const Space: ComponentConfig<SpaceProps> = {
   label: "Space",
+  icon: <Minus size={16} />,
   fields: {
     size: {
       type: "select",
