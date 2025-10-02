@@ -100,6 +100,7 @@ export type ExternalFieldWithAdaptor<
 export type ExternalField<Props extends any = { [key: string]: any }> =
   BaseField & {
     type: "external";
+    cache?: boolean;
     placeholder?: string;
     fetchList: (params: {
       query: string;
