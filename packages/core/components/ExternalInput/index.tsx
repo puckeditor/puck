@@ -171,7 +171,7 @@ export const ExternalInput = ({
           })}
           onSubmit={(e) => {
             e.preventDefault();
-
+            e.stopPropagation();
             search(searchQuery, filters);
           }}
         >
