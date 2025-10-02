@@ -25,6 +25,9 @@ import type {
   Config,
   Data,
   Metadata,
+  AsFieldProps,
+  DefaultComponentProps,
+  ComponentData,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -67,6 +70,7 @@ import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { populateIds } from "../../lib/data/populate-ids";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -165,6 +169,26 @@ function PuckProvider<
     [_iframe]
   );
 
+  const updateIds = (
+    root: AsFieldProps<DefaultComponentProps> | AsFieldProps<any> | undefined,
+    config: Config
+  ) => {
+    if (!root || typeof root !== "object") return;
+
+    if (root.props && typeof root.props === "object") {
+      if (!("id" in root.props)) {
+        root = populateIds(root as ComponentData, config);
+      }
+    }
+
+    // recurse into all nested values
+    for (const value of Object.values(root)) {
+      if (typeof value === "object") {
+        updateIds(value, config);
+      }
+    }
+  };
+
   const [generatedAppState] = useState<G["UserAppState"]>(() => {
     const initial = { ...defaultAppState.ui, ...initialUi };
 
@@ -229,6 +253,8 @@ function PuckProvider<
       ...config.root?.defaultProps,
       ...rootProps,
     };
+
+    updateIds(defaultedRootProps, config);
 
     const newAppState = {
       ...defaultAppState,
