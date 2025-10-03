@@ -25,6 +25,9 @@ import type {
   Config,
   Data,
   Metadata,
+  AsFieldProps,
+  DefaultComponentProps,
+  ComponentData,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -67,6 +70,8 @@ import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { populateIds } from "../../lib/data/populate-ids";
+import { toComponent } from "../../lib/data/to-component";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -227,14 +232,19 @@ function PuckProvider<
 
     const defaultedRootProps = {
       ...config.root?.defaultProps,
-      ...rootProps,
+      ...(rootProps as AsFieldProps<DefaultComponentProps> | AsFieldProps<any>),
     };
+
+    const root = populateIds(
+      toComponent({ ...initialData?.root, props: defaultedRootProps }),
+      config
+    );
 
     const newAppState = {
       ...defaultAppState,
       data: {
         ...initialData,
-        root: { ...initialData?.root, props: defaultedRootProps },
+        root: { ...initialData?.root, props: root.props },
         content: initialData.content || [],
       },
       ui: {
