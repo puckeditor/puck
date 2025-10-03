@@ -71,6 +71,7 @@ import { Sidebar } from "./components/Sidebar";
 import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
+import { toComponent } from "../../lib/data/to-component";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -169,26 +170,6 @@ function PuckProvider<
     [_iframe]
   );
 
-  const updateIds = (
-    root: AsFieldProps<DefaultComponentProps> | AsFieldProps<any> | undefined,
-    config: Config
-  ) => {
-    if (!root || typeof root !== "object") return;
-
-    if (root.props && typeof root.props === "object") {
-      if (!("id" in root.props)) {
-        root = populateIds(root as ComponentData, config);
-      }
-    }
-
-    // recurse into all nested values
-    for (const value of Object.values(root)) {
-      if (typeof value === "object") {
-        updateIds(value, config);
-      }
-    }
-  };
-
   const [generatedAppState] = useState<G["UserAppState"]>(() => {
     const initial = { ...defaultAppState.ui, ...initialUi };
 
@@ -254,13 +235,15 @@ function PuckProvider<
       ...rootProps,
     };
 
-    updateIds(defaultedRootProps, config);
-
+    const root = populateIds(
+      toComponent({ ...initialData?.root, props: defaultedRootProps }),
+      config
+    );
     const newAppState = {
       ...defaultAppState,
       data: {
         ...initialData,
-        root: { ...initialData?.root, props: defaultedRootProps },
+        root: { ...initialData?.root, props: root.props },
         content: initialData.content || [],
       },
       ui: {
