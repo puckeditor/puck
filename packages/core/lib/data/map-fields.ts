@@ -69,26 +69,32 @@ export const walkField = ({
   if (map && fieldType === "slot") {
     const content = (value as Content) || [];
 
-    const mappedContent = recurseSlots
-      ? content.map((el) => {
-          const componentConfig = config.components[el.type];
+    let mappedContent = content;
 
-          if (!componentConfig) {
-            throw new Error(`Could not find component config for ${el.type}`);
-          }
+    if (recurseSlots) {
+      for (let i = 0; i < content.length; i++) {
+        const el = content[i];
 
-          const fields = componentConfig.fields ?? {};
+        const componentConfig = config.components[el.type];
 
-          return walkField({
+        if (!componentConfig || !el.props?.id) {
+          continue;
+        }
+
+        const fields = componentConfig.fields ?? {};
+
+        mappedContent.push(
+          walkField({
             value: { ...el, props: defaultSlots(el.props, fields) },
             fields,
             mappers,
             id: el.props.id,
             config,
             recurseSlots,
-          });
-        })
-      : content;
+          })
+        );
+      }
+    }
 
     if (containsPromise(mappedContent)) {
       return Promise.all(mappedContent);
