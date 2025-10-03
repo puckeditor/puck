@@ -41,6 +41,7 @@ export const ExternalInput = ({
     mapRow = (val: any) => val,
     filterFields,
   } = field || {};
+  const { enabled: shouldCacheData } = field.cache ?? { enabled: true };
 
   const [data, setData] = useState<Record<string, any>[]>([]);
   const [isOpen, setOpen] = useState(false);
@@ -81,14 +82,21 @@ export const ExternalInput = ({
 
       const cacheKey = `${id}-${query}-${JSON.stringify(filters)}`;
 
-      const listData =
-        dataCache[cacheKey] || (await field.fetchList({ query, filters }));
+      let listData;
+
+      if (shouldCacheData && dataCache[cacheKey]) {
+        listData = dataCache[cacheKey];
+      } else {
+        listData = await field.fetchList({ query, filters });
+      }
 
       if (listData) {
         setData(listData);
         setIsLoading(false);
 
-        dataCache[cacheKey] = listData;
+        if (shouldCacheData) {
+          dataCache[cacheKey] = listData;
+        }
       }
     },
     [id, field]
@@ -163,7 +171,7 @@ export const ExternalInput = ({
           })}
           onSubmit={(e) => {
             e.preventDefault();
-
+            e.stopPropagation();
             search(searchQuery, filters);
           }}
         >

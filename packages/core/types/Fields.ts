@@ -97,9 +97,14 @@ export type ExternalFieldWithAdaptor<
   getItemSummary: (item: NotUndefined<Props>, index?: number) => string;
 };
 
+export type CacheOpts = {
+  enabled?: boolean;
+};
+
 export type ExternalField<Props extends any = { [key: string]: any }> =
   BaseField & {
     type: "external";
+    cache?: CacheOpts;
     placeholder?: string;
     fetchList: (params: {
       query: string;
