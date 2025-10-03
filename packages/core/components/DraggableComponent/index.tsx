@@ -214,11 +214,11 @@ export const DraggableComponent = ({
       sortable.droppable.disabled = !s.enabledIndex[zoneCompound];
     });
 
-    if (ref.current && !permissions.drag) {
-      ref.current.setAttribute("data-puck-disabled", "");
+    if (elState && !permissions.drag) {
+      elState.setAttribute("data-puck-disabled", "");
 
       return () => {
-        ref.current?.removeAttribute("data-puck-disabled");
+        elState?.removeAttribute("data-puck-disabled");
         cleanup();
       };
     }
@@ -226,14 +226,14 @@ export const DraggableComponent = ({
     return cleanup;
   }, [permissions.drag, zoneCompound]);
 
-  const ref = useRef<HTMLElement>(null);
+  const [elState, setElState] = useState<HTMLElement | null>(null);
 
-  const refSetter = useCallback(
+  const elSetter = useCallback(
     (el: HTMLElement | null) => {
       sortableRef(el);
 
       if (el) {
-        ref.current = el;
+        setElState(el);
       }
     },
     [sortableRef]
@@ -244,21 +244,20 @@ export const DraggableComponent = ({
   useEffect(() => {
     setPortalEl(
       iframe.enabled
-        ? ref.current?.ownerDocument.body
-        : ref.current?.closest<HTMLElement>("[data-puck-preview]") ??
-            document.body
+        ? elState?.ownerDocument.body
+        : elState?.closest<HTMLElement>("[data-puck-preview]") ?? document.body
     );
-  }, [iframe.enabled, ref.current]);
+  }, [iframe.enabled, elState]);
 
   const getStyle = useCallback(() => {
-    if (!ref.current) return;
+    if (!elState) return;
 
-    const rect = ref.current!.getBoundingClientRect();
-    const deepScrollPosition = getDeepScrollPosition(ref.current);
+    const rect = elState!.getBoundingClientRect();
+    const deepScrollPosition = getDeepScrollPosition(elState);
 
     const portalContainerEl = iframe.enabled
       ? null
-      : ref.current?.closest<HTMLElement>("[data-puck-preview]");
+      : elState?.closest<HTMLElement>("[data-puck-preview]");
 
     const portalContainerRect = portalContainerEl?.getBoundingClientRect();
     const portalScroll = portalContainerEl
@@ -275,11 +274,11 @@ export const DraggableComponent = ({
     };
 
     const untransformed = {
-      height: ref.current.offsetHeight,
-      width: ref.current.offsetWidth,
+      height: elState.offsetHeight,
+      width: elState.offsetWidth,
     };
 
-    const transform = accumulateTransform(ref.current);
+    const transform = accumulateTransform(elState);
 
     const style: CSSProperties = {
       left: `${(rect.left + scroll.x) / transform.scaleX}px`,
@@ -289,25 +288,25 @@ export const DraggableComponent = ({
     };
 
     return style;
-  }, [ref.current]);
+  }, [elState]);
 
   const [style, setStyle] = useState<CSSProperties>();
 
   const sync = useCallback(() => {
     setStyle(getStyle());
-  }, [ref.current, iframe]);
+  }, [elState, iframe]);
 
   useEffect(() => {
-    if (ref.current) {
+    if (elState) {
       const observer = new ResizeObserver(sync);
 
-      observer.observe(ref.current);
+      observer.observe(elState);
 
       return () => {
         observer.disconnect();
       };
     }
-  }, [ref.current]);
+  }, [elState]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
 
@@ -322,7 +321,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     registerNode(id, {
       methods: { sync, showOverlay, hideOverlay },
-      element: ref.current ?? null,
+      element: elState ?? null,
     });
 
     return () => {
@@ -418,11 +417,11 @@ export const DraggableComponent = ({
   );
 
   useEffect(() => {
-    if (!ref.current) {
+    if (!elState) {
       return;
     }
 
-    const el = ref.current as HTMLElement;
+    const el = elState as HTMLElement;
 
     const _onMouseOver = (e: Event) => {
       const userIsDragging = !!zoneStore.getState().draggedItem;
@@ -462,7 +461,7 @@ export const DraggableComponent = ({
       el.removeEventListener("mouseout", _onMouseOut);
     };
   }, [
-    ref.current, // Remount attributes if the element changes
+    elState, // Remount attributes if the element changes
     onClick,
     containsActiveZone,
     zoneCompound,
@@ -547,8 +546,8 @@ export const DraggableComponent = ({
       return;
     }
 
-    if (ref.current) {
-      const computedStyle = window.getComputedStyle(ref.current);
+    if (elState) {
+      const computedStyle = window.getComputedStyle(elState);
 
       if (
         computedStyle.display === "inline" ||
@@ -561,7 +560,7 @@ export const DraggableComponent = ({
     }
 
     setDragAxis(autoDragAxis);
-  }, [ref, userDragAxis, autoDragAxis]);
+  }, [elState, userDragAxis, autoDragAxis]);
 
   const parentAction = useMemo(
     () =>
@@ -662,7 +661,7 @@ export const DraggableComponent = ({
           </div>,
           portalEl || document.body
         )}
-      {children(refSetter)}
+      {children(elSetter)}
     </DropZoneProvider>
   );
 };
