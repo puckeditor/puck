@@ -55,7 +55,7 @@ const config = {
 | ----------------------------------------- | -------------------------------------------- | ---------- | -------- |
 | [`type`](#type)                           | `type: "external"`                           | "external" | Required |
 | [`fetchList()`](#fetchlistqueryparams)    | `fetchList: async () => []`                  | Function   | Required |
-| [`cache`](#cache)                         | `cache: false`                               | Boolean    | -        |
+| [`cache`](#cache)                         | `cache: { enabled: true }`                   | Boolean    | -        |
 | [`filterFields`](#filterfields)           | `{ "rating": { type: "number" } }`           | Object     | -        |
 | [`getItemSummary()`](#getitemsummaryitem) | `getItemSummary: async ({ title }) => title` | Function   | -        |
 | [`initialFilters`](#initialfilters)       | `{ "rating": 1 }`                            | Object     | -        |
@@ -145,7 +145,7 @@ An object describing the filters configured by [`filterFields`](#filterfields).
 
 Puck will automatically cache the output of the [`fetchList()`](#fetchlistqueryparams) function in memory.
 
-You can disable this behaviour by setting `cache: false` on your field.
+You can disable this behaviour by setting `cache: { enabled: false }` on your field.
 
 ```tsx {7} copy
 const config = {
@@ -154,7 +154,7 @@ const config = {
       fields: {
         data: {
           type: "external",
-          cache: false,
+          cache: { enabled: true },
           fetchList: async () => {
             // ... fetch data from a third party API, or other async source
 

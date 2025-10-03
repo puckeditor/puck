@@ -39,9 +39,9 @@ export const ExternalInput = ({
   const {
     mapProp = (val: any) => val,
     mapRow = (val: any) => val,
-    cache: shouldCacheData = true,
     filterFields,
   } = field || {};
+  const { enabled: shouldCacheData } = field.cache ?? { enabled: true };
 
   const [data, setData] = useState<Record<string, any>[]>([]);
   const [isOpen, setOpen] = useState(false);
