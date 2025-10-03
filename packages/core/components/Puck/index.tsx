@@ -232,13 +232,14 @@ function PuckProvider<
 
     const defaultedRootProps = {
       ...config.root?.defaultProps,
-      ...rootProps,
+      ...(rootProps as AsFieldProps<DefaultComponentProps> | AsFieldProps<any>),
     };
 
     const root = populateIds(
       toComponent({ ...initialData?.root, props: defaultedRootProps }),
       config
     );
+
     const newAppState = {
       ...defaultAppState,
       data: {
