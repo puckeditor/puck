@@ -1,0 +1,28 @@
+.MenuBar-button-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 4px;
+  background-color: var(--puck-color-white);
+  padding: 4px;
+  position: relative;
+  z-index: 100;
+  margin-bottom: 2px;
+}
+
+.MenuBar-menu-alignment,
+.MenuBar-menu-text,
+.MenuBar-menu-blocks,
+.MenuBar-menu-breaks {
+  display: flex;
+  align-items: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
+  z-index: 3;
+  position: relative;
+}

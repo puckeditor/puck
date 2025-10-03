@@ -95,6 +95,10 @@
   "dependencies": {
     "@dnd-kit/helpers": "0.1.18",
     "@dnd-kit/react": "0.1.18",
+    "@tiptap/extension-text-align": "^3.6.2",
+    "@tiptap/extension-text-style": "^3.6.2",
+    "@tiptap/react": "^3.6.2",
+    "@tiptap/starter-kit": "^3.6.2",
     "deep-diff": "^1.0.2",
     "fast-equals": "5.2.2",
     "flat": "^5.0.2",
