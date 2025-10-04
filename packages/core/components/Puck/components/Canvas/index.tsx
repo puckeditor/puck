@@ -16,6 +16,7 @@ import { UiState } from "../../../../types";
 import { Loader } from "../../../Loader";
 import { useShallow } from "zustand/react/shallow";
 import { useCanvasFrame } from "../../../../lib/frame-context";
+import { usePropsContext } from "../..";
 
 const getClassName = getClassNameFactory("PuckCanvas", styles);
 
@@ -25,6 +26,8 @@ const TRANSITION_DURATION = 150;
 export const Canvas = () => {
   const { frameRef } = useCanvasFrame();
   const resetAutoZoom = useResetAutoZoom(frameRef);
+
+  const { _experimentalFullScreenCanvas } = usePropsContext();
 
   const {
     dispatch,
@@ -152,6 +155,7 @@ export const Canvas = () => {
       className={getClassName({
         ready: status === "READY" || !iframe.enabled || !iframe.waitForStyles,
         showLoader,
+        fullScreen: _experimentalFullScreenCanvas,
       })}
       onClick={(e) => {
         const el = e.target as Element;
@@ -171,6 +175,7 @@ export const Canvas = () => {
       {viewports.controlsVisible && iframe.enabled && (
         <div className={getClassName("controls")}>
           <ViewportControls
+            fullScreen={_experimentalFullScreenCanvas}
             autoZoom={zoomConfig.autoZoom}
             zoom={zoomConfig.zoom}
             onViewportChange={(viewport) => {
