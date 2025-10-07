@@ -40,9 +40,9 @@ export async function loader({ params }: Route.LoaderArgs) {
 export function meta({ data: loaderData }: Route.MetaArgs) {
   return [
     {
-      title: loaderData?.isEditorRoute
+      title: loaderData.isEditorRoute
         ? `Edit: ${loaderData.path}`
-        : loaderData?.data?.root?.props?.title ?? '',
+        : loaderData.data.root.props?.title ?? "",
     },
   ];
 }
