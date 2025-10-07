@@ -214,11 +214,11 @@ export const DraggableComponent = ({
       sortable.droppable.disabled = !s.enabledIndex[zoneCompound];
     });
 
-    if (elState && !permissions.drag) {
-      elState.setAttribute("data-puck-disabled", "");
+    if (elTarget && !permissions.drag) {
+      elTarget.setAttribute("data-puck-disabled", "");
 
       return () => {
-        elState?.removeAttribute("data-puck-disabled");
+        elTarget?.removeAttribute("data-puck-disabled");
         cleanup();
       };
     }
@@ -226,14 +226,14 @@ export const DraggableComponent = ({
     return cleanup;
   }, [permissions.drag, zoneCompound]);
 
-  const [elState, setElState] = useState<HTMLElement | null>(null);
+  const [elTarget, setElTarget] = useState<HTMLElement | null>(null);
 
   const elSetter = useCallback(
     (el: HTMLElement | null) => {
       sortableRef(el);
 
       if (el) {
-        setElState(el);
+        setElTarget(el);
       }
     },
     [sortableRef]
@@ -244,20 +244,20 @@ export const DraggableComponent = ({
   useEffect(() => {
     setPortalEl(
       iframe.enabled
-        ? elState?.ownerDocument.body
-        : elState?.closest<HTMLElement>("[data-puck-preview]") ?? document.body
+        ? elTarget?.ownerDocument.body
+        : elTarget?.closest<HTMLElement>("[data-puck-preview]") ?? document.body
     );
-  }, [iframe.enabled, elState]);
+  }, [iframe.enabled, elTarget]);
 
   const getStyle = useCallback(() => {
-    if (!elState) return;
+    if (!elTarget) return;
 
-    const rect = elState!.getBoundingClientRect();
-    const deepScrollPosition = getDeepScrollPosition(elState);
+    const rect = elTarget!.getBoundingClientRect();
+    const deepScrollPosition = getDeepScrollPosition(elTarget);
 
     const portalContainerEl = iframe.enabled
       ? null
-      : elState?.closest<HTMLElement>("[data-puck-preview]");
+      : elTarget?.closest<HTMLElement>("[data-puck-preview]");
 
     const portalContainerRect = portalContainerEl?.getBoundingClientRect();
     const portalScroll = portalContainerEl
@@ -274,11 +274,11 @@ export const DraggableComponent = ({
     };
 
     const untransformed = {
-      height: elState.offsetHeight,
-      width: elState.offsetWidth,
+      height: elTarget.offsetHeight,
+      width: elTarget.offsetWidth,
     };
 
-    const transform = accumulateTransform(elState);
+    const transform = accumulateTransform(elTarget);
 
     const style: CSSProperties = {
       left: `${(rect.left + scroll.x) / transform.scaleX}px`,
@@ -288,25 +288,25 @@ export const DraggableComponent = ({
     };
 
     return style;
-  }, [elState]);
+  }, [elTarget]);
 
   const [style, setStyle] = useState<CSSProperties>();
 
   const sync = useCallback(() => {
     setStyle(getStyle());
-  }, [elState, iframe]);
+  }, [elTarget, iframe]);
 
   useEffect(() => {
-    if (elState) {
+    if (elTarget) {
       const observer = new ResizeObserver(sync);
 
-      observer.observe(elState);
+      observer.observe(elTarget);
 
       return () => {
         observer.disconnect();
       };
     }
-  }, [elState]);
+  }, [elTarget]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
 
@@ -321,7 +321,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     registerNode(id, {
       methods: { sync, showOverlay, hideOverlay },
-      element: elState ?? null,
+      element: elTarget ?? null,
     });
 
     return () => {
@@ -417,11 +417,11 @@ export const DraggableComponent = ({
   );
 
   useEffect(() => {
-    if (!elState) {
+    if (!elTarget) {
       return;
     }
 
-    const el = elState as HTMLElement;
+    const el = elTarget as HTMLElement;
 
     const _onMouseOver = (e: Event) => {
       const userIsDragging = !!zoneStore.getState().draggedItem;
@@ -461,7 +461,7 @@ export const DraggableComponent = ({
       el.removeEventListener("mouseout", _onMouseOut);
     };
   }, [
-    elState, // Remount attributes if the element changes
+    elTarget, // Remount attributes if the element changes
     onClick,
     containsActiveZone,
     zoneCompound,
@@ -546,8 +546,8 @@ export const DraggableComponent = ({
       return;
     }
 
-    if (elState) {
-      const computedStyle = window.getComputedStyle(elState);
+    if (elTarget) {
+      const computedStyle = window.getComputedStyle(elTarget);
 
       if (
         computedStyle.display === "inline" ||
@@ -560,7 +560,7 @@ export const DraggableComponent = ({
     }
 
     setDragAxis(autoDragAxis);
-  }, [elState, userDragAxis, autoDragAxis]);
+  }, [elTarget, userDragAxis, autoDragAxis]);
 
   const parentAction = useMemo(
     () =>
