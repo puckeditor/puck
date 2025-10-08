@@ -7,6 +7,7 @@ import { generateId } from "@/core/lib/generate-id";
 import { componentKey } from "../../index";
 import { type Components } from "../../types";
 import TemplateComponent, { TemplateProps } from "./Template";
+import { LayoutList } from "lucide-react";
 
 const usePuck = createUsePuck();
 
@@ -28,6 +29,7 @@ async function createComponent<T extends keyof Components>(
 type TemplateData = Record<string, { label: string; data: Slot }>;
 
 export const TemplateInternal: ComponentConfig<TemplateProps> = {
+  icon: <LayoutList size={16} />,
   fields: {
     template: {
       type: "custom",

@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
 import { withLayout } from "../../components/Layout";
+import { Grid2X2Icon } from "lucide-react";
 
 const getClassName = getClassNameFactory("Grid", styles);
 
@@ -14,6 +15,7 @@ export type GridProps = {
 };
 
 export const GridInternal: ComponentConfig<GridProps> = {
+  icon: <Grid2X2Icon size={16} />,
   fields: {
     numColumns: {
       type: "number",
