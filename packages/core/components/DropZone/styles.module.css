@@ -60,6 +60,15 @@
   outline: 2px dashed var(--puck-color-azure-06);
 }
 
+.DropZone--isMaxed {
+  opacity: 0.6;
+}
+
+[data-puck-dragging] .DropZone--isMaxed {
+  outline: 2px dashed var(--puck-color-grey-06);
+  background: color-mix(in srgb, var(--puck-color-grey-09) 20%, transparent);
+}
+
 .DropZone > *:not([data-puck-component]) {
   opacity: 0;
 }
