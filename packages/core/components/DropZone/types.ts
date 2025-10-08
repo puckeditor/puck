@@ -5,6 +5,7 @@ export type DropZoneProps = {
   zone: string;
   allow?: string[];
   disallow?: string[];
+  maxItems?: number;
   style?: CSSProperties;
   minEmptyHeight?: number;
   className?: string;

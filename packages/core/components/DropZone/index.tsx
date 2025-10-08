@@ -278,6 +278,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       zone,
       allow,
       disallow,
+      maxItems,
       style,
       className,
       minEmptyHeight: userMinEmptyHeight = 128,
@@ -360,6 +361,11 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           return true;
         }
 
+        // Check maxItems limit
+        if (maxItems !== undefined && contentIds.length >= maxItems) {
+          return false;
+        }
+
         if (disallow) {
           const defaultedAllow = allow || [];
 
@@ -379,7 +385,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
 
         return true;
       },
-      [allow, disallow]
+      [allow, disallow, maxItems, contentIds.length]
     );
 
     const targetAccepted = useContextStore(ZoneStoreContext, (s) => {
@@ -471,6 +477,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           isAreaSelected,
           hasChildren: contentIds.length > 0,
           isAnimating,
+          isMaxed: maxItems !== undefined && contentIds.length >= maxItems,
         })}${className ? ` ${className}` : ""}`}
         ref={(node) => {
           assignRefs<HTMLDivElement>([ref, dropRef, userRef], node);
@@ -500,6 +507,27 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
             />
           );
         })}
+        {maxItems !== undefined && contentIds.length >= maxItems && contentIds.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "rgba(0, 0, 0, 0.7)",
+              color: "white",
+              padding: "8px 12px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "500",
+              pointerEvents: "none",
+              zIndex: 10,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Max items reached ({maxItems}/{maxItems})
+          </div>
+        )}
       </div>
     );
   }

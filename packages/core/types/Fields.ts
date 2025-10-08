@@ -139,6 +139,7 @@ export type SlotField = BaseField & {
   type: "slot";
   allow?: string[];
   disallow?: string[];
+  maxItems?: number;
 };
 
 export type Field<ValueType = any, UserField extends {} = {}> =
