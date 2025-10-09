@@ -117,3 +117,11 @@
   color: var(--puck-color-grey-08);
   margin-top: 4px;
 }
+/* styles.module.css */
+
+.Layer_dragHandle__{ cursor: grab; display:inline-flex; align-items:center; justify-content:center; padding:2px; margin-right:6px; }
+.Layer_isDragging__{ opacity: 0.6; }
+.Layer_overlay__{ background: var(--puck-bg, #fff); border:1px solid var(--puck-border, rgba(0,0,0,.08)); border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.12); padding:4px 6px; }
+.Layer_innerCustom__{ display:flex; align-items:stretch; gap:6px; }
+.Layer_autoHandle__{ display:inline-flex; align-items:center; }
+.Layer_customBody__{ flex:1; min-width:0; }
