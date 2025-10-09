@@ -586,4 +586,3 @@ Puck.Components = Components;
 Puck.Fields = Fields;
 Puck.Outline = Outline;
 Puck.Preview = Preview;
-Puck.Canvas = Canvas;
