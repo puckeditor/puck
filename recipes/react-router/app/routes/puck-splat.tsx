@@ -42,7 +42,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
     {
       title: loaderData.isEditorRoute
         ? `Edit: ${loaderData.path}`
-        : loaderData.data.root.title,
+        : loaderData.data.root.props?.title ?? "",
     },
   ];
 }

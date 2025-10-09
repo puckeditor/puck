@@ -21,7 +21,7 @@ export async function loader() {
 export function meta({ data: loaderData }: Route.MetaArgs) {
   return [
     {
-      title: loaderData.data.root.title,
+      title: loaderData.data.root.props?.title ?? "",
     },
   ];
 }

@@ -150,6 +150,11 @@ export const monitorHotkeys = (doc: Document) => {
     }
   };
 
+  const onBlur = () => {
+    useHotkeyStore.getState().reset();
+  };
+
+  window.addEventListener("blur", onBlur);
   doc.addEventListener("keydown", onKeyDown);
   doc.addEventListener("keyup", onKeyUp);
   doc.addEventListener("visibilitychange", onVisibilityChanged);
@@ -158,6 +163,7 @@ export const monitorHotkeys = (doc: Document) => {
     doc.removeEventListener("keydown", onKeyDown);
     doc.removeEventListener("keyup", onKeyUp);
     doc.removeEventListener("visibilitychange", onVisibilityChanged);
+    window.removeEventListener("blur", onBlur);
   };
 };
 
