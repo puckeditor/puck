@@ -1,0 +1,733 @@
+import { Puck } from "@/puck";
+import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
+import { Callout } from "nextra/components";
+import Superscript from "@tiptap/extension-superscript";
+import { SuperscriptControl } from "@/docs/components/Richtext/controls";
+import { superscriptSelector } from "@/docs/components/Richtext/selector";
+
+# RichText
+
+Render a `richtext` input. Extends [Base](base).
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      richtext: {
+        type: "richtext",
+        contentEditable: true,
+      },
+    },
+    defaultProps: {
+      richtext:
+        "<p style='text-align: center;'><strong>✍️ Hello,<s>Plain-text</s> Rich Text! 🎉</strong></p>",
+    },
+  }}
+/>
+
+<Callout>
+  `defaultProps` currently supports an `html` string value. The editor renders
+  the content as `html`.
+</Callout>
+
+```tsx {5-7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+        },
+      },
+      defaultProps: {
+        richtext:
+          "<p style='text-align: center;'><strong>✍️ Hello,<s>Plain-text</s> Rich Text! 🎉</strong></p>",
+      },
+    },
+  },
+};
+```
+
+## Params
+
+| Param                                     | Example                                                                             | Type                                                           | Status   |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------- |
+| [`type`](#type)                           | `type: "richtext"`                                                                  | `"richtext"`                                                   | Required |
+| [`contentEditable`](#contentEditable)     | `contentEditable: false`                                                            | `boolean`                                                      | -        |
+| [`menu`](#menu)                           | `menu: { typography: ["Bold", "Italic", "Underline", "Strikethrough"] }`            | `Record<string,string[]>`                                      | -        |
+| [`inlineMenu`](#inlineMenu)               | `inlineMenu: { typography: ["Bold", "Italic", "Underline", "Strikethrough"] }`      | `Record<string,string[]>`                                      | -        |
+| [`controls`](#controls)                   | `controls: { MyControl: {render: (editor, editorState) => <div>My Control</div>} }` | `Record<string, {render: (editor, editorState) => ReactNode}>` | -        |
+| [`textSelectOptions`](#textselectoptions) | `textSelectOptions: ["p","h2"]`                                                     | `("p" \| "h2" \| "h3" \| "h4" \| "h5" \| "h6")[]`              | -        |
+| [`extensions`](#extensions)               | `extensions: [StarterKit, Link]`                                                    | `Extensions[]` <i>from TipTap</i>                              | -        |
+| [`selector`](#selector)                   | `selector: (ctx) => ({ ... })`                                                      | `RichTextSelector`                                             | -        |
+
+## Required params
+
+### `type`
+
+The type of the field. Must be `"richtext"` for RichText fields.
+
+```tsx {6} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+## Optional params
+
+### `contentEditable`
+
+Enable inline text editing for this field.
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          contentEditable: false,
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `menu`
+
+Provide an override for the grouped button layout rendered in the editor toolbar. Each key in your `menu` matches a menu group and maps to an array of control keys.
+
+```tsx {7-10} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          menu: {
+            typography: ["Bold", "Italic", "Underline"],
+            blocks: ["BulletList", "OrderedList"],
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+### `inlineMenu`
+
+Provide an override for the grouped button layout rendered in the `BubbbleMenu` when inline editing of your field. Each key in your `inlineMenu` matches a menu group and maps to an array of control keys.
+
+```tsx {7-10} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          inlineMenu: {
+            typography: ["Bold", "Italic", "Underline"],
+            blocks: ["BulletList", "OrderedList"],
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+### `controls`
+
+Controls let you swap or extend the buttons available to each menu key. A control is an object with a `render(editor, editorState)` function, so you can plug in any React UI while still receiving the merged TipTap state produced by our selector utilities.
+
+```tsx {1-12, 20-22} copy
+const BoldControl = {
+  render: (editor, editorState) => (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        editor.chain().toggleBold().run();
+      }}
+      disabled={!editorState.canBold}
+      style={{ fontWeight: editorState.isBold ? "bold" : "normal" }}
+    >
+      Bold
+    </button>
+  ),
+};
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          controls: {
+            Bold: BoldControl,
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+<Callout>
+  Note: The `e.stopPropagation();` is required in Puck in order to avoid issues
+  with the portal on inlineMenu.
+</Callout>
+
+### `textSelectOptions`
+
+Configure the block-style dropdown rendered in the toolbar. Supply any subset of `"p" | "h1" … "h6"` to narrow or expand the list.
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          textSelectOptions: ["p", "h2", "h3"],
+        },
+      },
+    },
+  },
+};
+```
+
+### `extensions`
+
+Our RichText editor is powered by [TipTap](https://tiptap.dev/). The `extensions` option accepts any TipTap extension instances, allowing you to enable new nodes or marks alongside the default extensions.
+
+```tsx {1, 9} copy
+import Link from "@tiptap/extension-link";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          extensions: [Link],
+        },
+      },
+    },
+  },
+};
+```
+
+<Callout type="info">
+  TipTap maintains extensive [extension
+  guides](https://tiptap.dev/docs/editor/extensions/overview). Any configuration
+  recommended there works inside your `extensions` array and via `controls`,
+  `selector` + `menu`/`inlineMenu` overrides.
+</Callout>
+
+### `selector`
+
+Pass a custom selector `(ctx) => ({ ... })` to add booleans into the merged editor state. This is useful when supplying bespoke controls that need to react to TipTap attributes or mark status beyond what the defaults provide.
+
+```tsx {1-8, 16} copy
+const highlightSelector = (ctx) => {
+  const editor = ctx.editor;
+  if (!editor) return {};
+  return {
+    isHighlight: editor.isActive("highlight"),
+    canHighlight: editor.can().chain().toggleHighlight().run(),
+  };
+};
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          selector: highlightSelector,
+        },
+      },
+    },
+  },
+};
+```
+
+## Default values
+
+By default, we ship the `richtext` field with a pre-configured instance of TipTap. This should allow you to start building your pages with rich text content and formatting options without any additional configuration.
+
+### `contentEditable`
+
+Defaults to `true`.
+
+### `menu`
+
+```tsx
+{
+  align: ["AlignLeft", "AlignCenter", "AlignRight", "AlignJustify"],
+  text: ["Bold", "Italic", "Underline", "Strikethrough"],
+  headings: ["TextSelect"],
+  lists: ["BulletList", "OrderedList"],
+  blocks: ["Blockquote", "InlineCode", "CodeBlock"],
+  other: ["HorizontalRule"],
+}
+```
+
+### `inlineMenu`
+
+```tsx
+{
+  text: ["Bold", "Italic", "Underline", "Strikethrough"],
+}
+```
+
+### `controls`
+
+```tsx
+{
+  AlignLeft: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().setTextAlign("left").run();
+        }}
+        disabled={!editorState.canAlignLeft}
+        variant={editorState.isAlignLeft ? "secondary" : "primary"}
+        title="Align left"
+      >
+        <AlignLeft size={20} />
+      </IconButton>
+    ),
+  },
+
+  AlignCenter: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().setTextAlign("center").run();
+        }}
+        disabled={!editorState.canAlignCenter}
+        variant={editorState.isAlignCenter ? "secondary" : "primary"}
+        title="Align center"
+      >
+        <AlignCenter size={20} />
+      </IconButton>
+    ),
+  },
+
+  AlignRight: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().setTextAlign("right").run();
+        }}
+        disabled={!editorState.canAlignRight}
+        variant={editorState.isAlignRight ? "secondary" : "primary"}
+        title="Align right"
+      >
+        <AlignRight size={20} />
+      </IconButton>
+    ),
+  },
+
+  AlignJustify: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().setTextAlign("justify").run();
+        }}
+        disabled={!editorState.canAlignJustify}
+        variant={editorState.isAlignJustify ? "secondary" : "primary"}
+        title="Justify"
+      >
+        <AlignJustify size={20} />
+      </IconButton>
+    ),
+  },
+  Bold: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleBold().run();
+        }}
+        disabled={!editorState.canBold}
+        variant={editorState.isBold ? "secondary" : "primary"}
+        title="Bold"
+      >
+        <Bold size={20} />
+      </IconButton>
+    ),
+  },
+
+  Italic: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleItalic().run();
+        }}
+        disabled={!editorState.canItalic}
+        variant={editorState.isItalic ? "secondary" : "primary"}
+        title="Italic"
+      >
+        <Italic size={20} />
+      </IconButton>
+    ),
+  },
+
+  Underline: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleUnderline().run();
+        }}
+        disabled={!editorState.canUnderline}
+        variant={editorState.isUnderline ? "secondary" : "primary"}
+        title="Underline"
+      >
+        <Underline size={20} />
+      </IconButton>
+    ),
+  },
+
+  Strikethrough: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleStrike().run();
+        }}
+        disabled={!editorState.canStrike}
+        variant={editorState.isStrike ? "secondary" : "primary"}
+        title="Strikethrough"
+      >
+        <Strikethrough size={20} />
+      </IconButton>
+    ),
+  },
+
+  InlineCode: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleCode().run();
+        }}
+        disabled={!editorState.canInlineCode}
+        variant={editorState.isInlineCode ? "secondary" : "primary"}
+        title="Inline code"
+      >
+        <Code size={20} />
+      </IconButton>
+    ),
+  },
+
+  BulletList: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleBulletList().run();
+        }}
+        disabled={!editorState.canBulletList}
+        variant={editorState.isBulletList ? "secondary" : "primary"}
+        title="Bullet list"
+      >
+        <List size={20} />
+      </IconButton>
+    ),
+  },
+
+  OrderedList: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleOrderedList().run();
+        }}
+        disabled={!editorState.canOrderedList}
+        variant={editorState.isOrderedList ? "secondary" : "primary"}
+        title="Ordered list"
+      >
+        <ListOrdered size={20} />
+      </IconButton>
+    ),
+  },
+
+  CodeBlock: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleCodeBlock().run();
+        }}
+        disabled={!editorState.canCodeBlock}
+        variant={editorState.isCodeBlock ? "secondary" : "primary"}
+        title="Code block"
+      >
+        <SquareCode size={20} />
+      </IconButton>
+    ),
+  },
+
+  Blockquote: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().toggleBlockquote().run();
+        }}
+        disabled={!editorState.canBlockquote}
+        variant={editorState.isBlockquote ? "secondary" : "primary"}
+        title="Blockquote"
+      >
+        <Quote size={20} />
+      </IconButton>
+    ),
+  },
+
+  HorizontalRule: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().setHorizontalRule().run();
+        }}
+        disabled={!editorState.canHorizontalRule}
+        variant="primary"
+        title="Horizontal rule"
+      >
+        <Minus size={20} />
+      </IconButton>
+    ),
+  },
+}
+```
+
+### `textSelectOptions`
+
+```tsx
+["p", "h2", "h3", "h4", "h5", "h6"];
+```
+
+### `extensions`
+
+```tsx
+["StarterKit", "TextAlign"];
+```
+
+### `selector`
+
+```tsx
+(ctx: EditorStateSnapshot) => {
+  const editor = ctx.editor;
+  if (!editor) return {};
+
+  return {
+    isAlignLeft: editor.isActive({ textAlign: "left" }),
+    canAlignLeft: editor.can().chain().setTextAlign("left").run(),
+
+    isAlignCenter: editor.isActive({ textAlign: "center" }),
+    canAlignCenter: editor.can().chain().setTextAlign("center").run(),
+
+    isAlignRight: editor.isActive({ textAlign: "right" }),
+    canAlignRight: editor.can().chain().setTextAlign("right").run(),
+
+    isAlignJustify: editor.isActive({ textAlign: "justify" }),
+    canAlignJustify: editor.can().chain().setTextAlign("justify").run(),
+
+    isBold: editor.isActive("bold"),
+    canBold: editor.can().chain().toggleBold().run(),
+
+    isItalic: editor.isActive("italic"),
+    canItalic: editor.can().chain().toggleItalic().run(),
+
+    isUnderline: editor.isActive("underline"),
+    canUnderline: editor.can().chain().toggleUnderline().run(),
+
+    isStrike: editor.isActive("strike"),
+    canStrike: editor.can().chain().toggleStrike().run(),
+
+    isInlineCode: editor.isActive("code"),
+    canInlineCode: editor.can().chain().toggleCode().run(),
+
+    isBulletList: editor.isActive("bulletList"),
+    canBulletList: editor.can().chain().toggleBulletList().run(),
+
+    isOrderedList: editor.isActive("orderedList"),
+    canOrderedList: editor.can().chain().toggleOrderedList().run(),
+
+    isCodeBlock: editor.isActive("codeBlock"),
+    canCodeBlock: editor.can().chain().toggleCodeBlock().run(),
+
+    isBlockquote: editor.isActive("blockquote"),
+    canBlockquote: editor.can().chain().toggleBlockquote().run(),
+
+    canHorizontalRule: editor.can().chain().setHorizontalRule().run(),
+  };
+};
+```
+
+## Extending the Editor
+
+It's possible to extend the `richtext` TipTap with additional extensions to add new features or customize the editor's behavior.
+
+### Simple configuration
+
+If you simply want to reconfigure the editor's layout with the default settings you can add a configuration like below:
+
+<div className="simple-container">
+  <style>{`.simple-container h1 {  font-size: 24px; padding-bottom: 12px; } .simple-container p {padding-bottom: 8px;} .simple-container ul p {padding-bottom: 0px;}.simple-container ul { list-style: disc !important; margin-left: 20px; }`}</style>
+  <ConfigPreview
+    label="Simple configuration example"
+    componentConfig={{
+      fields: {
+        richtext: {
+          type: "richtext",
+          textSelectOptions: ["p", "h1", "h2", "h3"],
+          menu: {
+            headings: ["TextSelect"],
+            text: ["Bold", "Italic", "Underline"],
+            align: ["AlignLeft", "AlignCenter", "AlignRight"],
+            lists: ["BulletList", "OrderedList"],
+            blocks: ["Blockquote", "CodeBlock"],
+          },
+        },
+      },
+      defaultProps: {
+        richtext:
+          "<h1>Simple configuration</h1><p>Adjusting the menu items available</p><ul><li>Re-arranged ordering with text block selector 1st</li><li>Removed strikethrough option</li><li>Removed justify option</li><li>Removed inline code option</li><li>Removed other group and &lt;hr/&gt; option</li></ul>",
+      },
+    }}
+  />
+</div>
+
+```tsx {5-17} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        richtext: {
+          type: "richtext",
+          richtext: {
+            type: "richtext",
+            textSelectOptions: ["p", "h1", "h2", "h3"],
+            menu: {
+              headings: ["TextSelect"],
+              text: ["Bold", "Italic", "Underline"],
+              align: ["AlignLeft", "AlignCenter", "AlignRight"],
+              lists: ["BulletList", "OrderedList"],
+              blocks: ["Blockquote", "CodeBlock"],
+            },
+          },
+        },
+      },
+      defaultProps: {
+        richtext:
+          "<h1>Simple configuration</h1><p>Adjusting the menu items available</p><ul><li>Re-arranged ordering with text block selector 1st</li><li>Removed strikethrough option</li><li>Removed justify option</li><li>Removed inline code option</li><li>Removed other group and <hr/> option</li></ul>",
+      },
+    },
+  },
+};
+```
+
+### Advanced configuration
+
+Let's explore advanced configuration options for the RichText field. Say, you want to add the Superscript extension from TipTap [`@tiptap/extension-superscript`](https://tiptap.dev/docs/editor/extensions/marks/superscript). Here's how you can define your field config to add their extension and configure for your editor.
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      richtext: {
+        type: "richtext",
+        menu: {
+          textFormatting: ["SuperscriptControl"],
+        },
+        controls: { SuperscriptControl },
+        extensions: [Superscript],
+        selector: superscriptSelector,
+      },
+    },
+    defaultProps: {
+      richtext: "<p>Adding sup <sup>Superscript</sup></p>",
+    },
+  }}
+/>
+
+```tsx {1-32, 40-45} copy
+
+import Superscript from '@tiptap/extension-superscript'
+
+const customControls = {
+  SuperscriptControl: {
+    render: (editor, editorState) => {
+      return (
+        <div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              editor.chain().toggleSuperscript().run();
+            }}
+            style={
+              editorState.isSuperscript ? { color: "blue" } : { color: "black" }
+            }
+          >
+            Superscript
+          </button>
+        </div>
+      );
+    },
+  }
+};
+
+const mySelectors = (ctx) => {
+  const editor = ctx.editor;
+  if (!editor) return {};
+  return {
+    isSuperscript: editor.isActive("superscript"),
+    canSuperscript: editor.can().chain().toggleSuperscript().run(),
+  };
+};
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+          richtext: {
+            type: "richtext",
+            menu: {
+              textFormatting: ["SuperscriptControl"]
+            },
+            controls: myControls,
+            extensions: [Superscript],
+            selector: mySelectors
+          },
+        },
+      },
+      defaultProps: {
+        richtext: "<p>Adding sup <sup>Superscript</sup></p>",
+      },
+    },
+  },
+};
+```

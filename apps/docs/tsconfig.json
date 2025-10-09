@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig/nextjs.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/puck": ["../../packages/core"],
