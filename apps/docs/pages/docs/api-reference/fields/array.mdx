@@ -181,6 +181,7 @@ const config = {
             order: { type: "number" },
           },
           defaultItemProps: (index) => ({
+            key: `item-${index + 1}`,
             title: `Item ${index + 1}`,
             order: index + 1,
           }),
@@ -213,7 +214,7 @@ const config = {
       return (
         <ul>
           {items.map((item, i) => (
-            <li key={i}>
+            <li key={item.key ?? i}>
               {item.title} (Order: {item.order})
             </li>
           ))}
