@@ -23,7 +23,7 @@
     "conventional-recommended-bump": "^6.0.5",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
-    "lerna": "^7.1.1",
+    "lerna": "^9.0.0",
     "prettier": "^2.5.1",
     "puppeteer": "^24.8.2",
     "standard-changelog": "^2.0.21",
