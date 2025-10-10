@@ -213,7 +213,7 @@ const config = {
       return (
         <ul>
           {items.map((item, i) => (
-            <li key={item.key ?? i}>
+            <li key={i}>
               {item.title} (Order: {item.order})
             </li>
           ))}
