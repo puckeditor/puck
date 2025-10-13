@@ -4,7 +4,12 @@ import { Footer } from "./components/Footer";
 
 export type RootProps = DefaultRootProps;
 
-export const Root: RootConfig<RootProps> = {
+export const Root: RootConfig<{
+  props: RootProps;
+  fields: {
+    userField: { type: "userField"; option: boolean };
+  };
+}> = {
   defaultProps: {
     title: "My Page",
   },

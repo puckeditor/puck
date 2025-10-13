@@ -2,6 +2,107 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.20.2](https://github.com/measuredco/puck/compare/v0.20.1...v0.20.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* add CommonJS export to emotion cache package.json ([fbf3bd1](https://github.com/measuredco/puck/commit/fbf3bd1038a4c39d4e0c5079c3af33dd515c590b))
+* bypass resolveData cache when trigger is force ([eea53e0](https://github.com/measuredco/puck/commit/eea53e0464c15e7c2f964da973a16a04160224b8))
+* preserve selection when switching viewports and using zoom select ([38514a1](https://github.com/measuredco/puck/commit/38514a169592a3ffbaaedcfcb5b92767ba07b0e7))
+* prevent hidden category components from showing in 'Other' ([8333eaf](https://github.com/measuredco/puck/commit/8333eaf7e27d3225fb7133fe14326e1f8e93776a))
+
+
+
+
+## [0.20.1](https://github.com/measuredco/puck/compare/v0.20.0...v0.20.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* address type issues when using root ([38076a9](https://github.com/measuredco/puck/commit/38076a94bcafbb9905d197195a750928ade757ab))
+* don't widen getItemSummary type for array fields ([92112b9](https://github.com/measuredco/puck/commit/92112b9f1e012cdd1ec9fdfe62e4573da36327f4))
+* don't widen getItemSummary type for external fields ([e58ac42](https://github.com/measuredco/puck/commit/e58ac425398ec115456eda9b4650031359fffa6d))
+* fix slots within array and object fields ([b7fba1b](https://github.com/measuredco/puck/commit/b7fba1b46ba2678e775632a4f5be4a9a1e5be7cf))
+* render spaces/line breaks consistently in inline text fields ([6c58995](https://github.com/measuredco/puck/commit/6c58995b9db7897bd8994a3f2fb1b2456ef32b2f))
+* strip line breaks when pasting into inline text field ([2533c55](https://github.com/measuredco/puck/commit/2533c552a3222e47ffcfb1450ecf95fc4e78fb4a))
+
+
+
+
+## [0.20.0](https://github.com/measuredco/puck/compare/v0.19.3...v0.20.0) (2025-08-14)
+
+
+### Features
+
+* add componentOverlay override ([1a47857](https://github.com/measuredco/puck/commit/1a47857137a1fb7a4c52579e4687a6ae06606e99))
+* add fieldTransform API for modifying field values rendering in canvas ([e67152b](https://github.com/measuredco/puck/commit/e67152bd3e9ef85e3550ee184a0238d6c0ae8da8))
+* add inline text editing to custom fields ([042f4b2](https://github.com/measuredco/puck/commit/042f4b2fc06175d6ded53c83fd653c1eb9095c6a))
+* add inline text editing to text and textarea fields ([ed7c12e](https://github.com/measuredco/puck/commit/ed7c12e3398e76f3c680344bfa6be87abb803afb))
+* add no-external.css bundle without external fonts ([d97af5e](https://github.com/measuredco/puck/commit/d97af5ee2eb5ecd9c704b2b5c3f3c2cde6f660a5))
+* add overlay portals for interactive UI under overlay ([7d50c23](https://github.com/measuredco/puck/commit/7d50c2325a16166021c0c99520816c55682a272b))
+* add setDeep convenience utility ([676e2ab](https://github.com/measuredco/puck/commit/676e2aba846c0182d1079e0290e124255b9db0a8))
+* enable resizing the sidebars ([8909f8c](https://github.com/measuredco/puck/commit/8909f8cc1451a1bf5bc0abe51a564f4a0daa6d75))
+* export SlotComponent type ([d12fc3a](https://github.com/measuredco/puck/commit/d12fc3a9f4edbac5a556e9714bcf2118cc441f4d))
+* extend migrate function to support dynamic DropZones to slots ([3da831b](https://github.com/measuredco/puck/commit/3da831b0975b065e0b9a0062a4c2ae8e8cc9d94a))
+* make overrides optional in plugins ([baed208](https://github.com/measuredco/puck/commit/baed208b685639f3f1104def34408d8252b38dbe))
+* rename components & componentList overrides to drawer & drawerItem ([e40fdfe](https://github.com/measuredco/puck/commit/e40fdfe14c366258ea6b83e415d1c510cf7b0e46))
+* simplify generic type API on Config and ComponentConfig ([04fc574](https://github.com/measuredco/puck/commit/04fc574bc08129f60863fd4ca23f634f616ba6bb))
+* support object, null and undefined in select/radio options ([6dace1c](https://github.com/measuredco/puck/commit/6dace1cf3d49c6fd78eaf2e397399dc38f53412c))
+* support theming of font family ([6cf56a8](https://github.com/measuredco/puck/commit/6cf56a8a7cd7211490d2549cc7ae2af76becef1d))
+
+
+### Bug Fixes
+
+* add missing tiny-invariant dependency in remix recipe ([d405985](https://github.com/measuredco/puck/commit/d405985b80527ae633f7f472af73cfca4acb1cef))
+* address error when using disallow on a slot in root ([93d525c](https://github.com/measuredco/puck/commit/93d525c57f513260f0a60cbb710308e820becd1d))
+* don't revert custom Drawer.Items during drag ([0578004](https://github.com/measuredco/puck/commit/057800431be6530bfef8e2c8ea3d79245f2bdb14))
+* ensure nested name is propagated to custom fields ([f09540d](https://github.com/measuredco/puck/commit/f09540db9e5ad9ff0bd0987a38c0e586f7fa8965))
+* prevent field zoom on mobile devices ([660fd08](https://github.com/measuredco/puck/commit/660fd08af21841d52804e37a3a4503bbbc019ea0))
+* prevent iframe hanging when stylesheets empty ([ea0610a](https://github.com/measuredco/puck/commit/ea0610acbaa47f5a20627afabebaf6b98630d9a3))
+* reattach inline ref if element changes ([ba585f9](https://github.com/measuredco/puck/commit/ba585f93711b55bd100a2ebb7560d5d6b20fa28d))
+* remove erroneous get() API from usePuck ([c119ed0](https://github.com/measuredco/puck/commit/c119ed0d0d707aefa1003efb9448ef736f7ce60c))
+* respect user generic in usePuck hook ([6760121](https://github.com/measuredco/puck/commit/6760121f9f2a37ac990477e5b67c8d9f17cb9601))
+* respect user types in getItemBySelector and getItemById ([f2d031f](https://github.com/measuredco/puck/commit/f2d031fb1285bb31989943e3090461ebc150180f))
+* retain DropZone content in interactive mode ([d2e09bd](https://github.com/measuredco/puck/commit/d2e09bdc1ddd8d1973c08dbe9e75cdf232e9c259))
+* retain metadata in interactive preview mode ([68dd73b](https://github.com/measuredco/puck/commit/68dd73b8a1209923e1c2b2efca0c36fd935a207c))
+* support user-defined fields in overrides ([5cb4cc6](https://github.com/measuredco/puck/commit/5cb4cc652e5db3a54580eb0215932ddc6a648fc9))
+* type object, array, and external field types correctly ([f768aab](https://github.com/measuredco/puck/commit/f768aab935ed9c5955dd558f249f29e347bc52f7))
+* type user fields in overrides ([54d71e3](https://github.com/measuredco/puck/commit/54d71e34017c3319b6db2352fd4551277501d0ee))
+
+
+
+
+### Performance Improvements
+
+* don't render array fields unless open ([14d9681](https://github.com/measuredco/puck/commit/14d968176a62b68af7fab764138a9d7e0b1f74ec))
+
+
+
+
+## [0.19.3](https://github.com/measuredco/puck/compare/v0.19.2...v0.19.3) (2025-07-15)
+
+
+### Bug Fixes
+
+* don't duplicate content in Render when using multiple root DropZones ([412cc57](https://github.com/measuredco/puck/commit/412cc57d9f800e7f862bb4dd59ea4fc8056daea3))
+
+
+
+
+## [0.19.2](https://github.com/measuredco/puck/compare/v0.19.1...v0.19.2) (2025-07-11)
+
+
+### Bug Fixes
+
+* ensure setHistories resets the appState ([7cccfdd](https://github.com/measuredco/puck/commit/7cccfddf2c3c74ea8b17b1e6dda7dbdc2e231022))
+* prevent icon buttons from submitting parent form ([5f6f6d8](https://github.com/measuredco/puck/commit/5f6f6d8e8e2e33281ff235a51786d1af9a6e5622))
+* release ctrl/cmd when tab changes ([37d387b](https://github.com/measuredco/puck/commit/37d387bddec49f03dc10b1df6f72768bf39b24dd))
+* respect slot label in outline panel ([cccf912](https://github.com/measuredco/puck/commit/cccf9125587f14ee1336447a4e63e044af787ca6))
+
+
+
+
 ## [0.19.1](https://github.com/measuredco/puck/compare/v0.19.0...v0.19.1) (2025-06-09)
 
 

@@ -5,15 +5,15 @@ import { ComponentConfig, ComponentDataOptionalId, Slot } from "@/core/types";
 import { withLayout } from "../../components/Layout";
 import { generateId } from "@/core/lib/generate-id";
 import { componentKey } from "../../index";
-import { type Props } from "../../types";
+import { type Components } from "../../types";
 import TemplateComponent, { TemplateProps } from "./Template";
 
 const usePuck = createUsePuck();
 
-async function createComponent<T extends keyof Props>(
+async function createComponent<T extends keyof Components>(
   component: T,
-  props?: Partial<Props[T]>
-): Promise<ComponentDataOptionalId<Props[T]>> {
+  props?: Partial<Components[T]>
+): Promise<ComponentDataOptionalId<Components[T]>> {
   const { conf: config } = await import("../../index");
 
   return {
@@ -22,7 +22,7 @@ async function createComponent<T extends keyof Props>(
       ...config.components[component].defaultProps,
       ...props,
     },
-  } as ComponentDataOptionalId<Props[T]>;
+  } as ComponentDataOptionalId<Components[T]>;
 }
 
 type TemplateData = Record<string, { label: string; data: Slot }>;

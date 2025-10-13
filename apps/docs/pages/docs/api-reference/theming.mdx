@@ -1,0 +1,43 @@
+import { Callout } from "nextra/components";
+
+# Theming
+
+<Callout type="info">
+  Theming in Puck is currently limited in functionality, and being explored via
+  [#139 on GitHub](https://github.com/measuredco/puck/issues/139).
+</Callout>
+
+CSS properties for theming the default Puck user interface.
+
+## Properties
+
+| Param                                                             | Example |
+| ----------------------------------------------------------------- | ------- |
+| [`--puck-font-family`](#--puck-font-family)                       | `Arial` |
+| [`--puck-font-family-monospaced`](#--puck-font-family-monospaced) | `Menlo` |
+
+### `--puck-font-family`
+
+The font family used for the Puck interface. Must be used with the `no-external` bundle that stops Puck from loading the default font.
+
+```css
+/* Load bundle without existing font */
+@import "@measured/puck/no-external.css";
+
+:root {
+  --puck-font-family: Arial;
+}
+```
+
+### `--puck-font-family-monospaced`
+
+The font family used for monospaced elements of the Puck interface.
+
+```css
+/* Monospaced fonts don't use external files, so the default bundle is safe */
+@import "@measured/puck/puck.css";
+
+:root {
+  --puck-font-family-monospaced: Menlo;
+}
+```

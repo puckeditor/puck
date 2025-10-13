@@ -1,0 +1,88 @@
+import {
+  PuckPreview,
+  OverlayPortalPreview,
+  OverlayPortalTabsPreview,
+} from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+
+# Overlay Portals
+
+Overlay Portals enable you to disable the Puck overlay when hovering over specific elements, making them interactive in the editor.
+
+Use the [`registerOverlayPortal` API](/docs/api-reference/functions/register-overlay-portal) to mark an element as a portal.
+
+```tsx
+import { registerOverlayPortal } from "@measured/puck";
+
+const Example = () => {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
+
+  return (
+    <button ref={ref} onClick={() => alert("Click")}>
+      Clickable
+    </button>
+  );
+};
+```
+
+<PuckPreview
+  label="Overlay Portals example"
+  config={{
+    components: {
+      Example: {
+        render: () => {
+          return (
+            <div style={{ padding: 32 }}>
+              <OverlayPortalPreview />
+            </div>
+          );
+        },
+      },
+    },
+  }}
+  data={{
+    content: [
+      {
+        type: "Example",
+        props: {
+          id: "Example-1",
+        },
+      },
+    ],
+    root: { props: {} },
+  }}
+>
+  <Puck.Preview />
+</PuckPreview>
+
+Portals can be used to create interactive functionality for previewing, such as to paginate through tabs, or combined with [`usePuck()`](/docs/extending-puck/internal-puck-api) to create an inline form input.
+
+## Example: Tabs
+
+<PuckPreview
+  label="Tabs example"
+  config={{
+    components: {
+      Example: {
+        render: () => {
+          return <OverlayPortalTabsPreview />;
+        },
+      },
+    },
+  }}
+  data={{
+    content: [
+      {
+        type: "Example",
+        props: {
+          id: "Example-1",
+        },
+      },
+    ],
+    root: { props: {} },
+  }}
+>
+  <Puck.Preview />
+</PuckPreview>

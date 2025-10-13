@@ -9,21 +9,22 @@ import { HistorySlice } from "../store/slices/history";
 import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
-
-type WithGet<T> = T & { get: () => T };
+import { getSelectorForId } from "./get-selector-for-id";
 
 export type UsePuckData<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 > = {
-  appState: AppState;
+  appState: G["UserPublicAppState"];
   config: UserConfig;
   dispatch: AppStore["dispatch"];
   getPermissions: GetPermissions<UserConfig>;
   refreshPermissions: RefreshPermissions<UserConfig>;
   selectedItem: G["UserComponentData"] | null;
-  getItemBySelector: (selector: ItemSelector) => ComponentData | undefined;
-  getItemById: (id: string) => ComponentData | undefined;
+  getItemBySelector: (
+    selector: ItemSelector
+  ) => G["UserComponentData"] | undefined;
+  getItemById: (id: string) => G["UserComponentData"] | undefined;
   getSelectorForId: (id: string) => Required<ItemSelector> | undefined;
   history: {
     back: HistorySlice["back"];
@@ -40,9 +41,7 @@ export type UsePuckData<
 export type PuckApi<UserConfig extends Config = Config> =
   UsePuckData<UserConfig>;
 
-type UsePuckStore<UserConfig extends Config = Config> = WithGet<
-  PuckApi<UserConfig>
->;
+type UsePuckStore<UserConfig extends Config = Config> = PuckApi<UserConfig>;
 
 type PickedStore = Pick<
   AppStore,
@@ -71,23 +70,10 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     selectedItem: store.selectedItem || null,
     getItemBySelector: (selector) => getItem(selector, store.state),
     getItemById: (id) => store.state.indexes.nodes[id].data,
-    getSelectorForId: (id) => {
-      const node = store.state.indexes.nodes[id];
-
-      if (!node) return;
-
-      const zoneCompound = `${node.parentId}:${node.zone}`;
-
-      const index =
-        store.state.indexes.zones[zoneCompound].contentIds.indexOf(id);
-
-      return { zone: zoneCompound, index };
-    },
+    getSelectorForId: (id) => getSelectorForId(store.state, id),
   };
 
-  const get = () => storeData;
-
-  return { ...storeData, get };
+  return storeData;
 };
 
 export const UsePuckStoreContext = createContext<StoreApi<UsePuckStore> | null>(

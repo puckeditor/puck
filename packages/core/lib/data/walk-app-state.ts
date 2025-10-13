@@ -13,7 +13,7 @@ import {
   ZoneIndex,
   ZoneType,
 } from "../../types/Internal";
-import { mapSlots } from "./map-slots";
+import { mapFields } from "./map-fields";
 import { flattenNode } from "./flatten-node";
 
 /**
@@ -105,20 +105,23 @@ export function walkAppState<UserData extends Data = Data>(
     const id = mappedItem.props.id;
 
     const newProps = {
-      ...mapSlots(
+      ...mapFields(
         mappedItem,
-        (content, parentId, slotId) => {
-          const zoneCompound = `${parentId}:${slotId}`;
+        {
+          slot: ({ value, parentId, propPath }) => {
+            const content = value as Content;
+            const zoneCompound = `${parentId}:${propPath}`;
 
-          const [_, newContent] = processContent(
-            path,
-            zoneCompound,
-            content,
-            "slot",
-            parentId
-          );
+            const [_, newContent] = processContent(
+              path,
+              zoneCompound,
+              content,
+              "slot",
+              parentId
+            );
 
-          return newContent;
+            return newContent;
+          },
         },
         config
       ).props,

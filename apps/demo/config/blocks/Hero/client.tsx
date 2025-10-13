@@ -6,7 +6,15 @@ import { AutoField, FieldLabel } from "@/core";
 import { Link2 } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 
-export const Hero: ComponentConfig<HeroProps> = {
+export const Hero: ComponentConfig<{
+  props: HeroProps;
+  fields: {
+    userField: {
+      type: "userField";
+      option: boolean;
+    };
+  };
+}> = {
   fields: {
     quote: {
       type: "external",
@@ -72,15 +80,15 @@ export const Hero: ComponentConfig<HeroProps> = {
       },
       getItemSummary: (item) => item.label,
     },
-    title: { type: "text" },
-    description: { type: "textarea" },
+    title: { type: "text", contentEditable: true },
+    description: { type: "textarea", contentEditable: true },
     buttons: {
       type: "array",
       min: 1,
       max: 4,
       getItemSummary: (item) => item.label || "Button",
       arrayFields: {
-        label: { type: "text" },
+        label: { type: "text", contentEditable: true },
         href: { type: "text" },
         variant: {
           type: "select",
@@ -133,7 +141,7 @@ export const Hero: ComponentConfig<HeroProps> = {
         },
       },
     },
-    padding: { type: "text" },
+    padding: { type: "userField", option: true },
   },
   defaultProps: {
     title: "Hero",

@@ -3,7 +3,16 @@
 
 "use client";
 
-import { ActionBar, Button, Data, Puck, Render } from "@/core";
+import {
+  ActionBar,
+  AutoField,
+  Button,
+  Data,
+  FieldLabel,
+  Puck,
+  Render,
+  useGetPuck,
+} from "@/core";
 import { HeadingAnalyzer } from "@/plugin-heading-analyzer/src/HeadingAnalyzer";
 import config from "../../../config";
 import { UserConfig } from "../../../config/types";
@@ -11,12 +20,19 @@ import { useDemoData } from "../../../lib/use-demo-data";
 import { IconButton, createUsePuck } from "@/core";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Drawer } from "@/core/components/Drawer";
-import { ChevronUp, ChevronDown, Globe, Lock, Unlock } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  Globe,
+  Lock,
+  Unlock,
+  Type,
+} from "lucide-react";
 
 const usePuck = createUsePuck<UserConfig>();
 
 const CustomHeader = ({ onPublish }: { onPublish: (data: Data) => void }) => {
-  const get = usePuck((s) => s.get);
+  const getPuck = useGetPuck();
   const dispatch = usePuck((s) => s.dispatch);
   const previewMode = usePuck((s) => s.appState.ui.previewMode);
 
@@ -50,7 +66,7 @@ const CustomHeader = ({ onPublish }: { onPublish: (data: Data) => void }) => {
             Switch to {previewMode === "edit" ? "interactive" : "edit"}
           </Button>
           <Button
-            onClick={() => onPublish(get().appState.data)}
+            onClick={() => onPublish(getPuck().appState.data)}
             icon={<Globe size="14" />}
           >
             Publish
@@ -386,9 +402,38 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           lockable: true,
         }}
         overrides={{
+          fieldTypes: {
+            userField: ({ readOnly, field, name, value, onChange }) => (
+              <FieldLabel
+                label={field.label || name}
+                readOnly={readOnly}
+                icon={<Type size={16} />}
+              >
+                <AutoField
+                  readOnly={readOnly}
+                  field={{ type: "text" }}
+                  onChange={onChange}
+                  value={value}
+                />
+              </FieldLabel>
+            ),
+          },
           outline: ({ children }) => (
             <div style={{ padding: 16 }}>{children}</div>
           ),
+          componentOverlay: ({ hover, isSelected }) => {
+            return (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  background: hover ? "red" : "transparent",
+                  outline: isSelected ? "2px solid blue" : "",
+                  opacity: 0.4,
+                }}
+              />
+            );
+          },
           actionBar: ({ children, label, parentAction }) => {
             const selectedItem = usePuck((s) => s.selectedItem);
             const getPermissions = usePuck((s) => s.getPermissions);
@@ -446,7 +491,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
               </ActionBar>
             );
           },
-          components: () => <CustomDrawer />,
+          drawer: () => <CustomDrawer />,
           puck: () => <CustomPuck dataKey={key} />,
         }}
       />

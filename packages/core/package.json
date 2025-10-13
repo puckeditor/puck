@@ -1,10 +1,29 @@
 {
   "name": "@measured/puck",
-  "version": "0.19.1",
+  "version": "0.20.2",
+  "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
   "bugs": "https://github.com/measuredco/puck/issues",
   "homepage": "https://puckeditor.com",
+  "keywords": [
+    "puck",
+    "visual",
+    "editor",
+    "react",
+    "drag and drop",
+    "dnd",
+    "page",
+    "website",
+    "builder",
+    "headless",
+    "cms",
+    "low-code",
+    "no-code",
+    "javascript",
+    "typescript",
+    "WYSIWYG"
+  ],
   "private": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,6 +46,7 @@
       "require": "./dist/rsc.js"
     },
     "./puck.css": "./dist/index.css",
+    "./no-external.css": "./dist/no-external.css",
     "./dist/index.css": "./dist/index.css",
     "./package.json": "./package.json"
   },
@@ -40,7 +60,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup index.ts rsc.tsx",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts",
     "test": "jest",
     "prepare": "cp ../../README.md . && yarn build",
     "postpublish": "rm README.md"
@@ -76,7 +96,7 @@
     "@dnd-kit/helpers": "0.1.18",
     "@dnd-kit/react": "0.1.18",
     "deep-diff": "^1.0.2",
-    "fast-deep-equal": "^3.1.3",
+    "fast-equals": "5.2.2",
     "flat": "^5.0.2",
     "object-hash": "^3.0.0",
     "react-hotkeys-hook": "^4.6.1",

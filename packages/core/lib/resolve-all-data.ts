@@ -3,7 +3,7 @@ import {
   Config,
   Content,
   Data,
-  DefaultComponentProps,
+  DefaultComponents,
   DefaultRootFieldProps,
   Metadata,
   RootData,
@@ -11,10 +11,10 @@ import {
 import { resolveComponentData } from "./resolve-component-data";
 import { defaultData } from "./data/default-data";
 import { toComponent } from "./data/to-component";
-import { mapSlots } from "./data/map-slots";
+import { mapFields } from "./data/map-fields";
 
 export async function resolveAllData<
-  Props extends DefaultComponentProps = DefaultComponentProps,
+  Components extends DefaultComponents = DefaultComponents,
   RootProps extends Record<string, any> = DefaultRootFieldProps
 >(
   data: Partial<Data>,
@@ -41,9 +41,9 @@ export async function resolveAllData<
       )
     ).node as T;
 
-    const resolvedDeep = (await mapSlots(
+    const resolvedDeep = (await mapFields(
       resolved,
-      processContent,
+      { slot: ({ value }) => processContent(value) },
       config
     )) as T;
 
@@ -77,5 +77,5 @@ export async function resolveAllData<
     dynamic.zones![zoneKey] = await processContent(content);
   }, {});
 
-  return dynamic as Data<Props, RootProps>;
+  return dynamic as Data<Components, RootProps>;
 }

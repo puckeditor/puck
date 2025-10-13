@@ -1,0 +1,16 @@
+.InlineTextField {
+  cursor: text;
+  display: inline-block;
+  white-space: pre-wrap;
+  text-decoration: inherit;
+}
+
+/* Safari fixes for https://bugs.webkit.org/show_bug.cgi?id=112854 */
+[data-dnd-dragging] .InlineTextField {
+  cursor: none;
+  caret-color: transparent;
+}
+
+[data-dnd-dragging] .InlineTextField::selection {
+  display: none;
+}

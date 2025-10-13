@@ -9,20 +9,25 @@
   );
 }
 
-.DraggableComponent-overlay {
-  cursor: pointer;
+.DraggableComponent-overlayWrapper {
   height: 100%;
   width: 100%;
   top: 0;
-  outline: 2px var(--puck-color-azure-09) solid;
-  outline-offset: -2px;
   position: absolute;
   pointer-events: none;
   box-sizing: border-box;
   z-index: 1;
 }
 
-.DraggableComponent:focus-visible > .DraggableComponent-overlay {
+.DraggableComponent-overlay {
+  cursor: pointer;
+  height: 100%;
+  outline: 2px var(--puck-color-azure-09) solid;
+  outline-offset: -2px;
+  width: 100%;
+}
+
+.DraggableComponent:focus-visible > .DraggableComponent-overlayWrapper {
   outline: 1px solid var(--puck-color-azure-05);
 }
 
@@ -42,24 +47,24 @@
   z-index: 1;
 }
 
-.DraggableComponent--hover:not(.DraggableComponent--isLocked)
+.DraggableComponent--hover
+  > .DraggableComponent-overlayWrapper
   > .DraggableComponent-overlay {
   background: var(--overlay-background);
-}
-
-.DraggableComponent--hover > .DraggableComponent-overlay {
   outline: 2px var(--puck-color-azure-09) solid;
 }
 
-.DraggableComponent--isSelected > .DraggableComponent-overlay {
+.DraggableComponent--isSelected
+  > .DraggableComponent-overlayWrapper
+  > .DraggableComponent-overlay {
   outline-color: var(--puck-color-azure-07);
 }
 
 /* Won't work in FF */
 .DraggableComponent:has(
-    .DraggableComponent--hover > .DraggableComponent-overlay
+    .DraggableComponent--hover > .DraggableComponent-overlayWrapper
   )
-  > .DraggableComponent-overlay {
+  > .DraggableComponent-overlayWrapper {
   display: none;
 }
 

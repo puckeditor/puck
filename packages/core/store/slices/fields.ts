@@ -33,6 +33,7 @@ export const useRegisterFieldsSlice = (
   const resolveFields = useCallback(
     async (reset?: boolean) => {
       const { fields, lastResolvedData } = appStore.getState().fields;
+      const metadata = appStore.getState().metadata;
       const nodes = appStore.getState().state.indexes.nodes;
       const node = nodes[id || "root"];
       const componentData = node?.data;
@@ -73,6 +74,7 @@ export const useRegisterFieldsSlice = (
           changed,
           fields: defaultFields,
           lastFields,
+          metadata: { ...metadata, ...componentConfig.metadata },
           lastData: lastData as ComponentOrRootData,
           appState: makeStatePublic(state),
           parent,

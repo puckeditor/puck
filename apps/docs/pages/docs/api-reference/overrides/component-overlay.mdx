@@ -1,0 +1,45 @@
+---
+title: componentOverlay
+---
+
+# componentOverlay
+
+Override the overlay shown on hover or selection of a component.
+
+```tsx copy
+const overrides = {
+  overlay: ({ children }) => <div>{children}</div>,
+};
+```
+
+## Props
+
+| Prop                              | Example        | Type      |
+| --------------------------------- | -------------- | --------- |
+| [`children`](#children)           | `<div />`      | ReactNode |
+| [`componentId`](#componentid)     | `Heading-1234` | string    |
+| [`componentType`](#componenttype) | `Heading`      | string    |
+| [`hover`](#hover)                 | `false`        | boolean   |
+| [`isSelected`](#isselected)       | `false`        | boolean   |
+
+### `children`
+
+The default node for the overlay.
+
+### `componentId`
+
+The [id]() for the component underneath the overlay.
+
+### `componentType`
+
+The [type]() for the component underneath the overlay.
+
+### `hover`
+
+Whether or not the the component for this overlay is hovered over.
+
+A parent will not be `true` if a child node is `true`.
+
+### `isSelected`
+
+Whether or not the the component for this overlay is selected.

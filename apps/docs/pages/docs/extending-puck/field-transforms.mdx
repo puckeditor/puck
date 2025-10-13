@@ -1,0 +1,91 @@
+import { Callout } from "nextra/components";
+
+# Field Transforms
+
+Puck lets you modify props before rendering in the editor via the [`FieldTransforms` API](/docs/api-reference/field-transforms).
+
+Use this API to implement custom rendering behavior for specific field types, which can be used to implement features such as inline text editing.
+
+<Callout type="info">
+  Field transforms only apply to components rendered in `<Puck>` and will not be applied to `<Render>`.
+</Callout>
+
+## Implementing a transform
+
+Specify a transforms object for the fields you want to modify before rendering:
+
+```tsx
+const fieldTransforms = {
+  text: ({ value }) => <div>Value: {value}</div>, // Wrap all text field props in divs
+};
+
+const Example = () => <Puck fieldTransforms={fieldTransforms} />;
+```
+
+## Making it interactive
+
+Combine transforms with [Overlay Portals](/docs/integrating-puck/overlay-portals) to make them interactive.
+
+```tsx
+import { registerOverlayPortal } from "@measured/puck";
+
+const EditableText = ({ value }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      // Register the element as an overlay portal
+      registerOverlayPortal(ref.current);
+    }
+  }, [ref.current]);
+
+  return (
+    // Mark the element as editable for inline text editing
+    <p ref={ref} contentEditable>
+      {value}
+    </p>
+  );
+};
+
+const fieldTransforms = {
+  text: EditableText,
+};
+
+const Example = () => <Puck fieldTransforms={fieldTransforms} />;
+```
+
+## Define new fields
+
+As with [field type overrides](/docs/extending-puck/ui-overrides#introducing-new-field-types), field transforms let you define your own field types:
+
+```tsx
+const fieldTransforms = {
+  example: () => <div />,
+};
+```
+
+## Distributing field transforms as plugins
+
+Distribute transforms as plugins to package up custom behavior.
+
+```tsx
+const plugin = {
+  fieldTransforms: {
+    example: ({ value }) => <div>{value}</div>, // Wrap all example fields with divs
+  },
+
+  // This example combines transforms with overrides
+  overrides: {
+    fieldTypes: {
+      example: () => <input />, // Define a field interface
+    },
+  },
+};
+
+const Example = () => <Puck plugins={[plugin]} />;
+```
+
+## Further reading
+
+- [Field Transforms API reference](/docs/api-reference/field-transforms)
+- [Overlay Portals API reference](/docs/integrating-puck/overlay-portals)

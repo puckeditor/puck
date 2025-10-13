@@ -31,6 +31,7 @@ export function Editor() {
 | [`data`](#data)                                       | `data: {}`                                         | [Data](/docs/api-reference/data-model/data)                | Required     |
 | [`dnd`](#dnd)                                         | `dnd: {}`                                          | [DndConfig](#dnd-params)                                   | -            |
 | [`children`](#children)                               | `children: <Puck.Preview />`                       | ReactNode                                                  | -            |
+| [`fieldTransforms`](#fieldtransforms)                 | `fieldTransforms: {text: () => <div />}`           | [FieldTransforms](/docs/api-reference/field-transforms)    | -            |
 | [`headerPath`](#headerpath)                           | `headerPath: "/my-page"`                           | String                                                     | -            |
 | [`headerTitle`](#headertitle)                         | `headerTitle: "My Page"`                           | String                                                     | -            |
 | [`iframe`](#iframe)                                   | `iframe: {}`                                       | [IframeConfig](#iframe-params)                             | -            |
@@ -127,6 +128,23 @@ Configure drag-and-drop behavior.
 ##### `disableAutoScroll`
 
 Disable auto-scroll when the user drags an item near the edge of the preview area.
+
+### `fieldTransforms`
+
+Specify transforms to modify field values before being passed to the editor canvas. Implements the [Field Transforms API](/docs/api-reference/field-transforms).
+
+```tsx {4} copy
+export function Editor() {
+  return (
+    <Puck
+      fieldTransforms={{
+        text: ({ value }) => <div>{value}</div>, // Wrap all text field values in a div
+      }}
+      // ...
+    />
+  );
+}
+```
 
 ### `headerPath`
 

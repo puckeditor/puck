@@ -1,13 +1,14 @@
 import {
   ComponentData,
   Config,
+  Content,
   Metadata,
   ResolveDataTrigger,
   RootDataWithProps,
 } from "../types";
-import { mapSlots } from "./data/map-slots";
+import { mapFields } from "./data/map-fields";
 import { getChanged } from "./get-changed";
-import fdeq from "fast-deep-equal";
+import { deepEqual } from "fast-equals";
 
 export const cache: {
   lastChange: Record<string, any>;
@@ -39,7 +40,7 @@ export const resolveComponentData = async <
   if (shouldRunResolver) {
     const { item: oldItem = null, resolved = {} } = cache.lastChange[id] || {};
 
-    if (item && fdeq(item, oldItem)) {
+    if (trigger !== "force" && item && deepEqual(item, oldItem)) {
       return { node: resolved, didChange: false };
     }
 
@@ -67,26 +68,29 @@ export const resolveComponentData = async <
     }
   }
 
-  let itemWithResolvedChildren = await mapSlots(
+  let itemWithResolvedChildren = await mapFields(
     resolvedItem,
-    async (content) => {
-      return await Promise.all(
-        content.map(
-          async (childItem) =>
-            (
-              await resolveComponentData(
-                childItem as T,
-                config,
-                metadata,
-                onResolveStart,
-                onResolveEnd,
-                trigger
-              )
-            ).node
-        )
-      );
-    },
+    {
+      slot: async ({ value }) => {
+        const content = value as Content;
 
+        return await Promise.all(
+          content.map(
+            async (childItem) =>
+              (
+                await resolveComponentData(
+                  childItem as T,
+                  config,
+                  metadata,
+                  onResolveStart,
+                  onResolveEnd,
+                  trigger
+                )
+              ).node
+          )
+        );
+      },
+    },
     config
   );
 
@@ -101,6 +105,6 @@ export const resolveComponentData = async <
 
   return {
     node: itemWithResolvedChildren,
-    didChange: !fdeq(item, itemWithResolvedChildren),
+    didChange: !deepEqual(item, itemWithResolvedChildren),
   };
 };

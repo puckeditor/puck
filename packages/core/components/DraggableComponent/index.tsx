@@ -62,6 +62,16 @@ const DefaultActionBar = ({
   </ActionBar>
 );
 
+const DefaultOverlay = ({
+  children,
+}: {
+  children: ReactNode;
+  hover: boolean;
+  isSelected: boolean;
+  componentId: string;
+  componentType: string;
+}) => <>{children}</>;
+
 export type ComponentDndData = {
   areaId?: string;
   zone: string;
@@ -216,14 +226,17 @@ export const DraggableComponent = ({
     return cleanup;
   }, [permissions.drag, zoneCompound]);
 
+  const [, setRerender] = useState(0);
+
   const ref = useRef<HTMLElement>(null);
 
   const refSetter = useCallback(
     (el: HTMLElement | null) => {
       sortableRef(el);
 
-      if (el) {
+      if (ref.current !== el) {
         ref.current = el;
+        setRerender((update) => update + 1);
       }
     },
     [sortableRef]
@@ -332,9 +345,18 @@ export const DraggableComponent = ({
     [overrides.actionBar]
   );
 
+  const CustomOverlay = useMemo(
+    () => overrides.componentOverlay || DefaultOverlay,
+    [overrides.componentOverlay]
+  );
+
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
-      e.stopPropagation();
+      const el = e.target as Element;
+
+      if (!el.closest("[data-puck-overlay-portal]")) {
+        e.stopPropagation();
+      }
 
       dispatch({
         type: "setUi",
@@ -443,7 +465,7 @@ export const DraggableComponent = ({
       el.removeEventListener("mouseout", _onMouseOut);
     };
   }, [
-    ref,
+    ref.current, // Remount attributes if the element changes
     onClick,
     containsActiveZone,
     zoneCompound,
@@ -630,7 +652,16 @@ export const DraggableComponent = ({
                 </CustomActionBar>
               </div>
             </div>
-            <div className={getClassName("overlay")} />
+            <div className={getClassName("overlayWrapper")}>
+              <CustomOverlay
+                componentId={id}
+                componentType={componentType}
+                hover={hover}
+                isSelected={isSelected}
+              >
+                <div className={getClassName("overlay")}></div>
+              </CustomOverlay>
+            </div>
           </div>,
           portalEl || document.body
         )}

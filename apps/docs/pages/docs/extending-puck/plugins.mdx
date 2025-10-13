@@ -7,53 +7,111 @@ import { Callout } from "nextra/components";
   changes.
 </Callout>
 
-The plugin API enables developers to distribute plugins to customize the Puck interface.
+The [plugin API](/docs/api-reference/plugins) enables developers to share extensions to Puck, and are generally built on top of existing APIs.
 
 ## Official plugins
+
+Puck provides official plugins for common use-cases:
 
 - [`emotion-cache`](https://github.com/measuredco/puck/tree/main/packages/plugin-emotion-cache): Inject emotion cache into the Puck iframe.
 - [`heading-analyzer`](https://github.com/measuredco/puck/tree/main/packages/plugin-heading-analyzer): Analyze the heading outline of your page and be warned when you're not respecting WCAG 2 accessibility standards.
 
 Please see the [awesome-puck repo](https://github.com/measuredco/awesome-puck) for a full list of community plugins.
 
-## Developing a plugin
+## Loading a Plugin
 
-Plugins implement the [`overrides`](/docs/extending-puck/ui-overrides) API:
+To load a plugin, provide it to the [`plugins` prop](/docs/api-reference/components/puck#plugins) on the `<Puck>` component.
 
-```tsx showLineNumbers copy {3-9, 15}
+```tsx showLineNumbers {2,8}
 import { Puck } from "@measured/puck";
-
-const MyPlugin = {
-  overrides: {
-    componentItem: ({ name }) => (
-      <div style={{ backgroundColor: "hotpink" }}>{name}</div>
-    ),
-  },
-};
+import myPlugin from "my-puck-plugin";
 
 export function Editor() {
   return (
     <Puck
       // ...
-      plugins={[MyPlugin]}
+      plugins={[myPlugin]}
     />
   );
 }
 ```
 
-## Plugin currying
+## Developing a Plugin
 
-Plugins are rendered in the order they are defined. Unless otherwise specified, all overrides are _curried_, meaning that the return node of one plugin will be passed as `children` to the next plugin.
+If you're familiar with Puck, you can likely already build a Puck plugin. See the [Plugin API reference](/docs/api-reference/plugins) for a full breakdown of available APIs.
+
+### Transforming fields
+
+Plugins support [Field Transforms](/docs/extending-puck/field-transforms), enabling you to modify prop data before it's rendered in the `<Puck>` preview.
+
+```tsx showLineNumbers copy
+const plugin = {
+  fieldTransforms: {
+    // Make all props powered by "text" field pink in the editor
+    text: ({ value }) => <span style={{ color: "hotpink" }}>{value}</span>,
+  },
+};
+```
+
+### Overriding the UI
+
+Plugins support [UI Overrides](/docs/extending-puck/ui-overrides), enabling you to override discrete section of the Puck interface.
+
+```tsx showLineNumbers copy
+const plugin = {
+  overrides: {
+    // Make all drawer items pink
+    drawerItem: ({ name }) => <div style={{ color: "hotpink" }}>{name}</div>,
+  },
+};
+```
+
+<Callout type="info">
+
+<b>Override currying</b>
+
+Plugin overrides are rendered in the order they are defined. Unless otherwise specified, all overrides are _curried_, meaning that the return node of one plugin will be passed as `children` to the next plugin.
 
 This may result in some incompatible plugin combinations. To improve your chance of building a widely compatible plugin, consider:
 
 1. Implementing as few override methods as you need
 2. Always rendering `children` if possible
 
-## Custom fields
+</Callout>
 
-Plugins enable full UI overhauls. If you're creating a field for a specific use-case, you might be better off distributing a [custom field](custom-fields).
+### Introducing new field types
+
+Both the field transforms and overrides let you introduce [entirely new field types](/docs/extending-puck/ui-overrides#introducing-new-field-types). Plugins can combine this functionality to bundle up new field behavior in a convenient package.
+
+This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can modified directly in the editor preview.
+
+```tsx showLineNumbers copy {6-8, 12-20}
+import { registerOverlayPortal } from "@measured/puck";
+
+const plugin = {
+  overrides: {
+    // Add a richText field type
+    fieldTypes: {
+      richText: ({ name, value }) => <input name={name} value={value} />,
+    },
+  },
+  fieldTransforms: {
+    // Wrap the value in a span, create an overlay portal, and make it editable
+    richText: ({ value }) => {
+      const handleInput = useCallback(() => {}, []); // Implement your input behavior
+
+      return (
+        <span ref={registerOverlayPortal} contentEditable onInput={handleInput}>
+          {value}
+        </span>
+      );
+    },
+  },
+};
+```
 
 ## Further reading
 
 - [Plugin API reference](/docs/api-reference/plugin)
+- [FieldTransforms API reference](/docs/api-reference/field-transforms)
+- [UI Overrides](/docs/extending-puck/ui-overrides)

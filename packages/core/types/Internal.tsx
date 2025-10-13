@@ -1,7 +1,8 @@
 import { Slot } from "./API";
 import { AppState } from "./AppState";
+import { Config, DefaultComponents } from "./Config";
 import { ComponentData, Data } from "./Data";
-import { DefaultComponentProps } from "./Props";
+import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 
 export type ZoneType = "root" | "dropzone" | "slot";
 
@@ -28,8 +29,6 @@ export type PrivateAppState<UserData extends Data = Data> =
       zones: ZoneIndex;
     };
   };
-
-export type DefaultAllProps = Record<string, DefaultComponentProps>;
 
 type BuiltinTypes =
   | Date
@@ -59,3 +58,40 @@ export type WithDeepSlots<T, SlotType = T> =
     T extends object
     ? { [K in keyof T]: WithDeepSlots<T[K], SlotType> }
     : T;
+
+export type ConfigParams<
+  Components extends DefaultComponents = DefaultComponents,
+  RootProps extends DefaultComponentProps = any,
+  CategoryNames extends string[] = string[],
+  UserFields extends FieldsExtension = FieldsExtension
+> = {
+  components?: Components;
+  root?: RootProps;
+  categories?: CategoryNames;
+  fields?: AssertHasValue<UserFields>;
+};
+
+export type FieldsExtension = { [Type in string]: { type: Type } };
+
+export type ComponentConfigParams<
+  Props extends DefaultComponentProps = DefaultComponentProps,
+  UserFields extends FieldsExtension = never
+> = {
+  props: Props;
+  fields?: AssertHasValue<UserFields>;
+};
+
+// Check the keys of T do not introduce additional ones to Target
+export type Exact<T, Target> = Record<Exclude<keyof T, keyof Target>, never>;
+
+// Ensures the union either extends the left type, or is exactly the right type
+// This prevents type widening
+export type LeftOrExactRight<Union, Left, Right> =
+  | (Left & Union extends Right ? Exact<Union, Right> : Left)
+  | (Right & Exact<Union, Right>);
+
+export type AssertHasValue<T, True = T, False = never> = [keyof T] extends [
+  never
+]
+  ? False
+  : True;

@@ -1,0 +1,49 @@
+---
+title: registerOverlayPortal
+---
+
+# registerOverlayPortal
+
+Register a node as an [Overlay Portal](/docs/integrating-puck/overlay-portals), enabling interaction beneath the Puck overlay.
+
+```tsx copy
+import { registerOverlayPortal } from "@measured/puck";
+
+const MyComponent = () => {
+  const ref = useRef(null);
+
+  useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
+
+  return <button ref={ref}>Clickable</button>;
+};
+```
+
+## Args
+
+| Param           | Example | Type                                                                        | Status |
+| --------------- | ------- | --------------------------------------------------------------------------- | ------ |
+| [`el`](#el)     | `div`   | [HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement) | -      |
+| [`opts`](#opts) | `{}`    | [Config](/docs/api-reference/configuration/config)                          | -      |
+
+### `el`
+
+The element to turn into a portal. Will do nothing if `null` or `undefined`.
+
+### `opts`
+
+| Param                | Example | Type    | Status |
+| -------------------- | ------- | ------- | ------ |
+| `disableDrag`        | `false` | boolean | -      |
+| `disableDragOnFocus` | `false` | boolean | -      |
+
+#### `opts.disableDrag`
+
+Disable triggering a drag of the parent component when interacting with this element. Defaults to `false`.
+
+#### `opts.disableDragOnFocus`
+
+Disable triggering a drag of the parent component when interacting with this element once it is focused. Drag is disabled following a short delay after focusing. Defaults to `true`.
+
+## Returns
+
+A function to clean-up the portal.

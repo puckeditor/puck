@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ComponentConfig } from "@/core";
+import { ComponentConfig } from "@/core/types";
 import { Heading as _Heading } from "@/core/components/Heading";
 import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
@@ -37,6 +37,7 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
   fields: {
     text: {
       type: "textarea",
+      contentEditable: true,
     },
     size: {
       type: "select",

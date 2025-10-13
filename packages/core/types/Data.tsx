@@ -1,4 +1,5 @@
-import { DefaultAllProps, WithDeepSlots } from "./Internal";
+import { DefaultComponents } from "./Config";
+import { WithDeepSlots } from "./Internal";
 import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 import { AsFieldProps, WithId } from "./Utils";
 
@@ -27,13 +28,13 @@ export type RootData<
 export type ComponentData<
   Props extends DefaultComponentProps = DefaultComponentProps,
   Name = string,
-  AllProps extends Record<string, DefaultComponentProps> = Record<
+  Components extends Record<string, DefaultComponentProps> = Record<
     string,
     DefaultComponentProps
   >
 > = {
   type: Name;
-  props: WithDeepSlots<WithId<Props>, Content<AllProps>>;
+  props: WithDeepSlots<WithId<Props>, Content<Components>>;
 } & BaseData<Props>;
 
 export type ComponentDataOptionalId<
@@ -50,14 +51,14 @@ export type ComponentDataOptionalId<
 export type MappedItem = ComponentData;
 
 export type ComponentDataMap<
-  AllProps extends DefaultAllProps = DefaultAllProps
+  Components extends DefaultComponents = DefaultComponents
 > = {
-  [K in keyof AllProps]: ComponentData<
-    AllProps[K],
+  [K in keyof Components]: ComponentData<
+    Components[K],
     K extends string ? K : never,
-    AllProps
+    Components
   >;
-}[keyof AllProps];
+}[keyof Components];
 
 export type Content<
   PropsMap extends { [key: string]: DefaultComponentProps } = {
@@ -66,12 +67,12 @@ export type Content<
 > = ComponentDataMap<PropsMap>[];
 
 export type Data<
-  AllProps extends DefaultAllProps = DefaultAllProps,
+  Components extends DefaultComponents = DefaultComponents,
   RootProps extends DefaultComponentProps = DefaultRootFieldProps
 > = {
-  root: WithDeepSlots<RootData<RootProps>, Content<AllProps>>;
-  content: Content<AllProps>;
-  zones?: Record<string, Content<AllProps>>;
+  root: WithDeepSlots<RootData<RootProps>, Content<Components>>;
+  content: Content<Components>;
+  zones?: Record<string, Content<Components>>;
 };
 
 export type Metadata = { [key: string]: any };

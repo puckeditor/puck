@@ -31,11 +31,17 @@
   border-radius: 4px;
   box-sizing: border-box;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   padding: 12px 15px;
   transition: border-color 50ms ease-in;
   width: 100%;
   max-width: 100%;
+}
+
+@media (min-width: 458px) {
+  .Input-input {
+    font-size: 14px;
+  }
 }
 
 select.Input-input {

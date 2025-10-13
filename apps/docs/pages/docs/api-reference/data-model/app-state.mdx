@@ -29,8 +29,10 @@ The current state of the Puck editor interface.
 | [`isDragging`](#isdragging)                     | `false`                                               | Boolean                       |
 | [`itemSelector`](#uiitemselector)               | `{ index: 0, zone: "my-content" }`                    | [ItemSelector](item-selector) |
 | [`leftSideBarVisible`](#uileftsidebarvisible)   | `false`                                               | Boolean                       |
+| [`leftSideBarWidth`](#uileftsidebarwidth)       | `200`                                                 | Number                        |
 | [`previewMode`](#uipreviewmode)                 | `"edit"`                                              | String                        |
 | [`rightSideBarVisible`](#uirightsidebarvisible) | `false`                                               | Boolean                       |
+| [`rightSideBarWidth`](#uirightsidebarwidth)     | `200`                                                 | Number                        |
 | [`viewports`](#uiviewports)                     | `{ controlsVisible: true, current: {}, options: [] }` | Object                        |
 
 ---
@@ -43,23 +45,23 @@ An object describing the internal state of array items
 
 ### `ui.componentList`
 
-An object describing the component list. Similar shape to the [categories API](/docs/api-reference/configuration/config#categories)
+An object describing the component drawer. Similar shape to the [categories API](/docs/api-reference/configuration/config#categories)
 
 #### `ui.componentList[key].components`
 
-Array containing the names of components in this category
+Array containing the names of components in this category.
 
 #### `ui.componentList[key].title`
 
-Title of the category
+Title of the category.
 
 #### `ui.componentList[key].visible`
 
-Whether or not the category is visible in the side bar
+Whether or not the category is visible in the side bar.
 
 #### `ui.componentList[key].expanded`
 
-Whether or not the category is expanded in the side bar
+Whether or not the category is expanded in the side bar.
 
 ---
 
@@ -87,6 +89,12 @@ Whether or not the left side bar is visible.
 
 ---
 
+### `ui.leftSideBarWidth`
+
+Current width of the left side bar in pixels.
+
+---
+
 ### `ui.previewMode`
 
 The mode for the preview area, controlling whether or not the user can interact with the underlying component. Accepts the following values:
@@ -101,6 +109,12 @@ Puck does not currently provide the UI to control this value, but it can be togg
 ### `ui.rightSideBarVisible`
 
 Whether or not the right side bar is visible.
+
+---
+
+### `ui.rightSideBarWidth`
+
+Current width of the right side bar in pixels.
 
 ---
 

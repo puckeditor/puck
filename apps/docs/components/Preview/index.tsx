@@ -3,6 +3,7 @@ import React, {
   CSSProperties,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -24,6 +25,7 @@ import { codeToHtml } from "shiki";
 
 import { createStore } from "zustand";
 import { useContextStore } from "@/core/lib/use-context-store";
+import { Button, registerOverlayPortal } from "@/core";
 
 export const PreviewStoreContext = createContext(
   createStore(() => ({ drawerVisible: false }))
@@ -181,8 +183,10 @@ export const PuckPreview = ({
 };
 
 const ConfigPreviewInner = ({
+  children,
   componentConfig,
 }: {
+  children?: ReactNode;
   componentConfig: ComponentConfig;
 }) => {
   const appState = usePuck((s) => s.appState);
@@ -191,15 +195,16 @@ const ConfigPreviewInner = ({
     <div>
       {componentConfig.render && (
         <div className={getClassNamePreview("preview")}>
-          {componentConfig.render({
-            ...appState.data["content"][0]?.props,
-            puck: {
-              renderDropZone: () => <div />,
-              isEditing: false,
-              metadata: {},
-              dragRef: null,
-            },
-          })}
+          {children ??
+            componentConfig.render({
+              ...appState.data["content"][0]?.props,
+              puck: {
+                renderDropZone: () => <div />,
+                isEditing: false,
+                metadata: {},
+                dragRef: null,
+              },
+            })}
         </div>
       )}
     </div>
@@ -218,9 +223,11 @@ export const CodeBlockDrawer = ({
 };
 
 export const ConfigPreview = ({
+  children,
   componentConfig,
   label,
 }: {
+  children?: ReactNode;
   componentConfig: ComponentConfig;
   label: string;
 }) => {
@@ -245,6 +252,7 @@ export const ConfigPreview = ({
           <Puck.Fields />
         </div>
       )}
+      permissions={{ drag: false }}
       renderDrawer={() => (
         <CodeBlockDrawer
           getCode={(appState) => {
@@ -254,9 +262,66 @@ export const ConfigPreview = ({
           }}
         />
       )}
+      overrides={{ actionBar: () => null, componentOverlay: () => null }}
       style={{ padding: 0 }}
     >
-      <ConfigPreviewInner componentConfig={componentConfig} />
+      <ConfigPreviewInner componentConfig={componentConfig}>
+        {children}
+      </ConfigPreviewInner>
     </PuckPreview>
+  );
+};
+
+export const OverlayPortalPreview = () => {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
+
+  return (
+    <span ref={ref} style={{ display: "inline-block" }}>
+      <Button onClick={() => alert("Click")}>Clickable</Button>
+    </span>
+  );
+};
+
+export const OverlayPortalTabsPreview = () => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [selected, setSelected] = useState(1);
+
+  useEffect(() => registerOverlayPortal(ref.current), [ref.current]);
+
+  return (
+    <div>
+      <div ref={ref} style={{ display: "inline-flex", gap: 8 }}>
+        <Button
+          onClick={() => setSelected(1)}
+          variant={selected === 1 ? "primary" : "secondary"}
+        >
+          Tab 1
+        </Button>
+        <Button
+          onClick={() => setSelected(2)}
+          variant={selected === 2 ? "primary" : "secondary"}
+        >
+          Tab 2
+        </Button>
+      </div>
+      <div
+        style={{
+          background: "#eee",
+          display: "flex",
+          padding: 64,
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 8,
+          marginTop: 8,
+          fontSize: 32,
+        }}
+      >
+        {selected === 1 && <div>Tab 1</div>}
+        {selected === 2 && <div>Tab 2</div>}
+      </div>
+    </div>
   );
 };

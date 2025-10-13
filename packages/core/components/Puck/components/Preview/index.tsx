@@ -120,7 +120,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       <DropZonePure zone={rootDroppableId} />
     </Page>
   ) : (
-    <Render data={renderData} config={config} />
+    <Render data={renderData} config={config} metadata={metadata} />
   );
 
   useEffect(() => {
@@ -134,8 +134,15 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       className={getClassName()}
       id={id}
       data-puck-preview
-      onClick={() => {
-        dispatch({ type: "setUi", ui: { itemSelector: null } });
+      onClick={(e) => {
+        const el = e.target as Element;
+
+        if (
+          !el.hasAttribute("data-puck-component") &&
+          !el.hasAttribute("data-puck-dropzone")
+        ) {
+          dispatch({ type: "setUi", ui: { itemSelector: null } });
+        }
       }}
     >
       {iframe.enabled ? (

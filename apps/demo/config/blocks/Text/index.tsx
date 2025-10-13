@@ -1,7 +1,7 @@
 import React from "react";
 import { ALargeSmall, AlignLeft } from "lucide-react";
 
-import { ComponentConfig } from "@/core";
+import { ComponentConfig } from "@/core/types";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
 
@@ -16,7 +16,10 @@ export type TextProps = WithLayout<{
 
 const TextInner: ComponentConfig<TextProps> = {
   fields: {
-    text: { type: "textarea" },
+    text: {
+      type: "textarea",
+      contentEditable: true,
+    },
     size: {
       type: "select",
       labelIcon: <ALargeSmall size={16} />,

@@ -15,7 +15,15 @@ const collectStyles = (doc: Document) => {
   const collected: HTMLElement[] = [];
 
   doc.querySelectorAll(styleSelector).forEach((style) => {
-    collected.push(style as HTMLElement);
+    if (style.tagName === "STYLE") {
+      const hasContent = !!style.innerHTML.trim();
+
+      if (hasContent) {
+        collected.push(style as HTMLElement);
+      }
+    } else {
+      collected.push(style as HTMLElement);
+    }
   });
 
   return collected;
@@ -32,7 +40,9 @@ const getStyleSheet = (el: HTMLElement) => {
 const getStyles = (styleSheet?: CSSStyleSheet) => {
   if (styleSheet) {
     try {
-      return [...styleSheet.cssRules].map((rule) => rule.cssText).join("");
+      return [...Array.from(styleSheet.cssRules)]
+        .map((rule) => rule.cssText)
+        .join("");
     } catch (e) {
       console.warn(
         "Access to stylesheet %s is denied. Ignoring…",

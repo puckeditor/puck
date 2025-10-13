@@ -25,6 +25,9 @@ import type {
   Config,
   Data,
   Metadata,
+  AsFieldProps,
+  DefaultComponentProps,
+  ComponentData,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -36,7 +39,6 @@ import {
   defaultAppState,
   useAppStore,
   appStoreContext,
-  AppStore,
 } from "../../store";
 import styles from "./styles.module.css";
 import { Fields } from "./components/Fields";
@@ -51,6 +53,7 @@ import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
 import { DefaultOverride } from "../DefaultOverride";
 import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
+import { useDeleteHotkeys } from "../../lib/use-delete-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
 import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
@@ -59,10 +62,16 @@ import {
   UsePuckStoreContext,
   useRegisterUsePuckStore,
 } from "../../lib/use-puck";
+import { FrameProvider } from "../../lib/frame-context";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
 import fdeq from "fast-deep-equal";
 import { Header } from "./components/Header";
+import { Sidebar } from "./components/Sidebar";
+import { useSidebarResize } from "../../lib/use-sidebar-resize";
+import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { populateIds } from "../../lib/data/populate-ids";
+import { toComponent } from "../../lib/data/to-component";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -94,8 +103,9 @@ type PuckProps<
   onPublish?: (data: G["UserData"]) => void;
   onAction?: OnAction<G["UserData"]>;
   permissions?: Partial<Permissions>;
-  plugins?: Plugin[];
-  overrides?: Partial<Overrides>;
+  plugins?: Plugin<UserConfig>[];
+  overrides?: Partial<Overrides<UserConfig>>;
+  fieldTransforms?: FieldTransforms<UserConfig>;
   renderHeader?: (props: {
     children: ReactNode;
     dispatch: (action: PuckAction) => void;
@@ -148,6 +158,7 @@ function PuckProvider<
     initialHistory: _initialHistory,
     metadata,
     onAction,
+    fieldTransforms,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -211,7 +222,7 @@ function PuckProvider<
       Object.keys(initialData?.root || {}).length > 0 &&
       !initialData?.root?.props
     ) {
-      console.error(
+      console.warn(
         "Warning: Defining props on `root` is deprecated. Please use `root.props`, or republish this page to migrate automatically."
       );
     }
@@ -221,14 +232,19 @@ function PuckProvider<
 
     const defaultedRootProps = {
       ...config.root?.defaultProps,
-      ...rootProps,
+      ...(rootProps as AsFieldProps<DefaultComponentProps> | AsFieldProps<any>),
     };
+
+    const root = populateIds(
+      toComponent({ ...initialData?.root, props: defaultedRootProps }),
+      config
+    );
 
     const newAppState = {
       ...defaultAppState,
       data: {
         ...initialData,
-        root: { ...initialData?.root, props: defaultedRootProps },
+        root: { ...initialData?.root, props: root.props },
         content: initialData.content || [],
       },
       ui: {
@@ -289,6 +305,19 @@ function PuckProvider<
     plugins: plugins,
   });
 
+  const loadedFieldTransforms = useMemo(() => {
+    const _plugins: Plugin[] = plugins || [];
+    const pluginFieldTransforms = _plugins.reduce<FieldTransforms>(
+      (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
+      {}
+    );
+
+    return {
+      ...pluginFieldTransforms,
+      ...fieldTransforms,
+    };
+  }, [fieldTransforms, plugins]);
+
   const generateAppStore = useCallback(
     (state?: PrivateAppState) => {
       return {
@@ -300,6 +329,7 @@ function PuckProvider<
         iframe,
         onAction,
         metadata,
+        fieldTransforms: loadedFieldTransforms,
       };
     },
     [
@@ -311,6 +341,7 @@ function PuckProvider<
       iframe,
       onAction,
       metadata,
+      loadedFieldTransforms,
     ]
   );
 
@@ -395,12 +426,25 @@ function PuckLayout<
 
   useInjectGlobalCss(iframe.enabled);
 
+  const dispatch = useAppStore((s) => s.dispatch);
   const leftSideBarVisible = useAppStore((s) => s.state.ui.leftSideBarVisible);
   const rightSideBarVisible = useAppStore(
     (s) => s.state.ui.rightSideBarVisible
   );
 
-  const dispatch = useAppStore((s) => s.dispatch);
+  const {
+    width: leftWidth,
+    setWidth: setLeftWidth,
+    sidebarRef: leftSidebarRef,
+    handleResizeEnd: handleLeftSidebarResizeEnd,
+  } = useSidebarResize("left", dispatch);
+
+  const {
+    width: rightWidth,
+    setWidth: setRightWidth,
+    sidebarRef: rightSidebarRef,
+    handleResizeEnd: handleRightSidebarResizeEnd,
+  } = useSidebarResize("right", dispatch);
 
   useEffect(() => {
     if (!window.matchMedia("(min-width: 638px)").matches) {
@@ -448,6 +492,7 @@ function PuckLayout<
   const ready = useAppStore((s) => s.status === "READY");
 
   useMonitorHotkeys();
+  useDeleteHotkeys();
 
   useEffect(() => {
     if (ready && iframe.enabled) {
@@ -461,34 +506,61 @@ function PuckLayout<
 
   usePreviewModeHotkeys();
 
+  const layoutOptions: Record<string, any> = {};
+
+  if (leftWidth) {
+    layoutOptions["--puck-user-left-side-bar-width"] = `${leftWidth}px`;
+  }
+
+  if (rightWidth) {
+    layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
+  }
+
   return (
     <div className={`Puck ${getClassName()}`}>
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
           {children || (
-            <div
-              className={getLayoutClassName({
-                leftSideBarVisible,
-                mounted,
-                rightSideBarVisible,
-              })}
-            >
-              <div className={getLayoutClassName("inner")}>
-                <Header />
-                <div className={getLayoutClassName("leftSideBar")}>
-                  <SidebarSection title="Components" noBorderTop>
-                    <Components />
-                  </SidebarSection>
-                  <SidebarSection title="Outline">
-                    <Outline />
-                  </SidebarSection>
-                </div>
-                <Canvas />
-                <div className={getLayoutClassName("rightSideBar")}>
-                  <FieldSideBar />
+            <FrameProvider>
+              <div
+                className={getLayoutClassName({
+                  leftSideBarVisible,
+                  mounted,
+                  rightSideBarVisible,
+                })}
+              >
+                <div
+                  className={getLayoutClassName("inner")}
+                  style={layoutOptions}
+                >
+                  <Header />
+                  <Sidebar
+                    position="left"
+                    sidebarRef={leftSidebarRef}
+                    isVisible={leftSideBarVisible}
+                    onResize={setLeftWidth}
+                    onResizeEnd={handleLeftSidebarResizeEnd}
+                  >
+                    <SidebarSection title="Components" noBorderTop>
+                      <Components />
+                    </SidebarSection>
+                    <SidebarSection title="Outline">
+                      <Outline />
+                    </SidebarSection>
+                  </Sidebar>
+                  <Canvas />
+                  <Sidebar
+                    position="right"
+                    sidebarRef={rightSidebarRef}
+                    isVisible={rightSideBarVisible}
+                    onResize={setRightWidth}
+                    onResizeEnd={handleRightSidebarResizeEnd}
+                  >
+                    <FieldSideBar />
+                  </Sidebar>
                 </div>
               </div>
-            </div>
+            </FrameProvider>
           )}
         </CustomPuck>
       </DragDropContext>

@@ -8,7 +8,15 @@ export const Components = () => {
 
   const componentList = useComponentList();
 
-  const Wrapper = useMemo(() => overrides.components || "div", [overrides]);
+  const Wrapper = useMemo(() => {
+    // DEPRECATED
+    if (overrides.components) {
+      console.warn(
+        "The `components` override has been deprecated and renamed to `drawer`"
+      );
+    }
+    return overrides.components || overrides.drawer || "div";
+  }, [overrides]);
 
   return (
     <Wrapper>

@@ -200,7 +200,7 @@ describe("history slice", () => {
       expect(index).toBe(1);
       expect(appStore.getState().dispatch).toHaveBeenCalledWith({
         type: "set",
-        state: defaultAppState, // from the old store’s last item or initialAppState
+        state: { ...defaultAppState, data: "Two" },
       });
     });
   });

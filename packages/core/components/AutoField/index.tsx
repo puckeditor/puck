@@ -122,6 +122,17 @@ export type FieldPropsInternal<ValueType = any, F = Field<any>> = FieldProps<
   name?: string;
 };
 
+const defaultFields = {
+  array: ArrayField,
+  external: ExternalField,
+  object: ObjectField,
+  select: SelectField,
+  textarea: TextareaField,
+  radio: RadioField,
+  text: DefaultField,
+  number: DefaultField,
+};
+
 function AutoFieldInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
@@ -144,37 +155,32 @@ function AutoFieldInternal<
   const defaultId = useSafeId();
   const resolvedId = id || defaultId;
 
-  const defaultFields = {
-    array: ArrayField,
-    external: ExternalField,
-    object: ObjectField,
-    select: SelectField,
-    textarea: TextareaField,
-    radio: RadioField,
-    text: DefaultField,
-    number: DefaultField,
-  };
+  const render = useMemo(
+    () => ({
+      ...overrides.fieldTypes,
+      array: overrides.fieldTypes?.array || defaultFields.array,
+      external: overrides.fieldTypes?.external || defaultFields.external,
+      object: overrides.fieldTypes?.object || defaultFields.object,
+      select: overrides.fieldTypes?.select || defaultFields.select,
+      textarea: overrides.fieldTypes?.textarea || defaultFields.textarea,
+      radio: overrides.fieldTypes?.radio || defaultFields.radio,
+      text: overrides.fieldTypes?.text || defaultFields.text,
+      number: overrides.fieldTypes?.number || defaultFields.number,
+    }),
+    [overrides]
+  );
 
-  const render = {
-    ...overrides.fieldTypes,
-    array: overrides.fieldTypes?.array || defaultFields.array,
-    external: overrides.fieldTypes?.external || defaultFields.external,
-    object: overrides.fieldTypes?.object || defaultFields.object,
-    select: overrides.fieldTypes?.select || defaultFields.select,
-    textarea: overrides.fieldTypes?.textarea || defaultFields.textarea,
-    radio: overrides.fieldTypes?.radio || defaultFields.radio,
-    text: overrides.fieldTypes?.text || defaultFields.text,
-    number: overrides.fieldTypes?.number || defaultFields.number,
-  };
-
-  const mergedProps = {
-    ...props,
-    field,
-    label,
-    labelIcon,
-    Label,
-    id: resolvedId,
-  };
+  const mergedProps = useMemo(
+    () => ({
+      ...props,
+      field,
+      label,
+      labelIcon,
+      Label,
+      id: resolvedId,
+    }),
+    [props, field, label, labelIcon, Label, resolvedId]
+  );
 
   const onFocus = useCallback(
     (e: React.FocusEvent) => {
@@ -206,6 +212,25 @@ function AutoFieldInternal<
     }
   }, []);
 
+  let Children = useMemo(() => {
+    if (field.type !== "custom" && field.type !== "slot") {
+      return defaultFields[field.type];
+    }
+
+    return (_props: any) => null;
+  }, [field.type]);
+
+  let FieldComponent: React.ComponentType<any> = useMemo(() => {
+    if (field.type === "custom") {
+      if (!field.render) {
+        return null;
+      }
+      return field.render as any;
+    } else if (field.type !== "slot") {
+      return render[field.type] as (props: FieldProps) => ReactElement;
+    }
+  }, [field.type, render]);
+
   const { visible = true } = props.field;
 
   if (!visible) {
@@ -216,31 +241,15 @@ function AutoFieldInternal<
     return null;
   }
 
-  if (field.type === "custom") {
-    if (!field.render) {
-      return null;
-    }
-
-    const CustomField = field.render as any;
-
-    return (
-      <div className={getClassNameWrapper()} onFocus={onFocus} onBlur={onBlur}>
-        <div className={getClassName()}>
-          <CustomField {...mergedProps} />
-        </div>
-      </div>
-    );
+  if (!FieldComponent) {
+    throw new Error(`Field type for ${field.type} did not exist.`);
   }
-
-  const children = defaultFields[field.type](mergedProps);
-
-  const Render = render[field.type] as (props: FieldProps) => ReactElement;
 
   return (
     <NestedFieldContext.Provider
       value={{
         readOnlyFields: nestedFieldContext.readOnlyFields || readOnly || {},
-        localName: nestedFieldContext.localName,
+        localName: nestedFieldContext.localName ?? mergedProps.name,
       }}
     >
       <div
@@ -254,7 +263,9 @@ function AutoFieldInternal<
           e.stopPropagation();
         }}
       >
-        <Render {...mergedProps}>{children}</Render>
+        <FieldComponent {...mergedProps}>
+          <Children {...mergedProps} />
+        </FieldComponent>
       </div>
     </NestedFieldContext.Provider>
   );

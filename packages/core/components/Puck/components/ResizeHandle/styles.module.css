@@ -1,0 +1,23 @@
+@media (min-width: 766px) {
+  .ResizeHandle {
+    position: absolute;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 10;
+    background: transparent;
+    top: 0;
+  }
+
+  .ResizeHandle:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .ResizeHandle--left {
+    right: -3px;
+  }
+
+  .ResizeHandle--right {
+    left: -3px;
+  }
+}

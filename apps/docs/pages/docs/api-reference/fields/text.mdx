@@ -1,4 +1,6 @@
-import { ConfigPreview } from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
+import { Callout } from "nextra/components";
 
 # Text
 
@@ -38,10 +40,11 @@ const config = {
 
 ## Params
 
-| Param                         | Example                         | Type   | Status   |
-| ----------------------------- | ------------------------------- | ------ | -------- |
-| [`type`](#type)               | `type: "text"`                  | "text" | Required |
-| [`placeholder`](#placeholder) | `placeholder: "Lorem ipsum..."` | String | -        |
+| Param                                 | Example                         | Type    | Status   |
+| ------------------------------------- | ------------------------------- | ------- | -------- |
+| [`type`](#type)                       | `type: "text"`                  | "text"  | Required |
+| [`contentEditable`](#contentEditable) | `contentEditable: true`         | Boolean | -        |
+| [`placeholder`](#placeholder)         | `placeholder: "Lorem ipsum..."` | String  | -        |
 
 ## Required params
 
@@ -65,6 +68,50 @@ const config = {
 ```
 
 ## Optional params
+
+### contentEditable
+
+Enable inline text editing for this field. Defaults to `false`.
+
+<Callout type="warning">
+  When setting `contentEditable`, your [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) prop will be converted to an [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) when rendered inside [`<Puck>`](/docs/api-reference/components/puck) (but not [`<Render>`](/docs/api-reference/components/render)). When using TypeScript, change your `string` to  `string | ReactNode`.
+</Callout>
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        title: {
+          type: "text",
+          contentEditable: true,
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      title: {
+        type: "text",
+        contentEditable: true,
+      },
+    },
+    defaultProps: {
+      title: "Edit me inline",
+    },
+    render: ({ title }) => {
+      return <div>{title}</div>;
+    },
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
 
 ### Placeholder
 
