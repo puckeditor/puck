@@ -1,4 +1,4 @@
-import { Puck } from "@/puck";
+import { Puck, FieldLabel, AutoField } from "@/puck";
 import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
 import { Callout } from "nextra/components";
 
@@ -70,6 +70,7 @@ const config = {
 | [`type`](#type)                       | `type: "custom"`          | "custom" | Required |
 | [`render()`](#renderparams)           | `render: () => <input />` | Function | Required |
 | [`contentEditable`](#contentEditable) | `contentEditable: true`   | Boolean  | -        |
+| [`key`](#key)                         | `key: "custom-text"`      | String   | -        |
 
 ## Required params
 
@@ -208,6 +209,156 @@ const config = {
     },
   }}
 >
+  <Puck.Preview />
+</ConfigPreview>
+
+### key
+
+Assign a unique key to force the field to remount when resolving different custom field types on the same prop.
+
+```tsx {17, 19, 35, 37} showLineNumbers copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        isText: {
+          type: "radio",
+          options: [
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ],
+        },
+      },
+      resolveFields: (data, params) => {
+        if (data.props.isText) {
+          return {
+            ...params.fields,
+            title: {
+              type: "custom",
+              key: "custom-text",
+              render: ({ onChange, value }) => (
+                <label>
+                  Text Input
+                  <input
+                    value={value}
+                    name={name}
+                    onChange={(e) => onChange(e.currentTarget.value)}
+                  />
+                </label>
+              ),
+            },
+          };
+        } else {
+          return {
+            ...params.fields,
+            title: {
+              type: "custom",
+              key: "custom-number",
+              render: ({ value, onChange }) => {
+                return (
+                  <label>
+                    Number Input
+                    <input
+                      type="number"
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                    />
+                  </label>
+                );
+              },
+            },
+          };
+        }
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      isText: {
+        type: "radio",
+        options: [
+          { label: "Yes", value: true },
+          { label: "No", value: false },
+        ],
+      },
+    },
+    resolveFields: (data, params) => {
+      if (data.props.isText) {
+        return {
+          ...params.fields,
+          title: {
+            type: "custom",
+            key: "custom-text",
+            render: ({ onChange, value }) => (
+              <FieldLabel label="Text Input">
+                  <AutoField
+                    field={{ type: "text" }}
+                    value={value}
+                    onChange={onChange}
+                  />
+              </FieldLabel>
+            ),
+          },
+        };
+      } else {
+        return {
+          ...params.fields,
+          title: {
+            type: "custom",
+            key: "custom-number",
+            render: ({ value, onChange }) => {
+              return (
+                <FieldLabel label="Number Input">
+                  <AutoField
+                    field={{ type: "number" }}
+                    value={value}
+                    onChange={onChange}
+                  />
+                </FieldLabel>
+              );
+            },
+          },
+        };
+      }
+    },
+    resolveData: (data, params) => {
+      if (!params.changed.isText) return data;
+
+      if (data.props.isText) {
+        return {
+          ...data,
+          props: {
+            ...data.props,
+            title: "Title",
+          },
+        };
+      } else {
+        return {
+          ...data,
+          props: {
+            ...data.props,
+            title: 123,
+          },
+        };
+      }
+    },
+    defaultProps: {
+      isText: true,
+    },
+    render: ({ title }) => {
+      return <p style={{color: "black"}}>{title}</p>;
+    },
+
+}}
+
+>
+
   <Puck.Preview />
 </ConfigPreview>
 
