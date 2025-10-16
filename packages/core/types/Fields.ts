@@ -1,5 +1,12 @@
 import { ReactElement } from "react";
 import { DefaultComponentProps, Metadata, UiState } from ".";
+import { Extensions } from "@tiptap/react";
+import {
+  RichTextControls,
+  RichTextMenuConfig,
+  RichTextSelectOptions,
+  RichTextSelector,
+} from "../components/RichTextEditor/types";
 
 type FieldOption = {
   label: string;
@@ -43,6 +50,17 @@ export type SelectField = BaseField & {
 export type RadioField = BaseField & {
   type: "radio";
   options: FieldOptions;
+};
+
+export type RichtextField = BaseField & {
+  type: "richtext";
+  contentEditable?: boolean;
+  menu?: RichTextMenuConfig;
+  inlineMenu?: RichTextMenuConfig;
+  textSelectOptions?: RichTextSelectOptions[];
+  selector?: RichTextSelector;
+  controls?: RichTextControls;
+  extensions?: Extensions;
 };
 
 export type ArrayField<
@@ -143,6 +161,7 @@ export type SlotField = BaseField & {
 
 export type Field<ValueType = any, UserField extends {} = {}> =
   | TextField
+  | RichtextField
   | NumberField
   | TextareaField
   | SelectField
