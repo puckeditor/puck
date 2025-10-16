@@ -4,6 +4,7 @@ import { PrivateAppState } from "../types/Internal";
 export const defaultAppState: PrivateAppState = {
   data: { content: [], root: {}, zones: {} },
   ui: {
+    disableHotKeys: false,
     leftSideBarVisible: true,
     rightSideBarVisible: true,
     arrayState: {},

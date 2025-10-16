@@ -431,6 +431,7 @@ function PuckLayout<
   const rightSideBarVisible = useAppStore(
     (s) => s.state.ui.rightSideBarVisible
   );
+  const disableHotKeys = useAppStore((s) => s.state.ui.disableHotKeys);
 
   const {
     width: leftWidth,
@@ -498,11 +499,11 @@ function PuckLayout<
     if (ready && iframe.enabled) {
       const frameDoc = getFrame();
 
-      if (frameDoc) {
+      if (frameDoc && !disableHotKeys) {
         return monitorHotkeys(frameDoc);
       }
     }
-  }, [ready, iframe.enabled]);
+  }, [ready, iframe.enabled, disableHotKeys]);
 
   usePreviewModeHotkeys();
 
