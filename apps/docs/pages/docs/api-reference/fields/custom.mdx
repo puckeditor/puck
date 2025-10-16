@@ -149,7 +149,7 @@ Set the value of the field and optionally update the [Puck UI state](/docs/api-r
 
 ## Optional params
 
-### contentEditable
+### `contentEditable`
 
 Enable inline text editing for this field. Only works if the value is a string. Defaults to `false`.
 
@@ -157,7 +157,7 @@ Enable inline text editing for this field. Only works if the value is a string. 
   When setting `contentEditable`, your [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) prop will be converted to an [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) when rendered inside [`<Puck>`](/docs/api-reference/components/puck) (but not [`<Render>`](/docs/api-reference/components/render)). When using TypeScript, change your `string` to  `string | ReactNode`.
 </Callout>
 
-```tsx {7, 10} copy
+```tsx {7, 10} showLineNumbers copy
 const config = {
   components: {
     Example: {
@@ -212,11 +212,11 @@ const config = {
   <Puck.Preview />
 </ConfigPreview>
 
-### key
+### `key`
 
 Assign a unique key to force the field to remount when using [`resolveFields`](/docs/api-reference/configuration/component-config#resolvefieldsdata-params) to resolve different custom field types on the same prop.
 
-```tsx {17, 19, 35, 37} showLineNumbers copy
+```tsx {17-21, 26-30} showLineNumbers copy
 const config = {
   components: {
     Example: {
@@ -236,16 +236,7 @@ const config = {
             prop: {
               type: "custom",
               key: "custom-text",
-              render: ({ onChange, value }) => (
-                <label>
-                  Text Input
-                  <input
-                    value={value}
-                    name={name}
-                    onChange={(e) => onChange(e.currentTarget.value)}
-                  />
-                </label>
-              ),
+              // ...
             },
           };
         } else {
@@ -254,18 +245,7 @@ const config = {
             prop: {
               type: "custom",
               key: "custom-number",
-              render: ({ value, onChange }) => {
-                return (
-                  <label>
-                    Number Input
-                    <input
-                      type="number"
-                      value={value}
-                      onChange={(e) => onChange(e.target.value)}
-                    />
-                  </label>
-                );
-              },
+              // ...
             },
           };
         }
