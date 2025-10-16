@@ -16,19 +16,11 @@ import { mapFields } from "./data/map-fields";
 export async function resolveAllData<
   Components extends DefaultComponents = DefaultComponents,
   RootProps extends Record<string, any> = DefaultRootFieldProps
->(
-  data: Partial<Data>,
-  config: Config,
-  metadata: Metadata = {},
-  onResolveStart?: (item: ComponentData) => void,
-  onResolveEnd?: (item: ComponentData) => void
-) {
+>(data: Partial<Data>, config: Config, metadata: Metadata = {}) {
   const defaultedData = defaultData(data);
 
   const resolveNode = async <T extends ComponentData | RootData>(_node: T) => {
     const node = toComponent(_node);
-
-    onResolveStart?.(node);
 
     const resolved = (
       await resolveComponentData(
@@ -46,8 +38,6 @@ export async function resolveAllData<
       { slot: ({ value }) => processContent(value) },
       config
     )) as T;
-
-    onResolveEnd?.(toComponent(resolvedDeep));
 
     return resolvedDeep;
   };
