@@ -233,7 +233,7 @@ const config = {
         if (data.props.isText) {
           return {
             ...params.fields,
-            title: {
+            prop: {
               type: "custom",
               key: "custom-text",
               render: ({ onChange, value }) => (
@@ -251,7 +251,7 @@ const config = {
         } else {
           return {
             ...params.fields,
-            title: {
+            prop: {
               type: "custom",
               key: "custom-number",
               render: ({ value, onChange }) => {
