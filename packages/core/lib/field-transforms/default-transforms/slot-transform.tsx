@@ -16,6 +16,7 @@ export const getSlotTransform = (
       render({
         allow: field?.type === "slot" ? field.allow : [],
         disallow: field?.type === "slot" ? field.disallow : [],
+        maxItems: field?.type === "slot" ? field.maxItems : undefined,
         ...dzProps,
         zone: propName,
         content,
