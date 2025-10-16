@@ -133,6 +133,7 @@ export type CustomField<Value extends any> = BaseField & {
   type: "custom";
   render: CustomFieldRender<Value>;
   contentEditable?: boolean;
+  key?: string;
 };
 
 export type SlotField = BaseField & {
