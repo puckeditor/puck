@@ -98,8 +98,6 @@ const useHotkeyStore = create<{
 );
 
 export const monitorHotkeys = (doc: Document) => {
-  console.log("monitorHotkeys");
-
   const onKeyDown = (e: KeyboardEvent) => {
     const key = keyCodeMap[e.code];
 
