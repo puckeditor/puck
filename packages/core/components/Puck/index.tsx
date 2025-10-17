@@ -27,7 +27,7 @@ import type {
   Metadata,
   AsFieldProps,
   DefaultComponentProps,
-  ComponentData,
+  HotkeyState,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -124,6 +124,7 @@ type PuckProps<
   };
   initialHistory?: InitialHistory;
   metadata?: Metadata;
+  hotkeys?: HotkeyState
 };
 
 const propsContext = createContext<Partial<PuckProps>>({});
@@ -159,6 +160,7 @@ function PuckProvider<
     metadata,
     onAction,
     fieldTransforms,
+    hotkeys,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -242,6 +244,7 @@ function PuckProvider<
 
     const newAppState = {
       ...defaultAppState,
+      hotkeys,
       data: {
         ...initialData,
         root: { ...initialData?.root, props: root.props },
@@ -431,7 +434,7 @@ function PuckLayout<
   const rightSideBarVisible = useAppStore(
     (s) => s.state.ui.rightSideBarVisible
   );
-  const disableHotKeys = useAppStore((s) => s.state.ui.disableHotKeys);
+  const enabledHotkeys = useAppStore((s) => s.state.hotkeys.enabled);
 
   const {
     width: leftWidth,
@@ -499,11 +502,11 @@ function PuckLayout<
     if (ready && iframe.enabled) {
       const frameDoc = getFrame();
 
-      if (frameDoc && !disableHotKeys) {
+      if (frameDoc && enabledHotkeys) {
         return monitorHotkeys(frameDoc);
       }
     }
-  }, [ready, iframe.enabled, disableHotKeys]);
+  }, [ready, iframe.enabled, enabledHotkeys]);
 
   usePreviewModeHotkeys();
 

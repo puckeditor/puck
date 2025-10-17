@@ -2,9 +2,9 @@ import { defaultViewports } from "../components/ViewportControls/default-viewpor
 import { PrivateAppState } from "../types/Internal";
 
 export const defaultAppState: PrivateAppState = {
+  hotkeys: { enabled: true },
   data: { content: [], root: {}, zones: {} },
   ui: {
-    disableHotKeys: false,
     leftSideBarVisible: true,
     rightSideBarVisible: true,
     arrayState: {},

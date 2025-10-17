@@ -98,6 +98,8 @@ const useHotkeyStore = create<{
 );
 
 export const monitorHotkeys = (doc: Document) => {
+  console.log("monitorHotkeys");
+
   const onKeyDown = (e: KeyboardEvent) => {
     const key = keyCodeMap[e.code];
 
@@ -169,12 +171,12 @@ export const monitorHotkeys = (doc: Document) => {
 };
 
 export const useMonitorHotkeys = () => {
-  const disableHotKeys = useAppStore((s) => s.state.ui.disableHotKeys)
+  const enabledHotkeys = useAppStore((s) => s.state.hotkeys.enabled)
 
   useEffect(() => {
-    if (disableHotKeys) return;
+    if (!enabledHotkeys) return;
     return monitorHotkeys(document);
-  }, [disableHotKeys]);
+  }, [enabledHotkeys]);
 };
 
 export const useHotkey = (combo: KeyMapStrict, cb: Function) => {
