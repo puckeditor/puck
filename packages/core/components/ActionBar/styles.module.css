@@ -92,3 +92,8 @@
 .ActionBar-group * {
   margin: 0;
 }
+
+.ActionBar-action:disabled {
+  cursor: default;
+  color: var(--puck-color-grey-05);
+}
