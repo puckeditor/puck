@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useMemo } from "react";
 import { DropZoneProps } from "../DropZone/types";
 import {
   ComponentData,
@@ -60,7 +60,12 @@ export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
     { className, style, content, config, metadata, as },
     ref
   ) {
-    const El = as ?? "div";
+    const Wrapper = useMemo(
+      () => config.overrides?.slot || "div",
+      [config.overrides]
+    );
+
+    const El = as ?? Wrapper;
 
     return (
       <El className={className} style={style} ref={ref}>
