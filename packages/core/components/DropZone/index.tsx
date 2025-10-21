@@ -555,6 +555,11 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     let zoneCompound = `${areaId}:${zone}`;
     let content = data?.content || [];
 
+    const Wrapper = useMemo(
+      () => config.overrides?.div || "div",
+      [config.overrides]
+    );
+
     // Register zones if running Render mode inside editor (i.e. previewMode === "interactive")
     useEffect(() => {
       // Only register zones, not slots
@@ -574,7 +579,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     }
 
     return (
-      <div className={className} style={style} ref={ref}>
+      <Wrapper className={className} style={style} ref={ref}>
         {content.map((item) => {
           const Component = config.components[item.type];
           if (Component) {
@@ -590,7 +595,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
 
           return null;
         })}
-      </div>
+      </Wrapper>
     );
   }
 );
