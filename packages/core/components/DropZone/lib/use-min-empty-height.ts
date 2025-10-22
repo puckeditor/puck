@@ -13,7 +13,7 @@ export const useMinEmptyHeight = ({
   ref,
 }: {
   zoneCompound: string;
-  userMinEmptyHeight: CSSProperties["minHeight"];
+  userMinEmptyHeight: CSSProperties["minHeight"] | number;
   ref: RefObject<HTMLDivElement | null>;
 }) => {
   const appStore = useAppStoreApi();
@@ -85,5 +85,9 @@ export const useMinEmptyHeight = ({
     }
   }, [ref.current, draggedItem, onDragFinished]);
 
-  return [prevHeight ? `${prevHeight}px` : userMinEmptyHeight, isAnimating];
+  const returnedMinHeight = isNaN(Number(userMinEmptyHeight))
+    ? userMinEmptyHeight
+    : `${userMinEmptyHeight}px`;
+
+  return [prevHeight ? `${prevHeight}px` : returnedMinHeight, isAnimating];
 };

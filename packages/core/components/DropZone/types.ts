@@ -6,7 +6,7 @@ export type DropZoneProps = {
   allow?: string[];
   disallow?: string[];
   style?: CSSProperties;
-  minEmptyHeight?: CSSProperties["minHeight"];
+  minEmptyHeight?: CSSProperties["minHeight"] | number;
   className?: string;
   collisionAxis?: DragAxis;
 };
