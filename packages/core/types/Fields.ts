@@ -55,7 +55,7 @@ export type ArrayField<
       ? Field<Props[0][SubPropName], UserField> | UserField
       : Field<Props[0][SubPropName], UserField>;
   };
-  defaultItemProps?: Props[0];
+  defaultItemProps?: Props[0] | ((index: number) => Props[0]);
   getItemSummary?: (item: Props[0], index?: number) => ReactNode;
   max?: number;
   min?: number;
@@ -97,9 +97,14 @@ export type ExternalFieldWithAdaptor<
   getItemSummary: (item: NotUndefined<Props>, index?: number) => ReactNode;
 };
 
+export type CacheOpts = {
+  enabled?: boolean;
+};
+
 export type ExternalField<Props extends any = { [key: string]: any }> =
   BaseField & {
     type: "external";
+    cache?: CacheOpts;
     placeholder?: string;
     fetchList: (params: {
       query: string;

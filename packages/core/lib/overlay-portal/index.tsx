@@ -30,13 +30,13 @@ export const registerOverlayPortal = (
     });
   };
 
-  if (disableDragOnFocus) {
-    el.addEventListener("focus", onFocus, { capture: true });
-    el.addEventListener("blur", onBlur, { capture: true });
-  } else if (disableDrag) {
+  if (disableDrag) {
     el.addEventListener("pointerdown", stopPropagation, {
       capture: true,
     });
+  } else if (disableDragOnFocus) {
+    el.addEventListener("focus", onFocus, { capture: true });
+    el.addEventListener("blur", onBlur, { capture: true });
   }
 
   el.setAttribute("data-puck-overlay-portal", "true");
@@ -46,13 +46,13 @@ export const registerOverlayPortal = (
       capture: true,
     });
 
-    if (disableDragOnFocus) {
-      el.removeEventListener("focus", onFocus, { capture: true });
-      el.removeEventListener("blur", onFocus, { capture: true });
-    } else if (disableDrag) {
+    if (disableDrag) {
       el.removeEventListener("pointerdown", stopPropagation, {
         capture: true,
       });
+    } else if (disableDragOnFocus) {
+      el.removeEventListener("focus", onFocus, { capture: true });
+      el.removeEventListener("blur", onBlur, { capture: true });
     }
 
     el.removeAttribute("data-puck-overlay-portal");

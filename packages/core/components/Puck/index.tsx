@@ -25,6 +25,9 @@ import type {
   Config,
   Data,
   Metadata,
+  AsFieldProps,
+  DefaultComponentProps,
+  ComponentData,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -50,6 +53,7 @@ import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
 import { DefaultOverride } from "../DefaultOverride";
 import { useInjectGlobalCss } from "../../lib/use-inject-css";
 import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
+import { useDeleteHotkeys } from "../../lib/use-delete-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
 import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
@@ -66,6 +70,8 @@ import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { populateIds } from "../../lib/data/populate-ids";
+import { toComponent } from "../../lib/data/to-component";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -226,14 +232,19 @@ function PuckProvider<
 
     const defaultedRootProps = {
       ...config.root?.defaultProps,
-      ...rootProps,
+      ...(rootProps as AsFieldProps<DefaultComponentProps> | AsFieldProps<any>),
     };
+
+    const root = populateIds(
+      toComponent({ ...initialData?.root, props: defaultedRootProps }),
+      config
+    );
 
     const newAppState = {
       ...defaultAppState,
       data: {
         ...initialData,
-        root: { ...initialData?.root, props: defaultedRootProps },
+        root: { ...initialData?.root, props: root.props },
         content: initialData.content || [],
       },
       ui: {
@@ -361,7 +372,7 @@ function PuckProvider<
   const previousData = useRef<Data>(null);
 
   useEffect(() => {
-    appStore.subscribe(
+    return appStore.subscribe(
       (s) => s.state.data,
       (data) => {
         if (onChange) {
@@ -373,7 +384,7 @@ function PuckProvider<
         }
       }
     );
-  }, []);
+  }, [onChange]);
 
   useRegisterPermissionsSlice(appStore, permissions);
 
@@ -481,6 +492,7 @@ function PuckLayout<
   const ready = useAppStore((s) => s.status === "READY");
 
   useMonitorHotkeys();
+  useDeleteHotkeys();
 
   useEffect(() => {
     if (ready && iframe.enabled) {

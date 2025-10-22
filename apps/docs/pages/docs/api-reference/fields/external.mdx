@@ -55,6 +55,7 @@ const config = {
 | ----------------------------------------- | -------------------------------------------- | ---------- | -------- |
 | [`type`](#type)                           | `type: "external"`                           | "external" | Required |
 | [`fetchList()`](#fetchlistqueryparams)    | `fetchList: async () => []`                  | Function   | Required |
+| [`cache`](#cache)                         | `cache: { enabled: true }`                   | Object     | -        |
 | [`filterFields`](#filterfields)           | `{ "rating": { type: "number" } }`           | Object     | -        |
 | [`getItemSummary()`](#getitemsummaryitem) | `getItemSummary: async ({ title }) => title` | Function   | -        |
 | [`initialFilters`](#initialfilters)       | `{ "rating": 1 }`                            | Object     | -        |
@@ -139,6 +140,36 @@ The search query when using [`showSearch`](#showsearch).
 An object describing the filters configured by [`filterFields`](#filterfields).
 
 ## Optional params
+
+### `cache`
+
+Puck will automatically cache the output of the [`fetchList()`](#fetchlistqueryparams) function in memory.
+
+You can disable this behaviour by setting `cache: { enabled: false }` on your field.
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        data: {
+          type: "external",
+          cache: { enabled: true },
+          fetchList: async () => {
+            // ... fetch data from a third party API, or other async source
+
+            return [
+              { title: "Hello, world", description: "Lorem ipsum 1" },
+              { title: "Goodbye, world", description: "Lorem ipsum 2" },
+            ];
+          },
+        },
+      },
+      // ...
+    },
+  },
+};
+```
 
 ### `filterFields`
 
