@@ -786,7 +786,8 @@ const config = {
     Example: {
       fields: {
         data: {
-          type: "external",
+          type: "external"
+          cache: { enabled: false }
           fetchList: async ({ query }) => {
             const items = [
               { title: "Apple", description: "Lorem ipsum 1" },
