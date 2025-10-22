@@ -169,7 +169,7 @@ const config = {
 
 ### `getItemSummary(item, index)`
 
-Get a label of each item in the array. Can return a string or ReactElement for rich content.
+Get a label of each item in the array. Returns a [ReactNode](https://react.dev/learn/typescript#typing-children).
 
 ```tsx {10} copy
 const config = {
@@ -215,9 +215,9 @@ const config = {
   }}
 />
 
-#### Using ReactElement for rich summaries
+#### Using JSX for rich summaries
 
-The `getItemSummary` function can return a ReactElement for more complex item summaries with styling and additional information.
+The `getItemSummary` function returns a [ReactNode](https://react.dev/learn/typescript#typing-children), which means you can use JSX for item summaries that include HTML elements and styling.
 
 ```tsx {11-18} copy
 const config = {
@@ -232,9 +232,9 @@ const config = {
           },
           getItemSummary: (item, i) =>
             item.title && item.description ? (
-              <>
+              <p>
                 {item.title} ({item.description})
-              </>
+              </p>
             ) : (
               `Feature #${i}`
             ),
@@ -258,9 +258,9 @@ const config = {
         },
         getItemSummary: (item, i) =>
           item.title && item.description ? (
-            <>
+            <p>
               {item.title} ({item.description})
-            </>
+            </p>
           ) : (
             `Feature #${i}`
           ),
