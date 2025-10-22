@@ -4,27 +4,7 @@ import { ConfigPreview } from "@/docs/components/Preview";
 
 Select data from a list, typically populated via a third-party API. Extends [Base](base).
 
-<ConfigPreview
-  label="Example"
-  componentConfig={{
-    fields: {
-      data: {
-        type: "external",
-        fetchList: async () => {
-          return [
-            { title: "Hello, world", description: "Lorem ipsum 1" },
-            { title: "Goodbye, world", description: "Lorem ipsum 2" },
-          ];
-        },
-      },
-    },
-    render: ({ data }) => {
-      return <p style={{ margin: 0 }}>{data?.title || "No data selected"}</p>;
-    },
-  }}
-/>
-
-```tsx {5-15} copy
+```tsx {5-16} copy
 const config = {
   components: {
     Example: {
@@ -34,10 +14,11 @@ const config = {
           fetchList: async () => {
             // ... fetch data from a third party API, or other async source
 
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
         },
       },
@@ -48,6 +29,28 @@ const config = {
   },
 };
 ```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      data: {
+        type: "external",
+        cache: { enabled: false },
+        fetchList: async () => {
+          const items = [
+            { title: "Hello, world", description: "Lorem ipsum 1" },
+            { title: "Goodbye, world", description: "Lorem ipsum 2" },
+          ];
+          return { items };
+        },
+      },
+    },
+    render: ({ data }) => {
+      return <p>{data?.title || "No data selected"}</p>;
+    },
+  }}
+/>
 
 ## Params
 
@@ -62,9 +65,11 @@ const config = {
 | [`initialQuery`](#initialquery)           | `initialQuery: "Hello, world"`               | String     | -        |
 | [`mapProp()`](#mappropitem)               | `mapProp: async ({ title }) => title`        | Function   | -        |
 | [`mapRow()`](#maprowitem)                 | `mapRow: async ({ title }) => title`         | Function   | -        |
+| [`pagination`](#pagination)               | `pagination: { enabled: true }`              | Object     | -        |
 | [`placeholder`](#placeholder)             | `placeholder: "Select content"`              | String     | -        |
 | [`renderFooter()`](#renderfooterprops)    | `renderFooter: (props) => <p>Hello</p>`      | Function   | -        |
 | [`showSearch`](#showsearch)               | `showSearch: true`                           | Boolean    | -        |
+| [`sortableColumns`](#sortablecolumns)     | `sortableColumns: ["title", "date"]`         | String[]   | -        |
 
 ## Required params
 
@@ -80,10 +85,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async () => {
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
         },
       },
@@ -95,11 +101,11 @@ const config = {
 
 ### `fetchList(queryParams)`
 
-Return a promise with a list of objects to be rendered in a tabular format via the external input modal.
+Return a promise with an object containing `items` (an array of objects to be rendered in a tabular format).
 
 The table will only render strings and numbers.
 
-```tsx {7-14} copy
+```tsx {7-15} copy
 const config = {
   components: {
     Example: {
@@ -109,10 +115,11 @@ const config = {
           fetchList: async () => {
             // ... fetch data from a third party API, or other async source
 
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
         },
       },
@@ -126,10 +133,13 @@ const config = {
 
 The parameters passed to the `fetchList` method based on your field configuration.
 
-| Param                 | Example             | Type   |
-| --------------------- | ------------------- | ------ |
-| [`query`](#query)     | `"My Query"`        | String |
-| [`filters`](#filters) | `"{ "rating": 1 }"` | Object |
+| Param                 | Example                                 | Type   |
+| --------------------- | --------------------------------------- | ------ |
+| [`query`](#query)     | `"My Query"`                            | String |
+| [`filters`](#filters) | `"{ "rating": 1 }"`                     | Object |
+| [`page`](#page)       | `1`                                     | Number |
+| [`limit`](#limit)     | `10`                                    | Number |
+| [`sort`](#sort)       | `{ column: "title", direction: "asc" }` | Object |
 
 ##### `query`
 
@@ -138,6 +148,18 @@ The search query when using [`showSearch`](#showsearch).
 ##### `filters`
 
 An object describing the filters configured by [`filterFields`](#filterfields).
+
+##### `page`
+
+The current page number (1-indexed). Only provided when pagination is enabled.
+
+##### `limit`
+
+The number of items per page. Only provided when pagination is enabled.
+
+##### `sort`
+
+An object describing the current sort state with `column` (string) and `direction` ("asc" | "desc"). Only provided when a sortable column is actively sorted.
 
 ## Optional params
 
@@ -158,10 +180,11 @@ const config = {
           fetchList: async () => {
             // ... fetch data from a third party API, or other async source
 
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
         },
       },
@@ -175,7 +198,7 @@ const config = {
 
 An object describing filters for your query using the [Fields API](/docs/api-reference/fields)
 
-```tsx {13-17} copy
+```tsx {14-18} copy
 const config = {
   components: {
     Example: {
@@ -183,10 +206,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async ({ filters }) => {
-            return [
+            const items = [
               { title: "Apple", description: "Lorem ipsum 1", rating: 5 },
               { title: "Orange", description: "Lorem ipsum 2", rating: 3 },
             ].filter((item) => item.rating >= (filters.rating || 0));
+            return { items };
           },
           filterFields: {
             rating: {
@@ -207,13 +231,15 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async ({ filters }) => {
-          return [
+          const items = [
             { title: "Apple", description: "Lorem ipsum 1", rating: 5 },
             { title: "Orange", description: "Lorem ipsum 2", rating: 3 },
           ].filter((item) =>
             item.rating >= (filters.rating || 0)
-          )
+          );
+          return { items };
         },
         filterFields: {
           rating: {
@@ -233,7 +259,7 @@ const config = {
 
 Get the label to show once the item is selected.
 
-```tsx {13} copy
+```tsx {14} copy
 const config = {
   components: {
     Example: {
@@ -241,10 +267,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async () => {
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
           getItemSummary: (item) => item.title,
         },
@@ -261,11 +288,13 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async () => {
-          return [
+          const items = [
             { title: "Hello, world", description: "Lorem ipsum 1" },
             { title: "Goodbye, world", description: "Lorem ipsum 2" },
           ];
+          return { items };
         },
         getItemSummary: (item) => item.title,
       },
@@ -286,7 +315,7 @@ const config = {
 
 The initial filter values when using [`filterFields`](#filterfields).
 
-```tsx {18-20} copy
+```tsx {27-29} copy
 const config = {
   components: {
     Example: {
@@ -294,10 +323,19 @@ const config = {
         data: {
           type: "external",
           fetchList: async ({ filters }) => {
-            return [
-              { title: "Apple", description: "Lorem ipsum 1", rating: 5 },
-              { title: "Orange", description: "Lorem ipsum 2", rating: 3 },
+            const items = [
+              {
+                title: "Hello, world",
+                description: "Lorem ipsum 1",
+                rating: 5,
+              },
+              {
+                title: "Goodbye, world",
+                description: "Lorem ipsum 2",
+                rating: 2,
+              },
             ].filter((item) => item.rating >= (filters.rating || 0));
+            return { items };
           },
           filterFields: {
             rating: {
@@ -321,13 +359,21 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async ({ filters }) => {
-          return [
-            { title: "Apple", description: "Lorem ipsum 1", rating: 5 },
-            { title: "Orange", description: "Lorem ipsum 2", rating: 3 },
-          ].filter((item) =>
-            item.rating >= (filters.rating || 0)
-          )
+          const items = [
+              {
+                title: "Hello, world",
+                description: "Lorem ipsum 1",
+                rating: 5,
+              },
+              {
+                title: "Goodbye, world",
+                description: "Lorem ipsum 2",
+                rating: 2,
+              },
+            ].filter((item) => item.rating >= (filters.rating || 0));
+            return { items };
         },
         filterFields: {
           rating: {
@@ -350,26 +396,26 @@ const config = {
 
 Set an initial query when using showing a search input with [`showSearch`](#showsearch).
 
-```tsx {16} copy
+```tsx {8} copy
 const config = {
   components: {
     Example: {
       fields: {
         data: {
           type: "external",
+          showSearch: true,
+          initialQuery: "Apple",
           fetchList: async ({ query }) => {
-            return [
+            const items = [
               { title: "Apple", description: "Lorem ipsum 1" },
               { title: "Orange", description: "Lorem ipsum 2" },
             ].filter((item) => {
               // ...
             });
+            return { items };
           },
-          showSearch: true,
-          initialQuery: "Apple",
         },
       },
-      // ...
     },
   },
 };
@@ -381,34 +427,30 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
+        showSearch: true,
+        initialQuery: "apple",
         fetchList: async ({ query }) => {
-          return [
+          const items = [
             {
               title: "Apple",
-              description:
-                "An apple is a round, edible fruit produced by an apple tree.",
+              description: "An apple is a round, edible fruit produced by an apple tree.",
             },
             {
               title: "Orange",
-              description:
-                "An orange is a fruit of various citrus species in the family Rutaceae.",
+              description: "An orange is a fruit of various citrus species in the family Rutaceae.",
             },
           ].filter((item) => {
-            if (!query) return item;
+            if (!query) return true;
 
             const queryLowercase = query.toLowerCase();
-
-            if (item.title.toLowerCase().indexOf(queryLowercase) > -1) {
-              return item;
-            }
-
-            if (item.description.toLowerCase().indexOf(queryLowercase) > -1) {
-              return item;
-            }
-          })
+            return (
+              item.title.toLowerCase().includes(queryLowercase) ||
+              item.description.toLowerCase().includes(queryLowercase)
+            );
+          });
+          return { items };
         },
-        showSearch: true,
-        initialQuery: 'apple'
       },
     },
     render: ({ data }) => {
@@ -422,7 +464,7 @@ const config = {
 
 Modify the shape of the item selected by the user in the table before writing to the page data.
 
-```tsx {13} copy
+```tsx {14} copy
 const config = {
   components: {
     Example: {
@@ -430,10 +472,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async () => {
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
           mapProp: (item) => item.description,
         },
@@ -453,11 +496,13 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async () => {
-          return [
+          const items = [
             { title: "Hello, world", description: "Lorem ipsum 1" },
             { title: "Goodbye, world", description: "Lorem ipsum 2" },
           ];
+          return { items };
         },
         mapProp: (item) => item.description,
       },
@@ -472,7 +517,7 @@ const config = {
 
 Modify the shape of the item before rendering it in the table. This will not affect the selected data.
 
-```tsx {13} copy
+```tsx {14} copy
 const config = {
   components: {
     Example: {
@@ -480,10 +525,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async () => {
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
           mapRow: (item) => ({ ...item, title: item.title.toUpperCase() }),
         },
@@ -503,11 +549,13 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async () => {
-          return [
+          const items = [
             { title: "Hello, world", description: "Lorem ipsum 1" },
             { title: "Goodbye, world", description: "Lorem ipsum 2" },
           ];
+          return { items };
         },
         mapRow: (item) => ({ ...item, title: item.title.toUpperCase() }),
       },
@@ -522,7 +570,7 @@ const config = {
 
 Set the placeholder text when no item is selected.
 
-```tsx {13} copy
+```tsx {14} copy
 const config = {
   components: {
     Example: {
@@ -530,10 +578,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async () => {
-            return [
+            const items = [
               { title: "Apple", description: "Lorem ipsum 1" },
               { title: "Orange", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
           placeholder: "Pick your favorite fruit",
         },
@@ -550,19 +599,13 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async () => {
-          return [
-            {
-              title: "Apple",
-              description:
-                "An apple is a round, edible fruit produced by an apple tree.",
-            },
-            {
-              title: "Orange",
-              description:
-                "An orange is a fruit of various citrus species in the family Rutaceae.",
-            },
+          const items = [
+            { title: "Apple", description: "Lorem ipsum 1" },
+            { title: "Orange", description: "Lorem ipsum 2" },
           ];
+          return { items };
         },
         placeholder: "Pick your favorite fruit",
       },
@@ -577,7 +620,7 @@ const config = {
 
 Customize what will be displayed in the footer of the modal.
 
-```tsx {13-15} copy
+```tsx {14-16} copy
 const config = {
   components: {
     Example: {
@@ -585,10 +628,11 @@ const config = {
         data: {
           type: "external",
           fetchList: async () => {
-            return [
+            const items = [
               { title: "Hello, world", description: "Lorem ipsum 1" },
               { title: "Goodbye, world", description: "Lorem ipsum 2" },
             ];
+            return { items };
           },
           renderFooter: ({ items }) => (
             <b>Custom footer with {items.length} results</b>
@@ -610,11 +654,13 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async () => {
-          return [
+          const items = [
             { title: "Hello, world", description: "Lorem ipsum 1" },
             { title: "Goodbye, world", description: "Lorem ipsum 2" },
           ];
+          return { items };
         },
         renderFooter: ({ items }) => (
           <b>Custom footer with {items.length} results</b>
@@ -627,11 +673,114 @@ const config = {
   }}
 />
 
+### `pagination`
+
+Configure server-side pagination for the external data list. When enabled, the `fetchList` function will receive `page` and `limit` parameters, and your server/API should handle pagination logic.
+
+Use `pagination.initialPage` and `pagination.initialPageSize` to set the initial page and page size. If these are not set, the default parameters in your `fetchList` function signature will be used.
+
+```tsx {14-20} {22-27} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        data: {
+          type: "external",
+          fetchList: async ({ query, page = 1, limit = 10 }) => {
+            const items = [
+              { title: "Item 1", description: "Lorem ipsum 1" },
+              { title: "Item 2", description: "Lorem ipsum 2" },
+              { title: "Item 3", description: "Lorem ipsum 3" },
+              // ... more items
+            ];
+            const startIndex = (page - 1) * limit;
+            const endIndex = startIndex + limit;
+            const paginatedItems = items.slice(startIndex, endIndex);
+            return {
+              items: paginatedItems,
+              total: totalItems,
+            };
+          },
+          pagination: {
+            enabled: true,
+            pageSizeOptions: [5, 10, 25],
+            initialPage: 1,
+            initialPageSize: 10,
+          },
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      data: {
+        type: "external",
+        cache: { enabled: false },
+        fetchList: async ({ page = 1, limit = 3 }) => {
+          const items = Array.from({ length: 100 }, (_, i) => ({
+            title: `Item ${i + 1}`,
+            description: `Lorem ipsum ${i + 1}`,
+          }));
+          const totalItems = items.length;
+          const startIndex = (page - 1) * limit;
+          const endIndex = startIndex + limit;
+          const paginatedItems = items.slice(startIndex, endIndex);
+          return {
+            items: paginatedItems,
+            total: totalItems,
+          };
+        },
+        pagination: {
+          enabled: true,
+          pageSizeOptions: [5, 10, 25],
+          initialPage: 1,
+          initialPageSize: 10,
+        },
+      },
+    },
+    render: ({ data }) => {
+      return <p>{data?.title || "No data selected"}</p>;
+    },
+
+}}
+/>
+
+#### Pagination params
+
+| Param                                   | Example                        | Type     | Status |
+| --------------------------------------- | ------------------------------ | -------- | ------ |
+| [`enabled`](#enabled)                   | `enabled: true`                | Boolean  | -      |
+| [`pageSizeOptions`](#pagesizeoptions)   | `pageSizeOptions: [5, 10, 25]` | Number[] | -      |
+| [`initialPage`](#initialpage-1)         | `initialPage: 1`               | Number   | -      |
+| [`initialPageSize`](#initialpagesize-1) | `initialPageSize: 10`          | Number   | -      |
+
+##### `enabled`
+
+Enable or disable server-side pagination. When enabled, `fetchList` will receive `page` and `limit` parameters. Defaults to `false`.
+
+##### `pageSizeOptions`
+
+An array of page size options for the user to choose from. Defaults to `[10, 25, 50]`.
+
+##### `initialPage`
+
+The initial page number (1-indexed) to display when the modal opens. If not set, the default parameter value from your `fetchList` function will be used (typically `1`).
+
+##### `initialPageSize`
+
+The initial number of items per page to display when the modal opens. If not set, the default parameter value from your `fetchList` function will be used (typically `10`).
+
 ### `showSearch`
 
 Show a search input, the value of which will be passed to `fetchList` as the `query` param.
 
-```tsx {15} copy
+```tsx {16} copy
 const config = {
   components: {
     Example: {
@@ -639,12 +788,13 @@ const config = {
         data: {
           type: "external",
           fetchList: async ({ query }) => {
-            return [
+            const items = [
               { title: "Apple", description: "Lorem ipsum 1" },
               { title: "Orange", description: "Lorem ipsum 2" },
             ].filter((item) => {
               // ...
             });
+            return { items };
           },
           showSearch: true,
         },
@@ -661,8 +811,9 @@ const config = {
     fields: {
       data: {
         type: "external",
+        cache: { enabled: false },
         fetchList: async ({ query }) => {
-          return [
+          const items = [
             {
               title: "Apple",
               description:
@@ -685,9 +836,84 @@ const config = {
             if (item.description.toLowerCase().indexOf(queryLowercase) > -1) {
               return item;
             }
-          })
+          });
+          return { items };
         },
         showSearch: true,
+      },
+    },
+    render: ({ data }) => {
+      return <p>{data?.title || "No data selected"}</p>;
+    },
+
+}}
+/>
+
+### `sortableColumns`
+
+An array of column keys that can be sorted by the user. When a sortable column is clicked, `fetchList` will receive a `sort` parameter with `{ column: string, direction: "asc" | "desc" }`. Your server/API should handle the sorting logic.
+
+```tsx {13-20} {23} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        data: {
+          type: "external",
+          fetchList: async ({ sort }) => {
+            const items = [
+              { title: "Banana", rating: 3, date: "2024-01-01" },
+              { title: "Apple", rating: 5, date: "2024-02-15" },
+              { title: "Orange", rating: 4, date: "2024-03-20" },
+            ];
+            if (sort) {
+              items.sort((a, b) => {
+                const aVal = a[sort.column];
+                const bVal = b[sort.column];
+                const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+                return sort.direction === "asc" ? comparison : -comparison;
+              });
+            }
+            return { items };
+          },
+          sortableColumns: ["title", "date"],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      data: {
+        type: "external",
+        cache: { enabled: false },
+        pagination: {
+              enabled: false,
+        },
+        fetchList: async ({ sort }) => {
+          const items = [
+            { title: "Banana", rating: 3, date: "2024-01-01" },
+            { title: "Apple", rating: 5, date: "2024-02-15" },
+            { title: "Orange", rating: 4, date: "2024-03-20" },
+          ];
+
+          if (sort) {
+            items.sort((a, b) => {
+              const aVal = a[sort.column];
+              const bVal = b[sort.column];
+              const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+              return sort.direction === "asc" ? comparison : -comparison;
+            });
+          }
+
+          return { items };
+        },
+        sortableColumns: ["title", "date"],
       },
     },
     render: ({ data }) => {

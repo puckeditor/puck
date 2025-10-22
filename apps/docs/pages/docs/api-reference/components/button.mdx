@@ -1,0 +1,192 @@
+---
+title: <Button>
+---
+
+# \<Button\>
+
+Render a styled button component used throughout the Puck UI.
+
+```tsx copy
+import { Button } from "@measured/puck";
+
+export function MyComponent() {
+  return <Button onClick={() => console.log("clicked")}>Click me</Button>;
+}
+```
+
+## Props
+
+| Prop                      | Example                        | Type                                  | Status   |
+| ------------------------- | ------------------------------ | ------------------------------------- | -------- |
+| [`children`](#children)   | `children: "Click me"`         | ReactNode                             | Required |
+| [`onClick`](#onclick)     | `onClick: () => {}`            | Function                              | -        |
+| [`variant`](#variant)     | `variant: "primary"`           | "primary" \| "secondary" \| "outline" | -        |
+| [`type`](#type)           | `type: "submit"`               | "button" \| "submit" \| "reset"       | -        |
+| [`size`](#size)           | `size: "large"`                | "medium" \| "large"                   | -        |
+| [`href`](#href)           | `href: "/path"`                | String                                | -        |
+| [`newTab`](#newtab)       | `newTab: true`                 | Boolean                               | -        |
+| [`disabled`](#disabled)   | `disabled: true`               | Boolean                               | -        |
+| [`loading`](#loading)     | `loading: true`                | Boolean                               | -        |
+| [`fullWidth`](#fullwidth) | `fullWidth: true`              | Boolean                               | -        |
+| [`icon`](#icon)           | `icon: <Icon />`               | ReactNode                             | -        |
+| [`tabIndex`](#tabindex)   | `tabIndex: 0`                  | Number                                | -        |
+| [`className`](#classname) | `className: "my-custom-class"` | String                                | -        |
+
+## Required props
+
+### `children`
+
+The content to display inside the button.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button>Click me</Button>;
+}
+```
+
+## Optional props
+
+### `onClick`
+
+A callback function that triggers when the button is clicked. Can be synchronous or return a Promise. When a Promise is returned, the button will automatically show a loading spinner until the Promise resolves.
+
+```tsx {2-4} copy
+export function MyComponent() {
+  return (
+    <Button
+      onClick={async () => {
+        await fetch("/api/save");
+      }}
+    >
+      Save
+    </Button>
+  );
+}
+```
+
+### `variant`
+
+The visual style of the button. Defaults to `"primary"`.
+
+- `"primary"` - Blue background with white text
+- `"secondary"` - Transparent background with colored border
+- `"outline"` - White background with grey border
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button variant="secondary">Click me</Button>;
+}
+```
+
+### `type`
+
+The HTML button type attribute. Only applies when `href` is not provided.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button type="submit">Submit form</Button>;
+}
+```
+
+### `size`
+
+The size of the button. Defaults to `"medium"`.
+
+- `"medium"` - Standard button size (34px min-height)
+- `"large"` - Larger button size with more padding
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button size="large">Click me</Button>;
+}
+```
+
+### `href`
+
+When provided, renders the button as an anchor tag (`<a>`) instead of a button.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button href="/dashboard">Go to dashboard</Button>;
+}
+```
+
+### `newTab`
+
+Open the link in a new tab. Only applies when `href` is provided.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <Button href="https://example.com" newTab>
+      Open link
+    </Button>
+  );
+}
+```
+
+### `disabled`
+
+Disable the button, preventing user interaction.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button disabled>Cannot click</Button>;
+}
+```
+
+### `loading`
+
+Show a loading spinner inside the button. The button is automatically disabled while loading.
+
+```tsx {4} copy
+export function MyComponent() {
+  const [loading, setLoading] = useState(false);
+
+  return <Button loading={loading}>Save</Button>;
+}
+```
+
+Note: When using an async `onClick` handler, the loading state is managed automatically.
+
+### `fullWidth`
+
+Make the button take up the full width of its container.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button fullWidth>Full width button</Button>;
+}
+```
+
+### `icon`
+
+Display an icon inside the button, positioned before the text.
+
+```tsx {1,4} copy
+import { Save } from "lucide-react";
+
+export function MyComponent() {
+  return <Button icon={<Save size={16} />}>Save</Button>;
+}
+```
+
+### `tabIndex`
+
+Set the tab index for keyboard navigation.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button tabIndex={0}>Click me</Button>;
+}
+```
+
+### `className`
+
+Add a custom CSS class to the button for additional styling.
+
+```tsx {2} copy
+export function MyComponent() {
+  return <Button className="my-custom-button">Click me</Button>;
+}
+```

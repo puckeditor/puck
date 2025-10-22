@@ -12,38 +12,7 @@ If you want to provide the user a way to select the data, you can use the [`exte
 
 The [`external` field type](/docs/api-reference/fields/external) allows users to select tabular data from a third-party data source, like a headless CMS. This will load the data once and save it into the [data payload](/docs/api-reference/data-model/data).
 
-<ConfigPreview
-  label="Example"
-  componentConfig={{
-    fields: {
-      data: {
-        type: "external",
-        getItemSummary: (item) => item.title,
-        fetchList: async () => {
-          return [
-            { title: "Hello, world", description: "Lorem ipsum 1" },
-            { title: "Goodbye, world", description: "Lorem ipsum 2" },
-          ];
-        },
-      },
-    },
-    render: ({ data }) => {
-      if (!data) {
-        return "No data selected";
-      }
-
-      return (
-        <>
-          <b>{data.title}</b>
-          <p>{data.description}</p>
-        </>
-      );
-    },
-
-}}
-/>
-
-```tsx {5-17} copy
+```tsx {5-16} copy
 const config = {
   components: {
     Example: {
@@ -53,12 +22,11 @@ const config = {
           fetchList: async () => {
             // Query an API for a list of items
             const items = await fetch(`/api/items`).then((res) => res.json());
-            // [
+            // const items = [
             //   { title: "Hello, world", description: "Lorem ipsum 1" },
             //   { title: "Goodbye, world", description: "Lorem ipsum 2" },
             // ];
-
-            return items;
+            return { items };
           },
         },
       },
@@ -79,7 +47,39 @@ const config = {
 };
 ```
 
-You can also use the [`showSearch` parameter](/docs/api-reference/fields/external#showsearch) to show a search input to the user.
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      data: {
+        type: "external",
+        getItemSummary: (item) => item.title,
+        fetchList: async () => {
+          const items = [
+            { title: "Hello, world", description: "Lorem ipsum 1" },
+            { title: "Goodbye, world", description: "Lorem ipsum 2" },
+          ];
+          return { items };
+        },
+      },
+    },
+    render: ({ data }) => {
+      if (!data) {
+        return "No data selected";
+      }
+
+      return (
+        <>
+          <b>{data.title}</b>
+          <p>{data.description}</p>
+        </>
+      );
+    },
+
+}}
+/>
+
+You can also use the [`showSearch` parameter](/docs/api-reference/fields/external#showsearch), [`sortableColumns` parameter](/docs/api-reference/fields/external#sortablecolumns), and [`pagination` parameter](/docs/api-reference/fields/external#pagination) to customize the external data source.
 
 ## Data syncing
 
@@ -87,7 +87,7 @@ To keep the data in sync with the external source, we can combine the `external`
 
 This technique re-fetches the content every time the page is loaded, or the [`resolveAllData` utility](/docs/api-reference/functions/resolve-all-data) is called.
 
-```tsx showLineNumbers {19-37} /id: 0/1 /id: 1/ copy
+```tsx showLineNumbers {18-36} /id: 0/1 /id: 1/ copy
 const config = {
   components: {
     Example: {
@@ -97,12 +97,11 @@ const config = {
           fetchList: async () => {
             // Query an API for a list of items
             const items = await fetch(`/api/items`).then((res) => res.json());
-            // [
+            // const items = [
             //   { title: "Hello, world", id: 0 },
             //   { title: "Goodbye, world", id: 1 },
             // ];
-
-            return items;
+            return { items };
           },
         },
       },
@@ -143,10 +142,12 @@ Hybrid authoring enables users to edit fields inline, or populate those fields w
         type: "external",
         getItemSummary: (item) => item.title,
         fetchList: async () => {
-          return [
-            { title: "Hello, world", description: "Lorem ipsum 1" },
-            { title: "Goodbye, world", description: "Lorem ipsum 2" },
-          ];
+          return {
+            items: [
+              { title: "Hello, world", description: "Lorem ipsum 1" },
+              { title: "Goodbye, world", description: "Lorem ipsum 2" },
+            ],
+          };
         },
       },
       title: {

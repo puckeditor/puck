@@ -4,22 +4,42 @@ import {
   useState,
   useCallback,
   isValidElement,
+  useRef,
 } from "react";
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { ExternalField } from "../../types";
-import { Link, Search, SlidersHorizontal, Unlock } from "lucide-react";
+import {
+  Link,
+  Search,
+  SlidersHorizontal,
+  Unlock,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { Modal } from "../Modal";
 import { Heading } from "../Heading";
 import { Loader } from "../Loader";
 import { Button } from "../Button";
 import { AutoFieldPrivate } from "../AutoField";
 import { IconButton } from "../IconButton";
+import { Pagination, DEFAULT_PAGE_SIZE_OPTIONS } from "../Pagination";
 
 const getClassName = getClassNameFactory("ExternalInput", styles);
 const getClassNameModal = getClassNameFactory("ExternalInputModal", styles);
 
 const dataCache: Record<string, any> = {};
+
+const getDefaultPageSize = (
+  initialPageSize: number | undefined,
+  pageSizeOptions: number[] | undefined
+): number => {
+  const options = pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  if (initialPageSize !== undefined && options.includes(initialPageSize)) {
+    return initialPageSize;
+  }
+  return options[0];
+};
 
 export const ExternalInput = ({
   field,
@@ -44,6 +64,7 @@ export const ExternalInput = ({
   const { enabled: shouldCacheData } = field.cache ?? { enabled: true };
 
   const [data, setData] = useState<Record<string, any>[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [isOpen, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -52,9 +73,25 @@ export const ExternalInput = ({
   const [filters, setFilters] = useState(field.initialFilters || {});
   const [filtersToggled, setFiltersToggled] = useState(hasFilterFields);
 
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const isPaginationEnabled = field.pagination?.enabled !== false;
+
+  const initialPage = field.pagination?.initialPage ?? 1;
+  const initialPageSize = getDefaultPageSize(
+    field.pagination?.initialPageSize,
+    field.pagination?.pageSizeOptions
+  );
+
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [pageSize, setPageSize] = useState(initialPageSize);
+
   const mappedData = useMemo(() => {
     return data.map(mapRow);
-  }, [data]);
+  }, [data, mapRow]);
+
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   const keys = useMemo(() => {
     const validKeys: Set<string> = new Set();
@@ -76,47 +113,170 @@ export const ExternalInput = ({
 
   const [searchQuery, setSearchQuery] = useState(field.initialQuery || "");
 
+  const buildCacheKey = useCallback(
+    (
+      query: string,
+      filters: object,
+      page: number,
+      limit: number,
+      sort: { column: string; direction: "asc" | "desc" } | null
+    ) => {
+      return `${id}-${query}-${JSON.stringify(
+        filters
+      )}-${page}-${limit}-${JSON.stringify(sort || {})}`;
+    },
+    [id]
+  );
+
   const search = useCallback(
-    async (query: string, filters: object) => {
+    async (
+      query: string,
+      filters: object,
+      page: number | undefined,
+      limit: number | undefined,
+      sort: { column: string; direction: "asc" | "desc" } | null
+    ) => {
       setIsLoading(true);
 
-      const cacheKey = `${id}-${query}-${JSON.stringify(filters)}`;
+      const effectivePage = isPaginationEnabled ? page : undefined;
+      const effectiveLimit = isPaginationEnabled ? limit : undefined;
 
-      let listData;
+      const cacheKey = buildCacheKey(
+        query,
+        filters,
+        effectivePage ?? 1,
+        effectiveLimit ?? 10,
+        sort
+      );
+
+      let result;
 
       if (shouldCacheData && dataCache[cacheKey]) {
-        listData = dataCache[cacheKey];
+        result = dataCache[cacheKey];
       } else {
-        listData = await field.fetchList({ query, filters });
+        result = await field.fetchList({
+          query,
+          filters,
+          page: effectivePage,
+          limit: effectiveLimit,
+          sort: sort || undefined,
+        });
       }
 
-      if (listData) {
-        setData(listData);
+      if (result) {
+        setData(result.items);
+        setTotalItems(result.total);
         setIsLoading(false);
 
         if (shouldCacheData) {
-          dataCache[cacheKey] = listData;
+          dataCache[cacheKey] = result;
         }
       }
     },
-    [id, field]
+    [field, shouldCacheData, isPaginationEnabled, buildCacheKey]
+  );
+
+  const getCurrentSort = useCallback(() => {
+    return sortColumn ? { column: sortColumn, direction: sortDirection } : null;
+  }, [sortColumn, sortDirection]);
+
+  const performSearch = useCallback(
+    (page: number = currentPage, size: number = pageSize) => {
+      search(searchQuery, filters, page, size, getCurrentSort());
+    },
+    [searchQuery, filters, currentPage, pageSize, search, getCurrentSort]
+  );
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      search(searchQuery, filters, page, pageSize, getCurrentSort());
+    },
+    [searchQuery, filters, pageSize, search, getCurrentSort]
+  );
+
+  const handlePageSizeChange = useCallback(
+    (newSize: number) => {
+      setPageSize(newSize);
+      setCurrentPage(1);
+      search(searchQuery, filters, 1, newSize, getCurrentSort());
+    },
+    [searchQuery, filters, search, getCurrentSort]
+  );
+
+  const handleFilterChange = useCallback(
+    (fieldName: string, value: any) => {
+      const newFilters = {
+        ...filters,
+        [fieldName]: value,
+      };
+      setFilters(newFilters);
+      setCurrentPage(1);
+      search(searchQuery, newFilters, 1, pageSize, getCurrentSort());
+    },
+    [filters, searchQuery, pageSize, search, getCurrentSort]
+  );
+
+  const handleSearchSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setCurrentPage(1);
+      performSearch(1);
+    },
+    [performSearch]
+  );
+
+  const handleSort = useCallback(
+    (columnKey: string) => {
+      const newDirection: "asc" | "desc" =
+        sortColumn === columnKey && sortDirection === "asc" ? "desc" : "asc";
+
+      setSortColumn(columnKey);
+      setSortDirection(newDirection);
+
+      const sort = { column: columnKey, direction: newDirection };
+      search(searchQuery, filters, 1, pageSize, sort);
+    },
+    [sortColumn, sortDirection, searchQuery, filters, pageSize, search]
+  );
+
+  const isSortable = useCallback(
+    (columnKey: string): boolean => {
+      return field.sortableColumns?.includes(columnKey) ?? false;
+    },
+    [field.sortableColumns]
   );
 
   const Footer = useCallback(
     (props: { items: any[] }) =>
       field.renderFooter ? (
         field.renderFooter(props)
-      ) : (
+      ) : isPaginationEnabled ? null : (
         <span className={getClassNameModal("footer")}>
           {props.items.length} result{props.items.length === 1 ? "" : "s"}
         </span>
       ),
-    [field.renderFooter]
+    [field.renderFooter, isPaginationEnabled]
   );
 
   useEffect(() => {
-    search(searchQuery, filters);
+    search(
+      searchQuery,
+      filters,
+      initialPage,
+      initialPageSize,
+      getCurrentSort()
+    );
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSortColumn(null);
+      setSortDirection("asc");
+      setCurrentPage(initialPage);
+    }
+  }, [isOpen, initialPage]);
 
   return (
     <div
@@ -134,7 +294,6 @@ export const ExternalInput = ({
           className={getClassName("button")}
           disabled={readOnly}
         >
-          {/* NB this is hardcoded to strapi for now */}
           {value ? (
             field.getItemSummary ? (
               field.getItemSummary(value)
@@ -169,11 +328,7 @@ export const ExternalInput = ({
             hasData: mappedData.length > 0,
             filtersToggled,
           })}
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            search(searchQuery, filters);
-          }}
+          onSubmit={handleSearchSubmit}
         >
           <div className={getClassNameModal("masthead")}>
             {field.showSearch ? (
@@ -242,16 +397,9 @@ export const ExternalInput = ({
                           id={`external_field_${fieldName}_filter`}
                           label={filterField.label || fieldName}
                           value={filters[fieldName]}
-                          onChange={(value) => {
-                            const newFilters = {
-                              ...filters,
-                              [fieldName]: value,
-                            };
-
-                            setFilters(newFilters);
-
-                            search(searchQuery, newFilters);
-                          }}
+                          onChange={(value) =>
+                            handleFilterChange(fieldName, value)
+                          }
                         />
                       </div>
                     );
@@ -263,15 +411,74 @@ export const ExternalInput = ({
               <table className={getClassNameModal("table")}>
                 <thead className={getClassNameModal("thead")}>
                   <tr className={getClassNameModal("tr")}>
-                    {keys.map((key) => (
-                      <th
-                        key={key}
-                        className={getClassNameModal("th")}
-                        style={{ textAlign: "left" }}
-                      >
-                        {key}
-                      </th>
-                    ))}
+                    {keys.map((key) => {
+                      const sortable = isSortable(key);
+                      const isActiveSort = sortColumn === key;
+                      const showAscending =
+                        isActiveSort && sortDirection === "asc";
+
+                      const handleColumnClick = () => {
+                        if (sortable) {
+                          handleSort(key);
+                        }
+                      };
+
+                      return (
+                        <th
+                          key={key}
+                          className={
+                            sortable
+                              ? `${getClassNameModal("th")} ${getClassNameModal(
+                                  "th--sortable"
+                                )}`
+                              : getClassNameModal("th")
+                          }
+                          onClick={handleColumnClick}
+                          role={sortable ? "button" : undefined}
+                          aria-sort={
+                            isActiveSort
+                              ? sortDirection === "asc"
+                                ? "ascending"
+                                : "descending"
+                              : undefined
+                          }
+                          tabIndex={sortable ? 0 : undefined}
+                          onKeyDown={(e) => {
+                            if (
+                              sortable &&
+                              (e.key === "Enter" || e.key === " ")
+                            ) {
+                              e.preventDefault();
+                              handleSort(key);
+                            }
+                          }}
+                        >
+                          <div className={getClassNameModal("thContent")}>
+                            <span>{key}</span>
+                            {sortable && (
+                              <span
+                                className={
+                                  isActiveSort
+                                    ? `${getClassNameModal(
+                                        "sortIcon"
+                                      )} ${getClassNameModal(
+                                        "sortIcon--active"
+                                      )}`
+                                    : getClassNameModal("sortIcon")
+                                }
+                                aria-hidden="true"
+                              >
+                                {showAscending ? (
+                                  <ChevronUp size={16} />
+                                ) : (
+                                  <ChevronDown size={16} />
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody className={getClassNameModal("tbody")}>
@@ -283,7 +490,6 @@ export const ExternalInput = ({
                         className={getClassNameModal("tr")}
                         onClick={() => {
                           onChange(mapProp(data[i]));
-
                           setOpen(false);
                         }}
                       >
@@ -303,6 +509,20 @@ export const ExternalInput = ({
               </div>
             </div>
           </div>
+
+          {isPaginationEnabled && totalItems > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              pageSizeOptions={field.pagination?.pageSizeOptions}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              id={id}
+            />
+          )}
+
           <div className={getClassNameModal("footerContainer")}>
             <Footer items={mappedData} />
           </div>

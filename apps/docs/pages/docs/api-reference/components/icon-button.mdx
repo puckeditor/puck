@@ -1,0 +1,193 @@
+---
+title: <IconButton>
+---
+
+# \<IconButton\>
+
+Render a styled icon button component used throughout the Puck UI. Similar to [`<Button>`](button), but optimized for icon-only actions.
+
+```tsx copy
+import { IconButton } from "@measured/puck";
+import { Settings } from "lucide-react";
+
+export function MyComponent() {
+  return (
+    <IconButton title="Settings" onClick={() => console.log("clicked")}>
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+## Props
+
+| Prop                      | Example              | Type                            | Status   |
+| ------------------------- | -------------------- | ------------------------------- | -------- |
+| [`children`](#children)   | `children: <Icon />` | ReactNode                       | Required |
+| [`title`](#title)         | `title: "Settings"`  | String                          | Required |
+| [`onClick`](#onclick)     | `onClick: () => {}`  | Function                        | -        |
+| [`variant`](#variant)     | `variant: "primary"` | "primary" \| "secondary"        | -        |
+| [`type`](#type)           | `type: "submit"`     | "button" \| "submit" \| "reset" | -        |
+| [`href`](#href)           | `href: "/path"`      | String                          | -        |
+| [`newTab`](#newtab)       | `newTab: true`       | Boolean                         | -        |
+| [`disabled`](#disabled)   | `disabled: true`     | Boolean                         | -        |
+| [`fullWidth`](#fullwidth) | `fullWidth: true`    | Boolean                         | -        |
+| [`tabIndex`](#tabindex)   | `tabIndex: 0`        | Number                          | -        |
+
+## Required props
+
+### `children`
+
+The icon to display inside the button. Typically a React component from an icon library like [Lucide](https://lucide.dev).
+
+```tsx {4-6} copy
+import { Settings } from "lucide-react";
+
+export function MyComponent() {
+  return (
+    <IconButton title="Settings">
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `title`
+
+An accessible label for the button. This is used for screen readers and browser tooltips. Since icon buttons don't have visible text, this prop is required for accessibility.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Open settings">
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+## Optional props
+
+### `onClick`
+
+A callback function that triggers when the button is clicked. Can be synchronous or return a Promise. When a Promise is returned, the button will automatically show a loading spinner until the Promise resolves.
+
+```tsx {2-4} copy
+export function MyComponent() {
+  return (
+    <IconButton
+      title="Save"
+      onClick={async () => {
+        await fetch("/api/save");
+      }}
+    >
+      <Save size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `variant`
+
+The visual style of the button. Defaults to `"primary"`.
+
+- `"primary"` - Filled background
+- `"secondary"` - Subtle background
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Settings" variant="secondary">
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `type`
+
+The HTML button type attribute. Only applies when `href` is not provided.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Submit" type="submit">
+      <Check size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `href`
+
+When provided, renders the button as an anchor tag (`<a>`) instead of a button.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Dashboard" href="/dashboard">
+      <Home size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `newTab`
+
+Open the link in a new tab. Only applies when `href` is provided.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="External link" href="https://example.com" newTab>
+      <ExternalLink size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `disabled`
+
+Disable the button, preventing user interaction.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Disabled" disabled>
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `fullWidth`
+
+Make the button take up the full width of its container.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Full width" fullWidth>
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+### `tabIndex`
+
+Set the tab index for keyboard navigation.
+
+```tsx {2} copy
+export function MyComponent() {
+  return (
+    <IconButton title="Settings" tabIndex={0}>
+      <Settings size={16} />
+    </IconButton>
+  );
+}
+```
+
+## Further reading
+
+- [`<Button>` API reference](button)

@@ -159,6 +159,33 @@
   font-weight: 500;
   font-size: 14px;
   padding: 16px 24px;
+  text-align: left;
+}
+
+.ExternalInputModal-th--sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ExternalInputModal-th--sortable:focus-visible {
+  outline: 2px solid var(--puck-color-azure-05);
+  outline-offset: -2px;
+}
+
+.ExternalInputModal-thContent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ExternalInputModal-sortIcon {
+  display: inline-flex;
+  opacity: 0.3;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.ExternalInputModal-sortIcon--active {
+  opacity: 1;
 }
 
 .ExternalInputModal-td {

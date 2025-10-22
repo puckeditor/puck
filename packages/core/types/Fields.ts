@@ -109,7 +109,10 @@ export type ExternalField<Props extends any = { [key: string]: any }> =
     fetchList: (params: {
       query: string;
       filters: Record<string, any>;
-    }) => Promise<any[] | null>;
+      page?: number;
+      limit?: number;
+      sort?: { column: string; direction: "asc" | "desc" };
+    }) => Promise<{ items: any[]; total?: number } | null>;
     mapProp?: (value: any) => Props;
     mapRow?: (value: any) => Record<string, string | number | ReactElement>;
     getItemSummary?: (item: NotUndefined<Props>, index?: number) => string;
@@ -118,6 +121,13 @@ export type ExternalField<Props extends any = { [key: string]: any }> =
     initialQuery?: string;
     filterFields?: Record<string, Field>;
     initialFilters?: Record<string, any>;
+    sortableColumns?: string[];
+    pagination?: {
+      enabled?: boolean;
+      pageSizeOptions?: number[];
+      initialPage?: number;
+      initialPageSize?: number;
+    };
   };
 
 export type CustomFieldRender<Value extends any> = (props: {

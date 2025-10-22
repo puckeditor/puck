@@ -19,13 +19,11 @@ export const Hero: ComponentConfig<{
     quote: {
       type: "external",
       placeholder: "Select a quote",
-      showSearch: false,
-      renderFooter: ({ items }) => {
-        return (
-          <div>
-            {items.length} result{items.length === 1 ? "" : "s"}
-          </div>
-        );
+      showSearch: true,
+      sortableColumns: ["title"],
+      pagination: {
+        enabled: true,
+        pageSizeOptions: [5, 10, 25],
       },
       filterFields: {
         author: {
@@ -43,33 +41,71 @@ export const Hero: ComponentConfig<{
           ],
         },
       },
-      fetchList: async ({ query, filters }) => {
+      fetchList: async ({ query, filters, page = 1, limit = 10, sort }) => {
         // Simulate delay
         await new Promise((res) => setTimeout(res, 500));
 
-        return quotes
-          .map((quote, idx) => ({
-            index: idx,
-            title: quote.author,
-            description: quote.content,
-          }))
-          .filter((item) => {
-            if (filters?.author && item.title !== filters?.author) {
-              return false;
+        // Map quotes to the expected format
+        let items = quotes.map((quote, idx) => ({
+          index: idx,
+          title: quote.author,
+          description: quote.content,
+        }));
+
+        // Apply filters
+        items = items.filter((item) => {
+          if (filters?.author && item.title !== filters?.author) {
+            return false;
+          }
+
+          if (!query) return true;
+
+          const queryLowercase = query.toLowerCase();
+
+          if (item.title.toLowerCase().indexOf(queryLowercase) > -1) {
+            return true;
+          }
+
+          if (item.description.toLowerCase().indexOf(queryLowercase) > -1) {
+            return true;
+          }
+
+          return false;
+        });
+
+        // Apply sorting
+        if (sort) {
+          items.sort((a, b) => {
+            const aVal = a[sort.column as keyof typeof a];
+            const bVal = b[sort.column as keyof typeof b];
+
+            if (aVal == null && bVal == null) return 0;
+            if (aVal == null) return 1;
+            if (bVal == null) return -1;
+
+            let comparison = 0;
+            if (typeof aVal === "number" && typeof bVal === "number") {
+              comparison = aVal - bVal;
+            } else {
+              comparison = String(aVal).localeCompare(String(bVal), undefined, {
+                sensitivity: "base",
+                numeric: true,
+              });
             }
 
-            if (!query) return true;
-
-            const queryLowercase = query.toLowerCase();
-
-            if (item.title.toLowerCase().indexOf(queryLowercase) > -1) {
-              return true;
-            }
-
-            if (item.description.toLowerCase().indexOf(queryLowercase) > -1) {
-              return true;
-            }
+            return sort.direction === "asc" ? comparison : -comparison;
           });
+        }
+
+        const totalItems = items.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedItems = items.slice(startIndex, endIndex);
+
+        return {
+          items: paginatedItems,
+          total: totalItems,
+        };
       },
       mapRow: (item) => ({
         title: item.title,

@@ -21,12 +21,13 @@ export const Button = ({
   icon,
   size = "medium",
   loading: loadingProp = false,
+  className,
   ...props
 }: {
   children: ReactNode;
   href?: string;
   onClick?: (e: any) => void | Promise<void>;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "outline";
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   tabIndex?: number;
@@ -35,6 +36,7 @@ export const Button = ({
   icon?: ReactNode;
   size?: "medium" | "large";
   loading?: boolean;
+  className?: string;
 }) => {
   const [loading, setLoading] = useState(loadingProp);
 
@@ -45,13 +47,14 @@ export const Button = ({
 
   const el = (
     <ElementType
-      className={getClassName({
+      className={`${getClassName({
         primary: variant === "primary",
         secondary: variant === "secondary",
+        outline: variant === "outline",
         disabled,
         fullWidth,
         [size]: true,
-      })}
+      })}${className ? ` ${className}` : ""}`}
       onClick={(e) => {
         if (!onClick) return;
 

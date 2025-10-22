@@ -81,6 +81,22 @@
   color: var(--puck-color-black);
 }
 
+.Button--outline {
+  border: 1px solid var(--puck-color-grey-09);
+  background-color: var(--puck-color-white);
+  color: var(--puck-color-grey-04);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Button--outline:hover {
+    background-color: var(--puck-color-azure-12);
+  }
+}
+
+.Button--outline:active {
+  background-color: var(--puck-color-azure-11);
+}
+
 .Button--flush {
   border-radius: 0;
 }
