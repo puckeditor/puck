@@ -6,7 +6,7 @@ import { ItemSelector } from "../../lib/data/get-item";
 import { scrollIntoView } from "../../lib/scroll-into-view";
 import { ChevronDown, LayoutGrid, Layers, Type } from "lucide-react";
 import { rootAreaId, rootDroppableId } from "../../lib/root-droppable-id";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { ZoneStoreContext } from "../DropZone/context";
 import { getFrame } from "../../lib/get-frame";
 import { onScrollEnd } from "../../lib/on-scroll-end";
@@ -78,10 +78,13 @@ const Layer = ({
     config.components[nodeData.data.type];
   const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
 
+  const [isExpanded, setIsExpanded] = useState(true);
+
   return (
     <li
       className={getClassNameLayer({
         isSelected,
+        isExpanded,
         isHovering,
         containsZone,
         childIsSelected,
@@ -94,9 +97,10 @@ const Layer = ({
           onClick={() => {
             if (isSelected) {
               setItemSelector(null);
+              setIsExpanded(false);
               return;
             }
-
+            
             const frame = getFrame();
 
             const el = frame?.querySelector(
@@ -132,7 +136,11 @@ const Layer = ({
           {containsZone && (
             <div
               className={getClassNameLayer("chevron")}
-              title={isSelected ? "Collapse" : "Expand"}
+              title={isExpanded ? "Collapse" : "Expand"}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
             >
               <ChevronDown size="12" />
             </div>
@@ -150,7 +158,7 @@ const Layer = ({
           </div>
         </button>
       </div>
-      {containsZone &&
+      {containsZone && isExpanded &&
         zonesForItem.map((subzone) => (
           <div key={subzone} className={getClassNameLayer("zones")}>
             <LayerTree zoneCompound={subzone} />

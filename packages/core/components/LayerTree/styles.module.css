@@ -74,8 +74,7 @@
   background: var(--puck-color-azure-10);
 }
 
-.Layer--isSelected > .Layer-inner > .Layer-clickable > .Layer-chevron,
-.Layer--childIsSelected > .Layer-inner > .Layer-clickable > .Layer-chevron {
+.Layer--isExpanded > .Layer-inner > .Layer-clickable > .Layer-chevron {
   transform: scaleY(-1);
 }
 
@@ -84,8 +83,7 @@
   margin-inline-start: 12px;
 }
 
-.Layer--isSelected > .Layer-zones,
-.Layer--childIsSelected > .Layer-zones {
+.Layer--isExpanded > .Layer-zones {
   display: block;
 }
 
