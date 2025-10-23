@@ -1,0 +1,176 @@
+---
+title: <Select>
+---
+
+import { ConfigPreview } from "@/docs/components/Preview";
+import { Select } from "@/puck";
+
+# \<Select\>
+
+A customizable select dropdown component with optional search functionality. Supports keyboard navigation and accessibility features.
+
+<ConfigPreview
+  label="Basic Select"
+  componentConfig={{
+    fields: {
+      country: {
+        type: "custom",
+        render: ({ onChange, value }) => {
+          return (
+            <Select
+              value={value}
+              onChange={onChange}
+              options={[
+                { label: "France", value: "fr" },
+                { label: "Germany", value: "de" },
+                { label: "Italy", value: "it" },
+                { label: "Spain", value: "es" },
+              ]}
+              placeholder="Select a country..."
+            />
+          );
+        },
+      },
+    },
+    defaultProps: {
+      country: "fr",
+    },
+    render: ({ country }) => {
+      return <p>Selected country: {country}</p>;
+    },
+  }}
+/>
+
+```tsx {1,4-13} copy
+import { Select } from "@measured/puck";
+
+const MySelect = ({ onChange, value }) => (
+  <Select
+    value={value}
+    onChange={onChange}
+    options={[
+      { label: "France", value: "fr" },
+      { label: "Germany", value: "de" },
+      // ...
+    ]}
+    placeholder="Choose an option..."
+  />
+);
+```
+
+## Props
+
+| Prop                                      | Example                                     | Type                  | Status   |
+| ----------------------------------------- | ------------------------------------------- | --------------------- | -------- |
+| [`value`](#value)                         | `"option1"`                                 | Any                   | Optional |
+| [`onChange`](#onchange)                   | `onChange("option2")`                       | Function              | Required |
+| [`options`](#options)                     | `[{ label: "Option 1", value: "option1" }]` | Array`<SelectOption>` | Required |
+| [`placeholder`](#placeholder)             | `"Select an option..."`                     | String                | Optional |
+| [`disabled`](#disabled)                   | `true`                                      | Boolean               | Optional |
+| [`id`](#id)                               | `"my-select"`                               | String                | Optional |
+| [`name`](#name)                           | `"country"`                                 | String                | Optional |
+| [`searchable`](#searchable)               | `true`                                      | Boolean               | Optional |
+| [`searchPlaceholder`](#searchplaceholder) | `"Search..."`                               | String                | Optional |
+
+## Required Props
+
+### `onChange`
+
+A callback function that triggers when the selected value changes.
+
+```tsx {3} copy
+<Select
+  value={value}
+  onChange={(newValue) => console.log(newValue)}
+  options={options}
+/>
+```
+
+### `options`
+
+An array of options for the select dropdown. Each option must have a `label` and `value`.
+
+```tsx {4-7} copy
+<Select
+  value={value}
+  onChange={onChange}
+  options={[
+    { label: "France", value: "fr" },
+    { label: "Germany", value: "de" },
+  ]}
+/>
+```
+
+## Optional Props
+
+### `value`
+
+The currently selected value. Can be any type that matches the `value` property of the options.
+
+```tsx {2} copy
+<Select value="fr" onChange={onChange} options={options} />
+```
+
+### `placeholder`
+
+The placeholder text displayed when no option is selected.
+
+```tsx {4} copy
+<Select
+  value={value}
+  onChange={onChange}
+  options={options}
+  placeholder="Choose a country..."
+/>
+```
+
+### `disabled`
+
+Whether the select is disabled and cannot be interacted with.
+
+```tsx {5} copy
+<Select value={value} onChange={onChange} options={options} disabled={true} />
+```
+
+### `id`
+
+A unique identifier for the select element. Used for accessibility and form handling.
+
+```tsx {5} copy
+<Select
+  value={value}
+  onChange={onChange}
+  options={options}
+  id="country-select"
+/>
+```
+
+### `name`
+
+The name attribute for the select element. Useful for form handling.
+
+```tsx /name="country"/ copy
+<Select value={value} onChange={onChange} options={options} name="country" />
+```
+
+### `searchable`
+
+Enables search functionality in the dropdown. When `true`, a search input appears at the top of the dropdown.
+
+```tsx /searchable={true}/ copy
+<Select value={value} onChange={onChange} options={options} searchable={true} />
+```
+
+### `searchPlaceholder`
+
+The placeholder text for the search input when `searchable` is `true`.
+
+```tsx {6} copy
+<Select
+  value={value}
+  onChange={onChange}
+  options={options}
+  searchable={true}
+  searchPlaceholder="Type to search..."
+/>
+```

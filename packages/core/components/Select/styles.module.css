@@ -1,0 +1,168 @@
+.Select {
+  position: relative;
+  width: 100%;
+}
+
+.Select-trigger {
+  align-items: center;
+  appearance: none;
+  background-color: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: 14px;
+  justify-content: space-between;
+  padding: 12px 15px;
+  width: 100%;
+}
+
+@media (min-width: 458px) {
+  .Select-trigger {
+    font-size: 14px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Select-trigger:hover:not(.Select-trigger--disabled) {
+    border-color: var(--puck-color-grey-05);
+  }
+}
+
+.Select-trigger:focus,
+.Select-trigger--open {
+  border-color: var(--puck-color-grey-05);
+  outline: 2px solid var(--puck-color-azure-05);
+}
+
+.Select-trigger--disabled {
+  background-color: var(--puck-color-grey-11);
+  border-color: var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.Select-value {
+  flex: 1;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Select-icon {
+  color: var(--puck-color-grey-07);
+  flex-shrink: 0;
+  margin-inline-start: 8px;
+}
+
+.Select-icon--open {
+  transform: rotate(180deg);
+}
+
+.Select-content {
+  background-color: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 4px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-sizing: border-box;
+  margin-top: 4px;
+  max-height: 300px;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  z-index: 50;
+}
+
+.Select-list {
+  box-sizing: border-box;
+  list-style: none;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.Select-option {
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  justify-content: space-between;
+  padding: 6px 10px;
+  user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Select-option:hover,
+  .Select-option--highlighted {
+    background-color: var(--puck-color-azure-11);
+  }
+}
+
+.Select-option--selected {
+  background-color: var(--puck-color-azure-12);
+  color: var(--puck-color-azure-04);
+  font-weight: 500;
+}
+
+.Select-option--selected.Select-option--highlighted {
+  background-color: var(--puck-color-azure-11);
+}
+
+.Select-optionLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Select-checkIcon {
+  color: var(--puck-color-azure-04);
+  flex-shrink: 0;
+  margin-inline-start: 8px;
+}
+
+.Select-search {
+  align-items: center;
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  position: relative;
+}
+
+.Select-searchIcon {
+  color: var(--puck-color-grey-07);
+  flex-shrink: 0;
+}
+
+.Select-searchInput {
+  background: transparent;
+  border: none;
+  color: inherit;
+  flex: 1;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  padding: 0;
+}
+
+.Select-searchInput::placeholder {
+  color: var(--puck-color-grey-07);
+}
+
+.Select-noResults {
+  align-items: center;
+  color: var(--puck-color-grey-07);
+  display: flex;
+  font-size: 14px;
+  justify-content: center;
+  padding: 8px 12px;
+  justify-content: flex-start;
+}

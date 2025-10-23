@@ -2,10 +2,10 @@ import { ConfigPreview } from "@/docs/components/Preview";
 
 # Select
 
-Render a `select` input with a list of options. Extends [Base](base).
+Render a `select` input with a list of options. Supports optional search functionality for better UX with long lists. Extends [Base](base).
 
 <ConfigPreview
-  label="Example"
+  label="Basic Select"
   componentConfig={{
     fields: {
       textAlign: {
@@ -17,10 +17,12 @@ Render a `select` input with a list of options. Extends [Base](base).
       },
     },
     render: ({ textAlign }) => {
-      return <p style={{ textAlign, margin: 0 }}>Hello, world</p>;
+      return <p style={{ textAlign }}>Hello, world</p>;
     },
   }}
 />
+
+## Basic Usage
 
 ```tsx {5-11} copy
 const config = {
@@ -45,16 +47,19 @@ const config = {
 
 ## Params
 
-| Param                 | Example                                               | Type     | Status   |
-| --------------------- | ----------------------------------------------------- | -------- | -------- |
-| [`type`](#type)       | `type: "select"`                                      | "select" | Required |
-| [`options`](#options) | `options: [{ label: "Option 1", value: "option-1" }]` | Object[] | Required |
+| Param                                     | Example                                               | Type     | Status   |
+| ----------------------------------------- | ----------------------------------------------------- | -------- | -------- |
+| [`type`](#type)                           | `type: "select"`                                      | "select" | Required |
+| [`options`](#options)                     | `options: [{ label: "Option 1", value: "option-1" }]` | Object[] | Required |
+| [`placeholder`](#placeholder)             | `placeholder: "Select an option..."`                  | string   | Optional |
+| [`searchable`](#searchable)               | `searchable: true`                                    | boolean  | Optional |
+| [`searchPlaceholder`](#searchplaceholder) | `searchPlaceholder: "Search..."`                      | string   | Optional |
 
 ## Required params
 
 ### `type`
 
-The type of the field. Must be `"select"` for Array fields.
+The type of the field. Must be `"select"` for Select fields.
 
 ```tsx {6} copy
 const config = {
@@ -77,7 +82,7 @@ const config = {
 
 ### `options`
 
-The options for the select field. The `value` can be a String, Number or Boolean.
+The options for the select field. The `value` can be a String, Number, Boolean, or Object.
 
 ```tsx {7-10} copy
 const config = {
@@ -97,3 +102,163 @@ const config = {
   },
 };
 ```
+
+## Optional params
+
+### `placeholder`
+
+The placeholder text for the select field.
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        country: {
+          type: "select",
+          placeholder: "Select a country...",
+          options: [
+            { label: "France", value: "fr" },
+            { label: "Germany", value: "de" },
+            // ...
+          ],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Placeholder Select"
+  componentConfig={{
+    fields: {
+      country: {
+        type: "select",
+        placeholder: "Select a country...",
+        options: [
+          { label: "France", value: "fr" },
+          { label: "Germany", value: "de" },
+          { label: "Italy", value: "it" },
+          { label: "Spain", value: "es" },
+          { label: "United Kingdom", value: "gb" },
+          { label: "United States", value: "us" },
+          { label: "Canada", value: "ca" },
+          { label: "Australia", value: "au" },
+          { label: "Japan", value: "jp" },
+          { label: "China", value: "cn" },
+        ],
+      },
+    },
+    render: ({ country }) => {
+      return <p>Selected: {country}</p>;
+    },
+  }}
+/>
+
+### `searchable`
+
+Enables search functionality in the dropdown. When `true`, a search input appears at the top of the dropdown.
+
+```tsx {7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        country: {
+          type: "select",
+          searchable: true,
+          options: [
+            { label: "France", value: "fr" },
+            { label: "Germany", value: "de" },
+            // ...
+          ],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Searchable Select"
+  componentConfig={{
+    fields: {
+      country: {
+        type: "select",
+        searchable: true,
+        options: [
+          { label: "France", value: "fr" },
+          { label: "Germany", value: "de" },
+          { label: "Italy", value: "it" },
+          { label: "Spain", value: "es" },
+          { label: "United Kingdom", value: "gb" },
+          { label: "United States", value: "us" },
+          { label: "Canada", value: "ca" },
+          { label: "Australia", value: "au" },
+          { label: "Japan", value: "jp" },
+          { label: "China", value: "cn" },
+        ],
+      },
+    },
+    render: ({ country }) => {
+      return <p>Selected: {country}</p>;
+    },
+  }}
+/>
+
+### `searchPlaceholder`
+
+The placeholder text for the search input when `searchable` is `true`.
+
+```tsx {8} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        country: {
+          type: "select",
+          searchable: true,
+          searchPlaceholder: "Search countries...",
+          options: [
+            { label: "France", value: "fr" },
+            { label: "Germany", value: "de" },
+            // ...
+          ],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Search placeholder Select"
+  componentConfig={{
+    fields: {
+      country: {
+        type: "select",
+        searchable: true,
+        searchPlaceholder: "Search countries...",
+        options: [
+          { label: "France", value: "fr" },
+          { label: "Germany", value: "de" },
+          { label: "Italy", value: "it" },
+          { label: "Spain", value: "es" },
+          { label: "United Kingdom", value: "gb" },
+          { label: "United States", value: "us" },
+          { label: "Canada", value: "ca" },
+          { label: "Australia", value: "au" },
+          { label: "Japan", value: "jp" },
+          { label: "China", value: "cn" },
+        ],
+      },
+    },
+    render: ({ country }) => {
+      return <p>Selected: {country}</p>;
+    },
+  }}
+/>

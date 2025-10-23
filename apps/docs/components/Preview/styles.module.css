@@ -1,21 +1,19 @@
 .PreviewFrame {
   background: white;
-  border: 1px solid var(--puck-color-grey-09);
   color: black;
-  border-radius: 16px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   margin-top: 32px;
-  overflow: hidden;
 }
 
 .PreviewFrame-header {
   background: var(--puck-color-azure-11);
   gap: 8px;
   color: var(--puck-color-azure-05);
-  font-weight: 0;
   padding: 12px 16px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border: 1px solid var(--puck-color-grey-09);
   align-items: center;
 }
 
@@ -31,7 +29,7 @@
 
 .PreviewFrame-contents {
   align-items: stretch;
-  background-color: var(--puck-color-grey-09);
+  background-color: transparent;
   display: flex;
   gap: 1px;
   flex-wrap: wrap;
@@ -43,12 +41,19 @@
   flex-grow: 1;
   padding: 32px;
   flex-basis: 49%;
+  /* border-bottom-right-radius: 16px; */
+  border-right: 1px solid var(--puck-color-grey-09);
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-left: 1px solid var(--puck-color-grey-09);
 }
 
 .PreviewFrame-info {
   background-color: white;
   flex-grow: 1;
   flex-basis: 49%;
+  /* border-bottom-left-radius: 16px; */
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-left: 1px solid var(--puck-color-grey-09);
 }
 
 .PreviewFrame-codeblock {
@@ -64,8 +69,7 @@
 
 .PreviewFrame-drawerButton {
   align-items: center;
-  border-left: 1px solid var(--puck-color-grey-10);
-  border-top: 1px solid var(--puck-color-grey-10);
+  border: 1px solid var(--puck-color-grey-09);
   display: flex;
   gap: 4px;
   border-top-left-radius: 4px;
@@ -88,8 +92,12 @@
 }
 
 .PreviewFrame-drawer {
-  background: var(--puck-color-grey-12);
-  border-top: 1px solid var(--puck-color-grey-09);
+  border-right: 1px solid var(--puck-color-grey-09);
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-left: 1px solid var(--puck-color-grey-09);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  overflow: hidden;
 }
 
 .PreviewFrame-preview {

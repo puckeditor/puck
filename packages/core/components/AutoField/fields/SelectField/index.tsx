@@ -1,9 +1,6 @@
-import getClassNameFactory from "../../../../lib/get-class-name-factory";
-import styles from "../../styles.module.css";
 import { ChevronDown } from "lucide-react";
 import { FieldPropsInternal } from "../..";
-
-const getClassName = getClassNameFactory("Input", styles);
+import { Select } from "../../../Select";
 
 export const SelectField = ({
   field,
@@ -26,24 +23,17 @@ export const SelectField = ({
       icon={labelIcon || <ChevronDown size={16} />}
       readOnly={readOnly}
     >
-      <select
+      <Select
         id={id}
-        title={label || name}
-        className={getClassName("input")}
+        name={name}
+        value={value}
+        onChange={onChange}
+        options={field.options}
+        placeholder={field.placeholder}
         disabled={readOnly}
-        onChange={(e) => {
-          onChange(JSON.parse(e.target.value).value);
-        }}
-        value={JSON.stringify({ value })}
-      >
-        {field.options.map((option) => (
-          <option
-            key={option.label + JSON.stringify(option.value)}
-            label={option.label}
-            value={JSON.stringify({ value: option.value })}
-          />
-        ))}
-      </select>
+        searchable={field.searchable}
+        searchPlaceholder={field.searchPlaceholder}
+      />
     </Label>
   );
 };

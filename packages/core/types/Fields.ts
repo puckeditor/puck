@@ -38,6 +38,9 @@ export type TextareaField = BaseField & {
 export type SelectField = BaseField & {
   type: "select";
   options: FieldOptions;
+  placeholder?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 };
 
 export type RadioField = BaseField & {
