@@ -78,7 +78,7 @@ const Layer = ({
     config.components[nodeData.data.type];
   const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
 
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <li
@@ -112,6 +112,7 @@ const Layer = ({
                 index,
                 zone: zoneCompound,
               });
+              setIsExpanded(true);
               return;
             }
 
@@ -122,6 +123,7 @@ const Layer = ({
                 index,
                 zone: zoneCompound,
               });
+              setIsExpanded(true);
             });
           }}
           onMouseEnter={(e) => {
