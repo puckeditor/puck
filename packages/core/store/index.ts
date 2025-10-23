@@ -261,7 +261,13 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
           return { ...s, state, selectedItem };
         }),
       resolveComponentData: async (componentData, trigger) => {
-        const { config, metadata, setComponentLoading, permissions } = get();
+        const { config, metadata, setComponentLoading, permissions, state } =
+          get();
+        const componentId =
+          "id" in componentData.props ? componentData.props.id : "root";
+        const parentId = state.indexes.nodes[componentId]?.parentId;
+        const parentNode = parentId ? state.indexes.nodes[parentId] : null;
+        const parentData = parentNode?.data ?? null;
 
         const timeouts: Record<string, () => void> = {};
 
@@ -284,7 +290,8 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
 
             timeouts[id]();
           },
-          trigger
+          trigger,
+          parentData
         );
       },
       resolveAndCommitData: async () => {

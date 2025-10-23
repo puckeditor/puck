@@ -22,7 +22,8 @@ export const resolveComponentData = async <
   metadata: Metadata = {},
   onResolveStart?: (item: T) => void,
   onResolveEnd?: (item: T) => void,
-  trigger: ResolveDataTrigger = "replace"
+  trigger: ResolveDataTrigger = "replace",
+  parent: ComponentData | null = null
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -56,6 +57,7 @@ export const resolveComponentData = async <
         lastData: oldItem,
         metadata: { ...metadata, ...configForItem.metadata },
         trigger,
+        parent,
       });
 
     resolvedItem.props = {
@@ -67,6 +69,14 @@ export const resolveComponentData = async <
       resolvedItem.readOnly = readOnly;
     }
   }
+
+  const itemAsComponentData: ComponentData =
+    "type" in resolvedItem
+      ? resolvedItem
+      : {
+          type: "root",
+          props: { id: "root", ...resolvedItem.props },
+        };
 
   let itemWithResolvedChildren = await mapFields(
     resolvedItem,
@@ -84,7 +94,8 @@ export const resolveComponentData = async <
                   metadata,
                   onResolveStart,
                   onResolveEnd,
-                  trigger
+                  trigger,
+                  itemAsComponentData
                 )
               ).node
           )
