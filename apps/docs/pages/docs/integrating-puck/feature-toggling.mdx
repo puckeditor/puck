@@ -14,7 +14,7 @@ See the [supported permissions reference](/docs/api-reference/permissions#suppor
 
 Toggling features across the entire Puck instance can be done with global permissions. These can be set by the [`permissions` prop](/docs/api-reference/components/puck#permissions) on the Puck component:
 
-```tsx showLineNumbers copy {4-6}
+```tsx copy {4-6}
 export function Editor() {
   return (
     <Puck
@@ -31,7 +31,7 @@ export function Editor() {
 
 Toggling feature for all instance of a component can be done using component permissions. This is controlled by the [`permissions` parameter](/docs/api-reference/configuration/component-config#permissions) on the component config, and inherits the global permissions.
 
-```tsx showLineNumbers copy {4-6}
+```tsx copy {4-6}
 const config = {
   components: {
     HeadingBlock: {
@@ -50,7 +50,7 @@ Component permissions can also be applied to the `root` config.
 
 Dynamic permissions enable runtime calculation of permissions based on the component data, enabling instance-specific permissions. This is controlled by the [`resolvePermissions` parameter](/docs/api-reference/configuration/component-config#resolvepermissionsdata-params) on the component config.
 
-```tsx showLineNumbers copy {4-12}
+```tsx copy {4-12}
 const config = {
   components: {
     HeadingBlock: {
@@ -73,7 +73,7 @@ const config = {
 
 Permissions can be resolved asynchronously, enabling powerful patterns like querying permissions from an endpoint whenever the data changes.
 
-```tsx showLineNumbers copy {4-8}
+```tsx copy {4-8}
 const config = {
   components: {
     HeadingBlock: {
@@ -96,7 +96,7 @@ However, it's possible that you may want to avoid making an expensive operation 
 
 This can be restricted by checking the [`changed` param](/docs/api-reference/configuration/component-config#paramschanged-2) before calling any expensive operations.
 
-```tsx {6} showLineNumbers copy
+```tsx {6} copy
 const config = {
   components: {
     HeadingBlock: {

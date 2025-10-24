@@ -6,7 +6,7 @@ Categories allow you to group components in the left side bar.
 
 Use the [`categories` API](/docs/api-reference/configuration/config#categories) to define the component categories.
 
-```tsx {2-6} copy showLineNumbers
+```tsx {2-6} copy
 const config = {
   categories: {
     typography: {
@@ -19,7 +19,7 @@ const config = {
 
 Components can appear in separate categories:
 
-```tsx /HeadingBlock/ copy showLineNumbers
+```tsx /HeadingBlock/ copy
 const config = {
   categories: {
     typography: {
@@ -35,7 +35,7 @@ const config = {
 
 You can also change the title, collapse and hide categories:
 
-```tsx {5,6,10} copy showLineNumbers
+```tsx {5,6,10} copy
 const config = {
   categories: {
     typography: {
@@ -56,7 +56,7 @@ const config = {
 
 Any uncategorized components will be grouped in the `other` category. This will be visible by default. It respects the same API as other categories.
 
-```tsx {6-8} copy showLineNumbers
+```tsx {6-8} copy
 const config = {
   categories: {
     typography: {

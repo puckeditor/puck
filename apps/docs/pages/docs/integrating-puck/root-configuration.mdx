@@ -11,7 +11,7 @@ Configuring the root is similar to [configuring components](component-configurat
 
 Use the [`root` parameter](/docs/api-reference/configuration/config#root) to specify a [`render` function](/docs/api-reference/configuration/component-config#renderprops):
 
-```tsx showLineNumbers copy {10-12}
+```tsx copy {10-12}
 const config = {
   components: {
     HeadingBlock: {
@@ -68,7 +68,7 @@ Root fields provide user input to the root render method, and can be used to sto
 
 By default, `root` is configured with a `title` text field:
 
-```tsx showLineNumbers copy /title/
+```tsx copy /title/
 const config = {
   // ...
   root: {
@@ -86,7 +86,7 @@ const config = {
 
 You can override the default field configuration by providing custom [Fields](/docs/api-reference/fields) to the [`fields` parameter](/docs/api-reference/configuration/component-config#fields):
 
-```tsx showLineNumbers copy {4-7} /description/2,3
+```tsx copy {4-7} /description/2,3
 const config = {
   // ...
   root: {
@@ -143,7 +143,7 @@ const config: Config<{}, RootProps> = {
 
 Provide an object to the [`defaultProps`](/docs/api-reference/configuration/component-config#fields) parameter to configure default props for the root fields:
 
-```tsx showLineNumbers copy {8-11}
+```tsx copy {8-11}
 const config = {
   // ...
   root: {

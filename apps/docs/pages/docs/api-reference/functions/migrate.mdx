@@ -6,7 +6,7 @@ title: migrate
 
 Migrate the [Data payload](/docs/api-reference/data-model/data) to the latest shape, automatically transforming deprecated data.
 
-```tsx copy showLineNumbers {7-10}
+```tsx copy {7-10}
 import { migrate } from "@measured/puck";
 
 migrate(legacyData);
@@ -44,7 +44,7 @@ Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zo
 
 **Before**
 
-```json showLineNumbers {10-20}
+```json {10-20}
 {
   "content": [
     {
@@ -70,7 +70,7 @@ Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zo
 
 **After**
 
-```json showLineNumbers {7-15}
+```json {7-15}
 {
   "content": [
     {
@@ -140,7 +140,7 @@ migrate(legacyData, config, {
 
 **Before**
 
-```json showLineNumbers {16-26}
+```json {16-26}
 {
   "root": {
     "props": {
@@ -172,7 +172,7 @@ migrate(legacyData, config, {
 
 **After**
 
-```json showLineNumbers {11-23}
+```json {11-23}
 {
   "root": {
     "props": {

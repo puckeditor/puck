@@ -9,12 +9,6 @@ import { ActionBar } from "@/puck";
 
 Render an action button in the [`<ActionBar>`](action-bar). Often used inside an [`<ActionBar.Group>`](action-bar-group).
 
-```tsx showLineNumbers {2} copy
-<ActionBar>
-  <ActionBar.Action onClick={() => console.log("Clicked!")}>★</ActionBar.Action>
-</ActionBar>
-```
-
 <PuckPreview>
   <div style={{ display: "flex" }}>
     <ActionBar>
@@ -23,6 +17,12 @@ Render an action button in the [`<ActionBar>`](action-bar). Often used inside an
 
   </div>
 </PuckPreview>
+
+```tsx {2} copy
+<ActionBar>
+  <ActionBar.Action onClick={() => console.log("Clicked!")}>★</ActionBar.Action>
+</ActionBar>
+```
 
 ## Props
 

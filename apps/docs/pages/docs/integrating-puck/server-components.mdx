@@ -45,7 +45,7 @@ Many modern component libraries will require some degree of client-side behaviou
 
 To achieve this, you must import each of those component from a separate file:
 
-```tsx copy showLineNumbers filename="puck.config.tsx"
+```tsx copy filename="puck.config.tsx"
 import type { Config } from "@measured/puck";
 import type { HeadingBlockProps } from "./components/HeadingBlock";
 import HeadingBlock from "./components/HeadingBlock";
@@ -72,7 +72,7 @@ export const config: Config<Props> = {
 
 And add the `"use client";` directive to the top of each component file:
 
-```tsx copy showLineNumbers filename="components/HeadingBlock.tsx" {1}
+```tsx copy filename="components/HeadingBlock.tsx" {1}
 "use client";
 
 import { useState } from "react";
@@ -94,7 +94,7 @@ export default ({ title }: { title: string }) => {
 
 This config can now be rendered inside an RSC component, such as a Next.js app router page:
 
-```tsx copy showLineNumbers filename="app/page.tsx"
+```tsx copy filename="app/page.tsx"
 import { config } from "../puck.config.tsx";
 
 export default async function Page() {
@@ -112,7 +112,7 @@ Alternatively, consider entirely separate configs for the `<Puck>` and `<Render>
 
 Create a shared config type:
 
-```tsx copy showLineNumbers filename="puck-types.ts"
+```tsx copy filename="puck-types.ts"
 import type { Config } from "@measured/puck";
 
 type Props = {
@@ -126,7 +126,7 @@ export type UserConfig = Config<Props>;
 
 Define a client component config for use within the `<Puck>` component:
 
-```tsx copy showLineNumbers filename="puck.config.client.tsx"
+```tsx copy filename="puck.config.client.tsx"
 import type { UserConfig } from "./puck-types.ts";
 
 export const config: UserConfig = {
@@ -154,7 +154,7 @@ export const config: UserConfig = {
 
 Define a server config using the shared types for use within the `<Render>` component, excluding fields as they are unnecessary in this environment:
 
-```tsx copy showLineNumbers filename="puck.config.server.tsx"
+```tsx copy filename="puck.config.server.tsx"
 import type { UserConfig } from "./puck-types.ts";
 
 export const config: UserConfig = {
@@ -174,7 +174,7 @@ export const config: UserConfig = {
 
 Render the appropriate config depending on the environment. Here's a Next.js app router example of a server render:
 
-```tsx copy showLineNumbers filename="app/page.tsx"
+```tsx copy filename="app/page.tsx"
 import { config } from "../puck.config.server.tsx";
 
 export default async function Page() {

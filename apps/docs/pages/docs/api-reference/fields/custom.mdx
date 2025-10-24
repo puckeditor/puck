@@ -32,12 +32,12 @@ Implement a field with a custom UI. Extends [Base](base).
       title: "Hello, world",
     },
     render: ({ title }) => {
-      return <p style={{ margin: 0 }}>{title}</p>;
+      return <p>{title}</p>;
     },
   }}
 />
 
-```tsx {7-16} copy showLineNumbers
+```tsx {7-16} copy
 import { FieldLabel } from "@measured/puck";
 
 const config = {
@@ -77,7 +77,7 @@ const config = {
 
 The type of the field. Must be `"custom"` for Custom fields.
 
-```tsx {6} showLineNumbers copy
+```tsx {6} copy
 const config = {
   components: {
     Example: {
@@ -103,7 +103,7 @@ const config = {
 
 Render the custom field.
 
-```tsx {9-14} showLineNumbers copy
+```tsx {9-14} copy
 import { FieldLabel } from "@measured/puck";
 
 const config = {

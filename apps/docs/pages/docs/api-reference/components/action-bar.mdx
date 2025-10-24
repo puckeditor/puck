@@ -9,16 +9,6 @@ import { ActionBar } from "@/puck";
 
 Render the Puck ActionBar. Use this when overriding the [actionBar](/docs/api-reference/overrides/action-bar).
 
-```tsx showLineNumbers copy
-<ActionBar label="Actions">
-  <ActionBar.Group>
-    <ActionBar.Action onClick={() => console.log("Clicked!")}>
-      ★
-    </ActionBar.Action>
-  </ActionBar.Group>
-</ActionBar>
-```
-
 <PuckPreview>
   <div style={{ display: "flex" }}>
     <ActionBar label="Actions">
@@ -28,6 +18,16 @@ Render the Puck ActionBar. Use this when overriding the [actionBar](/docs/api-re
     </ActionBar>
   </div>
 </PuckPreview>
+
+```tsx copy
+<ActionBar label="Actions">
+  <ActionBar.Group>
+    <ActionBar.Action onClick={() => console.log("Clicked!")}>
+      ★
+    </ActionBar.Action>
+  </ActionBar.Group>
+</ActionBar>
+```
 
 ## Props
 

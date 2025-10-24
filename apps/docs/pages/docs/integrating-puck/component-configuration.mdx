@@ -19,7 +19,7 @@ The [Config](/docs/api-reference/configuration/config) is provided via the `conf
 
 Components can be defined via the `components` object in [Config](/docs/api-reference/configuration/config). Every definition must provide a [`render` function](/docs/api-reference/configuration/component-config#renderprops):
 
-```tsx showLineNumbers copy {4-6}
+```tsx copy {4-6}
 const config = {
   components: {
     HeadingBlock: {
@@ -98,7 +98,7 @@ const config: Config<Components> = {
 
 You can define a field via the [`fields` parameter](/docs/api-reference/configuration/component-config#fields):
 
-```tsx showLineNumbers copy {5-7} /title/2,3
+```tsx copy {5-7} /title/2,3
 const config = {
   components: {
     HeadingBlock: {
@@ -173,7 +173,7 @@ Default props allow you to set an initial value for a prop when a new component 
 
 Provide an object to the [`defaultProps`](/docs/api-reference/configuration/component-config#fields) parameter to configure this:
 
-```tsx showLineNumbers copy {9-11}
+```tsx copy {9-11}
 const config = {
   components: {
     HeadingBlock: {

@@ -22,7 +22,7 @@ Please see the [awesome-puck repo](https://github.com/measuredco/awesome-puck) f
 
 To load a plugin, provide it to the [`plugins` prop](/docs/api-reference/components/puck#plugins) on the `<Puck>` component.
 
-```tsx showLineNumbers {2,8}
+```tsx {2,8}
 import { Puck } from "@measured/puck";
 import myPlugin from "my-puck-plugin";
 
@@ -44,7 +44,7 @@ If you're familiar with Puck, you can likely already build a Puck plugin. See th
 
 Plugins support [Field Transforms](/docs/extending-puck/field-transforms), enabling you to modify prop data before it's rendered in the `<Puck>` preview.
 
-```tsx showLineNumbers copy
+```tsx copy
 const plugin = {
   fieldTransforms: {
     // Make all props powered by "text" field pink in the editor
@@ -57,7 +57,7 @@ const plugin = {
 
 Plugins support [UI Overrides](/docs/extending-puck/ui-overrides), enabling you to override discrete section of the Puck interface.
 
-```tsx showLineNumbers copy
+```tsx copy
 const plugin = {
   overrides: {
     // Make all drawer items pink
@@ -85,7 +85,7 @@ Both the field transforms and overrides let you introduce [entirely new field ty
 
 This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can modified directly in the editor preview.
 
-```tsx showLineNumbers copy {6-8, 12-20}
+```tsx copy {6-8, 12-20}
 import { registerOverlayPortal } from "@measured/puck";
 
 const plugin = {

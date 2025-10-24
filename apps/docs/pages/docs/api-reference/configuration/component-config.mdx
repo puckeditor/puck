@@ -134,7 +134,7 @@ The remaining props are provided by the user-defined [fields](#fields).
 
 An object describing which [`Field`](/docs/api-reference/fields) to show for each prop passed to the component.
 
-```tsx {4-8} copy showLineNumbers
+```tsx {4-8} copy
 const config = {
   components: {
     HeadingBlock: {
@@ -161,7 +161,7 @@ const config = {
       title: "Hello, world",
     },
     render: ({ title }) => {
-      return <p style={{ margin: 0 }}>{title}</p>;
+      return <p>{title}</p>;
     },
   }}
 />
@@ -170,7 +170,7 @@ const config = {
 
 Default props to apply to a new instance of the component.
 
-```tsx {9} copy showLineNumbers
+```tsx {9} copy
 const config = {
   components: {
     HeadingBlock: {
@@ -198,7 +198,7 @@ const config = {
       title: "Hello, world",
     },
     render: ({ title }) => {
-      return <p style={{ margin: 0 }}>{title}</p>;
+      return <p>{title}</p>;
     },
   }}
 />
@@ -209,7 +209,7 @@ Render your component without a wrapping element. Use this to [create advanced C
 
 When `true`, you must to specify which item is draggable via the [`puck.dragRef` prop](#puckdragref).
 
-```tsx {4-5} copy showLineNumbers
+```tsx {4-5} copy
 const config = {
   components: {
     HeadingBlock: {
@@ -233,11 +233,7 @@ const config = {
     },
     inline: true,
     render: ({ title, puck }) => {
-      return (
-        <p style={{ margin: 0 }} ref={puck.dragRef}>
-          {title}
-        </p>
-      );
+      return <p ref={puck.dragRef}>{title}</p>;
     },
   }}
 />
@@ -246,7 +242,7 @@ const config = {
 
 A label to show when referring to your component within the Puck editor. Defaults to the key of your component.
 
-```tsx {4} copy showLineNumbers
+```tsx {4} copy
 const config = {
   components: {
     HeadingBlock: {
@@ -286,7 +282,7 @@ const config = {
 
 Set the [permissions](/docs/api-reference/permissions) for all instances of a component to toggle functionality. Inherits [global permissions](/docs/api-reference/components/puck/#permissions).
 
-```tsx {4-6} copy showLineNumbers
+```tsx {4-6} copy
 const config = {
   components: {
     HeadingBlock: {
@@ -347,7 +343,7 @@ const config = {
       };
     },
     render: ({ resolvedTitle }) => {
-      return <p style={{ margin: 0 }}>{resolvedTitle}</p>;
+      return <p>{resolvedTitle}</p>;
     },
 
 }}
@@ -592,7 +588,7 @@ Dynamically set the [permissions](/docs/api-reference/permissions) for this comp
 
 This function is triggered when the component data changes.
 
-```tsx {4-12} copy filename="Setting permissions for a specific instance" showLineNumbers
+```tsx {4-12} copy filename="Setting permissions for a specific instance"
 const config = {
   components: {
     MyComponent: {

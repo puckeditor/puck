@@ -9,7 +9,7 @@ Puck can be extended with completely custom fields for different use-cases.
 
 Creating a custom field is possible using the [`custom` field type](/docs/api-reference/fields/custom):
 
-```tsx copy showLineNumbers {5-15}
+```tsx copy {5-15}
 const config = {
   components: {
     Example: {
@@ -62,7 +62,7 @@ The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) up
       title: "Hello, world",
     },
     render: ({ title }) => {
-      return <p style={{ margin: 0 }}>{title}</p>;
+      return <p>{title}</p>;
     },
   }}
 />
@@ -71,7 +71,7 @@ The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) up
 
 You can add your own label, but it's recommended to use the [`<FieldLabel>` component](/docs/api-reference/components/field-label) provided by Puck to seamlessly integrate into the Puck field UI.
 
-```tsx copy showLineNumbers {1, 11-13}
+```tsx copy {1, 11-13}
 import { FieldLabel } from "@measured/puck";
 
 const config = {
@@ -123,7 +123,7 @@ const config = {
       title: "Hello, world",
     },
     render: ({ title }) => {
-      return <p style={{ margin: 0 }}>{title}</p>;
+      return <p>{title}</p>;
     },
   }}
 />
@@ -132,7 +132,7 @@ const config = {
 
 Use the [`<AutoField>` component](/docs/api-reference/components/auto-field) to render Puck fields within your custom field.
 
-```tsx copy showLineNumbers {1, 12-16}
+```tsx copy {1, 12-16}
 import { AutoField } from "@measured/puck";
 
 const config = {
@@ -183,7 +183,7 @@ const config = {
       title: "Hello, world",
     },
     render: ({ title }) => {
-      return <p style={{ margin: 0 }}>{title}</p>;
+      return <p>{title}</p>;
     },
   }}
 />
@@ -192,7 +192,7 @@ const config = {
 
 The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) can also be used to modify the [Puck UI state](/docs/api-reference/data-model/app-state#ui) at the same time as updating the field value:
 
-```tsx copy showLineNumbers {14,15}
+```tsx copy {14,15}
 const config = {
   components: {
     Example: {

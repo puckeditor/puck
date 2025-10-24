@@ -87,7 +87,7 @@ To keep the data in sync with the external source, we can combine the `external`
 
 This technique re-fetches the content every time the page is loaded, or the [`resolveAllData` utility](/docs/api-reference/functions/resolve-all-data) is called.
 
-```tsx showLineNumbers {19-37} /id: 0/1 /id: 1/ copy
+```tsx {19-37} /id: 0/1 /id: 1/ copy
 const config = {
   components: {
     Example: {
@@ -174,7 +174,7 @@ Hybrid authoring enables users to edit fields inline, or populate those fields w
 
 This can be achieved by mapping the data from `data.title` to `title` in [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params), and marking the field as read-only.
 
-```tsx showLineNumbers {21,22} copy
+```tsx {21,22} copy
 const config = {
   components: {
     Example: {

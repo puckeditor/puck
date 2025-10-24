@@ -25,7 +25,7 @@ There are two strategies for dealing with this:
 
 The easiest way to avoid breaking changes is to implement your prop changes in a backwards compatible manor:
 
-```tsx copy showLineNumbers {2}
+```tsx copy {2}
 const config = {
   HeadingBlock: ({ title, heading }) => <h1>{heading || title}</h1>,
 };
@@ -35,7 +35,7 @@ const config = {
 
 It will often be preferrable to update the underlying [Data](/docs/api-reference/data-model/data) payload. Puck provides the [`transformProps`](/docs/api-reference/functions/transform-props) utility method to conveniently transform the props for a given component throughout the payload.
 
-```tsx copy showLineNumbers {15-18}
+```tsx copy {15-18}
 import { transformProps } from "@measured/puck";
 
 const config = {
@@ -61,7 +61,7 @@ console.log(updatedData);
 
 You may choose to run this transform every time you render your content, or perform a batch operation against your database.
 
-```tsx copy showLineNumbers filename="Example showing data being updated before rendering"
+```tsx copy filename="Example showing data being updated before rendering"
 import { Puck, Render, transformProps } from "@measured/puck";
 
 const transforms = {

@@ -19,7 +19,7 @@ Select data from a list, typically populated via a third-party API. Extends [Bas
       },
     },
     render: ({ data }) => {
-      return <p style={{ margin: 0 }}>{data?.title || "No data selected"}</p>;
+      return <p>{data?.title || "No data selected"}</p>;
     },
   }}
 />
