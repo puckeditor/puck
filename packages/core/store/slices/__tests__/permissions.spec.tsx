@@ -434,6 +434,84 @@ describe("permissions slice", () => {
       expect(resolveCalls).toBe(4);
     });
 
+    it("should receive the parent component in params", async () => {
+      // Given: --------------
+      const parentPermissions = { parent: true };
+      const outsideParentPermissions = { outsideParent: true };
+      const resolvePermissions = jest.fn((_data, params) => {
+        if (params.parent.type === "Parent") {
+          return parentPermissions;
+        }
+        return outsideParentPermissions;
+      });
+
+      const config: Config = {
+        components: {
+          Child: {
+            resolvePermissions,
+            render: () => <div />,
+          },
+          Parent: {
+            fields: {
+              items: { type: "slot" },
+            },
+            render: ({ items: Content }) => <Content />,
+          },
+        },
+      };
+
+      const childComponent = {
+        type: "Child",
+        props: { id: "child-1" },
+      };
+      const parentComponent = {
+        type: "Parent",
+        props: {
+          id: "parent-1",
+          items: [childComponent],
+        },
+      };
+      const initialData = {
+        ...defaultAppState.data,
+        content: [parentComponent],
+      };
+
+      appStore.setState({
+        config,
+        state: walkAppState(
+          {
+            ...defaultAppState,
+            data: initialData,
+          },
+          config
+        ),
+      });
+
+      // When: --------------
+      renderHook(() =>
+        useRegisterPermissionsSlice(appStore, { testGlobal: true })
+      );
+
+      // Wait for the initial resolvePermissions promises to resolve
+      await waitFor(
+        () => Object.keys(appStore.getState().permissions.cache).length > 0
+      );
+
+      // Then: --------------
+      expect(resolvePermissions).toHaveBeenCalledTimes(1);
+      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
+        parentComponent
+      );
+      expect(
+        appStore.getState().permissions.cache[childComponent.props.id]
+          .lastParentId
+      ).toEqual(parentComponent.props.id);
+      expect(
+        appStore.getState().permissions.cache[childComponent.props.id]
+          .lastPermissions
+      ).toEqual(parentPermissions);
+    });
+
     it("updates if parent changes", async () => {
       // Given: --------------
       const parentPermissions = { parent: true };
