@@ -591,7 +591,7 @@ The parent data object if this item is within a [DropZone](/docs/api-reference/c
 
 Dynamically set the [permissions](/docs/api-reference/permissions) for this component to toggle functionality. Can be used to control the permissions on a specific component instance. Inherits [`permissions`](#permissions). Supports asynchronous calls.
 
-This function is triggered when the component is inserted or loaded in the editor, when its data changes, or when it's moved to a different parent.
+This function is triggered when [`<Puck>`](/docs/api-reference/components/puck) renders, when the component is inserted, when its data changes, or when it's moved to a different parent.
 
 ```tsx {4-12} copy filename="Setting permissions for a specific instance" showLineNumbers
 const config = {
