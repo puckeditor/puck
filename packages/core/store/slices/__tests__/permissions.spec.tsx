@@ -497,6 +497,17 @@ describe("permissions slice", () => {
         () => Object.keys(appStore.getState().permissions.cache).length > 0
       );
 
+      // Then: --------------
+      expect(resolvePermissions).toHaveBeenCalledTimes(1);
+      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
+        parentComponent
+      );
+      expect(
+        appStore.getState().permissions.cache[childComponent.props.id]
+          .lastPermissions
+      ).toEqual(parentPermissions);
+
+      // When: --------------
       await act(async () => {
         const { dispatch } = appStore.getState();
 
@@ -512,20 +523,14 @@ describe("permissions slice", () => {
 
       // Then: --------------
       expect(resolvePermissions).toHaveBeenCalledTimes(2);
-      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
-        parentComponent
-      );
-      expect(resolvePermissions.mock.results[0].value).toEqual(
-        parentPermissions
-      );
-
       expect(resolvePermissions.mock.calls[1][1].parent).toEqual({
         type: "root",
         props: { id: "root" },
       });
-      expect(resolvePermissions.mock.results[1].value).toEqual(
-        outsideParentPermissions
-      );
+      expect(
+        appStore.getState().permissions.cache[childComponent.props.id]
+          .lastPermissions
+      ).toEqual(outsideParentPermissions);
     });
 
     it("doesn't update if moving on the same parent", async () => {
