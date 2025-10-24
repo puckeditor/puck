@@ -2,7 +2,6 @@
 title: ComponentConfig
 ---
 
-import { Callout } from "nextra/components";
 import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
 import { Drawer } from "@/puck";
 
@@ -661,10 +660,7 @@ The last permissions object created by the previous run of this function.
 
 The [component data](/docs/api-reference/data-model/component-data) of the parent.
 
-<Callout type="warning">
-The latest parent's [resolved data](#resolvedatadata-params) won't be available on initial load because resolvers run from bottom to top.  
-To ensure it's ready, use [`resolveAllData`](/docs/api-reference/functions/resolve-all-data) before passing [initial data](/docs/api-reference/components/puck#data) to the `<Puck>` component.
-</Callout>
+Resolvers are executed bottom-up when `<Puck>` renders, so the parent component will only [resolve its data](#resolvedatadata-params) after the child resolver has completed when this happens.
 
 #### Returns
 
