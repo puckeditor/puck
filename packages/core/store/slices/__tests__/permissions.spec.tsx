@@ -499,9 +499,10 @@ describe("permissions slice", () => {
 
       // Then: --------------
       expect(resolvePermissions).toHaveBeenCalledTimes(1);
-      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
-        parentComponent
-      );
+      expect(
+        appStore.getState().permissions.cache[childComponent.props.id]
+          .lastParentId
+      ).toEqual(parentComponent.props.id);
       expect(
         appStore.getState().permissions.cache[childComponent.props.id]
           .lastPermissions
@@ -523,10 +524,10 @@ describe("permissions slice", () => {
 
       // Then: --------------
       expect(resolvePermissions).toHaveBeenCalledTimes(2);
-      expect(resolvePermissions.mock.calls[1][1].parent).toEqual({
-        type: "root",
-        props: { id: "root" },
-      });
+      expect(
+        appStore.getState().permissions.cache[childComponent.props.id]
+          .lastParentId
+      ).toEqual("root");
       expect(
         appStore.getState().permissions.cache[childComponent.props.id]
           .lastPermissions
@@ -615,19 +616,24 @@ describe("permissions slice", () => {
 
       // Then: --------------
       expect(resolvePermissions).toHaveBeenCalledTimes(2);
-      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
-        parentComponent
-      );
-      expect(resolvePermissions.mock.results[0].value).toEqual(
-        parentPermissions
-      );
 
-      expect(resolvePermissions.mock.calls[1][1].parent).toEqual(
-        parentComponent
-      );
-      expect(resolvePermissions.mock.results[1].value).toEqual(
-        parentPermissions
-      );
+      expect(
+        appStore.getState().permissions.cache[childComponent1.props.id]
+          .lastParentId
+      ).toEqual(parentComponent.props.id);
+      expect(
+        appStore.getState().permissions.cache[childComponent1.props.id]
+          .lastPermissions
+      ).toEqual(parentPermissions);
+
+      expect(
+        appStore.getState().permissions.cache[childComponent2.props.id]
+          .lastParentId
+      ).toEqual(parentComponent.props.id);
+      expect(
+        appStore.getState().permissions.cache[childComponent2.props.id]
+          .lastPermissions
+      ).toEqual(parentPermissions);
     });
   });
 
