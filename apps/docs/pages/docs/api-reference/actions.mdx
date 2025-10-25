@@ -17,7 +17,7 @@ Modify the [data payload](/docs/api-reference/data-model/data) currently managed
 
 #### Example
 
-```tsx
+```tsx showLineNumbers copy
 dispatch({
   type: "setData",
   data: {},
@@ -35,7 +35,7 @@ Change a value on Puck's [UI state](/docs/api-reference/data-model/app-state#ui)
 
 #### Example
 
-```tsx
+```tsx showLineNumbers copy
 dispatch({
   type: "setUi",
   ui: {
@@ -55,7 +55,7 @@ Change the entire [AppState](/docs/api-reference/data-model/app-state) in a sing
 
 #### Example
 
-```tsx
+```tsx showLineNumbers copy
 dispatch({
   type: "set",
   state: { data: {}, ui: {} },

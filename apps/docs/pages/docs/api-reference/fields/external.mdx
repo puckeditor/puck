@@ -24,7 +24,7 @@ Select data from a list, typically populated via a third-party API. Extends [Bas
   }}
 />
 
-```tsx {5-15} copy
+```tsx showLineNumbers copy {5-15}
 const config = {
   components: {
     Example: {
@@ -72,7 +72,7 @@ const config = {
 
 The type of the field. Must be `"external"` for Array fields.
 
-```tsx {6} copy
+```tsx showLineNumbers copy {6}
 const config = {
   components: {
     Example: {
@@ -99,7 +99,7 @@ Return a promise with a list of objects to be rendered in a tabular format via t
 
 The table will only render strings and numbers.
 
-```tsx {7-14} copy
+```tsx showLineNumbers copy {7-14}
 const config = {
   components: {
     Example: {
@@ -147,7 +147,7 @@ Puck will automatically cache the output of the [`fetchList()`](#fetchlistqueryp
 
 You can disable this behaviour by setting `cache: { enabled: false }` on your field.
 
-```tsx {7} copy
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -175,7 +175,7 @@ const config = {
 
 An object describing filters for your query using the [Fields API](/docs/api-reference/fields)
 
-```tsx {13-17} copy
+```tsx showLineNumbers copy {13-17}
 const config = {
   components: {
     Example: {
@@ -233,7 +233,7 @@ const config = {
 
 Get the label to show once the item is selected.
 
-```tsx {13} copy
+```tsx showLineNumbers copy {13}
 const config = {
   components: {
     Example: {
@@ -286,7 +286,7 @@ const config = {
 
 The initial filter values when using [`filterFields`](#filterfields).
 
-```tsx {18-20} copy
+```tsx showLineNumbers copy {18-20}
 const config = {
   components: {
     Example: {
@@ -350,7 +350,7 @@ const config = {
 
 Set an initial query when using showing a search input with [`showSearch`](#showsearch).
 
-```tsx {16} copy
+```tsx showLineNumbers copy {16}
 const config = {
   components: {
     Example: {
@@ -422,7 +422,7 @@ const config = {
 
 Modify the shape of the item selected by the user in the table before writing to the page data.
 
-```tsx {13} copy
+```tsx showLineNumbers copy {13}
 const config = {
   components: {
     Example: {
@@ -472,7 +472,7 @@ const config = {
 
 Modify the shape of the item before rendering it in the table. This will not affect the selected data.
 
-```tsx {13} copy
+```tsx showLineNumbers copy {13}
 const config = {
   components: {
     Example: {
@@ -522,7 +522,7 @@ const config = {
 
 Set the placeholder text when no item is selected.
 
-```tsx {13} copy
+```tsx showLineNumbers copy {13}
 const config = {
   components: {
     Example: {
@@ -577,7 +577,7 @@ const config = {
 
 Customize what will be displayed in the footer of the modal.
 
-```tsx {13-15} copy
+```tsx showLineNumbers copy {13-15}
 const config = {
   components: {
     Example: {
@@ -631,7 +631,7 @@ const config = {
 
 Show a search input, the value of which will be passed to `fetchList` as the `query` param.
 
-```tsx {15} copy
+```tsx showLineNumbers copy {15}
 const config = {
   components: {
     Example: {

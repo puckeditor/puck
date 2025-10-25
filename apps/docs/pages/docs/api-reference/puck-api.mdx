@@ -33,7 +33,7 @@ import { Callout } from "nextra/components";
 
 The current [application state](/docs/api-reference/data-model/app-state) for this Puck instance.
 
-```tsx
+```tsx showLineNumbers copy
 console.log(appState.data);
 // { content: [], root: {}, zones: {} }
 ```
@@ -42,7 +42,7 @@ console.log(appState.data);
 
 Execute an [action](/docs/api-reference/actions) to mutate the Puck [application state](/docs/api-reference/data-model/app-state).
 
-```tsx
+```tsx showLineNumbers copy
 dispatch({
   type: "setUi",
   ui: {
@@ -55,7 +55,7 @@ dispatch({
 
 Get an item's [`ComponentData`](/docs/api-reference/data-model/component-data) by its [selector](/docs/api-reference/data-model/item-selector).
 
-```tsx
+```tsx showLineNumbers copy
 getItemBySelector({
   index: 0,
   zone: "Flex-123:children", // The "children" slot field in the component with id "Flex-123"
@@ -67,7 +67,7 @@ getItemBySelector({
 
 Get an item's [`ComponentData`](/docs/api-reference/data-model/component-data) by its component id.
 
-```tsx
+```tsx showLineNumbers copy
 getItemById("HeadingBlock-123");
 // { type: "HeadingBlock", props: {} }
 ```
@@ -76,7 +76,7 @@ getItemById("HeadingBlock-123");
 
 Get an item's [selector](/docs/api-reference/data-model/app-state#uiitemselector) by its component id.
 
-```tsx
+```tsx showLineNumbers copy
 getSelectorForId("HeadingBlock-123");
 // { index: 0, zone: "Flex-123:children" }
 ```
@@ -85,7 +85,7 @@ getSelectorForId("HeadingBlock-123");
 
 Get global, component or resolved dynamic [permissions](/docs/api-reference/permissions).
 
-```tsx
+```tsx showLineNumbers copy
 getPermissions();
 // { delete: true, edit: true }
 ```
@@ -102,7 +102,7 @@ getPermissions();
 
 Specify `item` to retrieve the permissions for a given component instance, resolving any dynamic permissions for that component, as set by the [`resolvePermissions` parameter](/docs/api-reference/configuration/component-config#resolvepermissionsdata-params).
 
-```tsx
+```tsx showLineNumbers copy
 getPermissions({
   item: { type: "HeadingBlock", props: { id: "Heading-1234" } }, // Get resolved permissions for Heading-1234
 });
@@ -111,7 +111,7 @@ getPermissions({
 
 The `getPermissions` function will be redefined when after resolving dynamic permissions, so it's generally required to wrap it in a `useEffect` hook:
 
-```tsx
+```tsx showLineNumbers copy
 const [myPermissions, setMyPermissions] = useState(getPermissions());
 
 useEffect(() => {
@@ -123,7 +123,7 @@ useEffect(() => {
 
 Specify `root` to retrieve the permissions for the `root`, as set by the [`permissions` parameter](/docs/api-reference/configuration/component-config#permissions).
 
-```tsx
+```tsx showLineNumbers copy
 getPermissions({ root: true });
 // { delete: false }
 ```
@@ -132,7 +132,7 @@ getPermissions({ root: true });
 
 Specify `type` to retrieve the permissions for a given component type, as set by the [`permissions` parameter](/docs/api-reference/configuration/component-config#permissions).
 
-```tsx
+```tsx showLineNumbers copy
 getPermissions({ type: "HeadingBlock" });
 // { delete: false }
 ```
@@ -195,7 +195,7 @@ The index of the currently selected history in [`history.histories`](#historyhis
 
 A function to set the history state.
 
-```tsx
+```tsx showLineNumbers copy
 setHistories([]); // clears all history
 ```
 
@@ -203,7 +203,7 @@ setHistories([]); // clears all history
 
 A function to set current history index.
 
-```tsx
+```tsx showLineNumbers copy
 setHistoryIndex(2);
 ```
 
@@ -211,7 +211,7 @@ setHistoryIndex(2);
 
 Force the permissions to refresh, running all [`resolvePermissions` functions](/docs/api-reference/configuration/component-config#resolvepermissionsdata-params) and skipping the cache.
 
-```tsx
+```tsx showLineNumbers copy
 resolvePermissions(); // Refresh all permissions
 ```
 
@@ -227,7 +227,7 @@ resolvePermissions(); // Refresh all permissions
 
 Specify `item` to refresh the permissions for a given component instance only.
 
-```tsx
+```tsx showLineNumbers copy
 refreshPermissions({
   item: { type: "HeadingBlock", props: { id: "Heading-1234" } }, // Force refresh the resolved permissions for Heading-1234
 });
@@ -237,7 +237,7 @@ refreshPermissions({
 
 Specify `root` to refresh the permissions for the `root` only.
 
-```tsx
+```tsx showLineNumbers copy
 refreshPermissions({ root: true });
 ```
 
@@ -245,7 +245,7 @@ refreshPermissions({ root: true });
 
 Specify `type` to refresh the permissions for all components of a given component type.
 
-```tsx
+```tsx showLineNumbers copy
 refreshPermissions({ type: "HeadingBlock" });
 ```
 
@@ -253,7 +253,7 @@ refreshPermissions({ type: "HeadingBlock" });
 
 The currently selected item, as defined by `appState.ui.itemSelector`.
 
-```tsx
+```tsx showLineNumbers copy
 console.log(selectedItem);
 // { type: "Heading", props: {id: "my-heading"} }
 ```

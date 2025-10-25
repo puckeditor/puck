@@ -11,7 +11,7 @@ Configuring the root is similar to [configuring components](component-configurat
 
 Use the [`root` parameter](/docs/api-reference/configuration/config#root) to specify a [`render` function](/docs/api-reference/configuration/component-config#renderprops):
 
-```tsx copy {10-12}
+```tsx showLineNumbers copy {10-12}
 const config = {
   components: {
     HeadingBlock: {
@@ -36,7 +36,7 @@ If you don't render `children`, your components will not be rendered unless you 
 
 Given a minimal data payload containing one **HeadingBlock**
 
-```json copy
+```json showLineNumbers copy
 {
   "content": [
     {
@@ -52,7 +52,7 @@ Given a minimal data payload containing one **HeadingBlock**
 
 the example config will render HTML nodes like this:
 
-```html
+```html showLineNumbers copy
 <!-- root render -->
 <div>
   <!-- HeadingBlock render -->
@@ -68,7 +68,7 @@ Root fields provide user input to the root render method, and can be used to sto
 
 By default, `root` is configured with a `title` text field:
 
-```tsx copy /title/
+```tsx showLineNumbers copy /title/
 const config = {
   // ...
   root: {
@@ -86,7 +86,7 @@ const config = {
 
 You can override the default field configuration by providing custom [Fields](/docs/api-reference/fields) to the [`fields` parameter](/docs/api-reference/configuration/component-config#fields):
 
-```tsx copy {4-7} /description/2,3
+```tsx showLineNumbers copy {4-7} /description/2,3
 const config = {
   // ...
   root: {
@@ -109,7 +109,7 @@ const config = {
 
 When the user modifies the inputs, the editor will produce a data payload like this:
 
-```json copy {6-9}
+```json showLineNumbers copy {6-9}
 {
   "content": [
     // ...
@@ -127,7 +127,7 @@ When the user modifies the inputs, the editor will produce a data payload like t
 
 Generic types can be passed to the `Config` type to strictly type your root configuration:
 
-```tsx copy {1,3-5} /RootProps/2
+```tsx showLineNumbers copy {1,3-5} /RootProps/2
 import type { Config } from "@measured/puck";
 
 type RootProps = {
@@ -143,7 +143,7 @@ const config: Config<{}, RootProps> = {
 
 Provide an object to the [`defaultProps`](/docs/api-reference/configuration/component-config#fields) parameter to configure default props for the root fields:
 
-```tsx copy {8-11}
+```tsx showLineNumbers copy {8-11}
 const config = {
   // ...
   root: {

@@ -73,7 +73,7 @@ This field does render any UI in the form section.
   }}
 />
 
-```tsx {5-7,10} copy
+```tsx showLineNumbers copy {5-7,10}
 const config = {
   components: {
     Example: {
@@ -97,7 +97,7 @@ const config = {
 
 When using TypeScript, make sure to use the `Slot` type so the render prop is correctly transformed.
 
-```tsx
+```tsx showLineNumbers copy
 import { Slot } from "@measured/puck";
 
 type Props = {
@@ -121,7 +121,7 @@ type Props = {
 
 The type of the field. Must be `"slot"` for Slot fields.
 
-```tsx {6} copy
+```tsx showLineNumbers copy {6}
 const config = {
   components: {
     Example: {
@@ -142,7 +142,7 @@ const config = {
 
 Only allow specific components to be dragged into the slot. Will be overwritten by the [`allow` prop](#allow-1) provided to the render function.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -162,7 +162,7 @@ const config = {
 
 Allow all but specific components to be dragged into the slot. Any items in `allow` will override `disallow`. Will be overwritten by the [`disallow` prop](#disallow-1) provided to the render function.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -196,7 +196,7 @@ Slot data is provided to `render()` as a render function (or component). Provide
 
 Only allow specific components to be dragged into the slot. Overrides the [`allow` parameter](#allow) provided to the field.
 
-```tsx copy {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {
@@ -212,7 +212,7 @@ const config = {
 
 Provide a className to the rendered element. The default styles will still be applied.
 
-```tsx copy {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {
@@ -241,7 +241,7 @@ The defaults are set based on the CSS layout of the parent:
 - inline/inline-block: `x`
 - Everything else: `y`
 
-```tsx copy {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {
@@ -257,7 +257,7 @@ const config = {
 
 Allow all but specific components to be dragged into the slot. Any items in `allow` will override `disallow`.
 
-```tsx copy {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {
@@ -273,7 +273,7 @@ const config = {
 
 The minimum height of the slot when empty, in pixels. Defaults to `128`.
 
-```tsx copy {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {
@@ -289,7 +289,7 @@ const config = {
 
 A [React ref](https://react.dev/learn/manipulating-the-dom-with-refs), assigned to the root node of the slot.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -307,7 +307,7 @@ const config = {
 
 Provide a style attribute to the slot. The default styles will still be applied.
 
-```tsx copy {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {

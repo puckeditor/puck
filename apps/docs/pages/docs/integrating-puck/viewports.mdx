@@ -16,7 +16,7 @@ Each of the default viewports have 100% height, filling the available space (via
 
 Customizing the available viewports using the [`viewports` API](/docs/api-reference/components/puck#viewports):
 
-```tsx
+```tsx showLineNumbers copy
 export function Editor() {
   return (
     <Puck
@@ -38,7 +38,7 @@ export function Editor() {
 
 Opt-out of iframe rendering by using the [`iframe` API](/docs/api-reference/components/puck#iframe):
 
-```tsx
+```tsx showLineNumbers copy
 export function Editor() {
   return (
     <Puck
@@ -59,7 +59,7 @@ When implementing a [compositional interface](/docs/extending-puck/composition),
 
 CSS transforms can be used to zoom the viewport without impacting drag-and-drop behaviour.
 
-```tsx {6-8}
+```tsx showLineNumbers copy {6-8}
 import { Puck } from "@measured/puck";
 
 export function Editor() {

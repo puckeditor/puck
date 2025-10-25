@@ -37,7 +37,7 @@ Implement a field with a custom UI. Extends [Base](base).
   }}
 />
 
-```tsx {7-16} copy
+```tsx showLineNumbers copy {7-16}
 import { FieldLabel } from "@measured/puck";
 
 const config = {
@@ -77,7 +77,7 @@ const config = {
 
 The type of the field. Must be `"custom"` for Custom fields.
 
-```tsx {6} copy
+```tsx showLineNumbers copy {6}
 const config = {
   components: {
     Example: {
@@ -103,7 +103,7 @@ const config = {
 
 Render the custom field.
 
-```tsx {9-14} copy
+```tsx showLineNumbers copy {9-14}
 import { FieldLabel } from "@measured/puck";
 
 const config = {
@@ -156,7 +156,7 @@ Enable inline text editing for this field. Only works if the value is a string. 
   When setting `contentEditable`, your [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) prop will be converted to an [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) when rendered inside [`<Puck>`](/docs/api-reference/components/puck) (but not [`<Render>`](/docs/api-reference/components/render)). When using TypeScript, change your `string` to  `string | ReactNode`.
 </Callout>
 
-```tsx {7, 10} copy
+```tsx showLineNumbers copy {7, 10}
 const config = {
   components: {
     Example: {

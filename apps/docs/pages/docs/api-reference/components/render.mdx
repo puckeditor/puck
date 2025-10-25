@@ -6,7 +6,7 @@ title: <Render>
 
 Render a [`Data`](/docs/api-reference/data-model/data) object for a given [`Config`](/docs/api-reference/configuration/config).
 
-```tsx copy
+```tsx showLineNumbers copy
 import { Render } from "@measured/puck";
 
 export function Example() {
@@ -28,7 +28,7 @@ export function Example() {
 
 An object describing the available components, fields and more. See the [`Config` docs](/docs/api-reference/configuration/config) for a full reference.
 
-```tsx {4-17} copy
+```tsx showLineNumbers copy {4-17}
 export function Example() {
   return (
     <Render
@@ -56,7 +56,7 @@ export function Example() {
 
 The data to render against the provided config. See the [`Data` docs](/docs/api-reference/data-model/data) for a full reference.
 
-```tsx {4-12} copy
+```tsx showLineNumbers copy {4-12}
 export function Example() {
   return (
     <Render
@@ -79,7 +79,7 @@ export function Example() {
 
 An object containing additional data provided to each component's [`render`](/docs/api-reference/configuration/component-config#renderprops) and [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) functions.
 
-```tsx {4,8} copy
+```tsx showLineNumbers copy {4,8}
 export function Example() {
   return (
     <Render

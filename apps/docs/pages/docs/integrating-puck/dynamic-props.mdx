@@ -10,7 +10,7 @@ The [`resolveData` function](/docs/api-reference/configuration/component-config#
 
 For example, we can set the value of one prop to another:
 
-```tsx {12-18} copy
+```tsx showLineNumbers copy {12-18}
 const config = {
   components: {
     HeadingBlock: {
@@ -69,7 +69,7 @@ const config = {
 
 [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) also allows us to mark fields as read-only using the [`readOnly` parameter](/docs/api-reference/configuration/component-config#datareadonly-1).
 
-```tsx {17} copy
+```tsx showLineNumbers copy {17}
 const config = {
   components: {
     HeadingBlock: {
@@ -121,7 +121,7 @@ It's possible that `resolveData` may carry out an expensive operation (like an A
 
 This can be restricted by checking the [`changed` param](/docs/api-reference/configuration/component-config#paramschanged) before calling any expensive operations.
 
-```tsx {6} copy
+```tsx showLineNumbers copy {6}
 const config = {
   components: {
     HeadingBlock: {
@@ -145,7 +145,7 @@ const config = {
 
 The `resolveData` method is also available on the [root component](/docs/api-reference/configuration/config#root).
 
-```tsx copy {12-18}
+```tsx showLineNumbers copy {12-18}
 const config = {
   components: {},
   root: {
@@ -180,7 +180,7 @@ const config = {
 
 Resolve data is triggered whenever the props for a component change, or when the [`resolveAllData` utility](/docs/api-reference/functions/resolve-all-data) is used.
 
-```tsx
+```tsx showLineNumbers copy
 import { resolveAllData } from "@measured/puck";
 
 const updatedData = await resolveAllData(data, config);

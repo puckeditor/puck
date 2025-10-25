@@ -6,7 +6,7 @@ title: migrate
 
 Migrate the [Data payload](/docs/api-reference/data-model/data) to the latest shape, automatically transforming deprecated data.
 
-```tsx copy {7-10}
+```tsx showLineNumbers copy {7-10}
 import { migrate } from "@measured/puck";
 
 migrate(legacyData);
@@ -20,7 +20,7 @@ Migrates any props stored on root data to the `props` object.
 
 **Before**
 
-```json
+```json showLineNumbers copy
 {
   "root": {
     "title": "Hello, world"
@@ -30,7 +30,7 @@ Migrates any props stored on root data to the `props` object.
 
 **After**
 
-```json
+```json showLineNumbers copy
 {
   "root": {
     "props": { "title": "Hello, world" }
@@ -44,7 +44,7 @@ Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zo
 
 **Before**
 
-```json {10-20}
+```json showLineNumbers copy {10-20}
 {
   "content": [
     {
@@ -70,7 +70,7 @@ Migrates all [DropZone](/docs/api-reference/components/drop-zone) data from [`zo
 
 **After**
 
-```json {7-15}
+```json showLineNumbers copy {7-15}
 {
   "content": [
     {
@@ -123,7 +123,7 @@ Each migration function receives:
 
 The function should return the updated component props with the migrated zone data.
 
-```tsx
+```tsx showLineNumbers copy
 migrate(legacyData, config, {
   migrateDynamicZonesForComponent: {
     Columns: (props, zones) => {
@@ -140,7 +140,7 @@ migrate(legacyData, config, {
 
 **Before**
 
-```json {16-26}
+```json showLineNumbers copy {16-26}
 {
   "root": {
     "props": {
@@ -172,7 +172,7 @@ migrate(legacyData, config, {
 
 **After**
 
-```json {11-23}
+```json showLineNumbers copy {11-23}
 {
   "root": {
     "props": {

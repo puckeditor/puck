@@ -6,7 +6,7 @@ title: <Puck>
 
 Render the Puck editor.
 
-```tsx copy
+```tsx showLineNumbers copy
 import { Puck } from "@measured/puck";
 
 const config = {
@@ -52,7 +52,7 @@ export function Editor() {
 
 An object describing the available components, fields and more. See the [`Config` docs](/docs/api-reference/configuration/config) for a full reference.
 
-```tsx {4-17} copy
+```tsx showLineNumbers copy {4-17}
 export function Editor() {
   return (
     <Puck
@@ -80,7 +80,7 @@ export function Editor() {
 
 The initial data to render. Cannot be changed once `<Puck>` has been mounted. See the [`Data` docs](/docs/api-reference/data-model/data) for a full reference.
 
-```tsx {4-12} copy
+```tsx showLineNumbers copy {4-12}
 export function Editor() {
   return (
     <Puck
@@ -105,7 +105,7 @@ export function Editor() {
 
 Render custom nodes to create [compositional interfaces](/docs/extending-puck/composition).
 
-```tsx {4} copy
+```tsx showLineNumbers copy {4}
 export function Editor() {
   return (
     <Puck /*...*/>
@@ -133,7 +133,7 @@ Disable auto-scroll when the user drags an item near the edge of the preview are
 
 Specify transforms to modify field values before being passed to the editor canvas. Implements the [Field Transforms API](/docs/api-reference/field-transforms).
 
-```tsx {4} copy
+```tsx showLineNumbers copy {4}
 export function Editor() {
   return (
     <Puck
@@ -150,7 +150,7 @@ export function Editor() {
 
 Set a path to show after the header title
 
-```tsx {4} copy
+```tsx showLineNumbers copy {4}
 export function Editor() {
   return (
     <Puck
@@ -165,7 +165,7 @@ export function Editor() {
 
 Set the title shown in the header
 
-```tsx {4} copy
+```tsx showLineNumbers copy {4}
 export function Editor() {
   return (
     <Puck
@@ -180,7 +180,7 @@ export function Editor() {
 
 Configure the iframe behaviour.
 
-```tsx {4} copy
+```tsx showLineNumbers copy {4}
 export function Editor() {
   return (
     <Puck
@@ -212,7 +212,7 @@ Defer rendering of the Puck preview until the iframe styles have loaded, showing
 
 Sets the undo/redo Puck history state when using the `usePuck` [history API](/docs/api-reference/puck-api#history).
 
-```tsx copy {12-15}
+```tsx showLineNumbers copy {12-15}
 const historyState = {
   data: {
     root: {
@@ -266,7 +266,7 @@ Receives three arguments:
 2. `appState`: The new [`AppState`](/docs/api-reference/data-model/app-state) after the action was applied
 3. `prevAppState`: The previous [`AppState`](/docs/api-reference/data-model/app-state) before the action was applied
 
-```tsx {4-8} copy
+```tsx showLineNumbers copy {4-8}
 export function Editor() {
   return (
     <Puck
@@ -285,7 +285,7 @@ export function Editor() {
 
 An object containing additional data provided to each component's [`render`](/docs/api-reference/configuration/component-config#renderprops) and [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) functions.
 
-```tsx {4,8} copy
+```tsx showLineNumbers copy {4,8}
 export function Editor() {
   return (
     <Puck
@@ -309,7 +309,7 @@ Callback that triggers when the user makes a change.
 
 Receives a single [`Data`](/docs/api-reference/data-model/data) arg.
 
-```tsx {4-6} copy
+```tsx showLineNumbers copy {4-6}
 export function Editor() {
   return (
     <Puck
@@ -328,7 +328,7 @@ Callback that triggers when the user hits the "Publish" button. Use this to save
 
 Receives a single [`Data`](/docs/api-reference/data-model/data) arg.
 
-```tsx {4-9} copy
+```tsx showLineNumbers copy {4-9}
 export function Editor() {
   return (
     <Puck
@@ -348,7 +348,7 @@ export function Editor() {
 
 An [`Overrides`](/docs/api-reference/overrides) object defining custom render methods for various parts of the Puck UI.
 
-```tsx {4-6} copy
+```tsx showLineNumbers copy {4-6}
 export function Editor() {
   return (
     <Puck
@@ -365,7 +365,7 @@ export function Editor() {
 
 Set the global [permissions](/docs/api-reference/permissions) for the Puck instance to toggle Puck functionality.
 
-```tsx {4-6} copy
+```tsx showLineNumbers copy {4-6}
 export function Editor() {
   return (
     <Puck
@@ -382,7 +382,7 @@ export function Editor() {
 
 An array of plugins to enhance Puck's behaviour. See the [Plugin API reference](/docs/api-reference/plugin).
 
-```tsx {6} copy
+```tsx showLineNumbers copy {6}
 import headingAnalyzer from "@measured/puck-plugin-heading-analyzer";
 
 export function Editor() {
@@ -399,7 +399,7 @@ export function Editor() {
 
 Set the initial application UI state. See [`AppState.ui`](/docs/api-reference/data-model/app-state#ui).
 
-```tsx {5} copy
+```tsx showLineNumbers copy {5}
 export function Editor() {
   return (
     <Puck
@@ -415,7 +415,7 @@ export function Editor() {
 
 Configure the viewports available to the user, rendered as an iframe. Puck will select the most appropriate initial viewport based on the user's window size, unless otherwise specified via the [`ui`](#ui) prop.
 
-```tsx {4-8} copy
+```tsx showLineNumbers copy {4-8}
 export function Editor() {
   return (
     <Puck
@@ -466,7 +466,7 @@ Puck uses [Lucide icons](https://lucide.dev/icons/). You can use [lucide-react](
 
 By default, Puck exposes small, medium and large viewports based on common viewport sizes.
 
-```json
+```json showLineNumbers copy
 [
   {
     "width": 360,

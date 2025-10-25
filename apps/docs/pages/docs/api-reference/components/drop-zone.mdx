@@ -12,7 +12,7 @@ The [`<DropZone>` component](/docs/api-reference/components/drop-zone) component
 
 Place droppable regions (zones) inside other components to enable nested components.
 
-```tsx {1,9} copy
+```tsx showLineNumbers copy {1,9}
 import { DropZone } from "@measured/puck";
 
 const config = {
@@ -51,7 +51,7 @@ Set the zone identifier for the given DropZone.
 
 Must be unique within this component, but two different components can both define DropZones with the same `zone` value.
 
-```tsx /zone="my-content"/ copy
+```tsx showLineNumbers copy /zone="my-content"/
 const config = {
   components: {
     Example: {
@@ -73,7 +73,7 @@ const config = {
 
 Only allow specific components to be dragged into the DropZone:
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -93,7 +93,7 @@ const config = {
 
 Provide a className to the DropZone component. The default DropZone styles will still be applied.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -126,7 +126,7 @@ The defaults are set based on the CSS layout of the parent:
 - inline/inline-block: `x`
 - Everything else: `y`
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -146,7 +146,7 @@ const config = {
 
 Allow all but specific components to be dragged into the DropZone. Any items in `allow` will override `disallow`.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -166,7 +166,7 @@ const config = {
 
 The minimum height of the DropZone when empty, in pixels. Defaults to `128`.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {
@@ -186,7 +186,7 @@ const config = {
 
 A [React ref](https://react.dev/learn/manipulating-the-dom-with-refs), assigned to the root node of the DropZone.
 
-```tsx copy {9}
+```tsx showLineNumbers copy {9}
 const config = {
   components: {
     Example: {
@@ -208,7 +208,7 @@ const config = {
 
 Provide a style attribute to the DropZone. The default DropZone styles will still be applied.
 
-```tsx copy {7}
+```tsx showLineNumbers copy {7}
 const config = {
   components: {
     Example: {

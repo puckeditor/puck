@@ -6,7 +6,7 @@ title: usePuck
 
 A hook for accessing the [`PuckApi`](/docs/api-reference/puck-api) as part of your React render lifecycle.. The best way to access `usePuck` is via the `createUsePuck()` factory.
 
-```tsx copy
+```tsx showLineNumbers copy
 import { createUsePuck } from "@measured/puck";
 
 const usePuck = createUsePuck();
@@ -30,7 +30,7 @@ You can also access `usePuck` as a direct export, but you won't be able to use [
 
 A selector function that describes what `usePuck` returns. Receives [`PuckApi`](/docs/api-reference/puck-api) and returns anything. Be as granular as possible to minimize re-renders.
 
-```tsx
+```tsx showLineNumbers copy
 // Good: only re-render when the `selectedItem` changes
 const selectedItem = usePuck((s) => s.selectedItem);
 

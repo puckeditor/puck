@@ -43,7 +43,7 @@ The [`external` field type](/docs/api-reference/fields/external) allows users to
 }}
 />
 
-```tsx {5-17} copy
+```tsx showLineNumbers copy {5-17}
 const config = {
   components: {
     Example: {
@@ -87,7 +87,7 @@ To keep the data in sync with the external source, we can combine the `external`
 
 This technique re-fetches the content every time the page is loaded, or the [`resolveAllData` utility](/docs/api-reference/functions/resolve-all-data) is called.
 
-```tsx {19-37} /id: 0/1 /id: 1/ copy
+```tsx showLineNumbers copy {19-37} /id: 0/1 /id: 1/
 const config = {
   components: {
     Example: {
@@ -174,7 +174,7 @@ Hybrid authoring enables users to edit fields inline, or populate those fields w
 
 This can be achieved by mapping the data from `data.title` to `title` in [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params), and marking the field as read-only.
 
-```tsx {21,22} copy
+```tsx showLineNumbers copy {21,22}
 const config = {
   components: {
     Example: {

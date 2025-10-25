@@ -33,7 +33,7 @@ Render a styled `label` when creating [`custom` fields](/docs/api-reference/fiel
   }}
 />
 
-```tsx {1,4-6} copy
+```tsx showLineNumbers copy {1,4-6}
 import { FieldLabel } from "@measured/puck";
 
 const CustomField = () => (
@@ -73,7 +73,7 @@ const config = {
 
 The label string for the fields.
 
-```tsx /label="Title"/ copy
+```tsx showLineNumbers copy /label="Title"/
 import { FieldLabel } from "@measured/puck";
 
 const CustomField = () => (
@@ -91,7 +91,7 @@ const CustomField = () => (
 
 A node to render inside the FieldLabel's internal `<label>` element. You can also define your input element as a sibling.
 
-```tsx {5} copy
+```tsx showLineNumbers copy {5}
 import { FieldLabel } from "@measured/puck";
 
 const CustomField = () => (
@@ -107,7 +107,7 @@ const CustomField = () => (
 
 Define a custom class for the field label.
 
-```tsx /className="MyClass"/ copy
+```tsx showLineNumbers copy /className="MyClass"/
 import { FieldLabel } from "@measured/puck";
 
 const CustomField = () => (
@@ -123,7 +123,7 @@ const CustomField = () => (
 
 Specify whether to render a `label` or `div`. **Defaults to `"label"`**.
 
-```tsx /el="div"/ copy
+```tsx showLineNumbers copy /el="div"/
 import { FieldLabel } from "@measured/puck";
 
 const CustomField = () => (
@@ -139,7 +139,7 @@ const CustomField = () => (
 
 Render an icon before the label text. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
 
-```tsx /icon={<Globe size="16" />}/ copy
+```tsx showLineNumbers copy /icon={<Globe size="16" />}/
 import { FieldLabel } from "@measured/puck";
 import { Globe } from "lucide-react";
 
@@ -177,7 +177,7 @@ const CustomField = () => (
 
 Indicate to the user that this field is in a read-only state by showing a padlock icon to the right of the text.
 
-```tsx /readOnly/1 copy
+```tsx showLineNumbers copy /readOnly/1
 import { FieldLabel } from "@measured/puck";
 
 const CustomField = () => (

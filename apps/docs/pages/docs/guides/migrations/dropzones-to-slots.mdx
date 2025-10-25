@@ -16,7 +16,7 @@ Replace your `<DropZone>` instances with [slot fields](/docs/api-reference/field
 
 **Before**
 
-```tsx {5}
+```tsx showLineNumbers copy {5}
 const config = {
   components: {
     Example: {
@@ -30,7 +30,7 @@ const config = {
 
 **After**
 
-```tsx {5-7, 10, 13}
+```tsx showLineNumbers copy {5-7, 10, 13}
 const config = {
   components: {
     Example: {
@@ -56,7 +56,7 @@ The slot data model is inline and recursive. This means that instead of storing 
 
 **Before**
 
-```json {10-20}
+```json showLineNumbers copy {10-20}
 {
   "content": [
     {
@@ -82,7 +82,7 @@ The slot data model is inline and recursive. This means that instead of storing 
 
 **After**
 
-```json {7-15}
+```json showLineNumbers copy {7-15}
 {
   "content": [
     {
@@ -108,7 +108,7 @@ The slot data model is inline and recursive. This means that instead of storing 
 
 For new slots, you don't need to do anything. If you're migrating existing DropZones to slots, you will need to migrate your the data accordingly. Puck provides the [`migrate()` helper](/docs/api-reference/functions/migrate) to help with this:
 
-```tsx
+```tsx showLineNumbers copy
 import { migrate } from "@measured/puck";
 import config from "puck.config.tsx";
 
@@ -121,7 +121,7 @@ This will migrate any existing zone in `zones` where you have defined a `slot` w
 
 To migrate DropZone data with dynamic zone names (e.g., those generated when rendering DropZones in a loop), use the [`migrateDynamicZonesForComponent`](/docs/api-reference/functions/migrate#migratedynamiczonesforcomponent) option in the [`migrate()` helper](/docs/api-reference/functions/migrate).
 
-```tsx
+```tsx showLineNumbers copy
 const newData = migrate(legacyData, config, {
   migrateDynamicZonesForComponent: {
     Columns: (props, zones) => {

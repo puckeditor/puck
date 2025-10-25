@@ -16,7 +16,7 @@ Puck supports nested and multi-column layouts across any CSS layout using the [`
 
 Add the [`slot`](/docs/api-reference/fields/slot) field to your component to create a zone that you can drop components into.
 
-```tsx {5-7,10} copy
+```tsx showLineNumbers copy {5-7,10}
 const config = {
   components: {
     Example: {
@@ -92,7 +92,7 @@ const config = {
 
 Combine multiple DropZones to achieve fixed layouts. By default, components inside a DropZone are arranged along the vertical (`block`) axis.
 
-```tsx {5-10,17,18} copy
+```tsx showLineNumbers copy {5-10,17,18}
 const config = {
   components: {
     Example: {
@@ -204,7 +204,7 @@ const config = {
 
 Apply the [CSS display](https://developer.mozilla.org/en-US/docs/Web/CSS/display) property to a slot via the [`style`](/docs/api-reference/components/drop-zone#style) or [`className`](/docs/api-reference/components/drop-zone#className) props to arrange your components in different layouts. Puck supports drag-and-drop for all `display` values, including `grid` and `flex`.
 
-```tsx {12-15} copy
+```tsx showLineNumbers copy {12-15}
 const config = {
   components: {
     Example: {
@@ -298,7 +298,7 @@ For example, this is required if you wish to use CSS rules like `flex-grow`, `gr
 
 Use the [`inline`](/docs/api-reference/configuration/component-config#inline) component parameter to remove the wrapping element. **When using this API, you must also specify which element is draggable by passing the [`puck.dragRef` prop](/docs/api-reference/configuration/component-config#puckdragref) to your element's `ref` prop.**
 
-```tsx {13-14,21,24-28} copy
+```tsx showLineNumbers copy {13-14,21,24-28}
 const config = {
   components: {
     Example: {
@@ -417,7 +417,7 @@ data={{
 
 Use the [`allow`](/docs/api-reference/fields/slot#allow) and [`disallow`](/docs/api-reference/fields/slot#disallow) parameters to restrict which components can be dragged into a slot.
 
-```tsx {6} copy
+```tsx showLineNumbers copy {6}
 const config = {
   components: {
     fields: {
@@ -437,7 +437,7 @@ const config = {
 
 Combine this with [categories](/docs/integrating-puck/categories) to restrict behavior based on your existing groups.
 
-```tsx {2-6,12} copy
+```tsx showLineNumbers copy {2-6,12}
 const config = {
   categories: {
     typography: {
@@ -466,7 +466,7 @@ Alternatively, you can provide `allow` and `disallow` [to your render function](
 
 Use slots with [`defaultProps`](/docs/api-reference/configuration/component-config#defaultprops) to pre-populate it when the component is inserted with an array of [`ComponentData`](/docs/api-reference/data-model/component-data).
 
-```tsx {9-18} copy
+```tsx showLineNumbers copy {9-18}
 const config = {
   components: {
     Example: {

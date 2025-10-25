@@ -14,7 +14,7 @@ Use this API to implement custom rendering behavior for specific field types, wh
 
 Specify a transforms object for the fields you want to modify before rendering:
 
-```tsx
+```tsx showLineNumbers copy
 const fieldTransforms = {
   text: ({ value }) => <div>Value: {value}</div>, // Wrap all text field props in divs
 };
@@ -26,7 +26,7 @@ const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 
 Combine transforms with [Overlay Portals](/docs/integrating-puck/overlay-portals) to make them interactive.
 
-```tsx
+```tsx showLineNumbers copy
 import { registerOverlayPortal } from "@measured/puck";
 
 const EditableText = ({ value }) => {
@@ -58,7 +58,7 @@ const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 
 As with [field type overrides](/docs/extending-puck/ui-overrides#introducing-new-field-types), field transforms let you define your own field types:
 
-```tsx
+```tsx showLineNumbers copy
 const fieldTransforms = {
   example: () => <div />,
 };
@@ -68,7 +68,7 @@ const fieldTransforms = {
 
 Distribute transforms as plugins to package up custom behavior.
 
-```tsx
+```tsx showLineNumbers copy
 const plugin = {
   fieldTransforms: {
     example: ({ value }) => <div>{value}</div>, // Wrap all example fields with divs
