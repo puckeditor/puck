@@ -14,16 +14,10 @@
   cursor: pointer;
   display: flex;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--puck-font-size-xxs);
   justify-content: space-between;
-  padding: 12px 15px;
+  padding: 12px 16px;
   width: 100%;
-}
-
-@media (min-width: 458px) {
-  .Select-trigger {
-    font-size: 14px;
-  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -89,12 +83,12 @@
 
 .Select-option {
   align-items: center;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
-  font-size: 14px;
+  font-size: var(--puck-font-size-xxs);
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 8px 12px;
   user-select: none;
 }
 
@@ -148,7 +142,7 @@
   color: inherit;
   flex: 1;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--puck-font-size-xxs);
   outline: none;
   padding: 0;
 }
@@ -161,7 +155,7 @@
   align-items: center;
   color: var(--puck-color-grey-07);
   display: flex;
-  font-size: 14px;
+  font-size: var(--puck-font-size-xxs);
   justify-content: center;
   padding: 8px 12px;
   justify-content: flex-start;

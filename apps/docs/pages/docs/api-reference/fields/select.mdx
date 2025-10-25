@@ -51,9 +51,9 @@ const config = {
 | ----------------------------------------- | ----------------------------------------------------- | -------- | -------- |
 | [`type`](#type)                           | `type: "select"`                                      | "select" | Required |
 | [`options`](#options)                     | `options: [{ label: "Option 1", value: "option-1" }]` | Object[] | Required |
-| [`placeholder`](#placeholder)             | `placeholder: "Select an option..."`                  | string   | Optional |
+| [`placeholder`](#placeholder)             | `placeholder: "Select an option..."`                  | String   | Optional |
 | [`searchable`](#searchable)               | `searchable: true`                                    | boolean  | Optional |
-| [`searchPlaceholder`](#searchplaceholder) | `searchPlaceholder: "Search..."`                      | string   | Optional |
+| [`searchPlaceholder`](#searchplaceholder) | `searchPlaceholder: "Search..."`                      | String   | Optional |
 
 ## Required params
 
@@ -159,7 +159,7 @@ const config = {
 
 ### `searchable`
 
-Enables search functionality in the dropdown. When `true`, a search input appears at the top of the dropdown.
+Enable search functionality. When `true`, a search input appears at the top of the dropdown.
 
 ```tsx {7} copy
 const config = {
