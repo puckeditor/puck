@@ -1,6 +1,7 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { Button as _Button } from "@/core/components/Button";
+import {  RectangleEllipsis } from "lucide-react";
 
 export type ButtonProps = {
   label: string;
@@ -10,6 +11,7 @@ export type ButtonProps = {
 
 export const Button: ComponentConfig<ButtonProps> = {
   label: "Button",
+  icon: <RectangleEllipsis size={16} />,
   fields: {
     label: {
       type: "text",

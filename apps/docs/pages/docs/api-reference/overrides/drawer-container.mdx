@@ -1,0 +1,129 @@
+---
+title: drawerContainer
+---
+
+# drawerContainer
+
+Override the container that wraps the component drawer items. When provided, completely replaces the default drawer container while receiving all necessary props for drag-and-drop functionality.
+
+```tsx copy
+const overrides = {
+  drawerContainer: ({ children, className, ref, ...props }) => (
+    <div 
+      className={className} 
+      ref={ref} 
+      {...props}
+      style={{ border: "2px solid blue" }}
+    >
+      {children}
+    </div>
+  ),
+};
+```
+
+**Important**: When using this override, you must provide a complete implementation. The override completely replaces the default container, so ensure you pass through the required props for drag-and-drop functionality to work.
+
+## Props
+
+| Prop                              | Example                    | Type      | Description |
+| --------------------------------- | -------------------------- | --------- | ----------- |
+| [`children`](#children)           | `<div />`                  | ReactNode | The drawer items |
+| [`className`](#classname)         | `"Drawer-abc123"`          | string    | CSS class for styling |
+| [`ref`](#ref)                     | `ref`                      | RefObject | React ref for drag-and-drop |
+| [`data-puck-dnd`](#data-puck-dnd) | `"drawer-123"`             | string    | Drag-and-drop identifier |
+| [`data-puck-drawer`](#data-puck-drawer) | `true`               | boolean   | Marks as drawer container |
+| [`data-puck-dnd-void`](#data-puck-dnd-void) | `true`           | boolean   | Drag-and-drop collision handling |
+
+### `children`
+
+The drawer items to be rendered inside the container.
+
+### `className`
+
+The CSS class name for styling the drawer. Pass this through to maintain default styling.
+
+### `ref`
+
+React ref required for drag-and-drop functionality. Must be passed through.
+
+### `data-puck-dnd`
+
+Unique identifier for drag-and-drop operations. Must be passed through.
+
+### `data-puck-drawer`
+
+Boolean flag marking this as a drawer container. Must be passed through.
+
+### `data-puck-dnd-void`
+
+Flag for drag-and-drop collision handling. Must be passed through.
+
+## Examples
+
+### Custom styling while preserving functionality
+```tsx copy
+const overrides = {
+  drawerContainer: ({ children, className, ref, ...props }) => (
+    <div 
+      className={`${className} my-custom-class`} 
+      ref={ref} 
+      {...props}
+      style={{ background: "lightblue", padding: "8px" }}
+    >
+      {children}
+    </div>
+  ),
+};
+```
+
+### Adding header while preserving drag-and-drop
+```tsx copy
+const overrides = {
+  drawerContainer: ({ children, className, ref, ...props }) => (
+    <div>
+      <h3>Available Components</h3>
+      <div className={className} ref={ref} {...props}>
+        {children}
+      </div>
+    </div>
+  ),
+};
+```
+
+### Grid layout that fills available space
+```tsx copy
+const overrides = {
+  drawerContainer: ({ children, className, ref, ...props }) => (
+    <div 
+      className={className} 
+      ref={ref} 
+      {...props}
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(64px, 1fr))",
+        gap: 16,
+      }}
+    >
+      {children}
+    </div>
+  ),
+};
+```
+
+### Completely custom container
+```tsx copy
+const overrides = {
+  drawerContainer: ({ children, className, ref, ...props }) => (
+    <section 
+      className="my-drawer-section" 
+      ref={ref} 
+      {...props} // Important: must pass through for drag-and-drop
+    >
+      <header>My Components</header>
+      <div className="drawer-content">
+        {children}
+      </div>
+    </section>
+  ),
+};
+```

@@ -1,5 +1,5 @@
 import React from "react";
-import { ALargeSmall, AlignLeft } from "lucide-react";
+import { ALargeSmall, AlignLeft, TypeIcon } from "lucide-react";
 
 import { ComponentConfig } from "@/core/types";
 import { Section } from "../../components/Section";
@@ -15,6 +15,7 @@ export type TextProps = WithLayout<{
 }>;
 
 const TextInner: ComponentConfig<TextProps> = {
+  icon: <TypeIcon size={16} />,
   fields: {
     text: {
       type: "textarea",

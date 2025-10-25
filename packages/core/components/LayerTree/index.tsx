@@ -28,6 +28,7 @@ const Layer = ({
 }) => {
   const config = useAppStore((s) => s.config);
   const itemSelector = useAppStore((s) => s.state.ui.itemSelector);
+  const showComponentIconsInOutline = useAppStore((s) => s.showComponentIconsInOutline);
   const dispatch = useAppStore((s) => s.dispatch);
 
   const setItemSelector = useCallback(
@@ -77,6 +78,17 @@ const Layer = ({
   const componentConfig: ComponentConfig | undefined =
     config.components[nodeData.data.type];
   const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
+  const componentIcon = componentConfig?.["icon"];
+
+  const getComponentIcon = () => {
+    if (showComponentIconsInOutline && componentIcon) {
+      return componentIcon;
+    }
+    if (nodeData.data.type === "Text" || nodeData.data.type === "Heading") {
+      return <Type size="16" />;
+    }
+    return <LayoutGrid size="16" />;
+  };
 
   return (
     <li
@@ -138,14 +150,11 @@ const Layer = ({
             </div>
           )}
           <div className={getClassNameLayer("title")}>
-            <div className={getClassNameLayer("icon")}>
-              {nodeData.data.type === "Text" ||
-              nodeData.data.type === "Heading" ? (
-                <Type size="16" />
-              ) : (
-                <LayoutGrid size="16" />
-              )}
-            </div>
+            {(
+              <div className={getClassNameLayer("icon")}>
+                {getComponentIcon()}
+              </div>
+            )}
             <div className={getClassNameLayer("name")}>{label}</div>
           </div>
         </button>
