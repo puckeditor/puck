@@ -72,10 +72,5 @@ export async function resolveAllData<
     zones: await processZones(),
   };
 
-  Object.keys(defaultedData.zones ?? {}).forEach(async (zoneKey) => {
-    const content = defaultedData.zones![zoneKey];
-    dynamic.zones![zoneKey] = await processContent(content);
-  }, {});
-
   return dynamic as Data<Components, RootProps>;
 }
