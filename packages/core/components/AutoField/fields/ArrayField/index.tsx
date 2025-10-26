@@ -27,6 +27,7 @@ export const ArrayField = ({
   readOnly,
   id,
   Label = (props) => <div {...props} />,
+  hiddenLabelIcon,
 }: FieldPropsInternal) => {
   const thisArrayState = useAppStore((s) => s.state.ui.arrayState[id]);
   const setUi = useAppStore((s) => s.setUi);
@@ -162,6 +163,7 @@ export const ArrayField = ({
       icon={labelIcon || <List size={16} />}
       el="div"
       readOnly={readOnly}
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       <SortableProvider
         onDragStart={(id) => setDraggedItem(id)}

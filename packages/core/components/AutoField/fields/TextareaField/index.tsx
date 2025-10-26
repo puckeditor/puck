@@ -15,12 +15,14 @@ export const TextareaField = ({
   labelIcon,
   Label,
   id,
+  hiddenLabelIcon,
 }: FieldPropsInternal) => {
   return (
     <Label
       label={label || name}
       icon={labelIcon || <Type size={16} />}
       readOnly={readOnly}
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       <textarea
         id={id}

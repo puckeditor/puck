@@ -11,6 +11,7 @@ type FieldOptions = Array<FieldOption> | ReadonlyArray<FieldOption>;
 export interface BaseField {
   label?: string;
   labelIcon?: ReactElement;
+  hiddenLabelIcon?: boolean;
   metadata?: FieldMetadata;
   visible?: boolean;
 }

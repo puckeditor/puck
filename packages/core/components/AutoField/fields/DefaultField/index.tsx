@@ -15,6 +15,7 @@ export const DefaultField = ({
   labelIcon,
   Label,
   id,
+  hiddenLabelIcon,
 }: FieldPropsInternal) => {
   const value = _value as string | number | undefined | null;
 
@@ -30,6 +31,7 @@ export const DefaultField = ({
         )
       }
       readOnly={readOnly}
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       <input
         className={getClassName("input")}

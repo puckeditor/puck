@@ -15,6 +15,7 @@ export const SelectField = ({
   name,
   readOnly,
   id,
+  hiddenLabelIcon,
 }: FieldPropsInternal) => {
   if (field.type !== "select" || !field.options) {
     return null;
@@ -25,6 +26,7 @@ export const SelectField = ({
       label={label || name}
       icon={labelIcon || <ChevronDown size={16} />}
       readOnly={readOnly}
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       <select
         id={id}

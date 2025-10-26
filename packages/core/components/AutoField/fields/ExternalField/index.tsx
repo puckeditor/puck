@@ -18,6 +18,7 @@ export const ExternalField = ({
   Label,
   id,
   readOnly,
+  hiddenLabelIcon,
 }: FieldPropsInternal) => {
   // DEPRECATED
   const validField = field as ExternalFieldType;
@@ -40,6 +41,7 @@ export const ExternalField = ({
       label={label || name}
       icon={labelIcon || <Link size={16} />}
       el="div"
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       <ExternalInput
         name={name}

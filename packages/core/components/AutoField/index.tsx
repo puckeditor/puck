@@ -36,6 +36,7 @@ export const FieldLabel = ({
   el = "label",
   readOnly,
   className,
+  hiddenLabelIcon,
 }: {
   children?: ReactNode;
   icon?: ReactNode;
@@ -43,12 +44,17 @@ export const FieldLabel = ({
   el?: "label" | "div";
   readOnly?: boolean;
   className?: string;
+  hiddenLabelIcon?: boolean;
 }) => {
   const El = el;
   return (
     <El className={className}>
       <div className={getClassName("label")}>
-        {icon ? <div className={getClassName("labelIcon")}>{icon}</div> : <></>}
+        {!hiddenLabelIcon && icon ? (
+          <div className={getClassName("labelIcon")}>{icon}</div>
+        ) : (
+          <></>
+        )}
         {label}
 
         {readOnly && (
@@ -68,6 +74,7 @@ type FieldLabelPropsInternal = {
   label?: string;
   el?: "label" | "div";
   readOnly?: boolean;
+  hiddenLabelIcon?: boolean;
 };
 
 export const FieldLabelInternal = ({
@@ -76,6 +83,7 @@ export const FieldLabelInternal = ({
   label,
   el = "label",
   readOnly,
+  hiddenLabelIcon,
 }: FieldLabelPropsInternal) => {
   const overrides = useAppStore((s) => s.overrides);
 
@@ -95,6 +103,7 @@ export const FieldLabelInternal = ({
       className={getClassName({ readOnly })}
       readOnly={readOnly}
       el={el}
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       {children}
     </Wrapper>
@@ -108,6 +117,7 @@ type FieldPropsInternalOptional<ValueType = any, F = Field<any>> = FieldProps<
   Label?: React.FC<FieldLabelPropsInternal>;
   label?: string;
   labelIcon?: ReactNode;
+  hiddenLabelIcon?: boolean;
   name?: string;
 };
 
@@ -118,6 +128,7 @@ export type FieldPropsInternal<ValueType = any, F = Field<any>> = FieldProps<
   Label: React.FC<FieldLabelPropsInternal>;
   label?: string;
   labelIcon?: ReactNode;
+  hiddenLabelIcon?: boolean;
   id: string;
   name?: string;
 };
@@ -151,6 +162,7 @@ function AutoFieldInternal<
   const field = props.field as Field<ValueType>;
   const label = field.label;
   const labelIcon = field.labelIcon;
+  const hiddenLabelIcon = field.hiddenLabelIcon;
 
   const defaultId = useSafeId();
   const resolvedId = id || defaultId;
@@ -176,10 +188,11 @@ function AutoFieldInternal<
       field,
       label,
       labelIcon,
+      hiddenLabelIcon,
       Label,
       id: resolvedId,
     }),
-    [props, field, label, labelIcon, Label, resolvedId]
+    [props, field, label, labelIcon, hiddenLabelIcon, Label, resolvedId]
   );
 
   const onFocus = useCallback(

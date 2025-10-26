@@ -16,6 +16,7 @@ export const ObjectField = ({
   Label,
   readOnly,
   id,
+  hiddenLabelIcon,
 }: FieldPropsInternal) => {
   const { readOnlyFields, localName = name } = useNestedFieldContext();
 
@@ -31,6 +32,7 @@ export const ObjectField = ({
       icon={labelIcon || <MoreVertical size={16} />}
       el="div"
       readOnly={readOnly}
+      hiddenLabelIcon={hiddenLabelIcon}
     >
       <div className={getClassName()}>
         <fieldset className={getClassName("fieldset")}>
