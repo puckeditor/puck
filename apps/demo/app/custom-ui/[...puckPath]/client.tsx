@@ -67,7 +67,7 @@ const CustomHeader = ({ onPublish }: { onPublish: (data: Data) => void }) => {
           </Button>
           <Button
             onClick={() => onPublish(getPuck().appState.data)}
-            icon={<Globe size="14" />}
+            icon={<Globe size={14} />}
           >
             Publish
           </Button>

@@ -3,7 +3,7 @@ import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
 import { AutoField, FieldLabel } from "@/core";
-import { Link2 } from "lucide-react";
+import { Link2, Sun } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 
 export const Hero: ComponentConfig<{
@@ -15,11 +15,13 @@ export const Hero: ComponentConfig<{
     };
   };
 }> = {
+  label: "Hero",
   fields: {
     quote: {
+      label: "Quote",
       type: "external",
       placeholder: "Select a quote",
-      showSearch: false,
+      showSearch: true,
       renderFooter: ({ items }) => {
         return (
           <div>
@@ -29,6 +31,7 @@ export const Hero: ComponentConfig<{
       },
       filterFields: {
         author: {
+          label: "Author",
           type: "select",
           options: [
             { value: "", label: "Select an author" },
@@ -80,50 +83,76 @@ export const Hero: ComponentConfig<{
       },
       getItemSummary: (item) => item.label,
     },
-    title: { type: "text", contentEditable: true },
-    description: { type: "textarea", contentEditable: true },
+    title: {
+      label: "Title",
+      type: "text",
+      contentEditable: true,
+    },
+    description: {
+      label: "Description",
+      type: "textarea",
+      contentEditable: true,
+    },
     buttons: {
+      label: "Action Buttons",
       type: "array",
       min: 1,
       max: 4,
       getItemSummary: (item) => item.label || "Button",
       arrayFields: {
-        label: { type: "text", contentEditable: true },
-        href: { type: "text" },
+        label: {
+          label: "Button Text",
+          type: "text",
+          contentEditable: true,
+        },
+        href: {
+          label: "Link URL",
+          type: "text",
+        },
         variant: {
+          label: "Variant",
           type: "select",
           options: [
-            { label: "primary", value: "primary" },
-            { label: "secondary", value: "secondary" },
+            { label: "Primary", value: "primary" },
+            { label: "Secondary", value: "secondary" },
           ],
         },
       },
       defaultItemProps: {
-        label: "Button",
+        label: "Get Started",
         href: "#",
+        variant: "primary",
       },
     },
     align: {
+      label: "Alignment",
       type: "radio",
       options: [
-        { label: "left", value: "left" },
-        { label: "center", value: "center" },
+        { label: "Left", value: "left" },
+        { label: "Center", value: "center" },
       ],
     },
     image: {
+      label: "Image",
       type: "object",
       objectFields: {
-        content: { type: "slot" },
+        content: {
+          label: "Custom Content",
+          type: "slot",
+        },
         url: {
+          label: "Image URL",
           type: "custom",
           render: ({ value, field, name, onChange, readOnly }) => (
             <FieldLabel
               label={field.label || name}
               readOnly={readOnly}
-              icon={<Link2 size="16" />}
+              icon={<Link2 size={16} />}
             >
               <AutoField
-                field={{ type: "text" }}
+                field={{
+                  type: "text",
+                }}
                 value={value}
                 onChange={onChange}
                 readOnly={readOnly}
@@ -132,22 +161,28 @@ export const Hero: ComponentConfig<{
           ),
         },
         mode: {
+          label: "Image mode",
           type: "radio",
           options: [
-            { label: "inline", value: "inline" },
-            { label: "bg", value: "background" },
-            { label: "custom", value: "custom" },
+            { label: "Inline", value: "inline" },
+            { label: "Background", value: "background" },
+            { label: "Custom", value: "custom" },
           ],
         },
       },
     },
-    padding: { type: "userField", option: true },
+    padding: {
+      label: "Vertical padding",
+      type: "userField",
+      option: true,
+    },
   },
   defaultProps: {
-    title: "Hero",
+    title: "Build something amazing",
     align: "left",
-    description: "Description",
-    buttons: [{ label: "Learn more", href: "#" }],
+    description:
+      "A powerful hero section that captures attention and drives engagement.",
+    buttons: [{ label: "Get Started", href: "#", variant: "primary" }],
     padding: "64px",
   },
   /**

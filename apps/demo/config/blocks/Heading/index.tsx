@@ -5,6 +5,7 @@ import { Heading as _Heading } from "@/core/components/Heading";
 import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { TextAlignStart } from "lucide-react";
 
 export type HeadingProps = WithLayout<{
   align: "left" | "center" | "right";
@@ -14,40 +15,46 @@ export type HeadingProps = WithLayout<{
 }>;
 
 const sizeOptions = [
-  { value: "xxxl", label: "XXXL" },
-  { value: "xxl", label: "XXL" },
-  { value: "xl", label: "XL" },
-  { value: "l", label: "L" },
-  { value: "m", label: "M" },
-  { value: "s", label: "S" },
-  { value: "xs", label: "XS" },
+  { label: "XXXL", value: "xxxl" },
+  { label: "XXL", value: "xxl" },
+  { label: "XL", value: "xl" },
+  { label: "L", value: "l" },
+  { label: "M", value: "m" },
+  { label: "S", value: "s" },
+  { label: "XS", value: "xs" },
 ];
 
 const levelOptions = [
-  { label: "", value: "" },
-  { label: "1", value: "1" },
-  { label: "2", value: "2" },
-  { label: "3", value: "3" },
-  { label: "4", value: "4" },
-  { label: "5", value: "5" },
-  { label: "6", value: "6" },
+  { label: "-", value: "" },
+  { label: "H1", value: "1" },
+  { label: "H2", value: "2" },
+  { label: "H3", value: "3" },
+  { label: "H4", value: "4" },
+  { label: "H5", value: "5" },
+  { label: "H6", value: "6" },
 ];
 
 const HeadingInternal: ComponentConfig<HeadingProps> = {
+  label: "Heading",
   fields: {
     text: {
+      label: "Text",
       type: "textarea",
       contentEditable: true,
     },
     size: {
+      label: "Size",
       type: "select",
       options: sizeOptions,
     },
     level: {
-      type: "select",
+      label: "Heading level",
+      type: "radio",
       options: levelOptions,
     },
     align: {
+      label: "Alignment",
+      labelIcon: <TextAlignStart size={16} />,
       type: "radio",
       options: [
         { label: "Left", value: "left" },
@@ -60,6 +67,7 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
     align: "left",
     text: "Heading",
     size: "m",
+    level: "1",
     layout: {
       padding: "8px",
     },

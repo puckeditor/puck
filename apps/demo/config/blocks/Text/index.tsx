@@ -1,5 +1,5 @@
 import React from "react";
-import { ALargeSmall, AlignLeft } from "lucide-react";
+import { ALargeSmall, TextAlignStart } from "lucide-react";
 
 import { ComponentConfig } from "@/core/types";
 import { Section } from "../../components/Section";
@@ -15,22 +15,26 @@ export type TextProps = WithLayout<{
 }>;
 
 const TextInner: ComponentConfig<TextProps> = {
+  label: "Text",
   fields: {
     text: {
+      label: "Text",
       type: "textarea",
       contentEditable: true,
     },
     size: {
+      label: "Font size",
       type: "select",
       labelIcon: <ALargeSmall size={16} />,
       options: [
-        { label: "S", value: "s" },
-        { label: "M", value: "m" },
+        { label: "Small", value: "s" },
+        { label: "Medium", value: "m" },
       ],
     },
     align: {
+      label: "Alignment",
       type: "radio",
-      labelIcon: <AlignLeft size={16} />,
+      labelIcon: <TextAlignStart size={16} />,
       options: [
         { label: "Left", value: "left" },
         { label: "Center", value: "center" },
@@ -38,13 +42,18 @@ const TextInner: ComponentConfig<TextProps> = {
       ],
     },
     color: {
+      label: "Color",
       type: "radio",
       options: [
         { label: "Default", value: "default" },
         { label: "Muted", value: "muted" },
       ],
     },
-    maxWidth: { type: "text" },
+    maxWidth: {
+      label: "Max width",
+      type: "text",
+      placeholder: "e.g. 800px, 90%",
+    },
   },
   defaultProps: {
     align: "left",

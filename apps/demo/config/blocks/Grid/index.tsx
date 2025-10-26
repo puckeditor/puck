@@ -14,6 +14,7 @@ export type GridProps = {
 };
 
 export const GridInternal: ComponentConfig<GridProps> = {
+  label: "Grid",
   fields: {
     numColumns: {
       type: "number",
@@ -27,6 +28,7 @@ export const GridInternal: ComponentConfig<GridProps> = {
       min: 0,
     },
     items: {
+      label: "Grid items",
       type: "slot",
     },
   },

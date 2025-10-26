@@ -53,7 +53,7 @@ export const FieldLabel = ({
 
         {readOnly && (
           <div className={getClassName("disabledIcon")} title="Read-only">
-            <Lock size="12" />
+            <Lock size={12} />
           </div>
         )}
       </div>

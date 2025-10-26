@@ -15,22 +15,29 @@ export type StatsProps = {
 };
 
 export const Stats: ComponentConfig<StatsProps> = {
+  label: "Stats",
   fields: {
     items: {
+      label: "Statistics",
       type: "array",
-      getItemSummary: (item, i) => item.title || `Feature #${i}`,
+      getItemSummary: (item, i) =>
+        item.title || `Stat #${i !== undefined ? i + 1 : 1}`,
       defaultItemProps: {
-        title: "Stat",
+        title: "Stat Label",
         description: "1,000",
       },
       arrayFields: {
         title: {
+          label: "Label",
           type: "text",
           contentEditable: true,
+          placeholder: "Total Users",
         },
         description: {
+          label: "Value",
           type: "text",
           contentEditable: true,
+          placeholder: "1,234,567",
         },
       },
     },
@@ -38,8 +45,8 @@ export const Stats: ComponentConfig<StatsProps> = {
   defaultProps: {
     items: [
       {
-        title: "Stat",
-        description: "1,000",
+        title: "Active Users",
+        description: "1,234",
       },
     ],
   },

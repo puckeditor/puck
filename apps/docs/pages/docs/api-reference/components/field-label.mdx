@@ -139,12 +139,12 @@ const CustomField = () => (
 
 Render an icon before the label text. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
 
-```tsx /icon={<Globe size="16" />}/ copy
+```tsx /icon={<Globe size={16} />}/ copy
 import { FieldLabel } from "@measured/puck";
 import { Globe } from "lucide-react";
 
 const CustomField = () => (
-  <FieldLabel icon={<Globe size="16" />} label="Title">
+  <FieldLabel icon={<Globe size={16} />} label="Title">
     <input />
   </FieldLabel>
 );
@@ -160,7 +160,7 @@ const CustomField = () => (
         type: "custom",
         render: () => {
           return (
-            <FieldLabel label="Title" icon={<Globe size="16" />}>
+            <FieldLabel label="Title" icon={<Globe size={16} />}>
               <input style={{ border: "1px solid black" }} />
             </FieldLabel>
           );

@@ -143,7 +143,7 @@ export const ExternalInput = ({
             )
           ) : (
             <>
-              <Link size="16" />
+              <Link size={16} />
               <span>{field.placeholder}</span>
             </>
           )}
@@ -183,7 +183,7 @@ export const ExternalInput = ({
                     Search
                   </span>
                   <div className={getClassNameModal("searchIcon")}>
-                    <Search size="18" />
+                    <Search size={18} />
                   </div>
                   <input
                     className={getClassNameModal("searchInput")}

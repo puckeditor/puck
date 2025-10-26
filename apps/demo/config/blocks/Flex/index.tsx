@@ -8,7 +8,7 @@ import { WithLayout, withLayout } from "../../components/Layout";
 const getClassName = getClassNameFactory("Flex", styles);
 
 export type FlexProps = WithLayout<{
-  justifyContent: "start" | "center" | "end";
+  justifyContent: "start" | "center" | "end" | "space-between" | "space-around";
   direction: "row" | "column";
   gap: number;
   wrap: "wrap" | "nowrap";
@@ -16,6 +16,7 @@ export type FlexProps = WithLayout<{
 }>;
 
 const FlexInternal: ComponentConfig<FlexProps> = {
+  label: "Flex Container",
   fields: {
     direction: {
       label: "Direction",
@@ -26,28 +27,33 @@ const FlexInternal: ComponentConfig<FlexProps> = {
       ],
     },
     justifyContent: {
-      label: "Justify Content",
-      type: "radio",
+      label: "Justify content",
+      type: "select",
       options: [
         { label: "Start", value: "start" },
         { label: "Center", value: "center" },
         { label: "End", value: "end" },
+        { label: "Between", value: "space-between" },
+        { label: "Around", value: "space-around" },
       ],
     },
     gap: {
       label: "Gap",
       type: "number",
       min: 0,
+      max: 100,
+      step: 4,
     },
     wrap: {
       label: "Wrap",
       type: "radio",
       options: [
-        { label: "true", value: "wrap" },
-        { label: "false", value: "nowrap" },
+        { label: "Yes", value: "wrap" },
+        { label: "No", value: "nowrap" },
       ],
     },
     items: {
+      label: "Content",
       type: "slot",
     },
   },

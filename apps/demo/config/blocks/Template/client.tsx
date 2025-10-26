@@ -28,10 +28,12 @@ async function createComponent<T extends keyof Components>(
 type TemplateData = Record<string, { label: string; data: Slot }>;
 
 export const TemplateInternal: ComponentConfig<TemplateProps> = {
+  label: "Template",
   fields: {
     template: {
+      label: "Template",
       type: "custom",
-      render: ({ name, value, onChange }) => {
+      render: ({ value, field, name, onChange }) => {
         const templateKey = `puck-demo-templates:${componentKey}`;
 
         const props = usePuck((s) => s.selectedItem?.props) as
@@ -43,7 +45,7 @@ export const TemplateInternal: ComponentConfig<TemplateProps> = {
         );
 
         return (
-          <FieldLabel label={name}>
+          <FieldLabel label={field.label || name}>
             <AutoField
               value={value}
               onChange={onChange}
@@ -113,6 +115,7 @@ export const TemplateInternal: ComponentConfig<TemplateProps> = {
       },
     },
     children: {
+      label: "Content",
       type: "slot",
     },
   },

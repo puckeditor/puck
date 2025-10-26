@@ -134,16 +134,16 @@ const Layer = ({
               className={getClassNameLayer("chevron")}
               title={isSelected ? "Collapse" : "Expand"}
             >
-              <ChevronDown size="12" />
+              <ChevronDown size={12} />
             </div>
           )}
           <div className={getClassNameLayer("title")}>
             <div className={getClassNameLayer("icon")}>
               {nodeData.data.type === "Text" ||
               nodeData.data.type === "Heading" ? (
-                <Type size="16" />
+                <Type size={16} />
               ) : (
-                <LayoutGrid size="16" />
+                <LayoutGrid size={16} />
               )}
             </div>
             <div className={getClassNameLayer("name")}>{label}</div>
@@ -196,7 +196,7 @@ export const LayerTree = ({
       {label && (
         <div className={getClassName("zoneTitle")}>
           <div className={getClassName("zoneIcon")}>
-            <Layers size="16" />
+            <Layers size={16} />
           </div>
           {label}
         </div>

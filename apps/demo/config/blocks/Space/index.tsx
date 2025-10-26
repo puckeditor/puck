@@ -17,10 +17,12 @@ export const Space: ComponentConfig<SpaceProps> = {
   label: "Space",
   fields: {
     size: {
+      label: "Size",
       type: "select",
       options: spacingOptions,
     },
     direction: {
+      label: "Direction",
       type: "radio",
       options: [
         { value: "vertical", label: "Vertical" },

@@ -33,30 +33,35 @@ export type CardProps = WithLayout<{
 }>;
 
 const CardInner: ComponentConfig<CardProps> = {
+  label: "Card",
   fields: {
     title: {
+      label: "Title",
       type: "text",
       contentEditable: true,
     },
     description: {
+      label: "Description",
       type: "textarea",
       contentEditable: true,
     },
     icon: {
+      label: "Icon",
       type: "select",
       options: iconOptions,
     },
     mode: {
+      label: "Style",
       type: "radio",
       options: [
-        { label: "card", value: "card" },
-        { label: "flat", value: "flat" },
+        { label: "Card", value: "card" },
+        { label: "Flat", value: "flat" },
       ],
     },
   },
   defaultProps: {
-    title: "Title",
-    description: "Description",
+    title: "Card Title",
+    description: "Card description text goes here.",
     icon: "Feather",
     mode: "flat",
   },

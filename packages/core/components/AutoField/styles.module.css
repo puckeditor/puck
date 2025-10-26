@@ -79,6 +79,10 @@ select.Input-input:dir(rtl) {
   transition: none;
 }
 
+.Input-input::placeholder {
+  color: var(--puck-color-grey-07);
+}
+
 .Input--readOnly > .Input-input,
 .Input--readOnly > select.Input-input {
   background-color: var(--puck-color-grey-11);

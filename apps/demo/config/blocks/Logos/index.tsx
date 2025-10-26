@@ -15,17 +15,27 @@ export type LogosProps = {
 };
 
 export const Logos: ComponentConfig<LogosProps> = {
+  label: "Logo Grid",
   fields: {
     logos: {
+      label: "Logos",
       type: "array",
-      getItemSummary: (item, i) => item.alt || `Feature #${i}`,
+      getItemSummary: (item, i) => item.alt || `Logo #${(i ?? 0) + 1}`,
       defaultItemProps: {
         alt: "",
         imageUrl: "",
       },
       arrayFields: {
-        alt: { type: "text" },
-        imageUrl: { type: "text" },
+        alt: {
+          label: "Alt text",
+          type: "text",
+          placeholder: "Company name",
+        },
+        imageUrl: {
+          label: "Image URL",
+          type: "text",
+          placeholder: "https://example.com/logo.png",
+        },
       },
     },
   },

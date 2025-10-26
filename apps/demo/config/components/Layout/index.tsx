@@ -29,21 +29,22 @@ type LayoutProps = WithLayout<{
 
 export const layoutField: ObjectField<LayoutFieldProps> = {
   type: "object",
+  label: "Layout",
   objectFields: {
     spanCol: {
-      label: "Grid Columns",
+      label: "Grid columns",
       type: "number",
       min: 1,
       max: 12,
     },
     spanRow: {
-      label: "Grid Rows",
+      label: "Grid rows",
       type: "number",
       min: 1,
       max: 12,
     },
     grow: {
-      label: "Flex Grow",
+      label: "Flex grow",
       type: "radio",
       options: [
         { label: "true", value: true },
@@ -52,7 +53,7 @@ export const layoutField: ObjectField<LayoutFieldProps> = {
     },
     padding: {
       type: "select",
-      label: "Vertical Padding",
+      label: "Vertical padding",
       options: [{ label: "0px", value: "0px" }, ...spacingOptions],
     },
   },
