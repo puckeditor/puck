@@ -41,8 +41,8 @@
 }
 
 .Select-value {
-  flex: 1;
   text-align: start;
+  display: inline-flex;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
