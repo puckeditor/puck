@@ -134,7 +134,7 @@ export interface CustomField<Value extends any> extends BaseField {
   render: CustomFieldRender<Value>;
   contentEditable?: boolean;
   key?: string;
-};
+}
 
 export interface SlotField extends BaseField {
   type: "slot";
