@@ -4,6 +4,7 @@ import { defaultAppState, createAppStore } from "../../";
 import { rootDroppableId } from "../../../lib/root-droppable-id";
 import { walkAppState } from "../../../lib/data/walk-app-state";
 import { makeStatePublic } from "../../../lib/data/make-state-public";
+import { Config } from "../../../types";
 
 const appStore = createAppStore();
 
@@ -218,24 +219,29 @@ describe("permissions slice", () => {
         resolved: true,
       });
 
+      const config = {
+        components: {
+          MyComponent: {
+            render: () => <div />,
+            permissions: { base: true },
+            resolvePermissions,
+          },
+        },
+      };
+
       appStore.setState({
         ...appStore.getInitialState(),
-        config: {
-          components: {
-            MyComponent: {
-              render: () => <div />,
-              permissions: { base: true },
-              resolvePermissions,
+        config,
+        state: walkAppState(
+          {
+            ...defaultAppState,
+            data: {
+              ...defaultAppState.data,
+              content: [{ type: "MyComponent", props: { id: "comp-1" } }],
             },
           },
-        },
-        state: {
-          ...defaultAppState,
-          data: {
-            ...defaultAppState.data,
-            content: [{ type: "MyComponent", props: { id: "comp-1" } }],
-          },
-        },
+          config
+        ),
       });
 
       renderHook(() =>
@@ -267,6 +273,7 @@ describe("permissions slice", () => {
             globalTest: true,
             insert: true,
           },
+          parent: { type: "root", props: { id: "root" } },
         }
       );
 
@@ -351,6 +358,7 @@ describe("permissions slice", () => {
             globalTest: true,
             insert: true,
           },
+          parent: { type: "root", props: { id: "root" } },
         }
       );
 
@@ -424,6 +432,271 @@ describe("permissions slice", () => {
 
       // Watcher will trigger this
       expect(resolveCalls).toBe(4);
+    });
+
+    it("should receive the parent component in params", async () => {
+      // Given: --------------
+      const parentPermissions = { parent: true };
+      const outsideParentPermissions = { outsideParent: true };
+      const resolvePermissions = jest.fn((_data, params) => {
+        if (params.parent.type === "Parent") {
+          return parentPermissions;
+        }
+        return outsideParentPermissions;
+      });
+
+      const config: Config = {
+        components: {
+          Child: {
+            resolvePermissions,
+            render: () => <div />,
+          },
+          Parent: {
+            fields: {
+              items: { type: "slot" },
+            },
+            render: ({ items: Content }) => <Content />,
+          },
+        },
+      };
+
+      const childComponent = {
+        type: "Child",
+        props: { id: "child-1" },
+      };
+      const parentComponent = {
+        type: "Parent",
+        props: {
+          id: "parent-1",
+          items: [childComponent],
+        },
+      };
+      const initialData = {
+        ...defaultAppState.data,
+        content: [parentComponent],
+      };
+
+      appStore.setState({
+        config,
+        state: walkAppState(
+          {
+            ...defaultAppState,
+            data: initialData,
+          },
+          config
+        ),
+      });
+
+      // When: --------------
+      renderHook(() =>
+        useRegisterPermissionsSlice(appStore, { testGlobal: true })
+      );
+
+      // Wait for the initial resolvePermissions promises to resolve
+      await waitFor(
+        () => Object.keys(appStore.getState().permissions.cache).length > 0
+      );
+
+      // Then: --------------
+      expect(resolvePermissions).toHaveBeenCalledTimes(1);
+      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
+        parentComponent
+      );
+      expect(resolvePermissions.mock.results[0].value).toEqual(
+        parentPermissions
+      );
+    });
+
+    it("updates if parent changes", async () => {
+      // Given: --------------
+      const parentPermissions = { parent: true };
+      const outsideParentPermissions = { outsideParent: true };
+      const resolvePermissions = jest.fn((_data, params) => {
+        if (params.parent.type === "Parent") {
+          return parentPermissions;
+        }
+        return outsideParentPermissions;
+      });
+
+      const config: Config = {
+        components: {
+          Child: {
+            resolvePermissions,
+            render: () => <div />,
+          },
+          Parent: {
+            fields: {
+              items: { type: "slot" },
+            },
+            render: ({ items: Content }) => <Content />,
+          },
+        },
+      };
+
+      const childComponent = {
+        type: "Child",
+        props: { id: "child-1" },
+      };
+      const parentComponent = {
+        type: "Parent",
+        props: {
+          id: "parent-1",
+          items: [childComponent],
+        },
+      };
+      const initialData = {
+        ...defaultAppState.data,
+        content: [parentComponent],
+      };
+
+      appStore.setState({
+        config,
+        state: walkAppState(
+          {
+            ...defaultAppState,
+            data: initialData,
+          },
+          config
+        ),
+      });
+
+      // When: --------------
+      renderHook(() =>
+        useRegisterPermissionsSlice(appStore, { testGlobal: true })
+      );
+
+      // Wait for the initial resolvePermissions promises to resolve
+      await waitFor(
+        () => Object.keys(appStore.getState().permissions.cache).length > 0
+      );
+
+      await act(async () => {
+        const { dispatch } = appStore.getState();
+
+        // Move the Child component to root
+        dispatch({
+          type: "move",
+          sourceZone: "parent-1:items",
+          sourceIndex: 0,
+          destinationZone: rootDroppableId,
+          destinationIndex: 0,
+        });
+      });
+
+      // Then: --------------
+      expect(resolvePermissions).toHaveBeenCalledTimes(2);
+      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
+        parentComponent
+      );
+      expect(resolvePermissions.mock.results[0].value).toEqual(
+        parentPermissions
+      );
+
+      expect(resolvePermissions.mock.calls[1][1].parent).toEqual({
+        type: "root",
+        props: { id: "root" },
+      });
+      expect(resolvePermissions.mock.results[1].value).toEqual(
+        outsideParentPermissions
+      );
+    });
+
+    it("doesn't update if moving on the same parent", async () => {
+      // Given: --------------
+      const parentPermissions = { parent: true };
+      const outsideParentPermissions = { outsideParent: true };
+      const resolvePermissions = jest.fn((_data, params) => {
+        if (params.parent.type === "Parent") {
+          return parentPermissions;
+        }
+        return outsideParentPermissions;
+      });
+
+      const config: Config = {
+        components: {
+          Child: {
+            resolvePermissions,
+            render: () => <div />,
+          },
+          Parent: {
+            fields: {
+              items: { type: "slot" },
+            },
+            render: ({ items: Content }) => <Content />,
+          },
+        },
+      };
+
+      const childComponent1 = {
+        type: "Child",
+        props: { id: "child-1" },
+      };
+      const childComponent2 = {
+        type: "Child",
+        props: { id: "child-2" },
+      };
+      const parentComponent = {
+        type: "Parent",
+        props: {
+          id: "parent-1",
+          items: [childComponent1, childComponent2],
+        },
+      };
+      const initialData = {
+        ...defaultAppState.data,
+        content: [parentComponent],
+      };
+
+      appStore.setState({
+        config,
+        state: walkAppState(
+          {
+            ...defaultAppState,
+            data: initialData,
+          },
+          config
+        ),
+      });
+
+      // When: --------------
+      renderHook(() =>
+        useRegisterPermissionsSlice(appStore, { testGlobal: true })
+      );
+
+      // Wait for the initial resolvePermissions promises to resolve
+      await waitFor(
+        () => Object.keys(appStore.getState().permissions.cache).length > 0
+      );
+
+      await act(async () => {
+        const { dispatch } = appStore.getState();
+
+        // Move the first child component to the second position (same parent)
+        dispatch({
+          type: "move",
+          sourceZone: "parent-1:items",
+          sourceIndex: 0,
+          destinationZone: "parent-1:items",
+          destinationIndex: 1,
+        });
+      });
+
+      // Then: --------------
+      expect(resolvePermissions).toHaveBeenCalledTimes(2);
+      // child-1
+      expect(resolvePermissions.mock.calls[0][1].parent).toEqual(
+        parentComponent
+      );
+      expect(resolvePermissions.mock.results[0].value).toEqual(
+        parentPermissions
+      );
+      // child-2
+      expect(resolvePermissions.mock.calls[1][1].parent).toEqual(
+        parentComponent
+      );
+      expect(resolvePermissions.mock.results[1].value).toEqual(
+        parentPermissions
+      );
     });
   });
 
