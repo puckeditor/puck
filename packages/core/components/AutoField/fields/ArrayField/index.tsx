@@ -405,8 +405,14 @@ export const ArrayField = ({
 
                 const existingValue = value || [];
 
+                // Support defaultItemProps as a function so we can generate dynamic defaults based on the current length of the array
+                const defaultProps =
+                  typeof field.defaultItemProps === "function"
+                    ? field.defaultItemProps(existingValue.length)
+                    : field.defaultItemProps ?? {};
+
                 const newItem = defaultSlots(
-                  uniqifyItem(field.defaultItemProps ?? {}),
+                  uniqifyItem(defaultProps),
                   field.arrayFields
                 );
                 const newValue = [...existingValue, newItem];

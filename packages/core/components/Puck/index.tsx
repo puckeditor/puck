@@ -372,7 +372,7 @@ function PuckProvider<
   const previousData = useRef<Data>(null);
 
   useEffect(() => {
-    appStore.subscribe(
+    return appStore.subscribe(
       (s) => s.state.data,
       (data) => {
         if (onChange) {
@@ -384,7 +384,7 @@ function PuckProvider<
         }
       }
     );
-  }, []);
+  }, [onChange]);
 
   useRegisterPermissionsSlice(appStore, permissions);
 
