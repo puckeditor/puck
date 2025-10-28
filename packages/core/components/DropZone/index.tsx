@@ -280,7 +280,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       disallow,
       style,
       className,
-      minEmptyHeight: userMinEmptyHeight = 128,
+      minEmptyHeight: userMinEmptyHeight = "128px",
       collisionAxis,
     },
     userRef
@@ -480,7 +480,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
         style={
           {
             ...style,
-            "--min-empty-height": `${minEmptyHeight}px`,
+            "--min-empty-height": minEmptyHeight,
             backgroundColor: RENDER_DEBUG
               ? getRandomColor()
               : style?.backgroundColor,

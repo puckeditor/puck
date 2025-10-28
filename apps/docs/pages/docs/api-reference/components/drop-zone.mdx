@@ -32,16 +32,16 @@ const config = {
 
 ## Props
 
-| Param                               | Example                      | Type          | Status   |
-| ----------------------------------- | ---------------------------- | ------------- | -------- |
-| [`zone`](#zone)                     | `zone: "my-zone"`            | String        | Required |
-| [`allow`](#allow)                   | `allow: ["HeadingBlock"]`    | Array         | -        |
-| [`className`](#classname)           | `className: "MyClass"`       | String        | -        |
-| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String        | -        |
-| [`disallow`](#disallow)             | `disallow: ["HeadingBlock"]` | Array         | -        |
-| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: 256`        | Number        | -        |
-| [`ref`](#ref)                       | `ref: ref`                   | Ref           | -        |
-| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties | -        |
+| Param                               | Example                      | Type                                 | Status   |
+| ----------------------------------- | ---------------------------- | ------------------------------------ | -------- |
+| [`zone`](#zone)                     | `zone: "my-zone"`            | String                               | Required |
+| [`allow`](#allow)                   | `allow: ["HeadingBlock"]`    | Array                                | -        |
+| [`className`](#classname)           | `className: "MyClass"`       | String                               | -        |
+| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String                               | -        |
+| [`disallow`](#disallow)             | `disallow: ["HeadingBlock"]` | Array                                | -        |
+| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: "256px"`    | CSSProperties["minHeight"] \| number | -        |
+| [`ref`](#ref)                       | `ref: ref`                   | Ref                                  | -        |
+| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties                        | -        |
 
 ## Required props
 
@@ -164,7 +164,7 @@ const config = {
 
 ### `minEmptyHeight`
 
-The minimum height of the DropZone when empty, in pixels. Defaults to `128`.
+The minimum height of the DropZone when empty. Defaults to `128px`.
 
 ```tsx copy {7}
 const config = {
@@ -173,7 +173,7 @@ const config = {
       render: () => {
         return (
           <div>
-            <DropZone zone="my-content" minEmptyHeight={256} />
+            <DropZone zone="my-content" minEmptyHeight="256px" />
           </div>
         );
       },
