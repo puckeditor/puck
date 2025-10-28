@@ -3,7 +3,7 @@ import { Metadata } from "./Data";
 import { WithChildren, WithPuckProps } from "./Utils";
 
 export type PuckContext = {
-  renderDropZone: React.FC<DropZoneProps>;
+  renderDropZone: (props: DropZoneProps) => React.ReactNode;
   metadata: Metadata;
   isEditing: boolean;
   dragRef: ((element: Element | null) => void) | null;
