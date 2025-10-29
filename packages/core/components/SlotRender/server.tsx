@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useMemo } from "react";
 import { DropZoneProps } from "../DropZone/types";
 import {
   ComponentData,
@@ -56,8 +56,13 @@ export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
     { className, style, content, config, metadata },
     ref
   ) {
+    const Wrapper = useMemo(
+      () => config.overrides?.div || "div",
+      [config.overrides]
+    );
+
     return (
-      <div className={className} style={style} ref={ref}>
+      <Wrapper className={className} style={style} ref={ref}>
         {content.map((item) => {
           if (!config.components[item.type]) {
             return null;
@@ -72,7 +77,7 @@ export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
             />
           );
         })}
-      </div>
+      </Wrapper>
     );
   }
 );
