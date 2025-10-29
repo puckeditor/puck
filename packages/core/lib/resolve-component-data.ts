@@ -39,9 +39,21 @@ export const resolveComponentData = async <
   const id = "id" in item.props ? item.props.id : "root";
 
   if (shouldRunResolver) {
-    const { item: oldItem = null, resolved = {} } = cache.lastChange[id] || {};
+    const {
+      item: oldItem = null,
+      resolved = {},
+      parentId = null,
+    } = cache.lastChange[id] || {};
+    // Skip resolving root or inserted nodes for "moved" trigger
+    const isRootOrInserted = parentId === null;
+    const parentChanged = !isRootOrInserted && parent?.props.id !== parentId;
 
-    if (trigger !== "force" && item && deepEqual(item, oldItem)) {
+    const dataChanged = item && !deepEqual(item, oldItem);
+
+    if (
+      (trigger === "moved" && !parentChanged) ||
+      (trigger !== "force" && !dataChanged)
+    ) {
       return { node: resolved, didChange: false };
     }
 
@@ -112,6 +124,7 @@ export const resolveComponentData = async <
   cache.lastChange[id] = {
     item: item,
     resolved: itemWithResolvedChildren,
+    parentId: parent?.props.id,
   };
 
   return {

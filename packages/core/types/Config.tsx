@@ -24,7 +24,7 @@ export type PuckComponent<Props> = (
   >
 ) => JSX.Element;
 
-export type ResolveDataTrigger = "insert" | "replace" | "load" | "force";
+export type ResolveDataTrigger = "insert" | "replace" | "load" | "force" | "moved";
 
 type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   T,
