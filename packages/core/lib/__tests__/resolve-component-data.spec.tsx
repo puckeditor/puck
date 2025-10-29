@@ -1,11 +1,17 @@
 import { resolveComponentData } from "../resolve-component-data";
 import { createAppStore } from "../../store";
-import { Config, Fields } from "../../types";
+import { Config, Fields, Slot } from "../../types";
 import { toComponent } from "../data/to-component";
 
 const appStore = createAppStore();
 
-const myComponentFields: Fields = {
+interface ComponentProps {
+  prop: string;
+  slot: Slot;
+  object: { slot: Slot };
+}
+
+const myComponentFields: Fields<ComponentProps> = {
   prop: { type: "text" },
   slot: {
     type: "slot",
@@ -20,7 +26,14 @@ const myComponentFields: Fields = {
   },
 };
 
-const config: Config = {
+const config: Config<{
+  root: {
+    title: string;
+    object: { slot: Slot };
+    slot: Slot;
+    array: { slot: Slot }[];
+  };
+}> = {
   root: {
     fields: {
       title: { type: "text" },
