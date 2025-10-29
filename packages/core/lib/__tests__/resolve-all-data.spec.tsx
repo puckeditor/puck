@@ -63,7 +63,7 @@ const config: Config = {
 };
 
 describe("resolve-data", () => {
-  beforeEach(() => jest.restoreAllMocks());
+  beforeEach(() => jest.clearAllMocks());
 
   it("should resolve the data for all components in the data", async () => {
     expect(await resolveAllData(data, config)).toMatchInlineSnapshot(`
