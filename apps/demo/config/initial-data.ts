@@ -128,6 +128,20 @@ export const initialData: Record<string, UserData> = {
         },
       },
       {
+        type: "RichText",
+        props: {
+          richtext:
+            "<p style='text-align: center;'><strong>✍️ <s>Plain-text</s> Rich Text Editor! 🎉</strong></p>",
+          layout: {
+            spanCol: 1,
+            spanRow: 1,
+            padding: "0px",
+            grow: false,
+          },
+          id: "RichText-b5020a95-4ab7-403a-bbce-c94d0e83beb4",
+        },
+      },
+      {
         type: "Space",
         props: {
           size: "96px",

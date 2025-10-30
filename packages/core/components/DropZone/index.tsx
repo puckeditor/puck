@@ -25,6 +25,7 @@ import {
   ComponentData,
   Config,
   DragAxis,
+  Fields,
   Metadata,
   PuckContext,
   WithPuckProps,
@@ -47,7 +48,9 @@ import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransforms } from "../../lib/field-transforms/use-field-transforms";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
+import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { Render } from "../RichTextEditor/Render";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -199,6 +202,7 @@ const DropZoneChild = ({
         <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
       )),
       ...getInlineTextTransform(),
+      ...getRichTextTransform(),
       ...plugins.reduce<FieldTransforms>(
         (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
         {}
@@ -505,6 +509,20 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
   }
 );
 
+const findRichtextKey = (
+  fields: Fields<any, {}> | undefined
+): string | null => {
+  if (!fields) return null;
+  for (const [key, field] of Object.entries(fields)) {
+    if (field.type === "richtext") return key;
+    if (field.type === "object" && field.objectFields) {
+      const nested = findRichtextKey(field.objectFields);
+      if (nested) return nested;
+    }
+  }
+  return null;
+};
+
 const DropZoneRenderItem = ({
   config,
   item,
@@ -528,10 +546,18 @@ const DropZoneRenderItem = ({
     [props]
   );
 
+  const richtextKey = findRichtextKey(Component.fields);
+
+  const richTextRenderer =
+    richtextKey && richtextKey in props
+      ? { richtext: <Render content={props[richtextKey]} /> }
+      : {};
+
   return (
     <DropZoneProvider key={props.id} value={nextContextValue}>
       <Component.render
         {...props}
+        {...richTextRenderer}
         puck={{
           ...props.puck,
           renderDropZone: DropZoneRenderPure,
@@ -572,7 +598,6 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     if (zoneCompound !== rootDroppableId) {
       content = setupZone(data, zoneCompound).zones[zoneCompound];
     }
-
     return (
       <div className={className} style={style} ref={ref}>
         {content.map((item) => {
