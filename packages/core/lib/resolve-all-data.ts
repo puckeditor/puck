@@ -52,7 +52,7 @@ export async function resolveAllData<
 
     const resolvedAsComponent = toComponent(resolved);
 
-    // Resolve any slots recursively
+    // Resolve any slots concurrently
     const resolvedDeepPromise = mapFields(
       resolved,
       {
@@ -63,13 +63,9 @@ export async function resolveAllData<
 
     let resolveZonePromises: Promise<void>[] = [];
 
-    // Resolve any zones recursively
-    if (
-      resolved.props &&
-      "id" in resolved.props &&
-      zonesByComponent[resolved.props?.id]
-    ) {
-      resolveZonePromises = zonesByComponent[resolved.props.id].map(
+    // Resolve any zones concurrently
+    if (zonesByComponent[resolvedAsComponent.props.id]) {
+      resolveZonePromises = zonesByComponent[resolvedAsComponent.props.id].map(
         async ({ zoneCompound, content }) => {
           resolvedZones[zoneCompound] = await processContent(
             content,
@@ -79,12 +75,13 @@ export async function resolveAllData<
       );
     }
 
+    // Await all concurrent children
     const resolvedDeep = await resolvedDeepPromise;
     await Promise.all(resolveZonePromises);
 
     onResolveEnd?.(toComponent(resolvedDeep));
 
-    return resolvedDeepPromise;
+    return resolvedDeep;
   };
 
   const processContent = async (
