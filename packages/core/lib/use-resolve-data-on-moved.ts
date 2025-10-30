@@ -8,7 +8,7 @@ export const useResolveDataOnMoved = (
   appStore: ReturnType<typeof useAppStoreApi>
 ) => {
   useEffect(() => {
-    appStore.subscribe(
+    return appStore.subscribe(
       (s) => s.state.ui.isDragging,
       async (currIsDragging, prevIsDragging) => {
         const dragFinished = prevIsDragging && !currIsDragging;
