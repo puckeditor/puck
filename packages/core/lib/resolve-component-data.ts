@@ -7,6 +7,7 @@ import {
   RootDataWithProps,
 } from "../types";
 import { mapFields } from "./data/map-fields";
+import { toComponent } from "./data/to-component";
 import { getChanged } from "./get-changed";
 import { deepEqual } from "fast-equals";
 
@@ -83,13 +84,7 @@ export const resolveComponentData = async <
     }
   }
 
-  const itemAsComponentData: ComponentData =
-    "type" in resolvedItem
-      ? resolvedItem
-      : {
-          type: "root",
-          props: { id: "root", ...resolvedItem.props },
-        };
+  const itemAsComponentData: ComponentData = toComponent(resolvedItem);
 
   let itemWithResolvedChildren = await mapFields(
     resolvedItem,
