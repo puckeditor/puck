@@ -298,8 +298,73 @@ describe("resolveComponentData", () => {
     });
     expect(initialResolution.node.props.prop).toBe("Hello, world");
     expect(initialResolution.node.readOnly.prop).toBe(true);
+    expect(initialResolution.didChange).toBe(true);
     expect(movedResolution.node.props.prop).toBe("Hello, world");
     expect(movedResolution.node.readOnly.prop).toBe(true);
+    expect(movedResolution.didChange).toBe(true);
+  });
+
+  it("shouldn't re-run when parent doesn't change for 'moved' triggers", async () => {
+    // When: ---------------
+    const parent = {
+      type: "MyComponentWithoutResolver",
+      props: {
+        id: "parent-1",
+        slot: [
+          {
+            type: "MyComponentWithResolver",
+            props: { id: "moved" },
+          },
+        ],
+      },
+    };
+
+    const initialResolution = await resolveComponentData(
+      toComponent({
+        type: "MyComponentWithResolver",
+        props: { id: "moved" },
+      }),
+      appStore.getState().config,
+      undefined,
+      undefined,
+      undefined,
+      "load",
+      parent
+    );
+
+    const movedResolution = await resolveComponentData(
+      toComponent({
+        type: "MyComponentWithResolver",
+        props: { id: "moved" },
+      }),
+      appStore.getState().config,
+      undefined,
+      undefined,
+      undefined,
+      "moved",
+      parent
+    );
+
+    // Then: ---------------
+    expect(componentResolveData).toHaveBeenCalledTimes(1);
+    expect(componentResolveData.mock.calls[0][1].parent).toStrictEqual({
+      type: "MyComponentWithoutResolver",
+      props: {
+        id: "parent-1",
+        slot: [
+          {
+            type: "MyComponentWithResolver",
+            props: { id: "moved" },
+          },
+        ],
+      },
+    });
+    expect(initialResolution.node.props.prop).toBe("Hello, world");
+    expect(initialResolution.node.readOnly.prop).toBe(true);
+    expect(initialResolution.didChange).toBe(true);
+    expect(movedResolution.node.props.prop).toBe("Hello, world");
+    expect(movedResolution.node.readOnly.prop).toBe(true);
+    expect(movedResolution.didChange).toBe(false);
   });
 
   it("shouldn't run for 'moved' triggers before the component resolves once for other actions", async () => {
@@ -366,8 +431,10 @@ describe("resolveComponentData", () => {
         ],
       },
     });
-    expect(movedResolution.node).toStrictEqual({});
     expect(insertedResolution.node.props.prop).toBe("Hello, world");
     expect(insertedResolution.node.readOnly.prop).toBe(true);
+    expect(insertedResolution.didChange).toBe(true);
+    expect(movedResolution.node).toStrictEqual({});
+    expect(movedResolution.didChange).toBe(false);
   });
 });
