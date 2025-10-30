@@ -295,8 +295,17 @@ function PuckProvider<
     })
   );
 
-  const initialHistoryIndex =
-    _initialHistory?.index || blendedHistories.length - 1;
+  const initialHistoryIndex = useMemo(() => {
+    if (
+      _initialHistory?.index !== undefined &&
+      _initialHistory?.index >= 0 &&
+      _initialHistory?.index < blendedHistories.length
+    ) {
+      return _initialHistory?.index;
+    }
+
+    return blendedHistories.length - 1;
+  }, []);
   const initialAppState = blendedHistories[initialHistoryIndex].state;
 
   // Load all plugins into the overrides
