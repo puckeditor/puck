@@ -18,7 +18,7 @@ export const loadOverrides = ({
       if (!plugin.overrides?.[overridesType]) return;
 
       if (overridesType === "fieldTypes") {
-        const fieldTypes = plugin.overrides.fieldTypes!;
+        const fieldTypes = plugin.overrides!.fieldTypes!;
         Object.keys(fieldTypes).forEach((fieldType) => {
           collected.fieldTypes = collected.fieldTypes || {};
 

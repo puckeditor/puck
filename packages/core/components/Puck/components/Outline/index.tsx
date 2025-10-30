@@ -3,6 +3,10 @@ import { useAppStore } from "../../../../store";
 import { useMemo } from "react";
 import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
 import { useShallow } from "zustand/react/shallow";
+import styles from "./styles.module.css";
+import { getClassNameFactory } from "../../../../lib";
+
+const getClassName = getClassNameFactory("Outline", styles);
 
 export const Outline = () => {
   const outlineOverride = useAppStore((s) => s.overrides.outline);
@@ -13,14 +17,16 @@ export const Outline = () => {
 
   const Wrapper = useMemo(() => outlineOverride || "div", [outlineOverride]);
   return (
-    <Wrapper>
-      {rootZones.map((zoneCompound) => (
-        <LayerTree
-          key={zoneCompound}
-          label={rootZones.length === 1 ? "" : zoneCompound.split(":")[1]}
-          zoneCompound={zoneCompound}
-        />
-      ))}
-    </Wrapper>
+    <div className={getClassName()}>
+      <Wrapper>
+        {rootZones.map((zoneCompound) => (
+          <LayerTree
+            key={zoneCompound}
+            label={rootZones.length === 1 ? "" : zoneCompound.split(":")[1]}
+            zoneCompound={zoneCompound}
+          />
+        ))}
+      </Wrapper>
+    </div>
   );
 };
