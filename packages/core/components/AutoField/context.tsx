@@ -3,6 +3,7 @@ import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 type NestedFieldContext = {
   localName?: string;
   readOnlyFields?: Partial<Record<string | number | symbol, boolean>>;
+  value?: any;
 };
 
 export const NestedFieldContext = createContext<NestedFieldContext>({});

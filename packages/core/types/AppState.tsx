@@ -5,6 +5,7 @@ import { Data } from "./Data";
 export type ItemWithId = {
   _arrayId: string;
   _originalIndex: number;
+  _currentIndex: number;
 };
 
 export type ArrayState = { items: ItemWithId[]; openId: string };
