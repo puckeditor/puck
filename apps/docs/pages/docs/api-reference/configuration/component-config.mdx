@@ -303,7 +303,7 @@ const config = {
 
 Dynamically change the props and set fields as read-only. Supports asynchronous calls.
 
-This function is triggered when [`<Puck>`](/docs/api-reference/components/puck) renders, when a field is changed, or when the [`resolveAllData` function](/docs/api-reference/functions/resolve-all-data) is called.
+This function is triggered when [`<Puck>`](/docs/api-reference/components/puck) renders, when a field is changed, when the [`resolveAllData` function](/docs/api-reference/functions/resolve-all-data) is called, or when the component is moved to a different parent.
 
 ```tsx {9-14} copy filename="Example mapping 'title' to 'resolvedTitle'"
 const config = {
@@ -355,10 +355,10 @@ const config = {
 
 #### Args
 
-| Prop     | Example                                                  | Type   |
-| -------- | -------------------------------------------------------- | ------ |
-| `data`   | `{ props: { title: "Hello, world" }, readOnly: {} }`     | Object |
-| `params` | `{ changed: { title: true }, metadata: { foo: "bar" } }` | Object |
+| Prop     | Example                                                                                          | Type   |
+| -------- | ------------------------------------------------------------------------------------------------ | ------ |
+| `data`   | `{ props: { title: "Hello, world" }, readOnly: {} }`                                             | Object |
+| `params` | `{ changed: { title: true }, metadata: { foo: "bar" }, parent: { type: "Heading", props: {} } }` | Object |
 
 ##### `data.props`
 
@@ -408,12 +408,19 @@ const resolveData = async ({ props }, { metadata }) => {
 };
 ```
 
+##### `params.parent`
+
+The [component data](/docs/api-reference/data-model/component-data) of the parent.
+
+Resolvers are executed bottom-up when [`<Puck>`](/docs/api-reference/components/puck) renders, so the parent component will only [resolve its data](#resolvedatadata-params) after the child resolver has completed when this happens.
+
 ##### `params.trigger`
 
 The event that triggered this resolveData call. One of:
 
 - `insert` - the component was inserted
 - `replace` - the component was replaced, such as when a field value is changed
+- `moved` - the component moved between parents
 - `load` - the Puck editor was loaded
 - `force` - an execution was forced via the [`resolveAllData` function](/docs/api-reference/functions/resolve-all-data)
 
