@@ -223,6 +223,8 @@ function AutoFieldInternal<
     return (_props: any) => null;
   }, [field.type]);
 
+  const fieldKey = field.type === "custom" ? field.key : undefined;
+
   let FieldComponent: React.ComponentType<any> = useMemo(() => {
     if (field.type === "custom") {
       if (!field.render) {
@@ -232,7 +234,7 @@ function AutoFieldInternal<
     } else if (field.type !== "slot") {
       return render[field.type] as (props: FieldProps) => ReactElement;
     }
-  }, [field.type, render]);
+  }, [field.type, fieldKey, render]);
 
   const { visible = true } = props.field;
 
