@@ -10,15 +10,6 @@ import { insertComponent } from "../insert-component";
 
 const appStore = createAppStore();
 
-function resetStores() {
-  appStore.setState(
-    {
-      ...appStore.getInitialState(),
-    },
-    true
-  );
-}
-
 const childResolveData = jest.fn(async (data, params) => {
   if (params.trigger === "moved") {
     return {
@@ -113,15 +104,10 @@ const moveChildTo = (
   }
 };
 
-// TODO: Change this when we solve race conditions over caches, it should be 1
-const resolveAndCommitDataCalls = 2;
-
-describe("useResolveDataOnMoved", () => {
-  beforeEach(async () => {
-    resetStores();
-    jest.clearAllMocks();
-    cache.lastChange = {};
-    appStore.setState({
+function resetStores() {
+  appStore.setState(
+    {
+      ...appStore.getInitialState(),
       config,
       state: walkAppState(
         {
@@ -167,7 +153,19 @@ describe("useResolveDataOnMoved", () => {
         },
         config
       ),
-    });
+    },
+    true
+  );
+}
+
+// TODO: Change this when we solve race conditions over caches, it should be 1
+const resolveAndCommitDataCalls = 2;
+
+describe("useResolveDataOnMoved", () => {
+  beforeEach(async () => {
+    resetStores();
+    jest.clearAllMocks();
+    cache.lastChange = {};
 
     await act(async () => {
       // This executes resolveData twice because of race conditions in cache
