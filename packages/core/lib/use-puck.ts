@@ -1,4 +1,4 @@
-import { Config, UserGenerics, AppState, ComponentData } from "../types";
+import { Config, UserGenerics, ResolveDataTrigger } from "../types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AppStore, useAppStoreApi } from "../store";
 import {
@@ -9,6 +9,7 @@ import { HistorySlice } from "../store/slices/history";
 import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
+import { resolveComponentDataById } from "./data/resolve-component-data-by-id";
 import { getSelectorForId } from "./get-selector-for-id";
 import { PuckNodeData } from "../types/Internal";
 
@@ -21,6 +22,7 @@ export type UsePuckData<
   dispatch: AppStore["dispatch"];
   getPermissions: GetPermissions<UserConfig>;
   refreshPermissions: RefreshPermissions<UserConfig>;
+  resolveComponentDataById: (id: string) => void;
   selectedItem: G["UserComponentData"] | null;
   getItemBySelector: (
     selector: ItemSelector
@@ -47,7 +49,13 @@ type UsePuckStore<UserConfig extends Config = Config> = PuckApi<UserConfig>;
 
 type PickedStore = Pick<
   AppStore,
-  "config" | "dispatch" | "selectedItem" | "permissions" | "history" | "state"
+  | "config"
+  | "dispatch"
+  | "selectedItem"
+  | "permissions"
+  | "history"
+  | "state"
+  | "resolveComponentData"
 >;
 
 export const generateUsePuck = (store: PickedStore): UsePuckStore => {
@@ -68,6 +76,7 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     dispatch: store.dispatch,
     getPermissions: store.permissions.getPermissions,
     refreshPermissions: store.permissions.refreshPermissions,
+    resolveComponentDataById: (id) => resolveComponentDataById(id, store),
     history,
     selectedItem: store.selectedItem || null,
     getItemBySelector: (selector) => getItem(selector, store.state),
@@ -100,6 +109,7 @@ const convertToPickedStore = (store: AppStore): PickedStore => {
     config: store.config,
     dispatch: store.dispatch,
     permissions: store.permissions,
+    resolveComponentData: store.resolveComponentData,
     history: store.history,
     selectedItem: store.selectedItem,
   };
