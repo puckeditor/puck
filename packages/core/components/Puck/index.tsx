@@ -27,7 +27,6 @@ import type {
   Metadata,
   AsFieldProps,
   DefaultComponentProps,
-  ComponentData,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
@@ -56,6 +55,7 @@ import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
 import { useDeleteHotkeys } from "../../lib/use-delete-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
+import { useResolveDataOnMoved } from "../../lib/use-resolve-data-on-moved";
 import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
 import { getFrame } from "../../lib/get-frame";
 import {
@@ -387,6 +387,8 @@ function PuckProvider<
   }, [onChange]);
 
   useRegisterPermissionsSlice(appStore, permissions);
+
+  useResolveDataOnMoved(appStore);
 
   const uPuckStore = useRegisterUsePuckStore(appStore);
 
