@@ -17,17 +17,18 @@ import { Callout } from "nextra/components";
 
 ## Params
 
-| Param                                             | Example                                            | Type                                                           |
-| ------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------- |
-| [`appState`](#appstate)                           | `{ data: {}, ui: {} }`                             | [AppState](/docs/api-reference/data-model/app-state)           |
-| [`dispatch`](#dispatchaction)                     | `(action: PuckAction) => void`                     | Function                                                       |
-| [`getItemBySelector`](#getitembyselectorselector) | `() => ({ type: "Heading", props: {} })`           | Function                                                       |
-| [`getItemById`](#getitembyidid)                   | `() => ({ type: "Heading", props: {} })`           | Function                                                       |
-| [`getSelectorForId`](#getselectorforidid)         | `() => ({ index: 0, zone: 'Flex-123:children'  })` | Function                                                       |
-| [`getPermissions`](#getpermissionsparams)         | `() => ({ delete: true  })`                        | Function                                                       |
-| [`history`](#history)                             | `{}`                                               | Object                                                         |
-| [`refreshPermissions`](#refreshpermissionsparams) | `() => void`                                       | Function                                                       |
-| [`selectedItem`](#selecteditem)                   | `{ type: "Heading", props: {id: "my-heading"} }`   | [ComponentData](/docs/api-reference/data-model/data#content-1) |
+| Param                                                     | Example                                            | Type                                                           |
+| --------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------- |
+| [`appState`](#appstate)                                   | `{ data: {}, ui: {} }`                             | [AppState](/docs/api-reference/data-model/app-state)           |
+| [`dispatch`](#dispatchaction)                             | `(action: PuckAction) => void`                     | Function                                                       |
+| [`getItemBySelector`](#getitembyselectorselector)         | `() => ({ type: "Heading", props: {} })`           | Function                                                       |
+| [`getItemById`](#getitembyidid)                           | `() => ({ type: "Heading", props: {} })`           | Function                                                       |
+| [`getSelectorForId`](#getselectorforidid)                 | `() => ({ index: 0, zone: 'Flex-123:children'  })` | Function                                                       |
+| [`getPermissions`](#getpermissionsparams)                 | `() => ({ delete: true  })`                        | Function                                                       |
+| [`history`](#history)                                     | `{}`                                               | Object                                                         |
+| [`refreshPermissions`](#refreshpermissionsparams)         | `() => void`                                       | Function                                                       |
+| [`resolveComponentDataById`](#resolvecomponentdatabyidid) | `() => void`                                       | Function                                                       |
+| [`selectedItem`](#selecteditem)                           | `{ type: "Heading", props: {id: "my-heading"} }`   | [ComponentData](/docs/api-reference/data-model/data#content-1) |
 
 ### `appState`
 
@@ -251,6 +252,14 @@ Specify `type` to refresh the permissions for all components of a given componen
 
 ```tsx
 refreshPermissions({ type: "HeadingBlock" });
+```
+
+### `resolveComponentDataById(id)`
+
+Force a component to [resolve its data](/docs/api-reference/configuration/component-config#resolvedatadata-params) by id.
+
+```tsx
+resolveComponentDataById("Heading-1234");
 ```
 
 ### `selectedItem`
