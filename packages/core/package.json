@@ -40,6 +40,10 @@
         "require": "./dist/index.js"
       }
     },
+    "./edge": {
+      "types": "./dist-vite/index.d.mts",
+      "import": "./dist-vite/index.mjs"
+    },
     "./rsc": {
       "types": "./dist/rsc.d.ts",
       "import": "./dist/rsc.mjs",
@@ -61,12 +65,14 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts",
+    "build:edge": "rm -rf dist-vite && vite build --config vite.build.config.ts",
     "test": "jest",
     "prepare": "cp ../../README.md . && yarn build",
     "postpublish": "rm README.md"
   },
   "files": [
-    "dist"
+    "dist",
+    "dist-vite"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
@@ -79,6 +85,7 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^5.1.0",
     "css-box-model": "^1.2.1",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
@@ -90,7 +97,9 @@
     "tsconfig": "*",
     "tsup": "^8.2.4",
     "tsup-config": "*",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vite": "^7.1.12",
+    "vite-plugin-lib-inject-css": "^2.2.2"
   },
   "dependencies": {
     "@dnd-kit/helpers": "0.1.18",
