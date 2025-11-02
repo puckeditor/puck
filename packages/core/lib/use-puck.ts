@@ -10,6 +10,7 @@ import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
 import { getSelectorForId } from "./get-selector-for-id";
+import { PuckNodeData } from "../types/Internal";
 
 export type UsePuckData<
   UserConfig extends Config = Config,
@@ -26,6 +27,7 @@ export type UsePuckData<
   ) => G["UserComponentData"] | undefined;
   getItemById: (id: string) => G["UserComponentData"] | undefined;
   getSelectorForId: (id: string) => Required<ItemSelector> | undefined;
+  getNodeById: (id: string) => PuckNodeData | undefined;
   history: {
     back: HistorySlice["back"];
     forward: HistorySlice["forward"];
@@ -71,6 +73,7 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     getItemBySelector: (selector) => getItem(selector, store.state),
     getItemById: (id) => store.state.indexes.nodes[id].data,
     getSelectorForId: (id) => getSelectorForId(store.state, id),
+    getNodeById: (id) => store.state.indexes.nodes[id],
   };
 
   return storeData;
