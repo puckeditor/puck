@@ -76,3 +76,9 @@ export type Data<
 };
 
 export type Metadata = { [key: string]: any };
+
+export interface PuckMetadata extends Metadata {}
+
+export interface ComponentMetadata extends PuckMetadata {}
+
+export interface FieldMetadata extends Metadata {}
