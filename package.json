@@ -29,10 +29,6 @@
     "standard-changelog": "^2.0.21",
     "turbo": "^2.5.8"
   },
-  "resolutions": {
-    "minimatch": "10.0.1",
-    "brace-expansion": "^2.0.1"
-  },
   "name": "puck-repo",
   "packageManager": "yarn@1.22.19",
   "workspaces": [

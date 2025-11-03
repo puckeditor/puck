@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from "react";
-import { DefaultComponentProps, Metadata, UiState } from ".";
+import { DefaultComponentProps, FieldMetadata, UiState } from "
 
 type FieldOption = {
   label: string;
@@ -8,47 +8,47 @@ type FieldOption = {
 
 type FieldOptions = Array<FieldOption> | ReadonlyArray<FieldOption>;
 
-export type BaseField = {
+export interface BaseField {
   label?: string;
   labelIcon?: ReactElement;
-  metadata?: Metadata;
+  metadata?: FieldMetadata;
   visible?: boolean;
-};
+}
 
-export type TextField = BaseField & {
+export interface TextField extends BaseField {
   type: "text";
   placeholder?: string;
   contentEditable?: boolean;
-};
+}
 
-export type NumberField = BaseField & {
+export interface NumberField extends BaseField {
   type: "number";
   placeholder?: string;
   min?: number;
   max?: number;
   step?: number;
-};
+}
 
-export type TextareaField = BaseField & {
+export interface TextareaField extends BaseField {
   type: "textarea";
   placeholder?: string;
   contentEditable?: boolean;
-};
+}
 
-export type SelectField = BaseField & {
+export interface SelectField extends BaseField {
   type: "select";
   options: FieldOptions;
-};
+}
 
-export type RadioField = BaseField & {
+export interface RadioField extends BaseField {
   type: "radio";
   options: FieldOptions;
-};
+}
 
-export type ArrayField<
+export interface ArrayField<
   Props extends { [key: string]: any }[] = { [key: string]: any }[],
   UserField extends {} = {}
-> = BaseField & {
+> extends BaseField {
   type: "array";
   arrayFields: {
     [SubPropName in keyof Props[0]]: UserField extends { type: PropertyKey }
@@ -59,19 +59,19 @@ export type ArrayField<
   getItemSummary?: (item: Props[0], index?: number) => ReactNode;
   max?: number;
   min?: number;
-};
+}
 
-export type ObjectField<
+export interface ObjectField<
   Props extends any = { [key: string]: any },
   UserField extends {} = {}
-> = BaseField & {
+> extends BaseField {
   type: "object";
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
       ? Field<Props[SubPropName]> | UserField
       : Field<Props[SubPropName]>;
   };
-};
+}
 
 // DEPRECATED
 export type Adaptor<
@@ -101,24 +101,24 @@ export type CacheOpts = {
   enabled?: boolean;
 };
 
-export type ExternalField<Props extends any = { [key: string]: any }> =
-  BaseField & {
-    type: "external";
-    cache?: CacheOpts;
-    placeholder?: string;
-    fetchList: (params: {
-      query: string;
-      filters: Record<string, any>;
-    }) => Promise<any[] | null>;
-    mapProp?: (value: any) => Props;
-    mapRow?: (value: any) => Record<string, string | number | ReactElement>;
-    getItemSummary?: (item: NotUndefined<Props>, index?: number) => ReactNode;
-    showSearch?: boolean;
-    renderFooter?: (props: { items: any[] }) => ReactElement;
-    initialQuery?: string;
-    filterFields?: Record<string, Field>;
-    initialFilters?: Record<string, any>;
-  };
+export interface ExternalField<Props extends any = { [key: string]: any }>
+  extends BaseField {
+  type: "external";
+  cache?: CacheOpts;
+  placeholder?: string;
+  fetchList: (params: {
+    query: string;
+    filters: Record<string, any>;
+  }) => Promise<any[] | null>;
+  mapProp?: (value: any) => Props;
+  mapRow?: (value: any) => Record<string, string | number | ReactElement>;
+  getItemSummary?: (item: NotUndefined<Props>, index?: number) => ReactNode;
+  showSearch?: boolean;
+  renderFooter?: (props: { items: any[] }) => ReactElement;
+  initialQuery?: string;
+  filterFields?: Record<string, Field>;
+  initialFilters?: Record<string, any>;
+}
 
 export type CustomFieldRender<Value extends any> = (props: {
   field: CustomField<Value>;
@@ -129,17 +129,18 @@ export type CustomFieldRender<Value extends any> = (props: {
   readOnly?: boolean;
 }) => ReactElement;
 
-export type CustomField<Value extends any> = BaseField & {
+export interface CustomField<Value extends any> extends BaseField {
   type: "custom";
   render: CustomFieldRender<Value>;
   contentEditable?: boolean;
-};
+  key?: string;
+}
 
-export type SlotField = BaseField & {
+export interface SlotField extends BaseField {
   type: "slot";
   allow?: string[];
   disallow?: string[];
-};
+}
 
 export type Field<ValueType = any, UserField extends {} = {}> =
   | TextField
