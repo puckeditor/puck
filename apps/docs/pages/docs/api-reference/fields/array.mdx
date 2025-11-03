@@ -228,6 +228,10 @@ const config = {
 
 Get a label of each item in the array. Returns a [ReactNode](https://react.dev/learn/typescript#typing-children).
 
+<Callout type="warning">
+  Avoid using interactive HTML elements like `<button>`, `<input>`, or `<a>` inside `getItemSummary`. These elements can interfere with the array field's built-in interactions (such as drag-and-drop reordering and item expansion). Stick to non-interactive elements like `<div>`, `<span>`, `<p>`, or plain text for summaries.
+</Callout>
+
 ```tsx {10} copy
 const config = {
   components: {
@@ -267,94 +271,6 @@ const config = {
             <li key={i}>{item.title}</li>
           ))}
         </ul>
-      );
-    },
-  }}
-/>
-
-#### Using JSX for rich summaries
-
-The `getItemSummary` function returns a [ReactNode](https://react.dev/learn/typescript#typing-children), which means you can use JSX for item summaries that include HTML elements and styling.
-
-<Callout type="warning">
-  Avoid using interactive HTML elements like `<button>`, `<input>`, or `<a>` inside `getItemSummary`. These elements can interfere with the array field's built-in interactions (such as drag-and-drop reordering and item expansion). Stick to non-interactive elements like `<div>`, `<span>`, `<p>`, or plain text for summaries.
-</Callout>
-
-```tsx {11-18} copy
-const config = {
-  components: {
-    Stats: {
-      fields: {
-        items: {
-          type: "array",
-          arrayFields: {
-            title: { type: "text" },
-            description: { type: "text" },
-          },
-          getItemSummary: (item, i) =>
-            item.title && item.description ? (
-              <p>
-                {item.title} ({item.description})
-              </p>
-            ) : (
-              `Feature #${i}`
-            ),
-        },
-      },
-      // ...
-    },
-  },
-};
-```
-
-<ConfigPreview
-  label="Stats with ReactElement summary"
-  componentConfig={{
-    fields: {
-      items: {
-        type: "array",
-        arrayFields: {
-          title: { type: "text" },
-          description: { type: "text" },
-        },
-        getItemSummary: (item, i) =>
-          item.title && item.description ? (
-            <p>
-              {item.title} ({item.description})
-            </p>
-          ) : (
-            `Feature #${i}`
-          ),
-      },
-    },
-    defaultProps: {
-      items: [
-        { title: "Users", description: "1,000" },
-        { title: "Revenue", description: "$50K" },
-      ],
-    },
-    render: ({ items }) => {
-      return (
-        <div style={{ display: "flex", gap: "20px" }}>
-          {items.map((item, i) => (
-            <div
-              key={i}
-              style={{
-                textAlign: "center",
-                padding: "16px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-              }}
-            >
-              <div style={{ fontSize: "24px", fontWeight: "bold" }}>
-                {item.description}
-              </div>
-              <div style={{ fontSize: "14px", color: "#666" }}>
-                {item.title}
-              </div>
-            </div>
-          ))}
-        </div>
       );
     },
   }}

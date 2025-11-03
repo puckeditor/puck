@@ -234,6 +234,10 @@ const config = {
 
 Get the label to show once the item is selected. Returns a [ReactNode](https://react.dev/learn/typescript#typing-children).
 
+<Callout type="warning">
+  Avoid using interactive HTML elements like `<button>`, `<input>`, or `<a>` inside `getItemSummary`. These elements can interfere with the array field's built-in interactions (such as drag-and-drop reordering and item expansion). Stick to non-interactive elements like `<div>`, `<span>`, `<p>`, or plain text for summaries.
+</Callout>
+
 ```tsx {13} copy
 const config = {
   components: {
@@ -275,114 +279,6 @@ const config = {
       data: {
         title: "Hello, world",
         description: "Lorem ipsum 1",
-      },
-    },
-    render: ({ data }) => {
-      return <p>{data?.title || "No data selected"}</p>;
-    },
-  }}
-/>
-
-#### Using JSX for rich summaries
-
-The `getItemSummary` function returns a [ReactNode](https://react.dev/learn/typescript#typing-children), which means you can use JSX for item summaries that include HTML elements and styling.
-
-<Callout type="warning">
-  Avoid using interactive HTML elements like `<button>`, `<input>`, or `<a>` inside `getItemSummary`. These elements can interfere with the array field's built-in interactions (such as drag-and-drop reordering and item expansion). Stick to non-interactive elements like `<div>`, `<span>`, `<p>`, or plain text for summaries.
-</Callout>
-
-```tsx {21-38} copy
-const config = {
-  components: {
-    Example: {
-      fields: {
-        data: {
-          type: "external",
-          fetchList: async () => {
-            return [
-              {
-                title: "Hello, world",
-                description: "Lorem ipsum 1",
-                status: "published",
-              },
-              {
-                title: "Goodbye, world",
-                description: "Lorem ipsum 2",
-                status: "draft",
-              },
-            ];
-          },
-          getItemSummary: (item) => (
-            <>
-              {item.title}
-              <span
-                style={{
-                  marginLeft: "8px",
-                  padding: "2px 6px",
-                  borderRadius: "4px",
-                  fontSize: "11px",
-                  backgroundColor:
-                    item.status === "published" ? "#10b981" : "#f59e0b",
-                  color: "white",
-                }}
-              >
-                {item.status}
-              </span>
-            </>
-          ),
-        },
-      },
-      // ...
-    },
-  },
-};
-```
-
-<ConfigPreview
-  label="External with ReactElement summary"
-  componentConfig={{
-    fields: {
-      data: {
-        type: "external",
-        fetchList: async () => {
-          return [
-            {
-              title: "Hello, world",
-              description: "Lorem ipsum 1",
-              status: "published",
-            },
-            {
-              title: "Goodbye, world",
-              description: "Lorem ipsum 2",
-              status: "draft",
-            },
-          ];
-        },
-        getItemSummary: (item) => (
-          <>
-            {item.title}
-            <span
-              style={{
-                marginLeft: "8px",
-                padding: "2px 6px",
-                borderRadius: "4px",
-                fontSize: "11px",
-                backgroundColor:
-                  item.status === "published" ? "#10b981" : "#f59e0b",
-                color: "white",
-              }}
-            >
-              {item.status}
-            </span>
-          </>
-        ),
-      },
-    },
-    defaultProps: {
-      data: {
-        title: "Hello, world",
-        description: "Lorem ipsum 1",
-        status: "published",
       },
     },
     render: ({ data }) => {
