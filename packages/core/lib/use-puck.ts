@@ -27,7 +27,7 @@ export type UsePuckData<
   ) => G["UserComponentData"] | undefined;
   getItemById: (id: string) => G["UserComponentData"] | undefined;
   getSelectorForId: (id: string) => Required<ItemSelector> | undefined;
-  getNodeById: (id: string) => PuckNodeData | undefined;
+  getParentById: (id: string) => ComponentData | undefined;
   history: {
     back: HistorySlice["back"];
     forward: HistorySlice["forward"];
@@ -73,7 +73,7 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     getItemBySelector: (selector) => getItem(selector, store.state),
     getItemById: (id) => store.state.indexes.nodes[id].data,
     getSelectorForId: (id) => getSelectorForId(store.state, id),
-    getNodeById: (id) => store.state.indexes.nodes[id],
+    getParentById: (id) => store.state.indexes.nodes[id].data,
   };
 
   return storeData;
