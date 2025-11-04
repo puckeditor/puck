@@ -72,6 +72,7 @@ import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
 import { toComponent } from "../../lib/data/to-component";
+import { EditorProvider } from "../RichTextEditor/context";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -548,16 +549,18 @@ function PuckLayout<
                       <Outline />
                     </SidebarSection>
                   </Sidebar>
-                  <Canvas />
-                  <Sidebar
-                    position="right"
-                    sidebarRef={rightSidebarRef}
-                    isVisible={rightSideBarVisible}
-                    onResize={setRightWidth}
-                    onResizeEnd={handleRightSidebarResizeEnd}
-                  >
-                    <FieldSideBar />
-                  </Sidebar>
+                  <EditorProvider>
+                    <Canvas />
+                    <Sidebar
+                      position="right"
+                      sidebarRef={rightSidebarRef}
+                      isVisible={rightSideBarVisible}
+                      onResize={setRightWidth}
+                      onResizeEnd={handleRightSidebarResizeEnd}
+                    >
+                      <FieldSideBar />
+                    </Sidebar>
+                  </EditorProvider>
                 </div>
               </div>
             </FrameProvider>

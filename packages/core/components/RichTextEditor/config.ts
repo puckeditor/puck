@@ -10,5 +10,10 @@ export const defaultMenu: RichTextMenuConfig = {
 };
 
 export const defaultInlineMenu: RichTextMenuConfig = {
-  text: ["Bold", "Italic", "Underline", "Strikethrough"],
+  text: [
+    "BoldAction",
+    "ItalicAction",
+    "UnderlineAction",
+    "StrikethroughAction",
+  ],
 };

@@ -1,15 +1,16 @@
 import { memo, useCallback, useMemo, KeyboardEvent } from "react";
 import { useSyncedEditor } from "./lib/use-synced-editor";
 import { defaultExtensions } from "./extensions";
-import { MenuBar } from "./components/MenuBar/MenuBar";
+import { MenuBar } from "./components/MenuBar";
 import { EditorContent, Extensions } from "@tiptap/react";
 import { defaultInlineMenu, defaultMenu } from "./config";
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { EditorProps, RichTextMenuItem, RichTextSelectOptions } from "./types";
 import { defaultControls } from "./controls";
-import { BlockStyleSelect } from "./components/BlockStyleSelect/BlockStyleSelect";
-import { InlineMenu } from "./components/InlineMenu/InlineMenu";
+import { BlockStyleSelect } from "./components/BlockStyleSelect";
+import { DynamicActions } from "./components/InlineMenu";
+import { useActiveEditor } from "./context";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 
@@ -29,11 +30,13 @@ export const Editor = memo(
       () => [...defaultExtensions, ...extensions] as Extensions,
       [extensions]
     );
+    const { activeEditor, setActiveEditor } = useActiveEditor();
     const editor = useSyncedEditor<typeof loadedExtensions>({
       content,
       onChange,
       extensions: loadedExtensions,
       editable: !readOnly,
+      onFocusChange: setActiveEditor,
     });
 
     const loadedMenu = useMemo(
@@ -102,14 +105,14 @@ export const Editor = memo(
 
     if (!editor) return null;
 
-    const Menu = inline ? InlineMenu : MenuBar;
+    const Menu = inline ? DynamicActions : MenuBar;
 
     return (
       <div onKeyDownCapture={handleHotkeyCapture}>
         {!readOnly && (
           <Menu
             menuConfig={groupedMenu || {}}
-            editor={editor}
+            editor={activeEditor}
             selector={selector}
           />
         )}

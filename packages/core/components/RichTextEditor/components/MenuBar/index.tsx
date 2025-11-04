@@ -12,15 +12,18 @@ import {
 } from "../../types";
 import { defaultEditorState } from "../../selector";
 const getClassName = getClassNameFactory("MenuBar", styles);
+const getMenuClassName = getClassNameFactory("MenuBarMenu", styles);
 
 export const MenuBar = ({
   menuConfig,
   editor,
   selector,
+  inline,
 }: {
   menuConfig: Record<string, Record<string, RichTextMenuItem>>;
   editor: RichTextEditor | null;
   selector?: RichTextSelector;
+  inline?: boolean;
 }) => {
   const resolvedSelector = useMemo(() => {
     return (ctx: Parameters<RichTextSelector>[0]) => ({
@@ -49,13 +52,13 @@ export const MenuBar = ({
   }
 
   return (
-    <div className={getClassName("button-group")}>
+    <div className={getClassName({ "button-group": !inline })}>
       {menuGroups.map((key) => {
         const menuItems = menuConfig[key];
         if (!menuItems) return null; // handle undefined in Partial
         if (Object.keys(menuItems).length === 0) return null;
         return (
-          <div key={String(key)} className={getClassName(`menu`)}>
+          <div key={String(key)} className={getMenuClassName({ inline })}>
             <RenderMenuItems
               menuItems={menuItems}
               editor={editor}

@@ -2,6 +2,7 @@ import { ReactNode, SyntheticEvent } from "react";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 const getClassName = getClassNameFactory("ActionBar", styles);
+const getActionClassName = getClassNameFactory("ActionBarAction", styles);
 
 export const ActionBar = ({
   label,
@@ -29,14 +30,16 @@ export const Action = ({
   children,
   label,
   onClick,
+  active = false,
 }: {
   children: ReactNode;
   label?: string;
   onClick: (e: SyntheticEvent) => void;
+  active?: boolean;
 }) => (
   <button
     type="button"
-    className={getClassName("action")}
+    className={getActionClassName({ active: active })}
     onClick={onClick}
     title={label}
   >

@@ -1,4 +1,16 @@
-.MenuBar-button-group {
+.MenuBar--button-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  z-index: 100;
+  margin-bottom: 2px;
+}
+
+.MenuBar--button-group {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +26,7 @@
   margin-bottom: 2px;
 }
 
-.MenuBar-menu {
+.MenuBarMenu {
   display: flex;
   align-items: space-between;
   flex-direction: row;
@@ -22,4 +34,11 @@
   gap: 4px;
   z-index: 3;
   position: relative;
+}
+
+.MenuBarMenu--inline {
+  gap: 0px;
+}
+.MenuBarMenu--inline button {
+  padding: 2px;
 }

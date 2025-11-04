@@ -27,11 +27,11 @@
   white-space: nowrap;
 }
 
-.ActionBar-action + .ActionBar-label {
+.ActionBarAction + .ActionBar-label {
   padding-inline-start: 0;
 }
 
-.ActionBar-label + .ActionBar-action {
+.ActionBar-label + .ActionBarAction {
   margin-inline-start: -4px;
 }
 
@@ -52,7 +52,7 @@
   display: none;
 }
 
-.ActionBar-action {
+.ActionBarAction {
   background: transparent;
   border: none;
   color: var(--puck-color-grey-08);
@@ -68,23 +68,24 @@
   transition: color 50ms ease-in;
 }
 
-.ActionBar-action svg {
+.ActionBarAction svg {
   max-width: none !important; /* Explicit definition to prevent some SVG style pollution */
 }
 
-.ActionBar-action:focus-visible {
+.ActionBarAction:focus-visible {
   outline: 2px solid var(--puck-color-azure-05);
   outline-offset: -2px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .ActionBar-action:hover {
+  .ActionBarAction:hover {
     color: var(--puck-color-azure-06);
     transition: none;
   }
 }
 
-.ActionBar-action:active {
+.ActionBarAction:active,
+.ActionBarAction--active {
   color: var(--puck-color-azure-07);
   transition: none;
 }

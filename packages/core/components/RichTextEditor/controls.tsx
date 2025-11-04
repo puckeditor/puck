@@ -13,10 +13,12 @@ import {
   Quote,
   SquareCode,
   Strikethrough,
+  ItalicIcon,
 } from "lucide-react";
 import { IconButton } from "../IconButton";
 import { Editor } from "@tiptap/react";
 import { EditorState } from "./types";
+import { Action } from "../ActionBar";
 
 export const defaultControls = {
   AlignLeft: {
@@ -239,6 +241,62 @@ export const defaultControls = {
       >
         <Minus size={20} />
       </IconButton>
+    ),
+  },
+
+  BoldAction: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <Action
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().focus().toggleBold().run();
+        }}
+        active={editorState.isBold}
+      >
+        <Bold size={16} />
+      </Action>
+    ),
+  },
+
+  ItalicAction: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <Action
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().focus().toggleItalic().run();
+        }}
+        active={editorState.isItalic}
+      >
+        <Italic size={16} />
+      </Action>
+    ),
+  },
+
+  UnderlineAction: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <Action
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().focus().toggleUnderline().run();
+        }}
+        active={editorState.isUnderline}
+      >
+        <Underline size={16} />
+      </Action>
+    ),
+  },
+
+  StrikethroughAction: {
+    render: (editor: Editor, editorState: EditorState) => (
+      <Action
+        onClick={(e) => {
+          e.stopPropagation();
+          editor.chain().focus().toggleStrike().run();
+        }}
+        active={editorState.isStrike}
+      >
+        <Strikethrough size={16} />
+      </Action>
     ),
   },
 };
