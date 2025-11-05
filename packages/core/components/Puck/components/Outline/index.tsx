@@ -1,26 +1,17 @@
 import { LayerTree } from "../../../LayerTree";
 import { useAppStore } from "../../../../store";
 import { useMemo } from "react";
-import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
-import { useShallow } from "zustand/react/shallow";
+import { rootDroppableId } from "../../../../lib/root-droppable-id";
 
 export const Outline = () => {
   const outlineOverride = useAppStore((s) => s.overrides.outline);
 
-  const rootZones = useAppStore(
-    useShallow((s) => findZonesForArea(s.state, "root"))
-  );
-
   const Wrapper = useMemo(() => outlineOverride || "div", [outlineOverride]);
+  
+  // Use a SINGLE LayerTree for all zones - this allows cross-zone drops
   return (
     <Wrapper>
-      {rootZones.map((zoneCompound) => (
-        <LayerTree
-          key={zoneCompound}
-          label={rootZones.length === 1 ? "" : zoneCompound.split(":")[1]}
-          zoneCompound={zoneCompound}
-        />
-      ))}
+      <LayerTree zoneCompound={rootDroppableId} />
     </Wrapper>
   );
 };
