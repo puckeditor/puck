@@ -64,8 +64,6 @@ export function projectDrop(
     
     // SPECIAL CASE: If overItem is a ZoneNode, use IT as the destination
     if (overItem.kind === "zone") {
-      console.log("[projectDrop] OverItem IS a ZoneNode - using it directly");
-      
       parentZoneId = overItem.itemId;
       destinationZone = overItem.zoneCompound;
       
@@ -76,13 +74,6 @@ export function projectDrop(
       
       insertIndex = position === "before" ? 0 : zoneChildren.length;
       constrainedDepth = overItem.depth + 1;
-      
-      console.log("[projectDrop] ZoneNode drop:", {
-        destinationZone,
-        insertIndex,
-        constrainedDepth,
-        childCount: zoneChildren.length,
-      });
     } else {
       // OverItem is a regular component item
       // Resolve to the parent ZoneNode
@@ -119,24 +110,6 @@ export function projectDrop(
       insertIndex = Math.max(0, Math.min(insertIndex, siblings.length));
       constrainedDepth = overItem.depth;
     }
-
-    // Calculate insertion index among siblings
-    const siblings = flattenedItems.filter(
-      (item) => item.parentId === parentZoneId && item.kind === "item"
-    );
-    
-    const overIndex = siblings.findIndex((item) => item.itemId === overId);
-    
-    if (position === "before") {
-      insertIndex = overIndex >= 0 ? overIndex : 0;
-    } else {
-      // "after"
-      insertIndex = overIndex >= 0 ? overIndex + 1 : siblings.length;
-    }
-
-    // Clamp to valid range
-    insertIndex = Math.max(0, Math.min(insertIndex, siblings.length));
-    constrainedDepth = overItem.depth;
   }
 
   // Determine if this is a reorder (same parent zone) or cross-zone move
@@ -147,11 +120,10 @@ export function projectDrop(
     activeParentZone.zoneCompound === destinationZone;
 
   // Validate: check for illegal reparenting into own subtree
-  const valid = !isMovingIntoOwnSubtree(
-    flattenedItems,
-    activeId,
-    parentZoneId || destinationZone
-  );
+  // parentZoneId should always be set at this point (either from zone or item branch)
+  const valid = parentZoneId
+    ? !isMovingIntoOwnSubtree(flattenedItems, activeId, parentZoneId)
+    : false;
 
   return {
     parentZoneId,

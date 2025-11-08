@@ -429,7 +429,6 @@ export const LayerTree = ({
         setFlattenedItems((current) => {
           const offsetLeft = manager.dragOperation.transform.x;
           const dragDepth = Math.round(offsetLeft / INDENTATION);
-          const projectedDepth = initialDepth.current + dragDepth;
 
           if (DEBUG_DND) {
             console.log("[LayerTree] Drag Over:", {
@@ -437,7 +436,6 @@ export const LayerTree = ({
               targetId: target.id,
               offsetLeft,
               dragDepth,
-              projectedDepth,
             });
           }
 
@@ -461,21 +459,49 @@ export const LayerTree = ({
             console.log("[LayerTree] Projection result:", projection);
           }
 
-          // Move item to new position in flat array
           const sourceIdx = current.findIndex((i) => i.itemId === source.id);
-          const targetIdx = current.findIndex((i) => i.itemId === target.id);
+          if (sourceIdx === -1) return current;
 
-          if (sourceIdx === -1 || targetIdx === -1) return current;
+          // Find all siblings under the destination parent
+          const siblingIndices: number[] = [];
+          for (let i = 0; i < current.length; i++) {
+            const item = current[i];
+            if (item.parentId === projection.parentZoneId && item.kind === "item") {
+              siblingIndices.push(i);
+            }
+          }
 
+          // Compute absolute insert index in the flat array
+          let absoluteInsertIdx: number;
+          
+          if (siblingIndices.length === 0) {
+            // No siblings - insert right after the parent ZoneNode
+            const parentIdx = current.findIndex(
+              (i) => i.itemId === projection.parentZoneId
+            );
+            absoluteInsertIdx = parentIdx + 1;
+          } else if (projection.insertIndex < siblingIndices.length) {
+            // Insert before the sibling at insertIndex
+            absoluteInsertIdx = siblingIndices[projection.insertIndex];
+          } else {
+            // Insert at end - after last sibling
+            absoluteInsertIdx = siblingIndices[siblingIndices.length - 1] + 1;
+          }
+
+          // Remove the item from its current position
           const newItems = [...current];
           const [movedItem] = newItems.splice(sourceIdx, 1);
 
-          // Insert at target position with BOTH depth and parentId updated
-          const insertIdx = sourceIdx < targetIdx ? targetIdx : targetIdx;
-          newItems.splice(insertIdx, 0, {
+          // Adjust insertion index if source was before target (classic splice rule)
+          if (sourceIdx < absoluteInsertIdx) {
+            absoluteInsertIdx--;
+          }
+
+          // Insert at new position with updated metadata
+          newItems.splice(absoluteInsertIdx, 0, {
             ...movedItem,
+            parentId: projection.parentZoneId,
             depth: projection.constrainedDepth,
-            parentId: projection.parentZoneId, // CRITICAL: update parent too!
           });
 
           return newItems;
