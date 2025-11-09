@@ -1,5 +1,5 @@
-import { CSSProperties } from "react";
-import { Content, DragAxis } from "../../types";
+import { CSSProperties, ElementType } from "react";
+import { DragAxis } from "../../types";
 
 export type DropZoneProps = {
   zone: string;
@@ -9,4 +9,5 @@ export type DropZoneProps = {
   minEmptyHeight?: number;
   className?: string;
   collisionAxis?: DragAxis;
+  as?: ElementType;
 };
