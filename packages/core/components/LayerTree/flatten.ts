@@ -163,8 +163,9 @@ function flattenZone(
       nodeData,
     });
 
-    // Recursively flatten children if expanded
-    if (isExpanded && hasChildren) {
+    // ALWAYS emit child ZoneNodes when parent component is expanded
+    // This ensures empty zones are visible as drop targets
+    if (isExpanded) {
       for (const childZone of childZones) {
         const zoneName = getZoneNameFromCompound(childZone);
         const zoneNodeId = generateZoneNodeId(itemId, zoneName);
@@ -172,7 +173,7 @@ function flattenZone(
 
         if (!childZoneData) continue;
 
-        // Emit ZoneNode for child zone
+        // Emit ZoneNode for child zone (even if empty)
         const zoneHasChildren = (childZoneData.contentIds || []).length > 0;
         const zoneHasSelectedChild = checkIfZoneHasSelectedChild(
           state,
@@ -192,8 +193,8 @@ function flattenZone(
           isExpanded: zoneIsExpanded,
         });
 
-        // Flatten zone contents if expanded
-        if (zoneIsExpanded) {
+        // Only recursively flatten if zone has content AND is expanded
+        if (zoneIsExpanded && zoneHasChildren) {
           flattenZone(
             state,
             childZone,
