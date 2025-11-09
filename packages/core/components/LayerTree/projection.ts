@@ -76,6 +76,19 @@ export function projectDrop(
       constrainedDepth = overItem.depth + 1;
     } else {
       // OverItem is a regular component item
+      
+      // SPECIAL CASE: If dropping "after" a component that has child zones,
+      // redirect to "inside" its first zone to avoid confusing UI
+      if (position === "after" && overItem.hasChildren) {
+        const firstChildZone = flattenedItems.find(
+          (item) => item.kind === "zone" && item.parentId === overItem.itemId
+        );
+        if (firstChildZone && firstChildZone.kind === "zone") {
+          // Redirect to inside the first zone
+          return projectDrop(flattenedItems, activeId, firstChildZone.itemId, "inside", inputDepth);
+        }
+      }
+      
       // Resolve to the parent ZoneNode
       const parentZone = flattenedItems.find(
         (item) => item.itemId === overItem.parentId

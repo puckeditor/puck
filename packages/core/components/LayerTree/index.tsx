@@ -279,7 +279,7 @@ export const LayerTree = ({
     [zonesIndex, nodesIndex]
   );
 
-  // Start with all items expanded
+  // Keep items expanded - updates when state changes to preserve expansion
   const [expandedItems, setExpandedItems] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     Object.keys(nodesIndex).forEach((id) => initial.add(id));
@@ -290,6 +290,29 @@ export const LayerTree = ({
     });
     return initial;
   });
+
+  // Update expanded items when new nodes/zones are added
+  useMemo(() => {
+    setExpandedItems((prev) => {
+      const updated = new Set(prev);
+      // Add any new nodes
+      Object.keys(nodesIndex).forEach((id) => {
+        if (!updated.has(id)) {
+          updated.add(id);
+        }
+      });
+      // Add any new zones
+      Object.keys(zonesIndex).forEach((zc) => {
+        const componentId = zc.split(":")[0];
+        const zoneName = zc.split(":")[1] || "default-zone";
+        const zoneNodeId = `${componentId}::zone::${zoneName}`;
+        if (!updated.has(zoneNodeId)) {
+          updated.add(zoneNodeId);
+        }
+      });
+      return updated;
+    });
+  }, [nodesIndex, zonesIndex]);
 
   const sensors = useSensors({
     mouse: { distance: { value: 5 } },
