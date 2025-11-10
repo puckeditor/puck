@@ -4,6 +4,7 @@ import { getSelectorForId } from "./get-selector-for-id";
 import { rootDroppableId } from "./root-droppable-id";
 import { getItem } from "./data/get-item";
 
+// TODO: delete this
 export const useResolveDataOnMoved = (
   appStore: ReturnType<typeof useAppStoreApi>
 ) => {

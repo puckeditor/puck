@@ -25,6 +25,7 @@ import {
 } from "../DropZone/context";
 import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
 import { insertComponent } from "../../lib/insert-component";
+import { moveComponent } from "../../lib/moveComponent";
 import { useDebouncedCallback } from "use-debounce";
 import { ComponentDndData } from "../DraggableComponent";
 
@@ -356,14 +357,12 @@ const DragDropContextClient = ({
                     appStore
                   );
                 } else if (initialSelector.current) {
-                  dispatch({
-                    type: "move",
-                    sourceIndex: initialSelector.current.index,
-                    sourceZone: initialSelector.current.zone,
-                    destinationIndex: thisPreview.index,
-                    destinationZone: thisPreview.zone,
-                    recordHistory: false,
-                  });
+                  moveComponent(
+                    thisPreview.props.id,
+                    initialSelector.current,
+                    thisPreview,
+                    appStore
+                  );
                 }
               }
 
