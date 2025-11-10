@@ -45,6 +45,11 @@
       "import": "./dist/rsc.mjs",
       "require": "./dist/rsc.js"
     },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "import": "./dist/internal.mjs",
+      "require": "./dist/internal.js"
+    },
     "./puck.css": "./dist/index.css",
     "./no-external.css": "./dist/no-external.css",
     "./dist/index.css": "./dist/index.css",
@@ -60,7 +65,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
     "test": "jest",
     "prepare": "cp ../../README.md . && yarn build",
     "postpublish": "rm README.md"
