@@ -34,3 +34,5 @@ export {
 export * from "../plugins/blocks";
 export * from "../plugins/fields";
 export * from "../plugins/outline";
+
+export { createReducer } from "../reducer";
