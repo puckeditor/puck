@@ -412,7 +412,7 @@ const resolveData = async ({ props }, { metadata }) => {
 
 The [component data](/docs/api-reference/data-model/component-data) of the parent.
 
-Resolvers are executed bottom-up when [`<Puck>`](/docs/api-reference/components/puck) renders, so the parent component will only [resolve its data](#resolvedatadata-params) after the child resolver has completed when this happens.
+If the parent implements [resolveData](#resolvedatadata-params), this parameter will return the unresolved data on initial render, as resolvers are executed bottom-up.
 
 ##### `params.trigger`
 
