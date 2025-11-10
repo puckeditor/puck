@@ -212,7 +212,7 @@ describe("resolveComponentData", () => {
     expect(didChange).toBe(true);
   });
 
-  it("should re-run when parent changes for 'moved' triggers", async () => {
+  it("should re-run when parent changes for 'move' triggers", async () => {
     // When: ---------------
     const initialResolution = await resolveComponentData(
       toComponent({
@@ -251,7 +251,7 @@ describe("resolveComponentData", () => {
       undefined,
       undefined,
       undefined,
-      "moved",
+      "move",
       {
         type: "MyComponentWithoutResolver",
         props: {
@@ -304,7 +304,7 @@ describe("resolveComponentData", () => {
     expect(movedResolution.didChange).toBe(true);
   });
 
-  it("shouldn't re-run when parent doesn't change for 'moved' triggers", async () => {
+  it("shouldn't re-run when parent doesn't change for 'move' triggers", async () => {
     // When: ---------------
     const parent = {
       type: "MyComponentWithoutResolver",
@@ -341,7 +341,7 @@ describe("resolveComponentData", () => {
       undefined,
       undefined,
       undefined,
-      "moved",
+      "move",
       parent
     );
 
@@ -367,7 +367,7 @@ describe("resolveComponentData", () => {
     expect(movedResolution.didChange).toBe(false);
   });
 
-  it("shouldn't run for 'moved' triggers before the component resolves once for other actions", async () => {
+  it("shouldn't run for 'move' triggers before the component resolves once for other actions", async () => {
     // When: ---------------
     const movedResolution = await resolveComponentData(
       toComponent({
@@ -378,7 +378,7 @@ describe("resolveComponentData", () => {
       undefined,
       undefined,
       undefined,
-      "moved",
+      "move",
       {
         type: "MyComponentWithoutResolver",
         props: {

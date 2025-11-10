@@ -45,15 +45,15 @@ export const resolveComponentData = async <
       resolved = {},
       parentId: oldParentId = null,
     } = cache.lastChange[id] || {};
-    // Skip inserted nodes for "moved" trigger
+    // Skip inserted nodes for "move" trigger
     // This is done this way to mitigate race conditions on insertion
     const isRootOrInserted = oldParentId === null;
     const parentChanged = !isRootOrInserted && parent?.props.id !== oldParentId;
     const dataChanged = item && !deepEqual(item, oldItem);
 
     const shouldSkip =
-      (trigger === "moved" && !parentChanged) ||
-      (trigger !== "moved" && trigger !== "force" && !dataChanged);
+      (trigger === "move" && !parentChanged) ||
+      (trigger !== "move" && trigger !== "force" && !dataChanged);
 
     if (shouldSkip) {
       return { node: resolved, didChange: false };

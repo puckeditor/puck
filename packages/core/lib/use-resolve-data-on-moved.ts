@@ -23,7 +23,7 @@ export const useResolveDataOnMoved = (
         const resolveComponentData = appStore.getState().resolveComponentData;
         const dispatch = appStore.getState().dispatch;
 
-        const resolvedData = await resolveComponentData(item, "moved");
+        const resolvedData = await resolveComponentData(item, "move");
 
         // The item could've moved since starting resolution
         const latestItemSelector = getSelectorForId(

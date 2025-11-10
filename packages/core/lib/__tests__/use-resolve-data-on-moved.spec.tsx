@@ -11,7 +11,7 @@ import { insertComponent } from "../insert-component";
 const appStore = createAppStore();
 
 const childResolveData = jest.fn(async (data, params) => {
-  if (params.trigger === "moved") {
+  if (params.trigger === "move") {
     return {
       ...data,
       props: {
@@ -29,7 +29,7 @@ const childResolveData = jest.fn(async (data, params) => {
 });
 
 const insertedResolveData = jest.fn(async (data, params) => {
-  if (params.trigger === "moved") {
+  if (params.trigger === "move") {
     return {
       ...data,
       props: {
@@ -250,7 +250,7 @@ describe("useResolveDataOnMoved", () => {
     expect(childResolveData).toHaveBeenCalledTimes(resolveAndCommitDataCalls);
   });
 
-  it("resolves with the moved trigger", async () => {
+  it("resolves with the move trigger", async () => {
     // When: ---------------
     renderHook(() => useResolveDataOnMoved(appStore));
 
@@ -262,7 +262,7 @@ describe("useResolveDataOnMoved", () => {
     const expectedCalls = resolveAndCommitDataCalls + 1;
     expect(childResolveData).toHaveBeenCalledTimes(expectedCalls);
     expect(childResolveData.mock.calls[expectedCalls - 1][1].trigger).toBe(
-      "moved"
+      "move"
     );
     const mockedReturn = await childResolveData.mock.results[expectedCalls - 1]
       .value;

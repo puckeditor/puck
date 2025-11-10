@@ -29,7 +29,7 @@ export type ResolveDataTrigger =
   | "replace"
   | "load"
   | "force"
-  | "moved";
+  | "move";
 
 type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   T,
