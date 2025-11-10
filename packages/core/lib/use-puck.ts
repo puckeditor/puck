@@ -73,6 +73,10 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     getSelectorForId: (id) => getSelectorForId(store.state, id),
   };
 
+  (storeData as any).__private = {
+    appState: store.state,
+  };
+
   return storeData;
 };
 
