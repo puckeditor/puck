@@ -25,7 +25,7 @@ import {
 } from "../DropZone/context";
 import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
 import { insertComponent } from "../../lib/insert-component";
-import { moveComponent } from "../../lib/moveComponent";
+import { moveComponent } from "../../lib/move-component";
 import { useDebouncedCallback } from "use-debounce";
 import { ComponentDndData } from "../DraggableComponent";
 
