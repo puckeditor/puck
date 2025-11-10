@@ -8,8 +8,7 @@ Closes #XXXX
 
 ## Description
 
-This PR adds the `test` trigger to the `resolveData` params, matching the behavior of `resolveFields`.
-This introduces a breaking change to the `resolveData` `changed` parameter, as all changes are now nested under a `test` key.
+This PR adds a `style` prop to the `Puck` component to allow customization of the editor layout styles.
 
 <!--
   Include a concise and clear description of what this PR does.
@@ -20,17 +19,19 @@ This introduces a breaking change to the `resolveData` `changed` parameter, as a
 
 ## Changes made
 
-- The `resolveData` config type now includes a new `test` trigger param.
-  - A new hook `useTestResolveData` was added to track when testing a component and call resolveComponentData with a `test` trigger.
+- The `Puck` component now receives an optional `style` prop and passes it to the editor `div` wrapper.
 
 <!--
   List the key changes made and the reasons behind them.
  -->
 
-## Manual tests
+## How to test
 
-- Confirmed that `resolveData` runs the same number of times on editor load, insertion, deletion, replacement, and reordering within the same slot, using sample data and config.
-- Confirmed that conditional data resolution based on the parent works as expected:
+- Render the `Puck` component with a two-column grid layout using the `style` prop and confirm it renders in two columns:
+
+```tsx
+<Puck style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} />
+```
 
 <!--
   List any manual tests you did to verify the behavior of the changes.
