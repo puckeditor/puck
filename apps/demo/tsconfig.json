@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig/nextjs.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
     "strict": true,
     "plugins": [{ "name": "next" }],
     "paths": {

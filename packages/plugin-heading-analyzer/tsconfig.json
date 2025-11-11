@@ -3,7 +3,6 @@
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "moduleResolution": "bundler",
     "paths": {
       "@/core": ["../core"],
       "@/core/*": ["../core/*"]
