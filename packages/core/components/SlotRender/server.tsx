@@ -53,11 +53,13 @@ const Item = ({
  */
 export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
   function SlotRenderInternal(
-    { className, style, content, config, metadata },
+    { className, style, content, config, metadata, as },
     ref
   ) {
+    const El = as ?? "div";
+
     return (
-      <div className={className} style={style} ref={ref}>
+      <El className={className} style={style} ref={ref}>
         {content.map((item) => {
           if (!config.components[item.type]) {
             return null;
@@ -72,7 +74,7 @@ export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
             />
           );
         })}
-      </div>
+      </El>
     );
   }
 );

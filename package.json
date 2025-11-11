@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "rm -rf packages/core/dist && turbo run dev --filter=demo",
+    "dev": "rimraf packages/core/dist && turbo run dev --filter=demo",
     "lint": "turbo run lint",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,css}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx,css}\"",
@@ -23,11 +23,12 @@
     "conventional-recommended-bump": "^6.0.5",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
-    "lerna": "^7.1.1",
+    "lerna": "^9.0.0",
     "prettier": "^2.5.1",
     "puppeteer": "^24.8.2",
+    "rimraf": "^6.1.0",
     "standard-changelog": "^2.0.21",
-    "turbo": "^2.3.3"
+    "turbo": "^2.5.8"
   },
   "name": "puck-repo",
   "packageManager": "yarn@1.22.19",
@@ -36,7 +37,7 @@
     "recipes/*",
     "packages/*"
   ],
-  "version": "0.20.1",
+  "version": "0.20.2",
   "engines": {
     "node": ">=20.0.0"
   }

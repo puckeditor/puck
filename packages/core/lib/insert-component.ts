@@ -1,16 +1,19 @@
 import { InsertAction } from "../reducer";
 import { insertAction } from "../reducer/actions/insert";
-import { AppStore } from "../store";
+import { useAppStoreApi } from "../store";
 import { generateId } from "./generate-id";
 import { getItem } from "./data/get-item";
+import { getSelectorForId } from "./get-selector-for-id";
 
 // Makes testing easier without mocks
 export const insertComponent = async (
   componentType: string,
   zone: string,
   index: number,
-  appStore: AppStore
+  appStore: ReturnType<typeof useAppStoreApi>
 ) => {
+  const { getState } = appStore;
+
   // Reuse newData so ID retains parity between dispatch and resolver
   const id = generateId(componentType);
 
@@ -22,11 +25,11 @@ export const insertComponent = async (
     id,
   };
 
-  const { state, dispatch, resolveComponentData } = appStore;
-
-  const insertedState = insertAction(state, insertActionData, appStore);
+  const stateBefore = getState().state;
+  const insertedState = insertAction(stateBefore, insertActionData, getState());
 
   // Dispatch the insert, immediately
+  const dispatch = getState().dispatch;
   dispatch({
     ...insertActionData, // Dispatch insert rather set, as user's may rely on this via onAction
 
@@ -36,27 +39,27 @@ export const insertComponent = async (
     recordHistory: true,
   });
 
-  const itemSelector = {
-    index,
-    zone,
-  };
+  const itemSelector = { index, zone };
 
   // Select the item, immediately
   dispatch({ type: "setUi", ui: { itemSelector } });
 
   const itemData = getItem(itemSelector, insertedState);
+  if (!itemData) return;
 
-  if (itemData) {
-    // Run any resolvers, async
-    const resolved = await resolveComponentData(itemData, "insert");
+  // Run any resolvers
+  const resolveComponentData = getState().resolveComponentData;
+  const resolved = await resolveComponentData(itemData, "insert");
+  if (!resolved.didChange) return;
 
-    if (resolved.didChange) {
-      dispatch({
-        type: "replace",
-        destinationZone: itemSelector.zone,
-        destinationIndex: itemSelector.index,
-        data: resolved.node,
-      });
-    }
-  }
+  // Use latest position, in case it has moved
+  const latestItemSelector = getSelectorForId(getState().state, id);
+  if (!latestItemSelector) return;
+
+  dispatch({
+    type: "replace",
+    destinationZone: latestItemSelector.zone,
+    destinationIndex: latestItemSelector.index,
+    data: resolved.node,
+  });
 };

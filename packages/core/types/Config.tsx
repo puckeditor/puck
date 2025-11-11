@@ -1,6 +1,6 @@
 import type { JSX, ReactNode } from "react";
 import { BaseField, Field, Fields } from "./Fields";
-import { ComponentData, Metadata, RootData } from "./Data";
+import { ComponentData, ComponentMetadata, RootData } from "./Data";
 
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
 import { AppState } from "./AppState";
@@ -8,8 +8,8 @@ import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
 import { Permissions } from "./API";
 import { DropZoneProps } from "../components/DropZone/types";
 import {
-  ComponentConfigParams,
-  ConfigParams,
+  AssertHasValue,
+  FieldsExtension,
   LeftOrExactRight,
   WithDeepSlots,
 } from "./Internal";
@@ -33,6 +33,8 @@ type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   props?: Partial<Props>;
 };
 
+export interface ComponentConfigExtensions {}
+
 type ComponentConfigInternal<
   RenderProps extends DefaultComponentProps,
   FieldProps extends DefaultComponentProps,
@@ -52,6 +54,7 @@ type ComponentConfigInternal<
       fields: Fields<FieldProps>;
       lastFields: Fields<FieldProps>;
       lastData: DataShape | null;
+      metadata: ComponentMetadata;
       appState: AppState;
       parent: ComponentData | null;
     }
@@ -61,7 +64,7 @@ type ComponentConfigInternal<
     params: {
       changed: Partial<Record<keyof FieldProps, boolean> & { id: string }>;
       lastData: DataShape | null;
-      metadata: Metadata;
+      metadata: ComponentMetadata;
       trigger: ResolveDataTrigger;
     }
   ) =>
@@ -75,10 +78,11 @@ type ComponentConfigInternal<
       permissions: Partial<Permissions>;
       appState: AppState;
       lastData: DataShape | null;
+      parent: ComponentData | null;
     }
   ) => Promise<Partial<Permissions>> | Partial<Permissions>;
-  metadata?: Metadata;
-};
+  metadata?: ComponentMetadata;
+} & ComponentConfigExtensions;
 
 // DEPRECATED - remove old generics in favour of Params
 export type ComponentConfig<
@@ -227,3 +231,23 @@ export type ExtractConfigParams<UserConfig extends ConfigInternal> =
         field: UserField extends { type: string } ? UserField : Field;
       }
     : never;
+
+export type ConfigParams<
+  Components extends DefaultComponents = DefaultComponents,
+  RootProps extends DefaultComponentProps = any,
+  CategoryNames extends string[] = string[],
+  UserFields extends FieldsExtension = FieldsExtension
+> = {
+  components?: Components;
+  root?: RootProps;
+  categories?: CategoryNames;
+  fields?: AssertHasValue<UserFields>;
+};
+
+export type ComponentConfigParams<
+  Props extends DefaultComponentProps = DefaultComponentProps,
+  UserFields extends FieldsExtension = never
+> = {
+  props: Props;
+  fields?: AssertHasValue<UserFields>;
+};

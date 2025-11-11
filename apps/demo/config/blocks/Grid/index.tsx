@@ -13,6 +13,10 @@ export type GridProps = {
   items: Slot;
 };
 
+const CustomSlot = (props: any) => {
+  return <span {...props} />;
+};
+
 export const GridInternal: ComponentConfig<GridProps> = {
   fields: {
     numColumns: {
@@ -39,6 +43,7 @@ export const GridInternal: ComponentConfig<GridProps> = {
     return (
       <Section>
         <Items
+          as={CustomSlot}
           disallow={["Hero", "Stats"]}
           className={getClassName()}
           style={{

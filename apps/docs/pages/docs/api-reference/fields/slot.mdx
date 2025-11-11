@@ -185,6 +185,7 @@ Slot data is provided to `render()` as a render function (or component). Provide
 | Param                               | Example                      | Type                                 | Status |
 | ----------------------------------- | ---------------------------- | ------------------------------------ | ------ |
 | [`allow`](#allow-1)                 | `allow: ["HeadingBlock"]`    | Array                                | -      |
+| [`as`](#as)                         | `as: "span"`                 | ElementType                          | -      |
 | [`className`](#classname)           | `className: "MyClass"`       | String                               | -      |
 | [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String                               | -      |
 | [`disallow`](#disallow-1)           | `disallow: ["HeadingBlock"]` | Array                                | -      |
@@ -202,6 +203,22 @@ const config = {
     Example: {
       render: ({ content: Content }) => {
         return <Content allow={["HeadingBlock"]} />;
+      },
+    },
+  },
+};
+```
+
+### `as`
+
+Render a custom element or component for the slot.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content as="table" />;
       },
     },
   },

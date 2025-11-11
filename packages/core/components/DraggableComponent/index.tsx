@@ -226,14 +226,17 @@ export const DraggableComponent = ({
     return cleanup;
   }, [permissions.drag, zoneCompound]);
 
+  const [, setRerender] = useState(0);
+
   const ref = useRef<HTMLElement>(null);
 
   const refSetter = useCallback(
     (el: HTMLElement | null) => {
       sortableRef(el);
 
-      if (el) {
+      if (ref.current !== el) {
         ref.current = el;
+        setRerender((update) => update + 1);
       }
     },
     [sortableRef]

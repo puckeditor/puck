@@ -1,4 +1,5 @@
 import { ConfigPreview } from "@/docs/components/Preview";
+import { Callout } from "nextra/components";
 
 # Array
 
@@ -56,14 +57,14 @@ const config = {
 
 ## Params
 
-| Param                                           | Example                                       | Type     | Status   |
-| ----------------------------------------------- | --------------------------------------------- | -------- | -------- |
-| [`type`](#type)                                 | `type: "array"`                               | "array"  | Required |
-| [`arrayFields`](#arrayfields)                   | `arrayFields: { title: { type: "text" } }`    | Object   | Required |
-| [`defaultItemProps`](#defaultitemprops)         | `defaultItemProps: { title: "Hello, world" }` | String   | -        |
-| [`getItemSummary()`](#getitemsummaryitem-index) | `getItemSummary: (item) => item.title`        | Function | -        |
-| [`max`](#max)                                   | `max: 3`                                      | Number   | -        |
-| [`min`](#min)                                   | `min: 1`                                      | Number   | -        |
+| Param                                           | Example                                       | Type               | Status   |
+| ----------------------------------------------- | --------------------------------------------- | ------------------ | -------- |
+| [`type`](#type)                                 | `type: "array"`                               | "array"            | Required |
+| [`arrayFields`](#arrayfields)                   | `arrayFields: { title: { type: "text" } }`    | Object             | Required |
+| [`defaultItemProps`](#defaultitemprops)         | `defaultItemProps: { title: "Hello, world" }` | Object \| Function | -        |
+| [`getItemSummary()`](#getitemsummaryitem-index) | `getItemSummary: (item) => item.title`        | Function           | -        |
+| [`max`](#max)                                   | `max: 3`                                      | Number             | -        |
+| [`min`](#min)                                   | `min: 1`                                      | Number             | -        |
 
 ## Required params
 
@@ -117,7 +118,7 @@ const config = {
 
 ### `defaultItemProps`
 
-Set the default values when a new item is added to the array.
+Set the default values when a new item is added to the array. Can be an object or a function that receives the current array index.
 
 ```tsx {10-12} copy
 const config = {
@@ -167,9 +168,69 @@ const config = {
   }}
 />
 
+You can also use a function to generate dynamic defaults:
+
+```tsx {10-14} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        items: {
+          type: "array",
+          arrayFields: {
+            title: { type: "text" },
+            order: { type: "number" },
+          },
+          defaultItemProps: (index) => ({
+            title: `Item ${index + 1}`,
+            order: index + 1,
+          }),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Dynamic Example"
+  componentConfig={{
+    fields: {
+      items: {
+        type: "array",
+        arrayFields: {
+          title: { type: "text" },
+          order: { type: "number" },
+        },
+        defaultItemProps: (index) => ({
+          title: `Item ${index + 1}`,
+          order: index + 1,
+        }),
+      },
+    },
+    defaultProps: { items: [] },
+    render: ({ items }) => {
+      return (
+        <ul>
+          {items.map((item, i) => (
+            <li key={i}>
+              {item.title} (Order: {item.order})
+            </li>
+          ))}
+        </ul>
+      );
+    },
+  }}
+/>
+
 ### `getItemSummary(item, index)`
 
-Get a label of each item in the array.
+Get a label of each item in the array. Returns a [ReactNode](https://react.dev/learn/typescript#typing-children).
+
+<Callout type="warning">
+  Avoid using interactive HTML elements like `<button>`, `<input>`, or `<a>` inside `getItemSummary`. These elements can interfere with the array field's built-in interactions (such as drag-and-drop reordering and item expansion). Stick to non-interactive elements like `<div>`, `<span>`, `<p>`, or plain text for summaries.
+</Callout>
 
 ```tsx {10} copy
 const config = {

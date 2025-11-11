@@ -4,7 +4,7 @@ import { Plugin } from "../types";
 import { ActionBar } from "../components/ActionBar";
 import { IconButton } from "../components/IconButton";
 import { LogsIcon } from "lucide-react";
-import { useAppStore } from "../store";
+import { useAppStoreApi } from "../store";
 
 const usePuck = createUsePuck();
 
@@ -29,14 +29,14 @@ export const debugPlugin: Plugin = {
       );
     },
     headerActions: ({ children }) => {
-      const appState = useAppStore((s) => s.state);
+      const appStoreApi = useAppStoreApi();
 
       return (
         <>
           <IconButton
             onClick={() => {
               // No way to get appState without re-rendering
-              console.log(appState);
+              console.log(appStoreApi.getState());
             }}
             title="Log state"
           >
