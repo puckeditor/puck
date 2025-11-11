@@ -28,27 +28,17 @@ const DefaultFields = ({
 const createOnChange =
   (fieldName: string, appStore: StoreApi<AppStore>) =>
   async (value: any, updatedUi?: Partial<UiState>) => {
-    let currentProps;
-
     const { dispatch, state, selectedItem, resolveComponentData } =
       appStore.getState();
 
     const { data, ui } = state;
     const { itemSelector } = ui;
 
-    // DEPRECATED
+    // DEPRECATED: root without props object
     const rootProps = data.root.props || data.root;
+    const currentProps = selectedItem ? selectedItem.props : rootProps;
 
-    if (selectedItem) {
-      currentProps = selectedItem.props;
-    } else {
-      currentProps = rootProps;
-    }
-
-    const newProps = {
-      ...currentProps,
-      [fieldName]: value,
-    };
+    const newProps = { ...currentProps, [fieldName]: value };
 
     if (selectedItem && itemSelector) {
       const resolved = await resolveComponentData(
@@ -69,27 +59,31 @@ const createOnChange =
         data: resolved.node,
         ui: updatedUi,
       });
-    } else {
-      if (data.root.props) {
-        dispatch({
-          type: "replaceRoot",
-          root: (
-            await resolveComponentData(
-              { ...data.root, props: newProps },
-              "replace"
-            )
-          ).node,
-          ui: { ...ui, ...updatedUi },
-          recordHistory: true,
-        });
-      } else {
-        // DEPRECATED
-        dispatch({
-          type: "setData",
-          data: { root: newProps },
-        });
-      }
+
+      return;
     }
+
+    if (data.root.props) {
+      dispatch({
+        type: "replaceRoot",
+        root: (
+          await resolveComponentData(
+            { ...data.root, props: newProps },
+            "replace"
+          )
+        ).node,
+        ui: { ...ui, ...updatedUi },
+        recordHistory: true,
+      });
+
+      return;
+    }
+
+    // DEPRECATED: root without props object
+    dispatch({
+      type: "setData",
+      data: { root: newProps },
+    });
   };
 
 const FieldsChild = ({ fieldName }: { fieldName: string }) => {
