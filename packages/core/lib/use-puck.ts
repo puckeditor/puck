@@ -75,13 +75,10 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     getSelectorForId: (id) => getSelectorForId(store.state, id),
     getParentById: (id) => {
       const node = store.state.indexes.nodes[id];
-      
       const parentId = node.parentId;
       if (parentId === null) return;
-      
       const parentNode = store.state.indexes.nodes[parentId];
       if (!parentNode) return;
-      
       return parentNode.data;
     },
   };
