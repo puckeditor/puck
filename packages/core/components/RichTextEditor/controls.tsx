@@ -13,7 +13,6 @@ import {
   Quote,
   SquareCode,
   Strikethrough,
-  ItalicIcon,
 } from "lucide-react";
 import { IconButton } from "../IconButton";
 import { Editor } from "@tiptap/react";

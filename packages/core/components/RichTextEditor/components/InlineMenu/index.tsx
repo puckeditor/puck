@@ -8,7 +8,6 @@ import {
 import { ActionBar } from "../../../ActionBar";
 
 import { useAppStore, useAppStoreApi } from "../../../../store";
-import { getClassNameFactory } from "../../../../lib";
 
 export function DynamicActions({
   menuConfig,
