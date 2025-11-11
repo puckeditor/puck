@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 import { DefaultComponentProps, FieldMetadata, UiState } from ".";
 import { Extensions } from "@tiptap/react";
 import {
@@ -74,7 +74,7 @@ export interface ArrayField<
       : Field<Props[0][SubPropName], UserField>;
   };
   defaultItemProps?: Props[0] | ((index: number) => Props[0]);
-  getItemSummary?: (item: Props[0], index?: number) => string;
+  getItemSummary?: (item: Props[0], index?: number) => ReactNode;
   max?: number;
   min?: number;
 }
@@ -112,7 +112,7 @@ export type ExternalFieldWithAdaptor<
   placeholder?: string;
   adaptor: Adaptor<any, any, Props>;
   adaptorParams?: object;
-  getItemSummary: (item: NotUndefined<Props>, index?: number) => string;
+  getItemSummary: (item: NotUndefined<Props>, index?: number) => ReactNode;
 };
 
 export type CacheOpts = {
@@ -130,7 +130,7 @@ export interface ExternalField<Props extends any = { [key: string]: any }>
   }) => Promise<any[] | null>;
   mapProp?: (value: any) => Props;
   mapRow?: (value: any) => Record<string, string | number | ReactElement>;
-  getItemSummary?: (item: NotUndefined<Props>, index?: number) => string;
+  getItemSummary?: (item: NotUndefined<Props>, index?: number) => ReactNode;
   showSearch?: boolean;
   renderFooter?: (props: { items: any[] }) => ReactElement;
   initialQuery?: string;

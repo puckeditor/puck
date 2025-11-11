@@ -1,4 +1,5 @@
 import { ConfigPreview } from "@/docs/components/Preview";
+import { Callout } from "nextra/components";
 
 # Array
 
@@ -225,7 +226,11 @@ const config = {
 
 ### `getItemSummary(item, index)`
 
-Get a label of each item in the array.
+Get a label of each item in the array. Returns a [ReactNode](https://react.dev/learn/typescript#typing-children).
+
+<Callout type="warning">
+  Avoid using interactive HTML elements like `<button>`, `<input>`, or `<a>` inside `getItemSummary`. These elements can interfere with the array field's built-in interactions (such as drag-and-drop reordering and item expansion). Stick to non-interactive elements like `<div>`, `<span>`, `<p>`, or plain text for summaries.
+</Callout>
 
 ```tsx {10} copy
 const config = {

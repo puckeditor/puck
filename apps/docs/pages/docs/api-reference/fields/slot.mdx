@@ -182,15 +182,16 @@ const config = {
 
 Slot data is provided to `render()` as a render function (or component). Provide props to this function to customize the behavior of the slot at render-time.
 
-| Param                               | Example                      | Type          | Status |
-| ----------------------------------- | ---------------------------- | ------------- | ------ |
-| [`allow`](#allow-1)                 | `allow: ["HeadingBlock"]`    | Array         | -      |
-| [`className`](#classname)           | `className: "MyClass"`       | String        | -      |
-| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String        | -      |
-| [`disallow`](#disallow-1)           | `disallow: ["HeadingBlock"]` | Array         | -      |
-| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: 256`        | Number        | -      |
-| [`ref`](#ref)                       | `ref: ref`                   | Ref           | -      |
-| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties | -      |
+| Param                               | Example                      | Type                                 | Status |
+| ----------------------------------- | ---------------------------- | ------------------------------------ | ------ |
+| [`allow`](#allow-1)                 | `allow: ["HeadingBlock"]`    | Array                                | -      |
+| [`as`](#as)                         | `as: "span"`                 | ElementType                          | -      |
+| [`className`](#classname)           | `className: "MyClass"`       | String                               | -      |
+| [`collisionAxis`](#collisionaxis)   | `collisionAxis: "x"`         | String                               | -      |
+| [`disallow`](#disallow-1)           | `disallow: ["HeadingBlock"]` | Array                                | -      |
+| [`minEmptyHeight`](#minemptyheight) | `minEmptyHeight: "256px"`    | CSSProperties["minHeight"] \| number | -      |
+| [`ref`](#ref)                       | `ref: ref`                   | Ref                                  | -      |
+| [`style`](#style)                   | `style: {display: "flex"}`   | CSSProperties                        | -      |
 
 ### `allow`
 
@@ -202,6 +203,22 @@ const config = {
     Example: {
       render: ({ content: Content }) => {
         return <Content allow={["HeadingBlock"]} />;
+      },
+    },
+  },
+};
+```
+
+### `as`
+
+Render a custom element or component for the slot.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content as="table" />;
       },
     },
   },
@@ -271,14 +288,14 @@ const config = {
 
 ### `minEmptyHeight`
 
-The minimum height of the slot when empty, in pixels. Defaults to `128`.
+The minimum height of the slot when empty. Defaults to `128px`.
 
 ```tsx copy {5}
 const config = {
   components: {
     Example: {
       render: () => {
-        return <Content minEmptyHeight={256} />;
+        return <Content minEmptyHeight="256px" />;
       },
     },
   },

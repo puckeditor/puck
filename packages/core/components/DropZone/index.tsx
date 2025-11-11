@@ -284,8 +284,9 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       disallow,
       style,
       className,
-      minEmptyHeight: userMinEmptyHeight = 128,
+      minEmptyHeight: userMinEmptyHeight = "128px",
       collisionAxis,
+      as,
     },
     userRef
   ) {
@@ -466,8 +467,10 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       ref,
     });
 
+    const El = as ?? "div";
+
     return (
-      <div
+      <El
         className={`${getClassName({
           isRootZone,
           hoveringOverArea,
@@ -476,15 +479,15 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           hasChildren: contentIds.length > 0,
           isAnimating,
         })}${className ? ` ${className}` : ""}`}
-        ref={(node) => {
-          assignRefs<HTMLDivElement>([ref, dropRef, userRef], node);
+        ref={(node: any) => {
+          assignRefs<any>([ref, dropRef, userRef], node);
         }}
         data-testid={`dropzone:${zoneCompound}`}
         data-puck-dropzone={zoneCompound}
         style={
           {
             ...style,
-            "--min-empty-height": `${minEmptyHeight}px`,
+            "--min-empty-height": minEmptyHeight,
             backgroundColor: RENDER_DEBUG
               ? getRandomColor()
               : style?.backgroundColor,
@@ -504,7 +507,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
             />
           );
         })}
-      </div>
+      </El>
     );
   }
 );
@@ -573,7 +576,7 @@ export const DropZoneRenderPure = (props: DropZoneProps) => (
 );
 
 const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
-  function DropZoneRenderInternal({ className, style, zone }, ref) {
+  function DropZoneRenderInternal({ className, style, zone, as }, ref) {
     const ctx = useContext(dropZoneContext);
     const { areaId = "root" } = ctx || {};
     const { config, data, metadata } = useContext(renderContext);
@@ -591,6 +594,8 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       }
     }, [content]);
 
+    const El = as ?? "div";
+
     if (!data || !config) {
       return null;
     }
@@ -599,7 +604,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       content = setupZone(data, zoneCompound).zones[zoneCompound];
     }
     return (
-      <div className={className} style={style} ref={ref}>
+      <El className={className} style={style} ref={ref}>
         {content.map((item) => {
           const Component = config.components[item.type];
           if (Component) {
@@ -615,7 +620,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
 
           return null;
         })}
-      </div>
+      </El>
     );
   }
 );
