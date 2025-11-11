@@ -80,7 +80,7 @@ describe("use-insert-component", () => {
     });
 
     it("should dispatch the insert action", async () => {
-      insertComponent("MyComponent", rootDroppableId, 0, appStore.getState());
+      insertComponent("MyComponent", rootDroppableId, 0, appStore);
 
       expect(dispatchedEvents[0]).toEqual<PuckAction>({
         type: "insert",
@@ -93,7 +93,7 @@ describe("use-insert-component", () => {
     });
 
     it("should dispatch the setUi action, and select the item", async () => {
-      insertComponent("MyComponent", rootDroppableId, 0, appStore.getState());
+      insertComponent("MyComponent", rootDroppableId, 0, appStore);
 
       expect(dispatchedEvents[1]).toEqual<PuckAction>({
         type: "setUi",
@@ -107,7 +107,7 @@ describe("use-insert-component", () => {
     });
 
     it("should run any resolveData methods on the inserted item", async () => {
-      insertComponent("MyComponent", rootDroppableId, 0, appStore.getState());
+      insertComponent("MyComponent", rootDroppableId, 0, appStore);
 
       expect(resolvedDataEvents[0]).toEqual({
         type: "MyComponent",
