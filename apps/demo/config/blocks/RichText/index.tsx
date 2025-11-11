@@ -17,8 +17,7 @@ const RichTextInner: ComponentConfig<RichTextProps> = {
     return <Section>{richtext}</Section>;
   },
   defaultProps: {
-    richtext:
-      "<p style='text-align: center;'><strong>✍️ <s>Plain-text</s> Rich Text Editor! 🎉</strong></p>",
+    richtext: "<h2>Heading</h2><p>Body</p>",
   },
 };
 

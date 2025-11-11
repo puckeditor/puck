@@ -5,8 +5,6 @@ export const defaultMenu: RichTextMenuConfig = {
   text: ["Bold", "Italic", "Underline", "Strikethrough"],
   headings: ["TextSelect"],
   lists: ["BulletList", "OrderedList"],
-  blocks: ["Blockquote", "InlineCode", "CodeBlock"],
-  other: ["HorizontalRule"],
 };
 
 export const defaultInlineMenu: RichTextMenuConfig = {
