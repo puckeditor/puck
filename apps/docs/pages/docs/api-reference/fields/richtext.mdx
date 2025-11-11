@@ -4,6 +4,7 @@ import { Callout } from "nextra/components";
 import Superscript from "@tiptap/extension-superscript";
 import { SuperscriptControl } from "@/docs/components/Richtext/controls";
 import { superscriptSelector } from "@/docs/components/Richtext/selector";
+import { Render } from "@/core/components/RichTextEditor/Render";
 
 # RichText
 
@@ -21,6 +22,9 @@ Render a `richtext` input. Extends [Base](base).
     defaultProps: {
       richtext:
         "<p style='text-align: center;'><strong>✍️ Hello,<s>Plain-text</s> Rich Text! 🎉</strong></p>",
+    },
+    render: ({ richtext }) => {
+      return <Render content={richtext} />
     },
   }}
 />

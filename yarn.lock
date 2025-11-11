@@ -3836,6 +3836,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extensions/-/extensions-3.9.1.tgz#5e15a0dd0f2210402d4887207a3b4bae216718da"
   integrity sha512-cFo3zsuqHvOo7wtUJ8+0wxdXq4L2iIupRJ3yjWKQ8q1Ajb6WYHXxiH4Q1rhZP6qHKdDZTrj/KP6YvadXZaZ8kw==
 
+"@tiptap/html@^3.10.5":
+  version "3.10.5"
+  resolved "https://registry.yarnpkg.com/@tiptap/html/-/html-3.10.5.tgz#c102c48b447cfc4e439e985acf5a8f147275daaf"
+  integrity sha512-+9DYOtF/OXeHFscCDzpgxuAT+igT98Mbgox2VLlMsAOqXdVKopQRhEJa0VK9YLbxjaaWxrgT4kCTae+fIMmq5g==
+
 "@tiptap/pm@^3.9.1":
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-3.9.1.tgz#fdc60a5344dc0dd149762de5a19bf8cc71f0a542"
@@ -4456,7 +4461,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.45.tgz#2c0fafd78705e7a18b7906b5201a522719dc5190"
   integrity sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==
 
-"@types/node@^20":
+"@types/node@^20", "@types/node@^20.0.0":
   version "20.19.24"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.19.24.tgz#6bc35bc96cda1a251000b706c76380b5c843f30b"
   integrity sha512-FE5u0ezmi6y9OZEzlJfg37mqqf6ZDSF2V/NLjUyGrR9uTZ7Sb9F7bLNZ03S4XVUNRWGA7Ck4c1kK+YnuWjl+DA==
@@ -4573,6 +4578,11 @@
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-10.0.0.tgz#e9c07fe50da0f53dc24970cca94d619ff03f6f6d"
   integrity sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==
+
+"@types/whatwg-mimetype@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/whatwg-mimetype/-/whatwg-mimetype-3.0.2.tgz#e5e06dcd3e92d4e622ef0129637707d66c28d6a4"
+  integrity sha512-c2AKvDT8ToxLIOUlN51gTiHXflsfIFisS4pO7pDPoKouJCESkhZnEy623gwP9laCy5lnLDAw1vAzu2vM2YLOrA==
 
 "@types/yargs-parser@*":
   version "21.0.3"
@@ -9074,6 +9084,15 @@ handlebars@^4.4.3, handlebars@^4.7.7, handlebars@^4.7.8:
     wordwrap "^1.0.0"
   optionalDependencies:
     uglify-js "^3.1.4"
+
+happy-dom@^20.0.10:
+  version "20.0.10"
+  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-20.0.10.tgz#01fb5f09426420994e47e966598e272102678dd2"
+  integrity sha512-6umCCHcjQrhP5oXhrHQQvLB0bwb1UzHAHdsXy+FjtKoYjUhmNZsQL8NivwM1vDvNEChJabVrUYxUnp/ZdYmy2g==
+  dependencies:
+    "@types/node" "^20.0.0"
+    "@types/whatwg-mimetype" "^3.0.2"
+    whatwg-mimetype "^3.0.0"
 
 hard-rejection@^2.1.0:
   version "2.1.0"
@@ -17588,6 +17607,11 @@ whatwg-encoding@^3.1.1:
   integrity sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==
   dependencies:
     iconv-lite "0.6.3"
+
+whatwg-mimetype@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/whatwg-mimetype/-/whatwg-mimetype-3.0.0.tgz#5fa1a7623867ff1af6ca3dc72ad6b8a4208beba7"
+  integrity sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==
 
 whatwg-mimetype@^4.0.0:
   version "4.0.0"

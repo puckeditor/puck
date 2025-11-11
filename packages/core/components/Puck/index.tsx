@@ -549,18 +549,16 @@ function PuckLayout<
                       <Outline />
                     </SidebarSection>
                   </Sidebar>
-                  <EditorProvider>
-                    <Canvas />
-                    <Sidebar
-                      position="right"
-                      sidebarRef={rightSidebarRef}
-                      isVisible={rightSideBarVisible}
-                      onResize={setRightWidth}
-                      onResizeEnd={handleRightSidebarResizeEnd}
-                    >
-                      <FieldSideBar />
-                    </Sidebar>
-                  </EditorProvider>
+                  <Canvas />
+                  <Sidebar
+                    position="right"
+                    sidebarRef={rightSidebarRef}
+                    isVisible={rightSideBarVisible}
+                    onResize={setRightWidth}
+                    onResizeEnd={handleRightSidebarResizeEnd}
+                  >
+                    <FieldSideBar />
+                  </Sidebar>
                 </div>
               </div>
             </FrameProvider>
@@ -579,7 +577,9 @@ export function Puck<
   return (
     <PropsProvider {...props}>
       <PuckProvider {...props}>
-        <PuckLayout {...props} />
+        <EditorProvider>
+          <PuckLayout {...props} />
+        </EditorProvider>
       </PuckProvider>
     </PropsProvider>
   );

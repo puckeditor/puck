@@ -1,11 +1,6 @@
-import {
-  Extensions,
-  generateHTML,
-  generateJSON,
-  JSONContent,
-} from "@tiptap/react";
+import { Extensions, JSONContent } from "@tiptap/react";
+import { generateHTML, generateJSON } from "@tiptap/html";
 import { useMemo } from "react";
-
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { defaultExtensions } from "./extensions";
 import styles from "./styles.module.css";
@@ -19,23 +14,20 @@ export function Render({
   content: string | JSONContent;
   extensions?: Extensions;
 }) {
-  const loadedExtensions = useMemo<Extensions>(
+  const loadedExtensions = useMemo(
     () => [...defaultExtensions, ...extensions],
     [extensions]
   );
 
-  const normalizedContent = useMemo(() => {
-    if (
-      typeof content === "object" &&
-      content !== null &&
-      "type" in content &&
-      content.type === "doc"
-    ) {
-      return content as JSONContent;
+  const normalized: JSONContent = useMemo(() => {
+    if (typeof content === "object" && content?.type === "doc") {
+      return content;
     }
 
     if (typeof content === "string") {
-      if (/<\/?[a-z][\s\S]*>/i.test(content)) {
+      const isHtml = /<\/?[a-z][\s\S]*>/i.test(content);
+
+      if (isHtml) {
         return generateJSON(content, loadedExtensions);
       }
 
@@ -44,16 +36,15 @@ export function Render({
         content: [
           { type: "paragraph", content: [{ type: "text", text: content }] },
         ],
-      } as JSONContent;
+      };
     }
 
-    return { type: "doc", content: [] } as JSONContent;
+    return { type: "doc", content: [] };
   }, [content, loadedExtensions]);
 
-  const html = useMemo(
-    () => generateHTML(normalizedContent, loadedExtensions),
-    [normalizedContent, loadedExtensions]
-  );
+  const html = useMemo(() => {
+    return generateHTML(normalized, loadedExtensions);
+  }, [normalized, loadedExtensions]);
 
   return (
     <div

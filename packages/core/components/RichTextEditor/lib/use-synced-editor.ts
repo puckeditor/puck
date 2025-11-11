@@ -50,6 +50,7 @@ export function useSyncedEditor<T extends Extensions>({
     };
 
     editor.on("focus", handleFocus);
+    editor.on("create", handleFocus);
 
     return () => {
       editor.off("focus", handleFocus);
