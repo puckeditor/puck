@@ -7,7 +7,7 @@ import { resolveAndReplaceData } from "./resolve-and-replace-data";
 export async function resolveDataBySelector(
   selector: ItemSelector,
   getState: ReturnType<typeof useAppStoreApi>["getState"],
-  trigger: ResolveDataTrigger = "force"
+  trigger?: ResolveDataTrigger
 ) {
   const item = getItem(selector, getState().state);
 
