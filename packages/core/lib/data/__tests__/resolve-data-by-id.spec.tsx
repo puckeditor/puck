@@ -1,4 +1,4 @@
-import { act, waitFor } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { createAppStore, defaultAppState } from "../../../store";
 import { Config } from "../../../types";
 import { cache } from "../../resolve-component-data";
