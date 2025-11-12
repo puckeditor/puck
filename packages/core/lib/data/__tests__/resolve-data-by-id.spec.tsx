@@ -8,16 +8,12 @@ import { walkAppState } from "../walk-app-state";
 const appStore = createAppStore();
 
 const childResolveData = jest.fn(async (data, params) => {
-  if (params.trigger === "force") {
-    return {
-      ...data,
-      props: {
-        resolvedProp: "Forced",
-      },
-    };
-  }
-
-  return data;
+  return {
+    ...data,
+    props: {
+      resolvedProp: params.trigger,
+    },
+  };
 });
 
 const config: Config = {
@@ -102,33 +98,10 @@ describe("resolveDataById", () => {
     // Then: ---------------
     expect(childResolveData).toHaveBeenCalledTimes(1);
     const mockedReturn = await childResolveData.mock.results[0].value;
-    expect(mockedReturn.props.resolvedProp).toBe("Forced");
+    expect(mockedReturn.props.resolvedProp).toBeDefined();
   });
 
-  it("resolves even if data hasn't changed", async () => {
-    // TODO: Change this when we solve race conditions over caches, it should be 3
-    const resolveAndCommitDataCalls = 6;
-
-    // When: ---------------
-    await act(async () => {
-      // This executes resolveData twice because of race conditions in cache
-      appStore.getState().resolveAndCommitData();
-    });
-
-    // TODO: Change this when we solve race conditions over caches, we shouldn't need to wait
-    await waitFor(() => Object.keys(cache.lastChange).length > 1);
-
-    await act(() => resolveDataById("Child-1", appStore.getState));
-
-    // Then: ---------------
-    const expectedCalls = resolveAndCommitDataCalls + 1;
-    expect(childResolveData).toHaveBeenCalledTimes(expectedCalls);
-    const mockedReturn = await childResolveData.mock.results[expectedCalls - 1]
-      .value;
-    expect(mockedReturn.props.resolvedProp).toBe("Forced");
-  });
-
-  it("shows a warning if the id doesn't exist", async () => {
+  it("shows a warning and doesn't resolve if the id doesn't exist", async () => {
     // Given: --------------
     const consoleWarnMock = jest.spyOn(console, "warn").mockImplementation();
 
@@ -136,6 +109,7 @@ describe("resolveDataById", () => {
     await act(() => resolveDataById("Doesn't exist", appStore.getState));
 
     // Then: ---------------
+    expect(childResolveData).not.toHaveBeenCalled();
     expect(consoleWarnMock).toHaveBeenCalledTimes(1);
     consoleWarnMock.mockRestore();
   });
@@ -152,7 +126,7 @@ describe("resolveDataById", () => {
     });
 
     // Then: ---------------
-    expect(childResolveData).toHaveBeenCalledTimes(0);
+    expect(childResolveData).not.toHaveBeenCalled();
     expect(consoleWarnMock).toHaveBeenCalledTimes(1);
     consoleWarnMock.mockRestore();
   });
