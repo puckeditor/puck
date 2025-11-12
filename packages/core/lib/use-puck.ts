@@ -22,7 +22,7 @@ export type UsePuckData<
   dispatch: AppStore["dispatch"];
   getPermissions: GetPermissions<UserConfig>;
   refreshPermissions: RefreshPermissions<UserConfig>;
-  resolveComponentDataById: (id: string) => void;
+  resolveDataById: (id: string, trigger?: ResolveDataTrigger) => void;
   selectedItem: G["UserComponentData"] | null;
   getItemBySelector: (
     selector: ItemSelector
@@ -58,7 +58,10 @@ type PickedStore = Pick<
   | "resolveComponentData"
 >;
 
-export const generateUsePuck = (store: PickedStore): UsePuckStore => {
+export const generateUsePuck = (
+  store: PickedStore,
+  getState: ReturnType<typeof useAppStoreApi>["getState"]
+): UsePuckStore => {
   const history: UsePuckStore["history"] = {
     back: store.history.back,
     forward: store.history.forward,
@@ -76,7 +79,8 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     dispatch: store.dispatch,
     getPermissions: store.permissions.getPermissions,
     refreshPermissions: store.permissions.refreshPermissions,
-    resolveComponentDataById: (id) => resolveComponentDataById(id, store),
+    resolveDataById: (id, trigger) =>
+      resolveComponentDataById(id, getState, trigger),
     history,
     selectedItem: store.selectedItem || null,
     getItemBySelector: (selector) => getItem(selector, store.state),
@@ -123,7 +127,10 @@ export const useRegisterUsePuckStore = (
 ) => {
   const [usePuckStore] = useState(() =>
     createStore(() =>
-      generateUsePuck(convertToPickedStore(appStore.getState()))
+      generateUsePuck(
+        convertToPickedStore(appStore.getState()),
+        appStore.getState
+      )
     )
   );
 
@@ -132,7 +139,7 @@ export const useRegisterUsePuckStore = (
     return appStore.subscribe(
       (store) => convertToPickedStore(store),
       (pickedStore) => {
-        usePuckStore.setState(generateUsePuck(pickedStore));
+        usePuckStore.setState(generateUsePuck(pickedStore, appStore.getState));
       }
     );
   }, []);
