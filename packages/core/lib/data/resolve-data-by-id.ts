@@ -4,7 +4,7 @@ import { PuckNodeData } from "../../types/Internal";
 import { getSelectorForId } from "../get-selector-for-id";
 import { toComponent } from "./to-component";
 
-export async function resolveComponentDataById(
+export async function resolveDataById(
   id: string,
   getState: ReturnType<typeof useAppStoreApi>["getState"],
   trigger: ResolveDataTrigger = "force"

@@ -2,7 +2,7 @@ import { act, waitFor } from "@testing-library/react";
 import { createAppStore, defaultAppState } from "../../../store";
 import { Config } from "../../../types";
 import { cache } from "../../resolve-component-data";
-import { resolveComponentDataById } from "../resolve-component-data-by-id";
+import { resolveDataById } from "../resolve-data-by-id";
 import { walkAppState } from "../walk-app-state";
 
 const appStore = createAppStore();
@@ -97,7 +97,7 @@ describe("useResolveDataOnMoved", () => {
 
   it("resolves when called", async () => {
     // When: ---------------
-    await act(() => resolveComponentDataById("Child-1", appStore.getState));
+    await act(() => resolveDataById("Child-1", appStore.getState));
 
     // Then: ---------------
     expect(childResolveData).toHaveBeenCalledTimes(1);
@@ -118,7 +118,7 @@ describe("useResolveDataOnMoved", () => {
     // TODO: Change this when we solve race conditions over caches, we shouldn't need to wait
     await waitFor(() => Object.keys(cache.lastChange).length > 1);
 
-    await act(() => resolveComponentDataById("Child-1", appStore.getState));
+    await act(() => resolveDataById("Child-1", appStore.getState));
 
     // Then: ---------------
     const expectedCalls = resolveAndCommitDataCalls + 1;
@@ -133,9 +133,7 @@ describe("useResolveDataOnMoved", () => {
     const consoleWarnMock = jest.spyOn(console, "warn").mockImplementation();
 
     // When: ---------------
-    await act(() =>
-      resolveComponentDataById("Doesn't exist", appStore.getState)
-    );
+    await act(() => resolveDataById("Doesn't exist", appStore.getState));
 
     // Then: ---------------
     expect(consoleWarnMock).toHaveBeenCalledTimes(1);
@@ -150,7 +148,7 @@ describe("useResolveDataOnMoved", () => {
     // When: ---------------
     await act(async () => {
       dispatch({ type: "remove", index: 0, zone: "Parent-1:items" });
-      resolveComponentDataById("Child-1", appStore.getState);
+      resolveDataById("Child-1", appStore.getState);
     });
 
     // Then: ---------------

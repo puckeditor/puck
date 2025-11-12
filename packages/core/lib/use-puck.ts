@@ -9,7 +9,7 @@ import { HistorySlice } from "../store/slices/history";
 import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
-import { resolveComponentDataById } from "./data/resolve-component-data-by-id";
+import { resolveDataById } from "./data/resolve-data-by-id";
 import { getSelectorForId } from "./get-selector-for-id";
 import { PuckNodeData } from "../types/Internal";
 
@@ -79,8 +79,7 @@ export const generateUsePuck = (
     dispatch: store.dispatch,
     getPermissions: store.permissions.getPermissions,
     refreshPermissions: store.permissions.refreshPermissions,
-    resolveDataById: (id, trigger) =>
-      resolveComponentDataById(id, getState, trigger),
+    resolveDataById: (id, trigger) => resolveDataById(id, getState, trigger),
     history,
     selectedItem: store.selectedItem || null,
     getItemBySelector: (selector) => getItem(selector, store.state),
