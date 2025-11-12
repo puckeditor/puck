@@ -88,7 +88,7 @@ function resetStores() {
   );
 }
 
-describe("useResolveDataOnMoved", () => {
+describe("resolveDataById", () => {
   beforeEach(async () => {
     resetStores();
     jest.clearAllMocks();
