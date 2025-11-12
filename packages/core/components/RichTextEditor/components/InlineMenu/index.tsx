@@ -1,25 +1,21 @@
 import { useEffect, ReactNode } from "react";
 import { MenuBar } from "../MenuBar";
-import {
-  RichTextEditor,
-  RichTextMenuItem,
-  RichTextSelector,
-} from "../../types";
+import { RichTextMenuItem, RichTextSelector } from "../../types";
 import { ActionBar } from "../../../ActionBar";
 
 import { useAppStore, useAppStoreApi } from "../../../../store";
+import { useActiveEditor } from "../../context";
 
 export function DynamicActions({
   menuConfig,
-  editor,
   selector,
 }: {
   menuConfig: Record<string, Record<string, RichTextMenuItem>>;
-  editor: RichTextEditor | null;
   selector?: RichTextSelector;
 }) {
   const appStoreApi = useAppStoreApi();
   const selectedItem = useAppStore((s) => s.selectedItem);
+  const { activeEditor: editor } = useActiveEditor();
 
   useEffect(() => {
     if (!selectedItem) return;
@@ -59,7 +55,7 @@ export function DynamicActions({
         actionBar: customActionBar,
       },
     }));
-  }, [appStoreApi, selectedItem]);
+  }, [appStoreApi, selectedItem, editor]);
 
   return null;
 }

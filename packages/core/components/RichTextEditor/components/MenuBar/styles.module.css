@@ -38,7 +38,9 @@
 
 .MenuBarMenu--inline {
   gap: 0px;
+  flex-wrap: nowrap;
 }
+
 .MenuBarMenu--inline button {
   padding: 2px;
 }

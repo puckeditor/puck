@@ -25,7 +25,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().setTextAlign("left").run();
+          editor.chain().setTextAlign("left").run();
         }}
         disabled={!editorState.canAlignLeft}
         variant={editorState.isAlignLeft ? "secondary" : "primary"}
@@ -41,7 +41,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().setTextAlign("center").run();
+          editor.chain().setTextAlign("center").run();
         }}
         disabled={!editorState.canAlignCenter}
         variant={editorState.isAlignCenter ? "secondary" : "primary"}
@@ -57,7 +57,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().setTextAlign("right").run();
+          editor.chain().setTextAlign("right").run();
         }}
         disabled={!editorState.canAlignRight}
         variant={editorState.isAlignRight ? "secondary" : "primary"}
@@ -73,7 +73,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().setTextAlign("justify").run();
+          editor.chain().setTextAlign("justify").run();
         }}
         disabled={!editorState.canAlignJustify}
         variant={editorState.isAlignJustify ? "secondary" : "primary"}
@@ -88,7 +88,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleBold().run();
+          editor.chain().toggleBold().run();
         }}
         disabled={!editorState.canBold}
         variant={editorState.isBold ? "secondary" : "primary"}
@@ -104,7 +104,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleItalic().run();
+          editor.chain().toggleItalic().run();
         }}
         disabled={!editorState.canItalic}
         variant={editorState.isItalic ? "secondary" : "primary"}
@@ -120,7 +120,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleUnderline().run();
+          editor.chain().toggleUnderline().run();
         }}
         disabled={!editorState.canUnderline}
         variant={editorState.isUnderline ? "secondary" : "primary"}
@@ -136,7 +136,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleStrike().run();
+          editor.chain().toggleStrike().run();
         }}
         disabled={!editorState.canStrike}
         variant={editorState.isStrike ? "secondary" : "primary"}
@@ -152,7 +152,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleCode().run();
+          editor.chain().toggleCode().run();
         }}
         disabled={!editorState.canInlineCode}
         variant={editorState.isInlineCode ? "secondary" : "primary"}
@@ -168,7 +168,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleBulletList().run();
+          editor.chain().toggleBulletList().run();
         }}
         disabled={!editorState.canBulletList}
         variant={editorState.isBulletList ? "secondary" : "primary"}
@@ -184,7 +184,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleOrderedList().run();
+          editor.chain().toggleOrderedList().run();
         }}
         disabled={!editorState.canOrderedList}
         variant={editorState.isOrderedList ? "secondary" : "primary"}
@@ -200,7 +200,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleCodeBlock().run();
+          editor.chain().toggleCodeBlock().run();
         }}
         disabled={!editorState.canCodeBlock}
         variant={editorState.isCodeBlock ? "secondary" : "primary"}
@@ -216,7 +216,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleBlockquote().run();
+          editor.chain().toggleBlockquote().run();
         }}
         disabled={!editorState.canBlockquote}
         variant={editorState.isBlockquote ? "secondary" : "primary"}
@@ -232,7 +232,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().setHorizontalRule().run();
+          editor.chain().setHorizontalRule().run();
         }}
         disabled={!editorState.canHorizontalRule}
         variant="primary"
@@ -248,7 +248,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleBold().run();
+          editor.chain().toggleBold().run();
         }}
         active={editorState.isBold}
       >
@@ -262,7 +262,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleItalic().run();
+          editor.chain().toggleItalic().run();
         }}
         active={editorState.isItalic}
       >
@@ -276,7 +276,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleUnderline().run();
+          editor.chain().toggleUnderline().run();
         }}
         active={editorState.isUnderline}
       >
@@ -290,7 +290,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().focus().toggleStrike().run();
+          editor.chain().toggleStrike().run();
         }}
         active={editorState.isStrike}
       >

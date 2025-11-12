@@ -19,6 +19,7 @@ const InlineEditorWrapper = memo(
   ({
     value,
     componentId,
+    type,
     propPath,
     menu,
     textSelectOptions,
@@ -28,6 +29,7 @@ const InlineEditorWrapper = memo(
   }: {
     value: string;
     componentId: string;
+    type: string;
     propPath: string;
     menu?: RichTextMenuConfig;
     textSelectOptions?: RichTextSelectOptions[];
@@ -83,12 +85,11 @@ const InlineEditorWrapper = memo(
       },
       [appStoreApi, componentId, propPath]
     );
-
     return (
       <div ref={portalRef} onClick={onClickHandler}>
         <Editor
           content={value}
-          id={componentId}
+          id={`${componentId}_${type}_${propPath}`}
           onChange={handleChange}
           extensions={extensions}
           menu={menu}
@@ -113,17 +114,19 @@ export const getRichTextTransform = (): FieldTransforms => ({
       selector,
       controls,
       extensions,
+      type,
     } = field;
     if (contentEditable === false || isReadOnly) {
       return <Render content={value} extensions={extensions} />;
     }
-
+    const id = `${componentId}_${field.type}_${propPath}-inline`;
     return (
       <InlineEditorWrapper
-        key={componentId}
+        key={id}
         value={value}
         componentId={componentId}
         propPath={propPath}
+        type={type}
         menu={inlineMenu}
         textSelectOptions={textSelectOptions}
         selector={selector}

@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useMemo } from "react";
 import { DropZoneProps } from "../DropZone/types";
 import {
   ComponentData,
@@ -8,6 +8,7 @@ import {
   WithPuckProps,
 } from "../../types";
 import { useSlots } from "../../lib/use-slots";
+import { useRichtextRenderer } from "../RichTextEditor/lib/use-richtext-renderer";
 
 type SlotRenderProps = DropZoneProps & {
   content: Content;
@@ -35,9 +36,12 @@ const Item = ({
     <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
   )) as WithPuckProps<ComponentData["props"]>;
 
+  const richTextRenderer = useRichtextRenderer(Component.fields, props);
+
   return (
     <Component.render
       {...props}
+      {...richTextRenderer}
       puck={{
         ...props.puck,
         metadata: metadata || {},

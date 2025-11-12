@@ -39,12 +39,8 @@ export const MenuBar = ({
 
   const menuGroups = useMemo(() => Object.keys(menuConfig), [menuConfig]);
 
-  if (!editor) {
-    return <Loader />;
-  }
-
-  if (!editorState) {
-    return <Loader />;
+  if (!editor || !editorState) {
+    return null;
   }
 
   if (menuGroups.length === 0) {

@@ -51,6 +51,7 @@ import { getSlotTransform } from "../../lib/field-transforms/default-transforms/
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { Render } from "../RichTextEditor/Render";
+import { useRichtextRenderer } from "../RichTextEditor/lib/use-richtext-renderer";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -512,20 +513,6 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
   }
 );
 
-const findRichtextKey = (
-  fields: Fields<any, {}> | undefined
-): string | null => {
-  if (!fields) return null;
-  for (const [key, field] of Object.entries(fields)) {
-    if (field.type === "richtext") return key;
-    if (field.type === "object" && field.objectFields) {
-      const nested = findRichtextKey(field.objectFields);
-      if (nested) return nested;
-    }
-  }
-  return null;
-};
-
 const DropZoneRenderItem = ({
   config,
   item,
@@ -549,12 +536,7 @@ const DropZoneRenderItem = ({
     [props]
   );
 
-  const richtextKey = findRichtextKey(Component.fields);
-
-  const richTextRenderer =
-    richtextKey && richtextKey in props
-      ? { richtext: <Render content={props[richtextKey]} /> }
-      : {};
+  const richTextRenderer = useRichtextRenderer(Component.fields, props);
 
   return (
     <DropZoneProvider key={props.id} value={nextContextValue}>

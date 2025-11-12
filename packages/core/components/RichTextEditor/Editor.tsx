@@ -1,4 +1,11 @@
-import { memo, useCallback, useMemo, KeyboardEvent } from "react";
+import {
+  memo,
+  useCallback,
+  useMemo,
+  KeyboardEvent,
+  useEffect,
+  useState,
+} from "react";
 import { useSyncedEditor } from "./lib/use-synced-editor";
 import { defaultExtensions } from "./extensions";
 import { MenuBar } from "./components/MenuBar";
@@ -24,13 +31,15 @@ export const Editor = memo(
     controls = {},
     extensions = [],
     selector,
+    id,
     inline = false,
   }: EditorProps) => {
     const loadedExtensions = useMemo(
       () => [...defaultExtensions, ...extensions] as Extensions,
       [extensions]
     );
-    const { activeEditor, setActiveEditor } = useActiveEditor();
+    const { activeEditor, setActiveEditor, editorMap } = useActiveEditor();
+
     const editor = useSyncedEditor<typeof loadedExtensions>({
       content,
       onChange,
@@ -38,6 +47,21 @@ export const Editor = memo(
       editable: !readOnly,
       onFocusChange: setActiveEditor,
     });
+
+    const [currentEditor, setCurrentEditor] = useState(editor);
+
+    useEffect(() => {
+      if (!editor) return;
+      editorMap.current[editor.instanceId] = id;
+    }, [editor]);
+
+    useEffect(() => {
+      if (activeEditor && editorMap.current[activeEditor.instanceId] === id) {
+        setCurrentEditor(activeEditor);
+      } else {
+        setCurrentEditor(editor);
+      }
+    }, [activeEditor, editor]);
 
     const loadedMenu = useMemo(
       () =>
@@ -112,7 +136,7 @@ export const Editor = memo(
         {!readOnly && (
           <Menu
             menuConfig={groupedMenu || {}}
-            editor={activeEditor}
+            editor={currentEditor}
             selector={selector}
           />
         )}

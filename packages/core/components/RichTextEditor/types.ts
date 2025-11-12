@@ -41,7 +41,7 @@ export type EditorState = DefaultEditorState & CustomEditorState;
 export type EditorProps = {
   onChange: (content: string | JSONContent) => void;
   content: string;
-  id?: string;
+  id: string;
   readOnly?: boolean;
   menu?: RichTextMenuConfig;
   textSelectOptions?: RichTextSelectOptions[] | [];
