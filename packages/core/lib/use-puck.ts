@@ -10,6 +10,7 @@ import { createStore, StoreApi, useStore } from "zustand";
 import { makeStatePublic } from "./data/make-state-public";
 import { getItem, ItemSelector } from "./data/get-item";
 import { resolveDataById } from "./data/resolve-data-by-id";
+import { resolveDataBySelector } from "./data/resolve-data-by-selector";
 import { getSelectorForId } from "./get-selector-for-id";
 import { PuckNodeData } from "../types/Internal";
 
@@ -23,6 +24,10 @@ export type UsePuckData<
   getPermissions: GetPermissions<UserConfig>;
   refreshPermissions: RefreshPermissions<UserConfig>;
   resolveDataById: (id: string, trigger?: ResolveDataTrigger) => void;
+  resolveDataBySelector: (
+    selector: ItemSelector,
+    trigger?: ResolveDataTrigger
+  ) => void;
   selectedItem: G["UserComponentData"] | null;
   getItemBySelector: (
     selector: ItemSelector
@@ -80,6 +85,8 @@ export const generateUsePuck = (
     getPermissions: store.permissions.getPermissions,
     refreshPermissions: store.permissions.refreshPermissions,
     resolveDataById: (id, trigger) => resolveDataById(id, getState, trigger),
+    resolveDataBySelector: (selector, trigger) =>
+      resolveDataBySelector(selector, getState, trigger),
     history,
     selectedItem: store.selectedItem || null,
     getItemBySelector: (selector) => getItem(selector, store.state),
