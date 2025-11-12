@@ -254,12 +254,20 @@ Specify `type` to refresh the permissions for all components of a given componen
 refreshPermissions({ type: "HeadingBlock" });
 ```
 
-### `resolveComponentDataById(id)`
+### `resolveDataById(id, trigger)`
 
-Force a component to [resolve its data](/docs/api-reference/configuration/component-config#resolvedatadata-params) by id.
+Runs a component's [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) by id for a given [trigger](/docs/api-reference/configuration/component-config#paramstrigger).
 
 ```tsx
-resolveComponentDataById("Heading-1234");
+resolveDataById("Heading-1234", "replace");
+```
+
+### `resolveDataBySelector(selector, trigger)`
+
+Runs a component's [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params) by selector for a given [trigger](/docs/api-reference/configuration/component-config#paramstrigger).
+
+```tsx
+resolveDataBySelector({ zone: "Flex-1234:items", index: 0 });
 ```
 
 ### `selectedItem`
