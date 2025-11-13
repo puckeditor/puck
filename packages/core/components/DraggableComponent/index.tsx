@@ -33,6 +33,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
+import { useActiveEditor } from "../RichTextEditor/context";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -350,6 +351,8 @@ export const DraggableComponent = ({
     [overrides.componentOverlay]
   );
 
+  const { setCurrentInlineId } = useActiveEditor();
+
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
       const el = e.target as Element;
@@ -357,6 +360,8 @@ export const DraggableComponent = ({
       if (!el.closest("[data-puck-overlay-portal]")) {
         e.stopPropagation();
       }
+
+      setCurrentInlineId(null);
 
       dispatch({
         type: "setUi",

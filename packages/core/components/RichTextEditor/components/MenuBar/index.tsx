@@ -2,7 +2,6 @@ import { useEditorState } from "@tiptap/react";
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 import { RenderMenuItems } from "../RenderMenuItems/RenderMenuItems";
-import { Loader } from "../../../Loader";
 import { useMemo } from "react";
 import {
   EditorState,
@@ -11,6 +10,7 @@ import {
   RichTextSelector,
 } from "../../types";
 import { defaultEditorState } from "../../selector";
+import { useActiveEditor } from "../../context";
 const getClassName = getClassNameFactory("MenuBar", styles);
 const getMenuClassName = getClassNameFactory("MenuBarMenu", styles);
 
@@ -25,6 +25,8 @@ export const MenuBar = ({
   selector?: RichTextSelector;
   inline?: boolean;
 }) => {
+  const { debug } = useActiveEditor();
+
   const resolvedSelector = useMemo(() => {
     return (ctx: Parameters<RichTextSelector>[0]) => ({
       ...defaultEditorState(ctx),
@@ -48,21 +50,24 @@ export const MenuBar = ({
   }
 
   return (
-    <div className={getClassName({ "button-group": !inline })}>
-      {menuGroups.map((key) => {
-        const menuItems = menuConfig[key];
-        if (!menuItems) return null; // handle undefined in Partial
-        if (Object.keys(menuItems).length === 0) return null;
-        return (
-          <div key={String(key)} className={getMenuClassName({ inline })}>
-            <RenderMenuItems
-              menuItems={menuItems}
-              editor={editor}
-              editorState={editorState}
-            />
-          </div>
-        );
-      })}
-    </div>
+    <>
+      {debug && <p>Debug Menu ID: {editor.instanceId}</p>}
+      <div className={getClassName({ "button-group": !inline })}>
+        {menuGroups.map((key) => {
+          const menuItems = menuConfig[key];
+          if (!menuItems) return null; // handle undefined in Partial
+          if (Object.keys(menuItems).length === 0) return null;
+          return (
+            <div key={String(key)} className={getMenuClassName({ inline })}>
+              <RenderMenuItems
+                menuItems={menuItems}
+                editor={editor}
+                editorState={editorState}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };

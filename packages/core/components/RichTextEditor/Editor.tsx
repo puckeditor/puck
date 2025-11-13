@@ -16,7 +16,7 @@ import getClassNameFactory from "../../lib/get-class-name-factory";
 import { EditorProps, RichTextMenuItem, RichTextSelectOptions } from "./types";
 import { defaultControls } from "./controls";
 import { BlockStyleSelect } from "./components/BlockStyleSelect";
-import { DynamicActions } from "./components/InlineMenu";
+import { InlineMenu } from "./components/InlineMenu";
 import { useActiveEditor } from "./context";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
@@ -38,7 +38,8 @@ export const Editor = memo(
       () => [...defaultExtensions, ...extensions] as Extensions,
       [extensions]
     );
-    const { activeEditor, setActiveEditor, editorMap } = useActiveEditor();
+    const { activeEditor, setActiveEditor, editorMap, debug } =
+      useActiveEditor();
 
     const editor = useSyncedEditor<typeof loadedExtensions>({
       content,
@@ -57,7 +58,7 @@ export const Editor = memo(
 
     useEffect(() => {
       if (activeEditor && editorMap.current[activeEditor.instanceId] === id) {
-        setCurrentEditor(activeEditor);
+        setCurrentEditor(() => activeEditor);
       } else {
         setCurrentEditor(editor);
       }
@@ -129,21 +130,24 @@ export const Editor = memo(
 
     if (!editor) return null;
 
-    const Menu = inline ? DynamicActions : MenuBar;
+    const menuSwitcher = inline ? (
+      <InlineMenu menuConfig={groupedMenu || {}} selector={selector} id={id} />
+    ) : (
+      <MenuBar
+        menuConfig={groupedMenu || {}}
+        editor={currentEditor}
+        selector={selector}
+      />
+    );
 
     return (
       <div onKeyDownCapture={handleHotkeyCapture}>
-        {!readOnly && (
-          <Menu
-            menuConfig={groupedMenu || {}}
-            editor={currentEditor}
-            selector={selector}
-          />
-        )}
+        {!readOnly && menuSwitcher}
         <EditorContent
           editor={editor}
           className={getClassName({ editor: !inline, inline })}
         />
+        {debug && <p>Debug Content ID: {editor.instanceId}</p>}
       </div>
     );
   }

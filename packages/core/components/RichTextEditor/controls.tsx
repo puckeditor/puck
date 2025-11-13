@@ -248,7 +248,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleBold().run();
+          editor.chain().focus().toggleBold().run();
         }}
         active={editorState.isBold}
       >
@@ -262,7 +262,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleItalic().run();
+          editor.chain().focus().toggleItalic().run();
         }}
         active={editorState.isItalic}
       >
@@ -276,7 +276,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleUnderline().run();
+          editor.chain().focus().toggleUnderline().run();
         }}
         active={editorState.isUnderline}
       >
@@ -290,7 +290,7 @@ export const defaultControls = {
       <Action
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleStrike().run();
+          editor.chain().focus().toggleStrike().run();
         }}
         active={editorState.isStrike}
       >

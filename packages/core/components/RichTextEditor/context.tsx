@@ -13,6 +13,9 @@ type EditorContextType = {
   activeEditor: Editor | null;
   setActiveEditor: (editor: Editor | null) => void;
   editorMap: RefObject<Record<Editor["instanceId"], string>>;
+  currentInlineId: string | null;
+  setCurrentInlineId: (id: string | null) => void;
+  debug: boolean;
 };
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
@@ -20,10 +23,19 @@ const EditorContext = createContext<EditorContextType | undefined>(undefined);
 export function EditorProvider({ children }: { children: ReactNode }) {
   const [activeEditor, setActiveEditor] = useState<Editor | null>(null);
   const editorMap = useRef<Record<Editor["instanceId"], string>>({});
+  const [currentInlineId, setCurrentInlineId] = useState<string | null>(null);
+  const debug = false;
 
   return (
     <EditorContext.Provider
-      value={{ activeEditor, setActiveEditor, editorMap }}
+      value={{
+        activeEditor,
+        setActiveEditor,
+        editorMap,
+        currentInlineId,
+        setCurrentInlineId,
+        debug,
+      }}
     >
       {children}
     </EditorContext.Provider>

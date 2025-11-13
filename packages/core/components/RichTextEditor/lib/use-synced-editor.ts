@@ -2,6 +2,7 @@ import { Extensions, JSONContent, useEditor, Editor } from "@tiptap/react";
 import { useEffect, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import { ExtensionSet } from "../types";
+import { useActiveEditor } from "../context";
 
 export function useSyncedEditor<T extends Extensions>({
   content,
@@ -23,6 +24,7 @@ export function useSyncedEditor<T extends Extensions>({
 
   const syncingRef = useRef(false);
   const lastSerialized = useRef<string | null>(null);
+  const { setCurrentInlineId } = useActiveEditor();
 
   const editor = useEditor({
     extensions,
@@ -39,9 +41,6 @@ export function useSyncedEditor<T extends Extensions>({
     },
   });
 
-  // Track which editor is active.
-  // Important: we only set activeEditor on focus.
-  // We do NOT clear it on blur here.
   useEffect(() => {
     if (!editor) return;
 
@@ -50,8 +49,6 @@ export function useSyncedEditor<T extends Extensions>({
     };
 
     editor.on("focus", handleFocus);
-    editor.on("create", handleFocus);
-
     return () => {
       editor.off("focus", handleFocus);
     };

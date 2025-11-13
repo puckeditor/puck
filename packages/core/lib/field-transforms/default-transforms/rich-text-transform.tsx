@@ -14,6 +14,7 @@ import {
   RichTextSelector,
 } from "../../../components/RichTextEditor/types";
 import { getSelectorForId } from "../../get-selector-for-id";
+import { useActiveEditor } from "../../../components/RichTextEditor/context";
 
 const InlineEditorWrapper = memo(
   ({
@@ -39,10 +40,15 @@ const InlineEditorWrapper = memo(
   }) => {
     const portalRef = useRef<HTMLDivElement>(null);
     const appStoreApi = useAppStoreApi();
+    const { currentInlineId, setCurrentInlineId, activeEditor, editorMap } =
+      useActiveEditor();
+    const id = `${componentId}_${type}_${propPath}`;
 
     const onClickHandler = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
+
+      setCurrentInlineId(id);
 
       const itemSelector = getSelectorForId(
         appStoreApi.getState().state,
@@ -55,7 +61,9 @@ const InlineEditorWrapper = memo(
     // Register portal once
     useEffect(() => {
       if (!portalRef.current) return;
-      const cleanup = registerOverlayPortal(portalRef.current);
+      const cleanup = registerOverlayPortal(portalRef.current, {
+        disableDragOnFocus: true,
+      });
       return () => cleanup?.();
     }, [portalRef.current]);
 
@@ -83,13 +91,14 @@ const InlineEditorWrapper = memo(
           destinationZone: zoneCompound,
         });
       },
-      [appStoreApi, componentId, propPath]
+      [appStoreApi, componentId, propPath, currentInlineId]
     );
+
     return (
       <div ref={portalRef} onClick={onClickHandler}>
         <Editor
           content={value}
-          id={`${componentId}_${type}_${propPath}`}
+          id={id}
           onChange={handleChange}
           extensions={extensions}
           menu={menu}
