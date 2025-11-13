@@ -160,7 +160,7 @@ function PuckProvider<
     metadata,
     onAction,
     fieldTransforms,
-    hotkeys,
+    hotkeys = { enabled: true },
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -244,7 +244,6 @@ function PuckProvider<
 
     const newAppState = {
       ...defaultAppState,
-      hotkeys,
       data: {
         ...initialData,
         root: { ...initialData?.root, props: root.props },
@@ -333,6 +332,7 @@ function PuckProvider<
         onAction,
         metadata,
         fieldTransforms: loadedFieldTransforms,
+        hotkeys: hotkeys,
       };
     },
     [
@@ -345,6 +345,7 @@ function PuckProvider<
       onAction,
       metadata,
       loadedFieldTransforms,
+      hotkeys
     ]
   );
 
@@ -434,7 +435,7 @@ function PuckLayout<
   const rightSideBarVisible = useAppStore(
     (s) => s.state.ui.rightSideBarVisible
   );
-  const enabledHotkeys = useAppStore((s) => s.state.hotkeys.enabled);
+  const enabledHotkeys = useAppStore((s) => s.hotkeys.enabled);
 
   const {
     width: leftWidth,

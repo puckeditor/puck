@@ -43,7 +43,6 @@ export type UiState = {
 };
 
 export type AppState<UserData extends Data = Data> = {
-  hotkeys: HotkeyState;
   data: UserData;
   ui: UiState;
 };

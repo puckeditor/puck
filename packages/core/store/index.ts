@@ -14,6 +14,7 @@ import {
   ComponentData,
   RootDataWithProps,
   ResolveDataTrigger,
+  HotkeyState,
 } from "../types";
 import { createReducer, PuckAction } from "../reducer";
 import { getItem } from "../lib/data/get-item";
@@ -87,6 +88,7 @@ export type AppStore<
   nodes: NodesSlice;
   permissions: PermissionsSlice;
   fieldTransforms: FieldTransforms;
+  hotkeys: HotkeyState;
 };
 
 export type AppStoreApi = StoreApi<AppStore>;
@@ -113,6 +115,7 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
       iframe: {},
       metadata: {},
       fieldTransforms: {},
+      hotkeys: { enabled: true },
       ...initialAppStore,
       fields: createFieldsSlice(set, get),
       history: createHistorySlice(set, get),
