@@ -81,6 +81,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
             "isDragging": false,
             "itemSelector": null,
             "leftSideBarVisible": true,
+            "portalSelector": null,
             "previewMode": "edit",
             "rightSideBarVisible": true,
             "viewports": {
@@ -140,6 +141,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
         "isDragging": false,
         "itemSelector": null,
         "leftSideBarVisible": true,
+        "portalSelector": null,
         "previewMode": "edit",
         "rightSideBarVisible": true,
         "viewports": {
@@ -189,8 +191,10 @@ exports[`Puck should generate the correct state on mount 1`] = `
   "resolveAndCommitData": [Function],
   "resolveComponentData": [Function],
   "selectedItem": null,
+  "selectedPortal": null,
   "setComponentLoading": [Function],
   "setComponentState": [Function],
+  "setSelectedPortal": [Function],
   "setStatus": [Function],
   "setUi": [Function],
   "setZoomConfig": [Function],
@@ -238,6 +242,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
       "isDragging": false,
       "itemSelector": null,
       "leftSideBarVisible": false,
+      "portalSelector": null,
       "previewMode": "edit",
       "rightSideBarVisible": false,
       "viewports": {
