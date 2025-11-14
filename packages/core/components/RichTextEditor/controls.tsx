@@ -25,7 +25,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().setTextAlign("left").run();
+          editor.chain().focus().setTextAlign("left").run();
         }}
         disabled={!editorState.canAlignLeft}
         variant={editorState.isAlignLeft ? "secondary" : "primary"}
@@ -41,7 +41,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().setTextAlign("center").run();
+          editor.chain().focus().setTextAlign("center").run();
         }}
         disabled={!editorState.canAlignCenter}
         variant={editorState.isAlignCenter ? "secondary" : "primary"}
@@ -57,7 +57,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().setTextAlign("right").run();
+          editor.chain().focus().setTextAlign("right").run();
         }}
         disabled={!editorState.canAlignRight}
         variant={editorState.isAlignRight ? "secondary" : "primary"}
@@ -73,7 +73,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().setTextAlign("justify").run();
+          editor.chain().focus().setTextAlign("justify").run();
         }}
         disabled={!editorState.canAlignJustify}
         variant={editorState.isAlignJustify ? "secondary" : "primary"}
@@ -88,7 +88,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleBold().run();
+          editor.chain().focus().toggleBold().run();
         }}
         disabled={!editorState.canBold}
         variant={editorState.isBold ? "secondary" : "primary"}
@@ -104,7 +104,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleItalic().run();
+          editor.chain().focus().toggleItalic().run();
         }}
         disabled={!editorState.canItalic}
         variant={editorState.isItalic ? "secondary" : "primary"}
@@ -120,7 +120,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleUnderline().run();
+          editor.chain().focus().toggleUnderline().run();
         }}
         disabled={!editorState.canUnderline}
         variant={editorState.isUnderline ? "secondary" : "primary"}
@@ -136,7 +136,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleStrike().run();
+          editor.chain().focus().toggleStrike().run();
         }}
         disabled={!editorState.canStrike}
         variant={editorState.isStrike ? "secondary" : "primary"}
@@ -152,7 +152,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleCode().run();
+          editor.chain().focus().toggleCode().run();
         }}
         disabled={!editorState.canInlineCode}
         variant={editorState.isInlineCode ? "secondary" : "primary"}
@@ -168,7 +168,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleBulletList().run();
+          editor.chain().focus().toggleBulletList().run();
         }}
         disabled={!editorState.canBulletList}
         variant={editorState.isBulletList ? "secondary" : "primary"}
@@ -184,7 +184,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleOrderedList().run();
+          editor.chain().focus().toggleOrderedList().run();
         }}
         disabled={!editorState.canOrderedList}
         variant={editorState.isOrderedList ? "secondary" : "primary"}
@@ -200,7 +200,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleCodeBlock().run();
+          editor.chain().focus().toggleCodeBlock().run();
         }}
         disabled={!editorState.canCodeBlock}
         variant={editorState.isCodeBlock ? "secondary" : "primary"}
@@ -216,7 +216,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().toggleBlockquote().run();
+          editor.chain().focus().toggleBlockquote().run();
         }}
         disabled={!editorState.canBlockquote}
         variant={editorState.isBlockquote ? "secondary" : "primary"}
@@ -232,7 +232,7 @@ export const defaultControls = {
       <IconButton
         onClick={(e) => {
           e.stopPropagation();
-          editor.chain().setHorizontalRule().run();
+          editor.chain().focus().setHorizontalRule().run();
         }}
         disabled={!editorState.canHorizontalRule}
         variant="primary"

@@ -24,7 +24,6 @@ export function useSyncedEditor<T extends Extensions>({
 
   const syncingRef = useRef(false);
   const lastSerialized = useRef<string | null>(null);
-  const { setCurrentInlineId } = useActiveEditor();
 
   const editor = useEditor({
     extensions,
