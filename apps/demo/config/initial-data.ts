@@ -8,7 +8,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           title: "This page was built with Puck",
           description:
-            "Puck is the self-hosted visual editor for React. Bring your own components and make site changes instantly, without a deploy.",
+            "<p><strong>Puck is the self-hosted visual editor for React.</strong> Bring your own components and make site changes instantly, without a deploy.</p>",
           buttons: [
             {
               label: "Visit GitHub",
@@ -125,20 +125,6 @@ export const initialData: Record<string, UserData> = {
           size: "96px",
           id: "Space-1687287070296",
           direction: "vertical",
-        },
-      },
-      {
-        type: "RichText",
-        props: {
-          richtext:
-            "<p style='text-align: center;'><strong>✍️ <s>Plain-text</s> Rich Text Editor! 🎉</strong></p>",
-          layout: {
-            spanCol: 1,
-            spanRow: 1,
-            padding: "0px",
-            grow: false,
-          },
-          id: "RichText-b5020a95-4ab7-403a-bbce-c94d0e83beb4",
         },
       },
       {

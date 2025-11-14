@@ -351,8 +351,6 @@ export const DraggableComponent = ({
     [overrides.componentOverlay]
   );
 
-  const { setCurrentInlineId } = useActiveEditor();
-
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
       const el = e.target as Element;
@@ -360,8 +358,6 @@ export const DraggableComponent = ({
       if (!el.closest("[data-puck-overlay-portal]")) {
         e.stopPropagation();
       }
-
-      setCurrentInlineId(null);
 
       dispatch({
         type: "setUi",

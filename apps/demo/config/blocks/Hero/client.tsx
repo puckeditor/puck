@@ -81,7 +81,7 @@ export const Hero: ComponentConfig<{
       getItemSummary: (item) => item.label,
     },
     title: { type: "text", contentEditable: true },
-    description: { type: "textarea", contentEditable: true },
+    description: { type: "richtext", contentEditable: true },
     buttons: {
       type: "array",
       min: 1,
@@ -146,7 +146,7 @@ export const Hero: ComponentConfig<{
   defaultProps: {
     title: "Hero",
     align: "left",
-    description: "Description",
+    description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],
     padding: "64px",
   },

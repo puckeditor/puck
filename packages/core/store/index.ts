@@ -78,6 +78,8 @@ export type AppStore<
   setStatus: (status: Status) => void;
   iframe: IframeConfig;
   selectedItem?: G["UserData"]["content"][0] | null;
+  selectedPortal?: string | null;
+  setSelectedPortal: (portalId: string | null) => void;
   setUi: (ui: Partial<UiState>, recordHistory?: boolean) => void;
   getComponentConfig: (type?: string) => ComponentConfig | null | undefined;
   onAction?: (action: PuckAction, newState: AppState, state: AppState) => void;
@@ -134,6 +136,7 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
             initialAppStore.state
           )
         : null,
+      selectedPortal: null,
       dispatch: (action: PuckAction) =>
         set((s) => {
           const { record } = get().history;
@@ -155,6 +158,7 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
         }),
       setZoomConfig: (zoomConfig) => set({ zoomConfig }),
       setStatus: (status) => set({ status }),
+      setSelectedPortal: (portal) => set({ selectedPortal: portal }),
       setComponentState: (componentState) => set({ componentState }),
       pendingLoadTimeouts: {},
       setComponentLoading: (

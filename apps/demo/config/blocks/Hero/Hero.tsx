@@ -60,7 +60,7 @@ export const Hero: PuckComponent<HeroProps> = ({
       <div className={getClassName("inner")}>
         <div className={getClassName("content")}>
           <h1>{title}</h1>
-          <p className={getClassName("subtitle")}>{description}</p>
+          <div className={getClassName("subtitle")}>{description}</div>
           <div className={getClassName("actions")}>
             {buttons.map((button, i) => (
               <Button

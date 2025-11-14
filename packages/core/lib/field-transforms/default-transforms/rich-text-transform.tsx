@@ -2,7 +2,7 @@
 import { Editor } from "../../../components/RichTextEditor";
 import { Render } from "../../../components/RichTextEditor/Render";
 import { FieldTransforms } from "../../../types/API/FieldTransforms";
-import { useAppStoreApi } from "../../../store";
+import { useAppStoreApi, useAppStore } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
 import { registerOverlayPortal } from "../../../lib/overlay-portal";
 import { useEffect, useRef, useCallback, memo, MouseEvent } from "react";
@@ -40,6 +40,7 @@ const InlineEditorWrapper = memo(
   }) => {
     const portalRef = useRef<HTMLDivElement>(null);
     const appStoreApi = useAppStoreApi();
+    const appStore = useAppStore((s) => s);
     const { currentInlineId, setCurrentInlineId, activeEditor, editorMap } =
       useActiveEditor();
     const id = `${componentId}_${type}_${propPath}`;
@@ -63,6 +64,8 @@ const InlineEditorWrapper = memo(
       if (!portalRef.current) return;
       const cleanup = registerOverlayPortal(portalRef.current, {
         disableDragOnFocus: true,
+        id: id,
+        appStore: appStore,
       });
       return () => cleanup?.();
     }, [portalRef.current]);

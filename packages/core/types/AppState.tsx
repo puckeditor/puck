@@ -15,6 +15,7 @@ export type UiState = {
   leftSideBarWidth?: number | null;
   rightSideBarWidth?: number | null;
   itemSelector: ItemSelector | null;
+  portalSelector: string | null;
   arrayState: Record<string, ArrayState | undefined>;
   previewMode: "interactive" | "edit";
   componentList: Record<

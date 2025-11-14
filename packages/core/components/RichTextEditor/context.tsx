@@ -6,8 +6,10 @@ import {
   ReactNode,
   useRef,
   RefObject,
+  useEffect,
 } from "react";
 import type { Editor } from "@tiptap/react";
+import { useAppStore } from "../../store";
 
 type EditorContextType = {
   activeEditor: Editor | null;
@@ -21,10 +23,19 @@ type EditorContextType = {
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
 export function EditorProvider({ children }: { children: ReactNode }) {
+  const selectedItem = useAppStore((s) => s.selectedItem);
+  const selectedPortal = useAppStore((s) => s.selectedPortal);
   const [activeEditor, setActiveEditor] = useState<Editor | null>(null);
   const editorMap = useRef<Record<Editor["instanceId"], string>>({});
   const [currentInlineId, setCurrentInlineId] = useState<string | null>(null);
   const debug = false;
+
+  useEffect(() => {
+    const idExists =
+      selectedPortal &&
+      Object.values(editorMap.current).includes(selectedPortal);
+    !idExists && setCurrentInlineId(null);
+  }, [selectedItem, selectedPortal]);
 
   return (
     <EditorContext.Provider
