@@ -90,7 +90,7 @@ const config = {
 
 ### `contentEditable`
 
-Enable inline text editing for this field.
+Enable inline text editing for this field. Defaults to `false`.
 
 ```tsx {7} copy
 const config = {
@@ -99,7 +99,7 @@ const config = {
       fields: {
         description: {
           type: "richtext",
-          contentEditable: false,
+          contentEditable: true,
         },
       },
       // ...
@@ -110,7 +110,7 @@ const config = {
 
 ### `menu`
 
-Provide an override for the grouped button layout rendered in the editor toolbar. Each key in your `menu` matches a menu group and maps to an array of control keys.
+Configure the toolbar menu layout for the available [controls](#controls). Items are placed into groups.
 
 ```tsx {7-10} copy
 const config = {
@@ -132,7 +132,7 @@ const config = {
 
 ### `inlineMenu`
 
-Provide an override for the grouped button layout rendered in the `BubbbleMenu` when inline editing of your field. Each key in your `inlineMenu` matches a menu group and maps to an array of control keys.
+Configure the toolbar menu layout for the available [controls](#controls) shown inline when enabling [`contentEditable`](#contenteditable). Items are placed into groups.
 
 ```tsx {7-10} copy
 const config = {
@@ -154,7 +154,7 @@ const config = {
 
 ### `controls`
 
-Controls let you swap or extend the buttons available to each menu key. A control is an object with a `render(editor, editorState)` function, so you can plug in any React UI while still receiving the merged TipTap state produced by our selector utilities.
+Controls are actions shown in the [`menu`](#menu) and [`inlineMenu`](#inlinemenu). You can define your own controls, or override the [default ones](#default-controls).
 
 ```tsx {1-12, 20-22} copy
 const BoldControl = {
