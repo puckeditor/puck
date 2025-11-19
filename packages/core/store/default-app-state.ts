@@ -8,7 +8,6 @@ export const defaultAppState: PrivateAppState = {
     rightSideBarVisible: true,
     arrayState: {},
     itemSelector: null,
-    portalSelector: null,
     componentList: {},
     isDragging: false,
     previewMode: "edit",

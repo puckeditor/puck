@@ -11,6 +11,8 @@ export const RenderMenuItems = ({
   editor: RichTextEditor;
 }) => {
   return Object.entries(menuItems).map(([key, menuItem]) => (
-    <Fragment key={key}>{menuItem.render(editor, editorState)}</Fragment>
+    <span key={key} data-rte-menu>
+      {menuItem.render(editor, editorState)}
+    </span>
   ));
 };

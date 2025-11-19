@@ -5,51 +5,41 @@ import { FieldTransforms } from "../../../types/API/FieldTransforms";
 import { useAppStoreApi, useAppStore } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
 import { registerOverlayPortal } from "../../../lib/overlay-portal";
-import { useEffect, useRef, useCallback, memo, MouseEvent } from "react";
-import { Extensions, JSONContent } from "@tiptap/react";
 import {
-  RichTextControls,
-  RichTextMenuConfig,
-  RichTextSelectOptions,
-  RichTextSelector,
-} from "../../../components/RichTextEditor/types";
+  useEffect,
+  useRef,
+  useCallback,
+  memo,
+  MouseEvent,
+  FocusEvent,
+} from "react";
+import { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
 import { getSelectorForId } from "../../get-selector-for-id";
-import { useActiveEditor } from "../../../components/RichTextEditor/context";
+import { RichtextField } from "../../../types";
 
 const InlineEditorWrapper = memo(
   ({
     value,
     componentId,
-    type,
     propPath,
-    menu,
-    textSelectOptions,
-    selector,
-    controls,
-    extensions,
+    field,
+    name,
   }: {
     value: string;
     componentId: string;
-    type: string;
     propPath: string;
-    menu?: RichTextMenuConfig;
-    textSelectOptions?: RichTextSelectOptions[];
-    selector?: RichTextSelector;
-    controls?: RichTextControls;
-    extensions?: Extensions;
+    name: string;
+    field: RichtextField;
   }) => {
     const portalRef = useRef<HTMLDivElement>(null);
     const appStoreApi = useAppStoreApi();
     const appStore = useAppStore((s) => s);
-    const { currentInlineId, setCurrentInlineId, activeEditor, editorMap } =
-      useActiveEditor();
-    const id = `${componentId}_${type}_${propPath}`;
+
+    const id = `${componentId}_${propPath}`;
 
     const onClickHandler = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-
-      setCurrentInlineId(id);
 
       const itemSelector = getSelectorForId(
         appStoreApi.getState().state,
@@ -94,21 +84,45 @@ const InlineEditorWrapper = memo(
           destinationZone: zoneCompound,
         });
       },
-      [appStoreApi, componentId, propPath, currentInlineId]
+      [appStoreApi, componentId, propPath]
+    );
+
+    const handleFocus = useCallback(
+      (editor: TipTapEditor) => {
+        appStoreApi.setState({
+          currentRichText: {
+            inlineComponentId: componentId,
+            field,
+            editor,
+          },
+        });
+      },
+      [id]
+    );
+
+    const handleBlur = useCallback(
+      (e: FocusEvent) => {
+        const targetInMenu =
+          e.relatedTarget?.parentElement?.hasAttribute("data-rte-menu");
+
+        if (!targetInMenu) {
+          appStoreApi.setState({
+            currentRichText: null,
+          });
+        }
+      },
+      [id]
     );
 
     return (
-      <div ref={portalRef} onClick={onClickHandler}>
+      <div ref={portalRef} onClick={onClickHandler} onBlur={handleBlur}>
         <Editor
           content={value}
           id={id}
           onChange={handleChange}
-          extensions={extensions}
-          menu={menu}
-          textSelectOptions={textSelectOptions}
-          selector={selector}
-          controls={controls}
+          field={field}
           inline
+          onFocus={handleFocus}
         />
       </div>
     );
@@ -119,15 +133,7 @@ InlineEditorWrapper.displayName = "InlineEditorWrapper";
 
 export const getRichTextTransform = (): FieldTransforms => ({
   richtext: ({ value, componentId, field, propPath, isReadOnly }) => {
-    const {
-      contentEditable = true,
-      inlineMenu,
-      textSelectOptions,
-      selector,
-      controls,
-      extensions,
-      type,
-    } = field;
+    const { contentEditable = true, extensions } = field;
     if (contentEditable === false || isReadOnly) {
       return <Render content={value} extensions={extensions} />;
     }
@@ -138,12 +144,8 @@ export const getRichTextTransform = (): FieldTransforms => ({
         value={value}
         componentId={componentId}
         propPath={propPath}
-        type={type}
-        menu={inlineMenu}
-        textSelectOptions={textSelectOptions}
-        selector={selector}
-        controls={controls}
-        extensions={extensions}
+        field={field}
+        name={propPath}
       />
     );
   },

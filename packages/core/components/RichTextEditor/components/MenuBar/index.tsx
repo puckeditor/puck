@@ -1,4 +1,4 @@
-import { useEditorState } from "@tiptap/react";
+import { Editor, useEditorState } from "@tiptap/react";
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 import { RenderMenuItems } from "../RenderMenuItems/RenderMenuItems";
@@ -7,25 +7,102 @@ import {
   EditorState,
   RichTextEditor,
   RichTextMenuItem,
+  RichTextSelectOptions,
   RichTextSelector,
 } from "../../types";
 import { defaultEditorState } from "../../selector";
-import { useActiveEditor } from "../../context";
+import { RichtextField } from "../../../../types";
+import { useAppStore } from "../../../../store";
+import { defaultInlineMenu, defaultMenu } from "../../config";
+import { defaultControls } from "../../controls";
+import { BlockStyleSelect } from "../BlockStyleSelect";
 const getClassName = getClassNameFactory("MenuBar", styles);
 const getMenuClassName = getClassNameFactory("MenuBarMenu", styles);
 
+export const useMenu = ({
+  inline,
+  editor: _editor,
+  field,
+}: {
+  inline?: boolean;
+  editor: Editor | null;
+  field?: RichtextField;
+}) => {
+  const { menu = {}, textSelectOptions = [], controls = {} } = field ?? {};
+
+  const editor = useAppStore((s) => _editor ?? s.currentRichText?.editor);
+
+  const loadedMenu = useMemo(
+    () =>
+      Object.entries(menu).length > 0
+        ? menu
+        : inline
+        ? defaultInlineMenu
+        : defaultMenu,
+    [menu]
+  );
+
+  const loadedTextSelection = useMemo(
+    () =>
+      textSelectOptions.length > 0
+        ? textSelectOptions
+        : (["p", "h2", "h3", "h4", "h5", "h6"] as RichTextSelectOptions[]),
+    [textSelectOptions]
+  );
+
+  const loadedControls = useMemo(() => {
+    if (!editor) return { ...defaultControls, ...controls };
+
+    return {
+      ...defaultControls,
+      ...controls,
+      TextSelect: {
+        render: () => (
+          <BlockStyleSelect config={loadedTextSelection} editor={editor} />
+        ),
+      },
+    };
+  }, [controls, editor, loadedTextSelection]);
+
+  const groupedMenu = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(loadedMenu).map(([groupName, keys]) => [
+          groupName,
+          Object.fromEntries(
+            keys
+              .map((key) => [
+                key,
+                loadedControls[key as keyof typeof loadedControls],
+              ])
+              .filter((entry): entry is [string, RichTextMenuItem] =>
+                Boolean(entry[1])
+              )
+          ),
+        ])
+      ) ?? {},
+    [loadedControls, loadedMenu]
+  );
+
+  return groupedMenu;
+};
+
 export const MenuBar = ({
-  menuConfig,
   editor,
-  selector,
+  field,
   inline,
 }: {
-  menuConfig: Record<string, Record<string, RichTextMenuItem>>;
+  field: RichtextField;
   editor: RichTextEditor | null;
-  selector?: RichTextSelector;
   inline?: boolean;
 }) => {
-  const { debug } = useActiveEditor();
+  const { selector } = field;
+
+  const menuConfig = useMenu({
+    field,
+    editor,
+    inline,
+  });
 
   const resolvedSelector = useMemo(() => {
     return (ctx: Parameters<RichTextSelector>[0]) => ({
@@ -51,7 +128,6 @@ export const MenuBar = ({
 
   return (
     <>
-      {debug && <p>Debug Menu ID: {editor.instanceId}</p>}
       <div className={getClassName({ "button-group": !inline })}>
         {menuGroups.map((key) => {
           const menuItems = menuConfig[key];

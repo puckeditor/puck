@@ -9,6 +9,7 @@ import { useSyncedEditor } from "./lib/use-synced-editor";
 
 import type { ReactElement } from "react";
 import { defaultEditorState } from "./selector";
+import { RichtextField } from "../../types";
 
 // Base menu item
 export type RichTextMenuItem = {
@@ -43,12 +44,9 @@ export type EditorProps = {
   content: string;
   id: string;
   readOnly?: boolean;
-  menu?: RichTextMenuConfig;
-  textSelectOptions?: RichTextSelectOptions[] | [];
-  selector?: RichTextSelector;
-  controls?: RichTextControls;
-  extensions?: Extensions;
   inline?: boolean;
+  field: RichtextField;
+  onFocus?: (editor: Editor) => void;
 };
 
 export type DefaultExtensions = typeof defaultExtensions;

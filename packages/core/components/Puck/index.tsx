@@ -72,7 +72,6 @@ import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
 import { toComponent } from "../../lib/data/to-component";
-import { EditorProvider } from "../RichTextEditor/context";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -586,9 +585,7 @@ export function Puck<
   return (
     <PropsProvider {...props}>
       <PuckProvider {...props}>
-        <EditorProvider>
-          <PuckLayout {...props} />
-        </EditorProvider>
+        <PuckLayout {...props} />
       </PuckProvider>
     </PropsProvider>
   );

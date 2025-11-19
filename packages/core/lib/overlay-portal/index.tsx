@@ -5,14 +5,11 @@ export const registerOverlayPortal = (
   opts: {
     disableDrag?: boolean;
     disableDragOnFocus?: boolean;
-    id?: string;
-    appStore?: any;
   } = {}
 ) => {
   if (!el) return;
 
-  const { disableDrag = false, disableDragOnFocus = true, id, appStore } = opts;
-  const setSelectedPortal = appStore?.setSelectedPortal ?? undefined;
+  const { disableDrag = false, disableDragOnFocus = true } = opts;
 
   const stopPropagation = (e: MouseEvent) => {
     e.stopPropagation();
@@ -23,7 +20,6 @@ export const registerOverlayPortal = (
   });
 
   const onFocus = () => {
-    setSelectedPortal && setSelectedPortal(id ?? null);
     setTimeout(() => {
       el.addEventListener("pointerdown", stopPropagation, {
         capture: true,

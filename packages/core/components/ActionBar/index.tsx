@@ -42,6 +42,7 @@ export const Action = ({
     className={getActionClassName({ active: active })}
     onClick={onClick}
     title={label}
+    tabIndex={0}
   >
     {children}
   </button>

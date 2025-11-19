@@ -14,6 +14,7 @@ import {
   ComponentData,
   RootDataWithProps,
   ResolveDataTrigger,
+  RichtextField,
 } from "../types";
 import { createReducer, PuckAction } from "../reducer";
 import { getItem } from "../lib/data/get-item";
@@ -35,6 +36,7 @@ import { toRoot } from "../lib/data/to-root";
 import { generateId } from "../lib/generate-id";
 import { defaultAppState } from "./default-app-state";
 import { FieldTransforms } from "../types/API/FieldTransforms";
+import type { Editor } from "@tiptap/react";
 
 export { defaultAppState };
 
@@ -78,8 +80,7 @@ export type AppStore<
   setStatus: (status: Status) => void;
   iframe: IframeConfig;
   selectedItem?: G["UserData"]["content"][0] | null;
-  selectedPortal?: string | null;
-  setSelectedPortal: (portalId: string | null) => void;
+
   setUi: (ui: Partial<UiState>, recordHistory?: boolean) => void;
   getComponentConfig: (type?: string) => ComponentConfig | null | undefined;
   onAction?: (action: PuckAction, newState: AppState, state: AppState) => void;
@@ -89,6 +90,11 @@ export type AppStore<
   nodes: NodesSlice;
   permissions: PermissionsSlice;
   fieldTransforms: FieldTransforms;
+  currentRichText?: {
+    inlineComponentId?: string;
+    field: RichtextField;
+    editor: Editor;
+  } | null;
 };
 
 export type AppStoreApi = StoreApi<AppStore>;
@@ -158,7 +164,6 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
         }),
       setZoomConfig: (zoomConfig) => set({ zoomConfig }),
       setStatus: (status) => set({ status }),
-      setSelectedPortal: (portal) => set({ selectedPortal: portal }),
       setComponentState: (componentState) => set({ componentState }),
       pendingLoadTimeouts: {},
       setComponentLoading: (
