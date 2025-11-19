@@ -43,7 +43,7 @@ const InlineTextFieldInternal = ({
         ref.current.replaceChildren(value);
       }
 
-      const cleanupPortal = registerOverlayPortal(ref.current, { appStore });
+      const cleanupPortal = registerOverlayPortal(ref.current);
 
       const handleInput = async (e: any) => {
         const appStore = appStoreApi.getState();
