@@ -42,7 +42,6 @@ export type EditorState = DefaultEditorState & CustomEditorState;
 export type EditorProps = {
   onChange: (content: string | JSONContent) => void;
   content: string;
-  id: string;
   readOnly?: boolean;
   inline?: boolean;
   field: RichtextField;

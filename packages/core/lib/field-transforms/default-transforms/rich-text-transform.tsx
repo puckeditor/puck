@@ -2,7 +2,7 @@
 import { Editor } from "../../../components/RichTextEditor";
 import { Render } from "../../../components/RichTextEditor/Render";
 import { FieldTransforms } from "../../../types/API/FieldTransforms";
-import { useAppStoreApi, useAppStore } from "../../../store";
+import { useAppStoreApi } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
 import { registerOverlayPortal } from "../../../lib/overlay-portal";
 import {
@@ -23,19 +23,14 @@ const InlineEditorWrapper = memo(
     componentId,
     propPath,
     field,
-    name,
   }: {
     value: string;
     componentId: string;
     propPath: string;
-    name: string;
     field: RichtextField;
   }) => {
     const portalRef = useRef<HTMLDivElement>(null);
     const appStoreApi = useAppStoreApi();
-    const appStore = useAppStore((s) => s);
-
-    const id = `${componentId}_${propPath}`;
 
     const onClickHandler = (e: MouseEvent) => {
       e.preventDefault();
@@ -54,8 +49,6 @@ const InlineEditorWrapper = memo(
       if (!portalRef.current) return;
       const cleanup = registerOverlayPortal(portalRef.current, {
         disableDragOnFocus: true,
-        id: id,
-        appStore: appStore,
       });
       return () => cleanup?.();
     }, [portalRef.current]);
@@ -97,28 +90,24 @@ const InlineEditorWrapper = memo(
           },
         });
       },
-      [id]
+      [field, componentId]
     );
 
-    const handleBlur = useCallback(
-      (e: FocusEvent) => {
-        const targetInMenu =
-          e.relatedTarget?.parentElement?.hasAttribute("data-rte-menu");
+    const handleBlur = useCallback((e: FocusEvent) => {
+      const targetInMenu =
+        e.relatedTarget?.parentElement?.hasAttribute("data-rte-menu");
 
-        if (!targetInMenu) {
-          appStoreApi.setState({
-            currentRichText: null,
-          });
-        }
-      },
-      [id]
-    );
+      if (!targetInMenu) {
+        appStoreApi.setState({
+          currentRichText: null,
+        });
+      }
+    }, []);
 
     return (
       <div ref={portalRef} onClick={onClickHandler} onBlur={handleBlur}>
         <Editor
           content={value}
-          id={id}
           onChange={handleChange}
           field={field}
           inline
@@ -137,7 +126,9 @@ export const getRichTextTransform = (): FieldTransforms => ({
     if (contentEditable === false || isReadOnly) {
       return <Render content={value} extensions={extensions} />;
     }
+
     const id = `${componentId}_${field.type}_${propPath}-inline`;
+
     return (
       <InlineEditorWrapper
         key={id}
@@ -145,7 +136,6 @@ export const getRichTextTransform = (): FieldTransforms => ({
         componentId={componentId}
         propPath={propPath}
         field={field}
-        name={propPath}
       />
     );
   },
