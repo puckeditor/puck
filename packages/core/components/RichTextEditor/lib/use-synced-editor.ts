@@ -35,7 +35,7 @@ export function useSyncedEditor<T extends Extensions>({
       const json = editor.getJSON();
       const serialized = JSON.stringify(json);
       lastSerialized.current = serialized;
-      setDebouncedJson(JSON.parse(serialized));
+      setDebouncedJson(json);
     },
   });
 

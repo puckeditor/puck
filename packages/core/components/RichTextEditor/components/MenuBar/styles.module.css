@@ -42,5 +42,12 @@
 }
 
 .MenuBarMenu--inline button {
-  padding: 2px;
+  padding: 4px;
+}
+
+.MenuBarMenu--inline button:first-of-type {
+  padding-left: 6px;
+}
+.MenuBarMenu--inline button:last-of-type {
+  padding-right: 6px;
 }
