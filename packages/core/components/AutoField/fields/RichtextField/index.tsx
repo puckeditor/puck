@@ -27,7 +27,6 @@ export const RichtextField = ({
           content={typeof value === "undefined" ? "" : value}
           readOnly={readOnly}
           field={field as RichtextFieldType}
-          id={id}
         />
       </Label>
     </>
