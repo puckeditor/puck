@@ -83,6 +83,10 @@ export const generateUsePuck = (store: PickedStore): UsePuckStore => {
     },
   };
 
+  (storeData as any).__private = {
+    appState: store.state,
+  };
+
   return storeData;
 };
 
