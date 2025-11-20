@@ -124,7 +124,7 @@ type PuckProps<
   };
   initialHistory?: InitialHistory;
   metadata?: Metadata;
-  hotkeys?: HotkeyState
+  hotkeys?: Partial<HotkeyState>
 };
 
 const propsContext = createContext<Partial<PuckProps>>({});

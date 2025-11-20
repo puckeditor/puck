@@ -88,7 +88,7 @@ export type AppStore<
   nodes: NodesSlice;
   permissions: PermissionsSlice;
   fieldTransforms: FieldTransforms;
-  hotkeys: HotkeyState;
+  hotkeys: Partial<HotkeyState>;
 };
 
 export type AppStoreApi = StoreApi<AppStore>;
