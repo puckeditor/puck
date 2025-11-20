@@ -29,16 +29,19 @@ export const Action = ({
   children,
   label,
   onClick,
+  disabled
 }: {
   children: ReactNode;
   label?: string;
   onClick: (e: SyntheticEvent) => void;
+  disabled?: boolean;
 }) => (
   <button
     type="button"
     className={getClassName("action")}
     onClick={onClick}
     title={label}
+    disabled={disabled}
   >
     {children}
   </button>
