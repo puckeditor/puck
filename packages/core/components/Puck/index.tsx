@@ -345,7 +345,7 @@ function PuckProvider<
       onAction,
       metadata,
       loadedFieldTransforms,
-      hotkeys
+      hotkeys.enabled
     ]
   );
 
