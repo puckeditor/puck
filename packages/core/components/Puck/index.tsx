@@ -332,7 +332,7 @@ function PuckProvider<
         onAction,
         metadata,
         fieldTransforms: loadedFieldTransforms,
-        hotkeys: hotkeys,
+        hotkeys,
       };
     },
     [
