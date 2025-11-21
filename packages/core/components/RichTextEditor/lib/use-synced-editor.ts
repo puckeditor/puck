@@ -20,7 +20,8 @@ export function useSyncedEditor<T extends Extensions>({
 }) {
   const [debouncedJson, setDebouncedJson] = useDebounce<JSONContent | string>(
     "",
-    50
+    50,
+    { leading: true, maxWait: 200 }
   );
 
   const syncingRef = useRef(false);
