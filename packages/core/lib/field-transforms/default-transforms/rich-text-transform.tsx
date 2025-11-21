@@ -23,11 +23,13 @@ const InlineEditorWrapper = memo(
     componentId,
     propPath,
     field,
+    id,
   }: {
     value: string;
     componentId: string;
     propPath: string;
     field: RichtextField;
+    id: string;
   }) => {
     const portalRef = useRef<HTMLDivElement>(null);
     const appStoreApi = useAppStoreApi();
@@ -85,8 +87,10 @@ const InlineEditorWrapper = memo(
         appStoreApi.setState({
           currentRichText: {
             inlineComponentId: componentId,
+            inline: true,
             field,
             editor,
+            id,
           },
         });
       },
@@ -97,7 +101,7 @@ const InlineEditorWrapper = memo(
       const targetInMenu =
         e.relatedTarget?.parentElement?.hasAttribute("data-rte-menu");
 
-      if (!targetInMenu) {
+      if (e.relatedTarget && !targetInMenu) {
         appStoreApi.setState({
           currentRichText: null,
         });
@@ -112,6 +116,7 @@ const InlineEditorWrapper = memo(
           field={field}
           inline
           onFocus={handleFocus}
+          id={id}
         />
       </div>
     );
@@ -127,7 +132,7 @@ export const getRichTextTransform = (): FieldTransforms => ({
       return <Render content={value} extensions={extensions} />;
     }
 
-    const id = `${componentId}_${field.type}_${propPath}-inline`;
+    const id = `${componentId}_${field.type}_${propPath}`;
 
     return (
       <InlineEditorWrapper
@@ -136,6 +141,7 @@ export const getRichTextTransform = (): FieldTransforms => ({
         componentId={componentId}
         propPath={propPath}
         field={field}
+        id={id}
       />
     );
   },

@@ -9,12 +9,14 @@ export function useSyncedEditor<T extends Extensions>({
   extensions,
   editable = true,
   onFocusChange,
+  isFocused,
 }: {
   content: JSONContent | string;
   onChange: (content: JSONContent | string) => void;
   extensions: ExtensionSet<T>;
   editable?: boolean;
   onFocusChange?: (editor: Editor | null) => void;
+  isFocused: boolean;
 }) {
   const [debouncedJson, setDebouncedJson] = useDebounce<JSONContent | string>(
     "",
@@ -64,7 +66,9 @@ export function useSyncedEditor<T extends Extensions>({
     if (!editor) return;
 
     // If the editor currently has focus, don't stomp what the user is typing
-    if (editor.isFocused) return;
+    if (isFocused) {
+      return;
+    }
 
     // Compare current doc vs incoming doc; if same, skip
     const currentJSON = editor.getJSON();
@@ -78,7 +82,7 @@ export function useSyncedEditor<T extends Extensions>({
     syncingRef.current = true;
     editor.commands.setContent(content, { emitUpdate: false });
     syncingRef.current = false;
-  }, [content, editor]);
+  }, [content, editor, isFocused]);
 
   return editor;
 }

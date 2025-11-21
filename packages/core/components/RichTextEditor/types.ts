@@ -46,6 +46,7 @@ export type EditorProps = {
   inline?: boolean;
   field: RichtextField;
   onFocus?: (editor: Editor) => void;
+  id: string;
 };
 
 export type DefaultExtensions = typeof defaultExtensions;

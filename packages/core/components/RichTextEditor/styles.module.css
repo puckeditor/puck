@@ -41,8 +41,12 @@
   max-width: 100%;
 }
 
-.RichTextEditor--editor :global(.ProseMirror-focused) {
+.RichTextEditor--editor:focus-within :global(.ProseMirror) {
   border-color: var(--puck-color-grey-05);
   outline: 2px solid var(--puck-color-azure-05);
   transition: none;
+}
+
+.RichTextEditor:not(:focus-within):not(.RichTextEditor--isFocused) ::selection {
+  background-color: transparent;
 }

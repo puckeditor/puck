@@ -7,7 +7,7 @@ import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { EditorProps } from "./types";
 
-import { useAppStoreApi } from "../../store";
+import { useAppStore, useAppStoreApi } from "../../store";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 
@@ -19,6 +19,7 @@ export const Editor = memo(
     field,
     inline = false,
     onFocus,
+    id,
   }: EditorProps) => {
     const { extensions = [] } = field;
 
@@ -29,23 +30,33 @@ export const Editor = memo(
 
     const appStoreApi = useAppStoreApi();
 
+    const isFocused = useAppStore(
+      (s) => s.currentRichText?.id === id && inline === s.currentRichText.inline
+    );
+
     const editor = useSyncedEditor<typeof loadedExtensions>({
       content,
       onChange,
       extensions: loadedExtensions,
       editable: !readOnly,
+
       onFocusChange: (editor) => {
         if (editor) {
+          const s = appStoreApi.getState();
+
           appStoreApi.setState({
             currentRichText: {
               field,
               editor,
+              id,
+              inline,
             },
           });
 
           onFocus?.(editor);
         }
       },
+      isFocused,
     });
 
     const handleHotkeyCapture = useCallback(
@@ -60,15 +71,27 @@ export const Editor = memo(
       []
     );
 
+    const menuEditor = useAppStore((s) => {
+      if (
+        !inline &&
+        s.currentRichText?.id === id &&
+        s.currentRichText?.inlineComponentId
+      ) {
+        return s.currentRichText.editor;
+      }
+
+      return editor;
+    });
+
     if (!editor) return null;
 
     return (
-      <div onKeyDownCapture={handleHotkeyCapture}>
-        {!readOnly && !inline && <MenuBar field={field} editor={editor} />}
-        <EditorContent
-          editor={editor}
-          className={getClassName({ editor: !inline, inline })}
-        />
+      <div
+        className={getClassName({ editor: !inline, inline, isFocused })}
+        onKeyDownCapture={handleHotkeyCapture}
+      >
+        {!readOnly && !inline && <MenuBar field={field} editor={menuEditor} />}
+        <EditorContent editor={editor} />
       </div>
     );
   }

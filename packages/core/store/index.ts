@@ -92,8 +92,10 @@ export type AppStore<
   fieldTransforms: FieldTransforms;
   currentRichText?: {
     inlineComponentId?: string;
+    inline: boolean;
     field: RichtextField;
     editor: Editor;
+    id: string;
   } | null;
 };
 
