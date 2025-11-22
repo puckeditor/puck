@@ -26,7 +26,7 @@
     "lerna": "^9.0.0",
     "prettier": "^2.5.1",
     "puppeteer": "^24.8.2",
-    "rimraf": "^6.1.0",
+    "rimraf": "^6.1.2",
     "standard-changelog": "^2.0.21",
     "turbo": "^2.5.8"
   },
@@ -40,5 +40,8 @@
   "version": "0.20.2",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "glob": "^13.0.0"
   }
 }
