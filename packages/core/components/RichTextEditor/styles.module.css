@@ -25,8 +25,7 @@
   outline: none;
 }
 
-.RichTextEditor--editor :global(.ProseMirror) {
-  margin-top: 16px;
+.RichTextEditor--editor {
   background: var(--puck-color-white);
   border-width: 1px;
   border-style: solid;
@@ -34,14 +33,17 @@
   border-radius: 4px;
   box-sizing: border-box;
   font-family: inherit;
-  font-size: 16px;
-  padding: 0 15px;
+  font-size: var(--puck-font-size-xxs);
   transition: border-color 50ms ease-in;
   width: 100%;
   max-width: 100%;
 }
 
-.RichTextEditor--editor:focus-within :global(.ProseMirror) {
+.RichTextEditor--editor :global(.ProseMirror) {
+  padding: 0 16px;
+}
+
+.RichTextEditor--editor:focus-within {
   border-color: var(--puck-color-grey-05);
   outline: 2px solid var(--puck-color-azure-05);
   transition: none;
