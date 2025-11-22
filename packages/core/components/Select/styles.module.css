@@ -1,0 +1,63 @@
+.Select {
+  position: relative;
+  z-index: 1;
+}
+
+.Select-button {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: currentColor;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  gap: 0px;
+  padding: 4px;
+  padding-right: 2px;
+}
+
+.Select-button:hover,
+.Select--hasValue .Select-button {
+  background: var(--puck-color-azure-12);
+  color: var(--puck-color-azure-04);
+}
+
+.Select-items {
+  background: white;
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 8px;
+  margin: 0;
+  padding: 4px;
+  z-index: 2;
+  list-style: none;
+}
+
+.SelectItem {
+  background: transparent;
+  border-radius: 4px;
+  border: none;
+  color: var(--puck-color-grey-04);
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.SelectItem--isSelected {
+  background: var(--puck-color-azure-11);
+  color: var(--puck-color-azure-04);
+  font-weight: 500;
+}
+
+.SelectItem--isSelected .SelectItem-icon {
+  color: var(--puck-color-azure-04);
+}
+
+.SelectItem:hover {
+  background: var(--puck-color-azure-11);
+  color: var(--puck-color-azure-04);
+}

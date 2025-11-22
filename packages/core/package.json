@@ -95,6 +95,7 @@
   "dependencies": {
     "@dnd-kit/helpers": "0.1.18",
     "@dnd-kit/react": "0.1.18",
+    "@radix-ui/react-popover": "^1.1.15",
     "@tiptap/extension-text-align": "^3.6.2",
     "@tiptap/html": "^3.10.5",
     "@tiptap/react": "^3.6.2",

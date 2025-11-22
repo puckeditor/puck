@@ -1,9 +1,27 @@
 import { useEditorState, Editor as EditorType } from "@tiptap/react";
-import styles from "./styles.module.css";
-import getClassNameFactory from "../../../../lib/get-class-name-factory";
-import { RichTextSelectOptions } from "../../types";
 
-const getClassName = getClassNameFactory("BlockStyleSelect", styles);
+import { RichTextSelectOptions } from "../../types";
+import { useMemo } from "react";
+import {
+  Heading,
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
+} from "lucide-react";
+import { Select } from "../../../Select";
+
+const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
+  p: { label: "Paragraph" },
+  h1: { label: "Heading 1", icon: Heading1 },
+  h2: { label: "Heading 2", icon: Heading2 },
+  h3: { label: "Heading 3", icon: Heading3 },
+  h4: { label: "Heading 4", icon: Heading4 },
+  h5: { label: "Heading 5", icon: Heading5 },
+  h6: { label: "Heading 6", icon: Heading6 },
+};
 
 export const BlockStyleSelect = ({
   config,
@@ -12,7 +30,7 @@ export const BlockStyleSelect = ({
   config: RichTextSelectOptions[];
   editor: EditorType;
 }) => {
-  const editorState = useEditorState({
+  const currentValue = useEditorState({
     editor,
     selector: (ctx) => {
       if (ctx.editor.isActive("paragraph")) return "p";
@@ -25,8 +43,7 @@ export const BlockStyleSelect = ({
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value as RichTextSelectOptions;
+  const handleChange = (val: RichTextSelectOptions) => {
     const chain = editor.chain();
 
     if (val === "p") {
@@ -37,19 +54,28 @@ export const BlockStyleSelect = ({
     }
   };
 
+  const options = useMemo(
+    () =>
+      config.map((item) => ({
+        value: item,
+        label: optionNodes[item].label,
+        icon: optionNodes[item].icon,
+      })),
+    [config]
+  );
+
+  const Node = (currentValue && optionNodes[currentValue]?.icon) ?? Heading;
+
   if (!config || config.length === 0) return null;
 
   return (
-    <select
-      value={editorState}
+    <Select
+      options={options}
       onChange={handleChange}
-      className={getClassName("input")}
+      value={currentValue}
+      defaultValue="p"
     >
-      {config.map((option) => (
-        <option key={option} value={option}>
-          {option === "p" ? "Paragraph" : `Heading ${option.replace("h", "")}`}
-        </option>
-      ))}
-    </select>
+      <Node size="20" />
+    </Select>
   );
 };
