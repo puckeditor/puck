@@ -16,6 +16,7 @@ import { useAppStore } from "../../../../store";
 import { defaultInlineMenu, defaultMenu } from "../../config";
 import { defaultControls } from "../../controls";
 import { BlockStyleSelect } from "../BlockStyleSelect";
+
 const getClassName = getClassNameFactory("MenuBar", styles);
 const getMenuClassName = getClassNameFactory("MenuBarMenu", styles);
 
@@ -128,7 +129,7 @@ export const MenuBar = ({
 
   return (
     <>
-      <div className={getClassName({ "button-group": !inline })}>
+      <div className={getClassName({ group: !inline })}>
         {menuGroups.map((key) => {
           const menuItems = menuConfig[key];
           if (!menuItems) return null; // handle undefined in Partial

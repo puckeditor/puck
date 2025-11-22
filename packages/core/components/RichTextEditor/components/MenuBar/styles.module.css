@@ -1,39 +1,37 @@
-.MenuBar--button-group {
+.MenuBar--group {
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: row;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid var(--puck-color-grey-10);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  padding: 6px 6px;
+  background-color: var(--puck-color-grey-12);
   position: relative;
   z-index: 100;
   margin-bottom: 2px;
-}
+  scrollbar-width: none;
 
-.MenuBar--button-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 12px;
-  border: 1px solid var(--puck-color-grey-09);
-  border-radius: 4px;
-  background-color: var(--puck-color-white);
-  padding: 4px;
-  position: relative;
-  z-index: 100;
-  margin-bottom: 2px;
+  overflow-x: auto;
 }
 
 .MenuBarMenu {
   display: flex;
   align-items: space-between;
   flex-direction: row;
-  flex-wrap: wrap;
-  gap: 4px;
+  flex-wrap: nowrap;
+  padding-inline: 6px;
+  gap: 2px;
   z-index: 3;
   position: relative;
+}
+
+.MenuBarMenu:first-of-type {
+  padding-left: 0;
+}
+
+.MenuBarMenu:last-of-type {
+  padding-right: 0;
 }
 
 .MenuBarMenu--inline {
@@ -50,4 +48,8 @@
 }
 .MenuBarMenu--inline button:last-of-type {
   padding-right: 6px;
+}
+
+.MenuBarMenu + .MenuBarMenu {
+  border-left: 1px solid var(--puck-color-grey-10);
 }
