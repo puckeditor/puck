@@ -43,44 +43,60 @@ export const Select = ({
 }) => {
   const [open, setOpen] = useState(false);
 
+  const hasOptions = options.length > 0;
+
   return (
-    <div className={getClassName({ hasValue: value !== defaultValue })}>
+    <div
+      className={getClassName({
+        hasValue: value !== defaultValue,
+        hasOptions,
+      })}
+    >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <button className={getClassName("button")}>
-            {children}
-            <ChevronDown size={12} />
-          </button>
+          {hasOptions ? (
+            <button className={getClassName("button")}>
+              {children}
+              <ChevronDown size={12} />
+            </button>
+          ) : (
+            <div className={getClassName("button")}>
+              {children}
+              <ChevronDown size={12} />
+            </div>
+          )}
         </PopoverTrigger>
 
-        <PopoverPortal>
-          <PopoverContent sideOffset={8} align="start">
-            <ul className={getClassName("items")}>
-              {options.map((option) => {
-                const Icon: any = option.icon;
+        {options.length > 0 && (
+          <PopoverPortal>
+            <PopoverContent sideOffset={8} align="start">
+              <ul className={getClassName("items")}>
+                {options.map((option) => {
+                  const Icon: any = option.icon;
 
-                return (
-                  <li key={option.value}>
-                    <Item
-                      isSelected={value === option.value}
-                      onClick={() => {
-                        onChange(option.value);
-                        setOpen(false);
-                      }}
-                    >
-                      {Icon && (
-                        <div className={getItemClassName("icon")}>
-                          <Icon size={16} />
-                        </div>
-                      )}
-                      {option.label}
-                    </Item>
-                  </li>
-                );
-              })}
-            </ul>
-          </PopoverContent>
-        </PopoverPortal>
+                  return (
+                    <li key={option.value}>
+                      <Item
+                        isSelected={value === option.value}
+                        onClick={() => {
+                          onChange(option.value);
+                          setOpen(false);
+                        }}
+                      >
+                        {Icon && (
+                          <div className={getItemClassName("icon")}>
+                            <Icon size={16} />
+                          </div>
+                        )}
+                        {option.label}
+                      </Item>
+                    </li>
+                  );
+                })}
+              </ul>
+            </PopoverContent>
+          </PopoverPortal>
+        )}
       </Popover>
     </div>
   );
