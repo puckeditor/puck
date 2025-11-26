@@ -127,9 +127,9 @@ InlineEditorWrapper.displayName = "InlineEditorWrapper";
 
 export const getRichTextTransform = (): FieldTransforms => ({
   richtext: ({ value, componentId, field, propPath, isReadOnly }) => {
-    const { contentEditable = true, extensions } = field;
+    const { contentEditable = true, tiptap } = field;
     if (contentEditable === false || isReadOnly) {
-      return <Render content={value} extensions={extensions} />;
+      return <Render content={value} extensions={tiptap?.extensions} />;
     }
 
     const id = `${componentId}_${field.type}_${propPath}`;

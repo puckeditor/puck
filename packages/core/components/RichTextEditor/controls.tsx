@@ -18,8 +18,13 @@ import { IconButton } from "../IconButton";
 import { Editor } from "@tiptap/react";
 import { EditorState } from "./types";
 import { Action } from "../ActionBar";
+import { BlockStyleSelect } from "./components/BlockStyleSelect";
+import { RichTextElement } from "../../types";
+import { PuckRichTextOptions } from "./extensions";
 
-export const defaultControls = {
+export const createDefaultControls = (
+  options: Partial<PuckRichTextOptions>
+) => ({
   AlignLeft: {
     render: (editor: Editor, editorState: EditorState) => (
       <IconButton
@@ -243,6 +248,44 @@ export const defaultControls = {
     ),
   },
 
+  TextSelect: {
+    render: (editor: Editor, _editorState: EditorState) => {
+      let blockOptions: RichTextElement[] = [];
+
+      if (options.heading !== false) {
+        if (!options.heading?.levels) {
+          blockOptions = ["h2", "h3", "h4", "h5", "h6"];
+        } else {
+          if (options.heading.levels.includes(1)) {
+            blockOptions.push("h1");
+          }
+
+          if (options.heading.levels.includes(2)) {
+            blockOptions.push("h2");
+          }
+
+          if (options.heading.levels.includes(3)) {
+            blockOptions.push("h3");
+          }
+
+          if (options.heading.levels.includes(4)) {
+            blockOptions.push("h4");
+          }
+
+          if (options.heading.levels.includes(5)) {
+            blockOptions.push("h5");
+          }
+
+          if (options.heading.levels.includes(6)) {
+            blockOptions.push("h6");
+          }
+        }
+      }
+
+      return <BlockStyleSelect config={blockOptions} editor={editor} />;
+    },
+  },
+
   BoldAction: {
     render: (editor: Editor, editorState: EditorState) => (
       <Action
@@ -298,4 +341,4 @@ export const defaultControls = {
       </Action>
     ),
   },
-};
+});

@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, KeyboardEvent } from "react";
 import { useSyncedEditor } from "./lib/use-synced-editor";
-import { defaultExtensions } from "./extensions";
+import { PuckRichText, PuckRichTextOptions } from "./extensions";
 import { MenuBar } from "./components/MenuBar";
 import { EditorContent, Extensions } from "@tiptap/react";
 import styles from "./styles.module.css";
@@ -21,11 +21,12 @@ export const Editor = memo(
     onFocus,
     id,
   }: EditorProps) => {
-    const { extensions = [] } = field;
+    const { tiptap = {}, options } = field;
+    const { extensions = [] } = tiptap;
 
     const loadedExtensions = useMemo(
-      () => [...defaultExtensions, ...extensions] as Extensions,
-      [extensions]
+      () => [PuckRichText.configure(options), ...extensions],
+      [field, extensions]
     );
 
     const appStoreApi = useAppStoreApi();

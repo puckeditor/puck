@@ -4,31 +4,24 @@ import {
   Extensions,
   JSONContent,
 } from "@tiptap/react";
-import { defaultExtensions } from "./extensions";
 import { useSyncedEditor } from "./lib/use-synced-editor";
 
 import type { ReactElement } from "react";
 import { defaultEditorState } from "./selector";
 import { RichtextField } from "../../types";
+import { createDefaultControls } from "./controls";
 
 // Base menu item
 export type RichTextMenuItem = {
   render: (editor: Editor, editorState: EditorState) => ReactElement;
 };
 
+type ControlKey = keyof ReturnType<typeof createDefaultControls>;
+
 // Menu config
-export type RichTextMenuConfig = Record<string, string[]>;
+export type RichTextMenuConfig = Record<string, ControlKey[]>; // TODO needs typing
 
 export type RichTextControls = Record<string, RichTextMenuItem>;
-
-export type RichTextSelectOptions =
-  | "p"
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "h5"
-  | "h6";
 
 export type RichTextSelector = (
   ctx: EditorStateSnapshot
@@ -48,8 +41,5 @@ export type EditorProps = {
   onFocus?: (editor: Editor) => void;
   id: string;
 };
-
-export type DefaultExtensions = typeof defaultExtensions;
-export type ExtensionSet<T extends Extensions = DefaultExtensions> = T;
 
 export type RichTextEditor = NonNullable<ReturnType<typeof useSyncedEditor>>;

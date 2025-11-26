@@ -6,16 +6,15 @@ import { useMemo } from "react";
 import {
   EditorState,
   RichTextEditor,
-  RichTextMenuItem,
-  RichTextSelectOptions,
+  RichTextMenuConfig,
   RichTextSelector,
 } from "../../types";
 import { defaultEditorState } from "../../selector";
 import { RichtextField } from "../../../../types";
 import { useAppStore } from "../../../../store";
 import { defaultInlineMenu, defaultMenu } from "../../config";
-import { defaultControls } from "../../controls";
-import { BlockStyleSelect } from "../BlockStyleSelect";
+import { createDefaultControls } from "../../controls";
+import { defaultPuckRichTextOptions } from "../../extensions";
 
 const getClassName = getClassNameFactory("MenuBar", styles);
 const getMenuClassName = getClassNameFactory("MenuBarMenu", styles);
@@ -29,27 +28,22 @@ export const useMenu = ({
   editor: Editor | null;
   field?: RichtextField;
 }) => {
-  const { menu = {}, textSelectOptions = [], controls = {} } = field ?? {};
+  const { menu, inlineMenu, controls = {}, options } = field ?? {};
 
   const editor = useAppStore((s) => _editor ?? s.currentRichText?.editor);
 
-  const loadedMenu = useMemo(
-    () =>
-      Object.entries(menu).length > 0
-        ? menu
-        : inline
-        ? defaultInlineMenu
-        : defaultMenu,
-    [menu]
-  );
+  const loadedMenu = useMemo(() => {
+    const _menu = inline ? inlineMenu : menu;
+    const _defaultMenu = inline ? defaultInlineMenu : defaultMenu;
 
-  const loadedTextSelection = useMemo(
-    () =>
-      textSelectOptions.length > 0
-        ? textSelectOptions
-        : (["p", "h2", "h3", "h4", "h5", "h6"] as RichTextSelectOptions[]),
-    [textSelectOptions]
-  );
+    return (
+      Object.entries(_menu ?? {}).length > 0 ? _menu : _defaultMenu
+    ) as RichTextMenuConfig;
+  }, [menu, inlineMenu]);
+
+  const defaultControls = useMemo(() => {
+    return createDefaultControls({ ...defaultPuckRichTextOptions, ...options });
+  }, [options]);
 
   const loadedControls = useMemo(() => {
     if (!editor) return { ...defaultControls, ...controls };
@@ -57,13 +51,8 @@ export const useMenu = ({
     return {
       ...defaultControls,
       ...controls,
-      TextSelect: {
-        render: () => (
-          <BlockStyleSelect config={loadedTextSelection} editor={editor} />
-        ),
-      },
     };
-  }, [controls, editor, loadedTextSelection]);
+  }, [controls, editor]);
 
   const groupedMenu = useMemo(
     () =>
@@ -76,9 +65,7 @@ export const useMenu = ({
                 key,
                 loadedControls[key as keyof typeof loadedControls],
               ])
-              .filter((entry): entry is [string, RichTextMenuItem] =>
-                Boolean(entry[1])
-              )
+              .filter((entry): entry is [string, any] => Boolean(entry[1]))
           ),
         ])
       ) ?? {},
@@ -97,7 +84,8 @@ export const MenuBar = ({
   editor: RichTextEditor | null;
   inline?: boolean;
 }) => {
-  const { selector } = field;
+  const { tiptap = {} } = field;
+  const { selector } = tiptap;
 
   const menuConfig = useMenu({
     field,

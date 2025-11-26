@@ -1,12 +1,13 @@
 import { ReactElement, ReactNode } from "react";
 import { DefaultComponentProps, FieldMetadata, UiState } from ".";
-import { Extensions } from "@tiptap/react";
+import { Editor, Extensions } from "@tiptap/react";
 import {
+  EditorState,
   RichTextControls,
   RichTextMenuConfig,
-  RichTextSelectOptions,
   RichTextSelector,
 } from "../components/RichTextEditor/types";
+import { PuckRichTextOptions } from "../components/RichTextEditor/extensions";
 
 type FieldOption = {
   label: string;
@@ -52,15 +53,46 @@ export interface RadioField extends BaseField {
   options: FieldOptions;
 }
 
+export type RichTextElement =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "a"
+  | "ul"
+  | "ol"
+  | "strong"
+  | "em"
+  | "code";
+
 export interface RichtextField extends BaseField {
   type: "richtext";
   contentEditable?: boolean;
+
+  options?: Partial<PuckRichTextOptions>;
+
+  renderMenu?: (props: {
+    children: ReactNode;
+    editor: Editor;
+    editorState: EditorState;
+  }) => ReactNode;
+
+  renderInlineMenu?: (props: {
+    children: ReactNode;
+    editor: Editor;
+    editorState: EditorState;
+  }) => ReactNode;
+
   menu?: RichTextMenuConfig;
   inlineMenu?: RichTextMenuConfig;
-  textSelectOptions?: RichTextSelectOptions[];
-  selector?: RichTextSelector;
   controls?: RichTextControls;
-  extensions?: Extensions;
+
+  tiptap?: {
+    selector?: RichTextSelector;
+    extensions?: Extensions;
+  };
 }
 
 export interface ArrayField<

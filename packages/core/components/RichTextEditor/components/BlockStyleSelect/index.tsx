@@ -1,6 +1,5 @@
 import { useEditorState, Editor as EditorType } from "@tiptap/react";
 
-import { RichTextSelectOptions } from "../../types";
 import { useMemo } from "react";
 import {
   Heading,
@@ -12,9 +11,9 @@ import {
   Heading6,
 } from "lucide-react";
 import { Select } from "../../../Select";
+import { RichTextElement } from "../../../../types";
 
 const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
-  p: { label: "Paragraph" },
   h1: { label: "Heading 1", icon: Heading1 },
   h2: { label: "Heading 2", icon: Heading2 },
   h3: { label: "Heading 3", icon: Heading3 },
@@ -27,7 +26,7 @@ export const BlockStyleSelect = ({
   config,
   editor,
 }: {
-  config: RichTextSelectOptions[];
+  config: RichTextElement[];
   editor: EditorType;
 }) => {
   const currentValue = useEditorState({
@@ -36,14 +35,14 @@ export const BlockStyleSelect = ({
       if (ctx.editor.isActive("paragraph")) return "p";
       for (let level = 1; level <= 6; level++) {
         if (ctx.editor.isActive("heading", { level })) {
-          return `h${level}` as RichTextSelectOptions;
+          return `h${level}` as RichTextElement;
         }
       }
       return "p";
     },
   });
 
-  const handleChange = (val: RichTextSelectOptions) => {
+  const handleChange = (val: RichTextElement | "p") => {
     const chain = editor.chain();
 
     if (val === "p") {
@@ -65,8 +64,6 @@ export const BlockStyleSelect = ({
   );
 
   const Node = (currentValue && optionNodes[currentValue]?.icon) ?? Heading;
-
-  if (!config || config.length === 0) return null;
 
   return (
     <Select

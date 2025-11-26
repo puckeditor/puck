@@ -2,8 +2,8 @@ import { Extensions, JSONContent } from "@tiptap/react";
 import { generateHTML, generateJSON } from "@tiptap/html";
 import { useMemo } from "react";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { defaultExtensions } from "./extensions";
 import styles from "./styles.module.css";
+import { PuckRichText } from "./extensions";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 
@@ -15,7 +15,7 @@ export function Render({
   extensions?: Extensions;
 }) {
   const loadedExtensions = useMemo(
-    () => [...defaultExtensions, ...extensions],
+    () => (extensions?.length > 0 ? extensions : [PuckRichText]),
     [extensions]
   );
 
