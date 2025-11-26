@@ -93,3 +93,10 @@
 .ActionBar-group * {
   margin: 0;
 }
+
+.ActionBar-separator {
+  background: var(--puck-color-grey-05);
+  margin-inline: 4px;
+  width: 0.5px; /* Fractional value required due to scaling */
+  height: 100%;
+}
