@@ -56,6 +56,9 @@ export const Label = ({ label }: { label: string }) => (
   <div className={getClassName("label")}>{label}</div>
 );
 
+export const Separator = () => <div className={getClassName("separator")} />;
+
 ActionBar.Action = Action;
 ActionBar.Label = Label;
 ActionBar.Group = Group;
+ActionBar.Separator = Separator;
