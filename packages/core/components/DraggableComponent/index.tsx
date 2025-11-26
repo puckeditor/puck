@@ -646,11 +646,14 @@ export const DraggableComponent = ({
                 >
                   {/* TODO figure out group */}
                   {richText && (
-                    <MenuBar
-                      editor={richText.editor}
-                      field={richText.field}
-                      inline
-                    />
+                    <>
+                      <MenuBar
+                        editor={richText.editor}
+                        field={richText.field}
+                        inline
+                      />
+                      <ActionBar.Separator />
+                    </>
                   )}
 
                   {permissions.duplicate && (
