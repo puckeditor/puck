@@ -52,6 +52,7 @@ import { getSlotTransform } from "../../lib/field-transforms/default-transforms/
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
+import { MemoizeComponent } from "../MemoizeComponent";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -223,7 +224,7 @@ const DropZoneChild = ({
 
   if (!item) return;
 
-  let Render = componentConfig
+  const Render = componentConfig
     ? componentConfig.render
     : () => (
         <div style={{ padding: 48, textAlign: "center" }}>
@@ -253,15 +254,13 @@ const DropZoneChild = ({
       {(dragRef) => {
         if (componentConfig?.inline && !isInserting) {
           return (
-            <>
-              <Render
-                {...transformedProps}
-                puck={{
-                  ...transformedProps.puck,
-                  dragRef,
-                }}
-              />
-            </>
+            <MemoizeComponent
+              Component={Render}
+              componentProps={{
+                ...transformedProps,
+                puck: { ...transformedProps.puck, dragRef },
+              }}
+            />
           );
         }
 
@@ -276,7 +275,10 @@ const DropZoneChild = ({
                 }
               />
             ) : (
-              <Render {...transformedProps} />
+              <MemoizeComponent
+                Component={Render}
+                componentProps={transformedProps}
+              />
             )}
           </div>
         );
