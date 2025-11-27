@@ -27,6 +27,7 @@ import {
   DragAxis,
   Fields,
   Metadata,
+  Overrides,
   PuckContext,
   WithPuckProps,
 } from "../../types";
@@ -66,6 +67,25 @@ export type DropZoneDndData = {
   depth: number;
   path: UniqueIdentifier[];
   isDroppableTarget: boolean;
+};
+
+const InsertPreview = ({
+  element,
+  label,
+  override,
+}: {
+  element?: Element;
+  label: string;
+  override?: Overrides["drawerItem"];
+}) => {
+  if (element) {
+    return (
+      // Safe to use this since the HTML is set by the user
+      <div dangerouslySetInnerHTML={{ __html: element.outerHTML }} />
+    );
+  }
+
+  return <DrawerItemInner name={label}>{override}</DrawerItemInner>;
 };
 
 export const DropZoneEditPure = (props: DropZoneProps) => (
@@ -158,25 +178,6 @@ const DropZoneChild = ({
 
   let label = componentConfig?.label ?? item?.type.toString() ?? "Component";
 
-  const renderPreview = useMemo(
-    () =>
-      function Preview() {
-        if (item && "element" in item && item.element) {
-          return (
-            // Safe to use this since the HTML is set by the user
-            <div dangerouslySetInnerHTML={{ __html: item.element.outerHTML }} />
-          );
-        }
-
-        return (
-          <DrawerItemInner name={label}>
-            {overrides.componentItem ?? overrides.drawerItem}
-          </DrawerItemInner>
-        );
-      },
-    [componentId, label, overrides]
-  );
-
   const defaultsProps = useMemo(
     () => ({
       ...componentConfig?.defaultProps,
@@ -235,10 +236,6 @@ const DropZoneChild = ({
   const isInserting =
     "previewType" in item ? item.previewType === "insert" : false;
 
-  if (isInserting) {
-    Render = renderPreview;
-  }
-
   return (
     <DraggableComponent
       id={componentId}
@@ -253,23 +250,37 @@ const DropZoneChild = ({
       userDragAxis={collisionAxis}
       inDroppableZone={inDroppableZone}
     >
-      {(dragRef) =>
-        componentConfig?.inline && !isInserting ? (
-          <>
-            <Render
-              {...transformedProps}
-              puck={{
-                ...transformedProps.puck,
-                dragRef,
-              }}
-            />
-          </>
-        ) : (
+      {(dragRef) => {
+        if (componentConfig?.inline && !isInserting) {
+          return (
+            <>
+              <Render
+                {...transformedProps}
+                puck={{
+                  ...transformedProps.puck,
+                  dragRef,
+                }}
+              />
+            </>
+          );
+        }
+
+        return (
           <div ref={dragRef}>
-            <Render {...transformedProps} />
+            {isInserting ? (
+              <InsertPreview
+                label={label}
+                override={overrides.componentItem ?? overrides.drawerItem}
+                element={
+                  "element" in item && item.element ? item.element : undefined
+                }
+              />
+            ) : (
+              <Render {...transformedProps} />
+            )}
           </div>
-        )
-      }
+        );
+      }}
     </DraggableComponent>
   );
 };
