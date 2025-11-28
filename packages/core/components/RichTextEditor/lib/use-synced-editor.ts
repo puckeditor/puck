@@ -17,14 +17,13 @@ export function useSyncedEditor({
   onFocusChange?: (editor: Editor | null) => void;
   isFocused: boolean;
 }) {
-  const [debouncedJson, setDebouncedJson] = useDebounce<JSONContent | string>(
-    "",
-    50,
-    { leading: true, maxWait: 200 }
-  );
+  const [debouncedHtml, setDebouncedHtml] = useDebounce<string>("", 50, {
+    leading: true,
+    maxWait: 200,
+  });
 
   const syncingRef = useRef(false);
-  const lastSerialized = useRef<string | null>(null);
+  const lastContent = useRef<string | null>(null);
 
   const editor = useEditor({
     extensions,
@@ -34,10 +33,9 @@ export function useSyncedEditor({
     parseOptions: { preserveWhitespace: "full" },
     onUpdate: ({ editor }) => {
       if (syncingRef.current) return;
-      const json = editor.getJSON();
-      const serialized = JSON.stringify(json);
-      lastSerialized.current = serialized;
-      setDebouncedJson(json);
+      const html = editor.getHTML();
+      lastContent.current = html;
+      setDebouncedHtml(html);
     },
   });
 
@@ -56,10 +54,10 @@ export function useSyncedEditor({
 
   // Push debounced changes up to parent
   useEffect(() => {
-    if (debouncedJson) {
-      onChange(debouncedJson);
+    if (debouncedHtml) {
+      onChange(debouncedHtml);
     }
-  }, [debouncedJson, onChange]);
+  }, [debouncedHtml, onChange]);
 
   // Bring in external content changes without causing flicker on blur
   useEffect(() => {
@@ -71,13 +69,9 @@ export function useSyncedEditor({
     }
 
     // Compare current doc vs incoming doc; if same, skip
-    const currentJSON = editor.getJSON();
-    const current = JSON.stringify(currentJSON);
+    const current = editor.getHTML();
 
-    const incoming =
-      typeof content === "string" ? content : JSON.stringify(content);
-
-    if (current === incoming || incoming === lastSerialized.current) return;
+    if (current === content || content === lastContent.current) return;
 
     syncingRef.current = true;
     editor.commands.setContent(content, { emitUpdate: false });

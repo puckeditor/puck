@@ -4,14 +4,14 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Button } from "@/core/components/Button";
 import { Section } from "../../components/Section";
-import { PuckComponent, Slot } from "@/core/types";
+import { PuckComponent, RichText, Slot } from "@/core/types";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
 export type HeroProps = {
   quote?: { index: number; label: string };
   title: string | ReactNode;
-  description: string;
+  description: RichText;
   align?: string;
   padding: string;
   image?: {

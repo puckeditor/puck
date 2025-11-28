@@ -203,7 +203,7 @@ export const Hero: ComponentConfig<{
     return {
       props: {
         title: quotes[props.quote.index].author,
-        description: quotes[props.quote.index].content,
+        description: `<p>${quotes[props.quote.index].content}</p>`,
       },
       readOnly: { title: true, description: true },
     };
