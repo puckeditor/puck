@@ -22,7 +22,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
-    background: var(--puck-color-azure-12);
+    background: var(--puck-color-grey-10);
     color: var(--puck-color-azure-04);
     cursor: pointer;
     transition: none;
