@@ -33,7 +33,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
-import { MenuBar } from "../RichTextEditor/components/MenuBar";
+import { LoadedRichTextMenu } from "../RichTextMenu";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -644,10 +644,9 @@ export const DraggableComponent = ({
                   parentAction={parentAction}
                   label={DEBUG ? id : label}
                 >
-                  {/* TODO figure out group */}
                   {richText && (
                     <>
-                      <MenuBar
+                      <LoadedRichTextMenu
                         editor={richText.editor}
                         field={richText.field}
                         inline

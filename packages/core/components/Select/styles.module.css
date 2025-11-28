@@ -8,10 +8,10 @@
   background: transparent;
   border: none;
   border-radius: 4px;
-  color: var(--puck-color-grey-06);
   display: flex;
   justify-content: center;
   gap: 0px;
+  height: 100%;
   padding: 4px;
   padding-right: 2px;
 }
@@ -24,17 +24,42 @@
   cursor: pointer;
 }
 
+.Select-buttonIcon {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.Select--standalone .Select-buttonIcon :global(.lucide) {
+  height: 18px;
+  width: 18px;
+}
+
+.Select--actionBar .Select-buttonIcon :global(.lucide) {
+  height: 16px;
+  width: 16px;
+}
+
 .Select--hasOptions .Select-button:hover,
 .Select--hasValue .Select-button {
-  background: var(--puck-color-azure-12);
+  background: var(--puck-color-grey-10);
   color: var(--puck-color-azure-04);
+}
+
+.Select--actionBar {
+  &.Select--hasOptions .Select-button:hover,
+  &.Select--hasValue .Select-button {
+    background: none;
+    color: var(--puck-color-azure-07);
+  }
 }
 
 .Select-items {
   background: white;
   border: 1px solid var(--puck-color-grey-09);
   border-radius: 8px;
-  margin: 0;
+  margin: 10px 8px;
+  margin-left: 0;
   padding: 4px;
   z-index: 2;
   list-style: none;

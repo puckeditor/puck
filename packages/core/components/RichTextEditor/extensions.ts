@@ -38,8 +38,6 @@ import { Text } from "@tiptap/extension-text";
 import TextAlign, { TextAlignOptions } from "@tiptap/extension-text-align";
 import type { UnderlineOptions } from "@tiptap/extension-underline";
 import { Underline } from "@tiptap/extension-underline";
-import type { TrailingNodeOptions } from "@tiptap/extensions";
-import { TrailingNode } from "@tiptap/extensions";
 import { Markdown, MarkdownExtensionOptions } from "@tiptap/markdown";
 
 export interface PuckRichTextOptions {

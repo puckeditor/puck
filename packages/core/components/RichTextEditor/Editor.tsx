@@ -1,13 +1,12 @@
 import { memo, useCallback, useMemo, KeyboardEvent } from "react";
 import { useSyncedEditor } from "./lib/use-synced-editor";
-import { PuckRichText, PuckRichTextOptions } from "./extensions";
-import { MenuBar } from "./components/MenuBar";
-import { EditorContent, Extensions } from "@tiptap/react";
+import { PuckRichText } from "./extensions";
+import { EditorContent } from "@tiptap/react";
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { EditorProps } from "./types";
-
 import { useAppStore, useAppStoreApi } from "../../store";
+import { LoadedRichTextMenu } from "../RichTextMenu";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 
@@ -35,7 +34,7 @@ export const Editor = memo(
       (s) => s.currentRichText?.id === id && inline === s.currentRichText.inline
     );
 
-    const editor = useSyncedEditor<typeof loadedExtensions>({
+    const editor = useSyncedEditor({
       content,
       onChange,
       extensions: loadedExtensions,
@@ -91,7 +90,9 @@ export const Editor = memo(
         className={getClassName({ editor: !inline, inline, isFocused })}
         onKeyDownCapture={handleHotkeyCapture}
       >
-        {!readOnly && !inline && <MenuBar field={field} editor={menuEditor} />}
+        {!readOnly && !inline && (
+          <LoadedRichTextMenu field={field} editor={menuEditor} />
+        )}
         <EditorContent editor={editor} />
       </div>
     );

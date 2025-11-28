@@ -1,9 +1,8 @@
 import { Extensions, JSONContent, useEditor, Editor } from "@tiptap/react";
 import { useEffect, useRef } from "react";
 import { useDebounce } from "use-debounce";
-import { ExtensionSet } from "../types";
 
-export function useSyncedEditor<T extends Extensions>({
+export function useSyncedEditor({
   content,
   onChange,
   extensions,
@@ -13,7 +12,7 @@ export function useSyncedEditor<T extends Extensions>({
 }: {
   content: JSONContent | string;
   onChange: (content: JSONContent | string) => void;
-  extensions: ExtensionSet<T>;
+  extensions: Extensions;
   editable?: boolean;
   onFocusChange?: (editor: Editor | null) => void;
   isFocused: boolean;

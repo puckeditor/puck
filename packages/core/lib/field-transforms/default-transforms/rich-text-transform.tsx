@@ -98,8 +98,7 @@ const InlineEditorWrapper = memo(
     );
 
     const handleBlur = useCallback((e: FocusEvent) => {
-      const targetInMenu =
-        e.relatedTarget?.parentElement?.hasAttribute("data-rte-menu");
+      const targetInMenu = e.relatedTarget?.closest?.("[data-puck-rte-menu]");
 
       if (e.relatedTarget && !targetInMenu) {
         appStoreApi.setState({

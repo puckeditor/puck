@@ -2,8 +2,8 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
-import { AutoField, FieldLabel } from "@/core";
-import { Link2 } from "lucide-react";
+import { AutoField, FieldLabel, RichTextMenu } from "@/core";
+import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 
 export const Hero: ComponentConfig<{
@@ -81,7 +81,36 @@ export const Hero: ComponentConfig<{
       getItemSummary: (item) => item.label,
     },
     title: { type: "text", contentEditable: true },
-    description: { type: "richtext", contentEditable: true },
+    description: {
+      type: "richtext",
+      contentEditable: true,
+      options: {
+        heading: false,
+        textAlign: false,
+      },
+      renderMenu: ({ editor, editorState }) => {
+        return (
+          <RichTextMenu>
+            <RichTextMenu.Group>
+              <RichTextMenu.Bold />
+              <RichTextMenu.Italic />
+              <RichTextMenu.Underline />
+            </RichTextMenu.Group>
+            <RichTextMenu.Group>
+              <RichTextMenu.ListSelect />
+              <RichTextMenu.Control
+                icon={<Quote />}
+                title="Quote"
+                active={editorState.isBlockquote}
+                onClick={() => {
+                  editor.chain().focus().toggleBlockquote().run();
+                }}
+              />
+            </RichTextMenu.Group>
+          </RichTextMenu>
+        );
+      },
+    },
     buttons: {
       type: "array",
       min: 1,

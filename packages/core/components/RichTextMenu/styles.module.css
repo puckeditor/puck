@@ -1,7 +1,10 @@
-.MenuBar--group {
+.RichTextMenu {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+}
+
+.RichTextMenu--form {
   border-bottom: 1px solid var(--puck-color-grey-10);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
@@ -11,11 +14,10 @@
   z-index: 100;
   margin-bottom: 2px;
   scrollbar-width: none;
-
   overflow-x: auto;
 }
 
-.MenuBarMenu {
+.RichTextMenu-group {
   display: flex;
   align-items: space-between;
   flex-direction: row;
@@ -26,30 +28,24 @@
   position: relative;
 }
 
-.MenuBarMenu:first-of-type {
+.RichTextMenu-group:first-of-type {
   padding-left: 0;
 }
 
-.MenuBarMenu:last-of-type {
+.RichTextMenu-group:last-of-type {
   padding-right: 0;
 }
 
-.MenuBarMenu--inline {
+.RichTextMenu--inline .RichTextMenu-group {
+  color: var(--puck-color-grey-08);
   gap: 0px;
   flex-wrap: nowrap;
 }
 
-.MenuBarMenu--inline button {
-  padding: 4px;
-}
-
-.MenuBarMenu--inline button:first-of-type {
-  padding-left: 6px;
-}
-.MenuBarMenu--inline button:last-of-type {
-  padding-right: 6px;
-}
-
-.MenuBarMenu + .MenuBarMenu {
+.RichTextMenu-group + .RichTextMenu-group {
   border-left: 1px solid var(--puck-color-grey-10);
+}
+
+.RichTextMenu--inline .RichTextMenu-group + .RichTextMenu-group {
+  border-left: 0.5px solid var(--puck-color-grey-05); /* Match actionbar separator */
 }

@@ -34,42 +34,41 @@ export const Select = ({
   onChange,
   value,
   defaultValue,
+  mode,
 }: {
   children: ReactNode;
   options: { icon?: React.FC; label: string; value: string }[];
   onChange: (val: any) => void;
   value: any;
   defaultValue?: any;
+  mode: "actionBar" | "standalone";
 }) => {
   const [open, setOpen] = useState(false);
 
   const hasOptions = options.length > 0;
+
+  const ButtonEl = hasOptions ? "button" : "div";
 
   return (
     <div
       className={getClassName({
         hasValue: value !== defaultValue,
         hasOptions,
+        actionBar: mode === "actionBar",
+        standalone: mode === "standalone",
       })}
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          {hasOptions ? (
-            <button className={getClassName("button")}>
-              {children}
-              <ChevronDown size={12} />
-            </button>
-          ) : (
-            <div className={getClassName("button")}>
-              {children}
-              <ChevronDown size={12} />
-            </div>
-          )}
+          <ButtonEl className={getClassName("button")}>
+            <span className={getClassName("buttonIcon")}>{children}</span>
+            <ChevronDown size={12} />
+          </ButtonEl>
         </PopoverTrigger>
 
         {options.length > 0 && (
           <PopoverPortal>
-            <PopoverContent sideOffset={8} align="start">
+            <PopoverContent align="start">
               <ul className={getClassName("items")}>
                 {options.map((option) => {
                   const Icon: any = option.icon;

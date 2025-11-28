@@ -3,8 +3,6 @@ import { DefaultComponentProps, FieldMetadata, UiState } from ".";
 import { Editor, Extensions } from "@tiptap/react";
 import {
   EditorState,
-  RichTextControls,
-  RichTextMenuConfig,
   RichTextSelector,
 } from "../components/RichTextEditor/types";
 import { PuckRichTextOptions } from "../components/RichTextEditor/extensions";
@@ -53,44 +51,24 @@ export interface RadioField extends BaseField {
   options: FieldOptions;
 }
 
-export type RichTextElement =
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "h5"
-  | "h6"
-  | "a"
-  | "ul"
-  | "ol"
-  | "strong"
-  | "em"
-  | "code";
-
-export interface RichtextField extends BaseField {
+export interface RichtextField<
+  UserSelector extends RichTextSelector = RichTextSelector
+> extends BaseField {
   type: "richtext";
   contentEditable?: boolean;
-
   options?: Partial<PuckRichTextOptions>;
-
   renderMenu?: (props: {
     children: ReactNode;
     editor: Editor;
-    editorState: EditorState;
+    editorState: EditorState<UserSelector>;
   }) => ReactNode;
-
   renderInlineMenu?: (props: {
     children: ReactNode;
     editor: Editor;
-    editorState: EditorState;
+    editorState: EditorState<UserSelector>;
   }) => ReactNode;
-
-  menu?: RichTextMenuConfig;
-  inlineMenu?: RichTextMenuConfig;
-  controls?: RichTextControls;
-
   tiptap?: {
-    selector?: RichTextSelector;
+    selector?: UserSelector;
     extensions?: Extensions;
   };
 }
