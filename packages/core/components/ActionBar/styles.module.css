@@ -68,6 +68,11 @@
   transition: color 50ms ease-in;
 }
 
+.ActionBarAction--disabled {
+  cursor: auto;
+  color: var(--puck-color-grey-06);
+}
+
 .ActionBarAction svg {
   max-width: none !important; /* Explicit definition to prevent some SVG style pollution */
 }
@@ -78,13 +83,13 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .ActionBarAction:hover {
+  .ActionBarAction:hover:not(.ActionBarAction--disabled) {
     color: var(--puck-color-azure-06);
     transition: none;
   }
 }
 
-.ActionBarAction:active,
+.ActionBarAction:active:not(.ActionBarAction--disabled),
 .ActionBarAction--active {
   color: var(--puck-color-azure-07);
   transition: none;

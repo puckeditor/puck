@@ -31,18 +31,21 @@ export const Action = ({
   label,
   onClick,
   active = false,
+  disabled,
 }: {
   children: ReactNode;
   label?: string;
   onClick: (e: SyntheticEvent) => void;
   active?: boolean;
+  disabled?: boolean;
 }) => (
   <button
     type="button"
-    className={getActionClassName({ active: active })}
+    className={getActionClassName({ active, disabled })}
     onClick={onClick}
     title={label}
     tabIndex={0}
+    disabled={disabled}
   >
     {children}
   </button>
