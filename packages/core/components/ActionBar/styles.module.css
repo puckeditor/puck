@@ -57,7 +57,7 @@
   border: none;
   color: var(--puck-color-grey-08);
   cursor: pointer;
-  padding: 6px 8px;
+  padding: 6px;
   margin-inline-start: 4px;
   margin-inline-end: 4px;
   border-radius: 4px;
