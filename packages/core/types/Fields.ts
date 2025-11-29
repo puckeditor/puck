@@ -61,11 +61,13 @@ export interface RichtextField<
     children: ReactNode;
     editor: Editor;
     editorState: EditorState<UserSelector>;
+    readOnly: boolean;
   }) => ReactNode;
   renderInlineMenu?: (props: {
     children: ReactNode;
     editor: Editor;
     editorState: EditorState<UserSelector>;
+    readOnly: boolean;
   }) => ReactNode;
   tiptap?: {
     selector?: UserSelector;

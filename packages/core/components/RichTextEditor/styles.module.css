@@ -54,6 +54,18 @@
   transition: none;
 }
 
+.RichTextEditor--editor.RichTextEditor--disabled {
+  background: var(--puck-color-grey-11);
+}
+
 .RichTextEditor:not(:focus-within):not(.RichTextEditor--isFocused) ::selection {
   background-color: transparent;
+}
+
+.RichTextEditor-menu {
+  border-bottom: 1px solid var(--puck-color-grey-10);
+}
+
+.RichTextEditor--disabled .RichTextEditor-menu {
+  border-bottom: 1px solid var(--puck-color-grey-09);
 }

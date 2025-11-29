@@ -35,6 +35,7 @@ export const Select = ({
   value,
   defaultValue,
   mode,
+  disabled = false,
 }: {
   children: ReactNode;
   options: { icon?: React.FC; label: string; value: string }[];
@@ -42,12 +43,14 @@ export const Select = ({
   value: any;
   defaultValue?: any;
   mode: "actionBar" | "standalone";
+  disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
 
   const hasOptions = options.length > 0;
 
-  const ButtonEl = hasOptions ? "button" : "div";
+  const PopoverTriggerEl = hasOptions && !disabled ? PopoverTrigger : "div";
+  const ButtonEl = hasOptions && !disabled ? "button" : "div";
 
   return (
     <div
@@ -56,15 +59,16 @@ export const Select = ({
         hasOptions,
         actionBar: mode === "actionBar",
         standalone: mode === "standalone",
+        disabled,
       })}
     >
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTriggerEl asChild>
           <ButtonEl className={getClassName("button")}>
             <span className={getClassName("buttonIcon")}>{children}</span>
             <ChevronDown size={12} />
           </ButtonEl>
-        </PopoverTrigger>
+        </PopoverTriggerEl>
 
         {options.length > 0 && (
           <PopoverPortal>

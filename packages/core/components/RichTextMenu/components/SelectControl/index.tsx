@@ -18,7 +18,7 @@ export function SelectControl<ValueType extends string = string>({
   value: ValueType;
   defaultValue: ValueType;
 }) {
-  const { inline } = useControlContext();
+  const { inline, readOnly } = useControlContext();
 
   type OptionsByValue = Record<ValueType, Option>;
 
@@ -40,6 +40,7 @@ export function SelectControl<ValueType extends string = string>({
       value={value}
       defaultValue={defaultValue}
       mode={inline ? "actionBar" : "standalone"}
+      disabled={readOnly}
     >
       <Node />
     </Select>

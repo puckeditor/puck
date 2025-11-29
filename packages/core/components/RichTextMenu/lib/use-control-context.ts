@@ -7,6 +7,7 @@ type ControlContextType = {
   editor: Editor;
   editorState: EditorState;
   inline: boolean;
+  readOnly: boolean;
   options?: Partial<PuckRichTextOptions>;
 };
 

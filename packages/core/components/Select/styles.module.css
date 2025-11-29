@@ -20,7 +20,7 @@
   color: currentColor;
 }
 
-.Select--hasOptions .Select-button {
+.Select--hasOptions:not(.Select--disabled) .Select-button {
   cursor: pointer;
 }
 
@@ -40,10 +40,14 @@
   width: 16px;
 }
 
-.Select--hasOptions .Select-button:hover,
+.Select--hasOptions:not(.Select--disabled) .Select-button:hover,
 .Select--hasValue .Select-button {
   background: var(--puck-color-grey-10);
   color: var(--puck-color-azure-04);
+}
+
+.Select--disabled .Select-button {
+  color: var(--puck-color-grey-07);
 }
 
 .Select--actionBar {

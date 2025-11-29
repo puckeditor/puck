@@ -87,11 +87,22 @@ export const Editor = memo(
 
     return (
       <div
-        className={getClassName({ editor: !inline, inline, isFocused })}
+        className={getClassName({
+          editor: !inline,
+          inline,
+          isFocused,
+          disabled: readOnly,
+        })}
         onKeyDownCapture={handleHotkeyCapture}
       >
-        {!readOnly && !inline && (
-          <LoadedRichTextMenu field={field} editor={menuEditor} />
+        {!inline && (
+          <div className={getClassName("menu")}>
+            <LoadedRichTextMenu
+              field={field}
+              editor={menuEditor}
+              readOnly={readOnly}
+            />
+          </div>
         )}
         <EditorContent editor={editor} />
       </div>

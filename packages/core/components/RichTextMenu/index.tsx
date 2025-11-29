@@ -83,10 +83,12 @@ RichTextMenu.Underline = Underline;
 export const LoadedRichTextMenu = ({
   editor,
   field,
+  readOnly,
   inline,
 }: {
   field: RichtextField;
   editor: RichTextEditor | null;
+  readOnly: boolean;
   inline?: boolean;
 }) => {
   const { tiptap = {}, renderMenu, renderInlineMenu } = field;
@@ -95,10 +97,10 @@ export const LoadedRichTextMenu = ({
   const resolvedSelector = useMemo(() => {
     return (ctx: Parameters<RichTextSelector>[0]) =>
       ({
-        ...defaultEditorState(ctx),
-        ...(selector ? selector(ctx) : {}),
+        ...defaultEditorState(ctx, readOnly),
+        ...(selector ? selector(ctx, readOnly) : {}),
       } as RichTextSelector);
-  }, [selector]);
+  }, [selector, readOnly]);
 
   const editorState = useEditorState<EditorState>({
     editor,
@@ -118,10 +120,14 @@ export const LoadedRichTextMenu = ({
 
   return (
     <ControlContext.Provider
-      value={{ editor, editorState, inline, options: field.options }}
+      value={{ editor, editorState, inline, options: field.options, readOnly }}
     >
       {inline ? (
-        <InlineMenu editor={editor} editorState={editorState}>
+        <InlineMenu
+          editor={editor}
+          editorState={editorState}
+          readOnly={readOnly}
+        >
           <Group>
             <Bold />
             <Italic />
@@ -129,7 +135,7 @@ export const LoadedRichTextMenu = ({
           </Group>
         </InlineMenu>
       ) : (
-        <Menu editor={editor} editorState={editorState}>
+        <Menu editor={editor} editorState={editorState} readOnly={readOnly}>
           <Group>
             <HeadingSelect />
             <ListSelect />
