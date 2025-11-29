@@ -102,3 +102,55 @@
     --puck-color-grey-03
   ) !important; /* Override any injected Nextra/Tailwind styles */
 }
+
+.PreviewFrame :global(.rich-text) > * {
+  margin-block: 12px;
+}
+
+.PreviewFrame :global(.rich-text) > *:first-child {
+  margin-top: 0px;
+}
+
+.PreviewFrame :global(.rich-text) > *:last-child {
+  margin-bottom: 0px;
+}
+
+.PreviewFrame h1 {
+  font-size: var(--puck-font-size-xxxl);
+  font-weight: 600;
+}
+
+.PreviewFrame h2 {
+  font-size: var(--puck-font-size-xxl);
+  font-weight: 600;
+}
+
+.PreviewFrame h3 {
+  font-size: var(--puck-font-size-xl);
+  font-weight: 600;
+}
+
+.PreviewFrame h4 {
+  font-size: var(--puck-font-size-l);
+  font-weight: 600;
+}
+
+.PreviewFrame h5 {
+  font-size: var(--puck-font-size-m);
+  font-weight: 600;
+}
+
+.PreviewFrame h6 {
+  font-size: var(--puck-font-size-s);
+  font-weight: 600;
+}
+
+.PreviewFrame ul {
+  padding-left: 24px;
+  list-style-type: disc;
+}
+
+.PreviewFrame ol {
+  padding-left: 24px;
+  list-style-type: decimal;
+}
