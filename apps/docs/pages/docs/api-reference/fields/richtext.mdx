@@ -245,7 +245,7 @@ const config = {
           <RichTextMenu>
             {children}
             <RichTextMenu.Group>
-              <RichTextMenu.Blockquote />
+              <RichTextMenu.Control icon={<Quote />} />
               <RichTextMenu.Control icon={<Highlighter />} />
             </RichTextMenu.Group>
           </RichTextMenu>
@@ -367,11 +367,9 @@ const config = {
 
 ### `tiptap.selector`
 
-{/* TODO update link */}
-
 Extend the [default editor state](#included-state) to access additional editor information in the menu. See [Tiptap docs](https://tiptap.dev/docs/editor/getting-started/install/react#reacting-to-editor-state-changes).
 
-```tsx {9-14, 18-20} copy showLineNumbers
+```tsx {9-15, 19-21} copy showLineNumbers
 import { RichTextMenu } from "@measured/puck";
 
 const config = {
@@ -381,9 +379,10 @@ const config = {
         description: {
           type: "richtext",
           tiptap: {
-            selector: ({ editor }) => ({
+            selector: ({ editor, readOnly }) => ({
               isHighlight: editor?.isActive("highlight"),
-              canHighlight: editor?.can().chain().toggleHighlight().run(),
+              canHighlight:
+                !readOnly && editor?.can().chain().toggleHighlight().run(),
             }),
           },
           renderMenu: ({ editorState }) => (
@@ -533,3 +532,7 @@ const config = {
 - `isBlockquote`
 - `canBlockquote`
 - `canHorizontalRule`
+
+### `readOnly`
+
+Whether or not the field is currently read-only.
