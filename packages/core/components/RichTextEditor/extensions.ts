@@ -187,7 +187,6 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Code.configure(options.code));
     }
 
-    // TODO is this appropriate?
     if (options.codeBlock !== false) {
       extensions.push(CodeBlock.configure(options.codeBlock));
     }

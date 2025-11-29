@@ -6,38 +6,38 @@
   position: relative;
 }
 
-.RichTextEditor :global(.ProseMirror *) {
+.RichTextEditor :global(.rich-text *) {
   white-space: pre-wrap;
 }
 
-.RichTextEditor :global(.ProseMirror blockquote) {
+.RichTextEditor :global(.rich-text blockquote) {
   margin: 1em 0;
   padding: 0 1em;
   border-left: 4px solid var(--puck-color-grey-09);
 }
 
-.RichTextEditor :global(.ProseMirror code) {
+.RichTextEditor :global(.rich-text code) {
   background-color: var(--puck-color-grey-11);
   padding: 4px 8px;
   border-radius: 4px;
 }
 
-.RichTextEditor :global(.ProseMirror p:empty::before) {
+.RichTextEditor :global(.rich-text p:empty::before) {
   content: "\00a0";
 }
 
-.RichTextEditor :global(.ProseMirror pre code) {
+.RichTextEditor :global(.rich-text pre code) {
   display: block;
   padding: 8px 12px;
 }
 
-.RichTextEditor :global(.ProseMirror > *:first-child),
-.RichTextEditor :global(.ProseMirror * p:first-of-type) {
+.RichTextEditor :global(.rich-text > *:first-child),
+.RichTextEditor :global(.rich-text * p:first-of-type) {
   margin-top: 0;
 }
 
-.RichTextEditor :global(.ProseMirror > *:last-child),
-.RichTextEditor :global(.ProseMirror * p:last-of-type) {
+.RichTextEditor :global(.rich-text > *:last-child),
+.RichTextEditor :global(.rich-text * p:last-of-type) {
   margin-bottom: 0;
 }
 
@@ -55,28 +55,28 @@
   max-width: 100%;
 }
 
-.RichTextEditor--editor :global(.ProseMirror) {
+.RichTextEditor--editor :global(.rich-text) {
   padding: 12px 15px;
 }
 
-.RichTextEditor--editor :global(.ProseMirror ul),
-.RichTextEditor--editor :global(.ProseMirror ol) {
+.RichTextEditor--editor :global(.rich-text ul),
+.RichTextEditor--editor :global(.rich-text ol) {
   padding-left: 24px;
 }
 
-.RichTextEditor--editor :global(.ProseMirror li) {
+.RichTextEditor--editor :global(.rich-text li) {
   line-height: 1.5;
 }
 
-.RichTextEditor--editor :global(.ProseMirror p) {
+.RichTextEditor--editor :global(.rich-text p) {
   margin-block: 12px;
 }
 
-.RichTextEditor--editor :global(.ProseMirror ul) {
+.RichTextEditor--editor :global(.rich-text ul) {
   list-style: disc;
 }
 
-.RichTextEditor--editor :global(.ProseMirror ol) {
+.RichTextEditor--editor :global(.rich-text ol) {
   list-style: decimal;
 }
 

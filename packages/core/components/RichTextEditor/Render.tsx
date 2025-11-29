@@ -47,9 +47,8 @@ export function Render({
   }, [normalized, loadedExtensions]);
 
   return (
-    <div
-      className={getClassName()}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className={getClassName()}>
+      <div className="rich-text" dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
   );
 }
