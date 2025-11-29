@@ -93,10 +93,11 @@ export const LoadedRichTextMenu = ({
   const { selector } = tiptap;
 
   const resolvedSelector = useMemo(() => {
-    return (ctx: Parameters<RichTextSelector>[0]) => ({
-      ...defaultEditorState(ctx),
-      ...(selector ? selector(ctx) : {}),
-    });
+    return (ctx: Parameters<RichTextSelector>[0]) =>
+      ({
+        ...defaultEditorState(ctx),
+        ...(selector ? selector(ctx) : {}),
+      } as RichTextSelector);
   }, [selector]);
 
   const editorState = useEditorState<EditorState>({
