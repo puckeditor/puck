@@ -158,7 +158,6 @@ export interface PuckRichTextOptions {
 export const defaultPuckRichTextOptions: Partial<PuckRichTextOptions> = {
   textAlign: {
     types: ["heading", "paragraph"],
-    defaultAlignment: "left",
   },
 };
 
