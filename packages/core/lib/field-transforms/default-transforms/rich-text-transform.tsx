@@ -107,6 +107,8 @@ const InlineEditorWrapper = memo(
       }
     }, []);
 
+    if (!field.contentEditable) return <Render content={value} />;
+
     return (
       <div ref={portalRef} onClick={onClickHandler} onBlur={handleBlur}>
         <Editor
