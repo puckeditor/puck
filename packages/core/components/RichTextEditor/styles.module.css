@@ -31,12 +31,12 @@
 }
 
 .RichTextEditor :global(.ProseMirror > *:first-child),
-.RichTextEditor :global(.ProseMirror p:first-of-type) {
+.RichTextEditor :global(.ProseMirror * p:first-of-type) {
   margin-top: 0;
 }
 
 .RichTextEditor :global(.ProseMirror > *:last-child),
-.RichTextEditor :global(.ProseMirror p:last-of-type) {
+.RichTextEditor :global(.ProseMirror * p:last-of-type) {
   margin-bottom: 0;
 }
 
@@ -69,6 +69,14 @@
 
 .RichTextEditor--editor :global(.ProseMirror p) {
   margin-block: 12px;
+}
+
+.RichTextEditor--editor :global(.ProseMirror ul) {
+  list-style: disc;
+}
+
+.RichTextEditor--editor :global(.ProseMirror ol) {
+  list-style: decimal;
 }
 
 .RichTextEditor--editor:focus-within {
