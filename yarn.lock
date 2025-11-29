@@ -4013,13 +4013,6 @@
   resolved "https://registry.yarnpkg.com/@tiptap/html/-/html-3.11.1.tgz#75d1cbe65af3a4c11d856efb77f688226b90c417"
   integrity sha512-gUIih+y5zUogLezigl37DAscwprCdobCfAIYFjF8pSEU9G6g9fNdLz2+u9awVU6nNBraWKTtBnpIBNlF9u5djg==
 
-"@tiptap/markdown@^3.11.0":
-  version "3.11.1"
-  resolved "https://registry.yarnpkg.com/@tiptap/markdown/-/markdown-3.11.1.tgz#2d1e4433f895fb8eefe4325968d4db565f5a1622"
-  integrity sha512-cC3mKV+bBoHJ0Bsd4zstVYFBm8KGsbeAhIayVzY59G4QpvIQC78BgajqXukfUKDLcehiycRYYW/HcOAwvAysWg==
-  dependencies:
-    marked "^15.0.12"
-
 "@tiptap/pm@^3.11.1":
   version "3.11.1"
   resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-3.11.1.tgz#09255e22a7ff1dc9b3ec3ca38381f2ac3c790dab"
@@ -11605,11 +11598,6 @@ markdown-table@^3.0.0:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-3.0.4.tgz#fe44d6d410ff9d6f2ea1797a3f60aa4d2b631c2a"
   integrity sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==
-
-marked@^15.0.12:
-  version "15.0.12"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-15.0.12.tgz#30722c7346e12d0a2d0207ab9b0c4f0102d86c4e"
-  integrity sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==
 
 marked@^16.2.1:
   version "16.4.1"

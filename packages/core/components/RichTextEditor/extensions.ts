@@ -38,7 +38,6 @@ import { Text } from "@tiptap/extension-text";
 import TextAlign, { TextAlignOptions } from "@tiptap/extension-text-align";
 import type { UnderlineOptions } from "@tiptap/extension-underline";
 import { Underline } from "@tiptap/extension-underline";
-import { Markdown, MarkdownExtensionOptions } from "@tiptap/markdown";
 
 export interface PuckRichTextOptions {
   /**
@@ -118,12 +117,6 @@ export interface PuckRichTextOptions {
    * @example link: false
    */
   link: Partial<LinkOptions> | false;
-
-  /**
-   * If set to false, the markdown extension will not be registered
-   * @example link: false
-   */
-  markdown: Partial<MarkdownExtensionOptions> | false;
 
   /**
    * If set to false, the orderedList extension will not be registered
@@ -230,11 +223,6 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
 
     if (options.link !== false) {
       extensions.push(Link.configure(options?.link));
-    }
-
-    // TODO do we want to include this by default?
-    if (options.markdown !== false) {
-      extensions.push(Markdown.configure(options?.markdown));
     }
 
     if (options.orderedList !== false) {
