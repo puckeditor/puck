@@ -603,6 +603,8 @@ export const DraggableComponent = ({
     s.currentRichText?.inlineComponentId === id ? s.currentRichText : null
   );
 
+  const hasNormalActions = permissions.duplicate || permissions.delete;
+
   return (
     <DropZoneProvider value={nextContextValue}>
       {dragFinished &&
@@ -652,7 +654,7 @@ export const DraggableComponent = ({
                         inline
                         readOnly={false}
                       />
-                      <ActionBar.Separator />
+                      {hasNormalActions && <ActionBar.Separator />}
                     </>
                   )}
 
