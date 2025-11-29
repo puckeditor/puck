@@ -67,6 +67,10 @@
   line-height: 1.5;
 }
 
+.RichTextEditor--editor :global(.ProseMirror p) {
+  margin-block: 12px;
+}
+
 .RichTextEditor--editor:focus-within {
   border-color: var(--puck-color-grey-05);
   outline: 2px solid var(--puck-color-azure-05);

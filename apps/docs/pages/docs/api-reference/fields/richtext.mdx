@@ -5,7 +5,7 @@ import Superscript from "@tiptap/extension-superscript";
 import { SuperscriptControl } from "@/docs/components/Richtext/controls";
 import { superscriptSelector } from "@/docs/components/Richtext/selector";
 import { Render } from "@/core/components/RichTextEditor/Render";
-import { Highlighter } from "lucide-react";
+import { Highlighter, Quote } from "lucide-react";
 
 # Richtext
 
@@ -17,9 +17,6 @@ Render a Rich Text editor field. Extends [Base](base).
     fields: {
       richtext: {
         type: "richtext",
-        options: {
-          paragraph: { HTMLAttributes: { style: "margin-block: 8px;" } },
-        },
       },
     },
     defaultProps: {
@@ -112,9 +109,6 @@ const config = {
       richtext: {
         type: "richtext",
         contentEditable: true,
-        options: {
-          paragraph: { HTMLAttributes: { style: "margin-block: 8px;" } },
-        },
       },
     },
     defaultProps: {
@@ -162,7 +156,6 @@ const config = {
         options: {
           bold: false,
           heading: { levels: [1, 2] },
-          paragraph: { HTMLAttributes: { style: "margin-block: 8px;" } },
         },
       },
     },
@@ -250,9 +243,6 @@ const config = {
             </RichTextMenu.Group>
           </RichTextMenu>
         ),
-        options: {
-          paragraph: { HTMLAttributes: { style: "margin-block: 8px;" } },
-        },
       },
     },
     defaultProps: {
@@ -321,9 +311,6 @@ const config = {
             </RichTextMenu.Group>
           </RichTextMenu>
         ),
-        options: {
-          paragraph: { HTMLAttributes: { style: "margin-block: 8px;" } },
-        },
       },
     },
     defaultProps: {
