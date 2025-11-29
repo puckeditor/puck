@@ -4,7 +4,7 @@ import { Callout } from "nextra/components";
 
 # Rich Text Editing
 
-Puck supports rich text input via the [`richtext`](/docs/api-reference/fields/richtext) field.
+Puck supports rich text editing via the [`richtext`](/docs/api-reference/fields/richtext) field.
 
 ## Adding a rich text field
 
@@ -299,7 +299,7 @@ const config = {
 
 Then implement a new control with [`<RichTextMenu.Control>`](/docs/api-reference/components/rich-text-menu-control) and render it with `renderMenu()`:
 
-```tsx copy showLineNumbers {2-3, 12-25}
+```tsx copy showLineNumbers {2-3, 12-28}
 import Superscript from "@tiptap/extension-superscript";
 import { Superscript } from "lucide-react";
 import { RichTextMenu } from "@measured/puck";
@@ -311,8 +311,11 @@ const config = {
         body: {
           type: "richtext",
           // ...
-          renderMenu: ({ editor, editorState }) => (
+          renderMenu: ({ children, editor, editorState }) => (
             <RichTextMenu>
+              {/* Render the default controls */}
+              {children}
+
               <RichTextMenu.Group>
                 <RichTextMenu.Control
                   icon={<Superscript />}
