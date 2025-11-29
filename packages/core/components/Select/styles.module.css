@@ -78,6 +78,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  font-size: var(--puck-font-size-xxs);
   margin: 0;
   padding: 8px 12px;
   width: 100%;
