@@ -14,8 +14,13 @@
 
 .RichTextEditor code {
   background-color: var(--puck-color-grey-11);
-  padding: 0.2em 0.4em;
-  border-radius: 0.2em;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.RichTextEditor pre code {
+  display: block;
+  padding: 8px 12px;
 }
 
 .RichTextEditor :global(.ProseMirror) {
