@@ -104,7 +104,7 @@ export const Editor = memo(
             />
           </div>
         )}
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} className="rich-text" />
       </div>
     );
   }
