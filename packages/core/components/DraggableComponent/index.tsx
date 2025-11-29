@@ -650,6 +650,7 @@ export const DraggableComponent = ({
                         editor={richText.editor}
                         field={richText.field}
                         inline
+                        readOnly={false}
                       />
                       <ActionBar.Separator />
                     </>
