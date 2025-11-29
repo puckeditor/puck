@@ -30,7 +30,7 @@ export function HeadingSelect() {
 
   if (options?.heading !== false) {
     if (!options?.heading?.levels) {
-      blockOptions = ["h2", "h3", "h4", "h5", "h6"];
+      blockOptions = ["h1", "h2", "h3", "h4", "h5", "h6"];
     } else {
       if (options?.heading.levels.includes(1)) {
         blockOptions.push("h1");
