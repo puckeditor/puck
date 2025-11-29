@@ -3,6 +3,7 @@ const menu = {
   "root-configuration": {},
   "multi-column-layouts": {},
   categories: {},
+  "rich-text-editing": {},
   "dynamic-props": {},
   "dynamic-fields": {},
   "external-data-sources": {},

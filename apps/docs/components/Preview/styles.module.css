@@ -59,6 +59,7 @@
 .PreviewFrame-codeblock pre {
   white-space: break-spaces;
   height: 100%;
+  margin: 0;
   padding: 24px;
 }
 
@@ -153,4 +154,12 @@
 .PreviewFrame ol {
   padding-left: 24px;
   list-style-type: decimal;
+}
+
+.PreviewFrame p,
+.PreviewFrame ul,
+.PreviewFrame ol,
+.PreviewFrame blockquote,
+.PreviewFrame pre {
+  margin-block: 12px;
 }
