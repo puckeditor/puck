@@ -1,33 +1,43 @@
-.RichTextEditor p:empty::before {
-  content: "\00a0"; /* non-breaking space */
-}
-
-.RichTextEditor * {
-  white-space: pre-wrap;
-}
-
-.RichTextEditor blockquote {
-  margin: 1em 0;
-  padding: 0 1em;
-  border-left: 4px solid var(--puck-color-grey-09);
-}
-
-.RichTextEditor code {
-  background-color: var(--puck-color-grey-11);
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.RichTextEditor pre code {
-  display: block;
-  padding: 8px 12px;
-}
-
 .RichTextEditor :global(.ProseMirror) {
   white-space: pre-wrap;
   word-wrap: break-word;
   cursor: text;
   outline: none;
+
+  * {
+    white-space: pre-wrap;
+  }
+
+  blockquote {
+    margin: 1em 0;
+    padding: 0 1em;
+    border-left: 4px solid var(--puck-color-grey-09);
+  }
+
+  code {
+    background-color: var(--puck-color-grey-11);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  p:empty::before {
+    content: "\00a0"; /* non-breaking space */
+  }
+
+  pre code {
+    display: block;
+    padding: 8px 12px;
+  }
+
+  & > *:first-child,
+  p:first-of-type {
+    margin-top: 0;
+  }
+
+  & > *:last-child,
+  p:last-of-type {
+    margin-bottom: 0;
+  }
 }
 
 .RichTextEditor--editor {
@@ -45,7 +55,16 @@
 }
 
 .RichTextEditor--editor :global(.ProseMirror) {
-  padding: 0 16px;
+  padding: 12px 15px;
+
+  ul,
+  ol {
+    padding-left: 24px;
+  }
+
+  li {
+    line-height: 1.5;
+  }
 }
 
 .RichTextEditor--editor:focus-within {

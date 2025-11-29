@@ -5,14 +5,11 @@
 }
 
 .RichTextMenu--form {
-  border-bottom: 1px solid var(--puck-color-grey-10);
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   padding: 6px 6px;
   background-color: var(--puck-color-grey-12);
   position: relative;
-  z-index: 100;
-  margin-bottom: 2px;
   scrollbar-width: none;
   overflow-x: auto;
 }
@@ -24,7 +21,6 @@
   flex-wrap: nowrap;
   padding-inline: 6px;
   gap: 2px;
-  z-index: 3;
   position: relative;
 }
 
