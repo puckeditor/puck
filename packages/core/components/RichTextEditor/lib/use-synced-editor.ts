@@ -59,6 +59,10 @@ export function useSyncedEditor({
     }
   }, [debouncedHtml, onChange]);
 
+  useEffect(() => {
+    editor?.setEditable(editable);
+  }, [editor, editable]);
+
   // Bring in external content changes without causing flicker on blur
   useEffect(() => {
     if (!editor) return;
