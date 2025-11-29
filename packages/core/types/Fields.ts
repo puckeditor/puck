@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from "react";
+import { CSSProperties, ReactElement, ReactNode } from "react";
 import { DefaultComponentProps, FieldMetadata, UiState } from ".";
 import { Editor, Extensions } from "@tiptap/react";
 import {
@@ -56,6 +56,7 @@ export interface RichtextField<
 > extends BaseField {
   type: "richtext";
   contentEditable?: boolean;
+  maxHeight?: CSSProperties["maxHeight"];
   options?: Partial<PuckRichTextOptions>;
   renderMenu?: (props: {
     children: ReactNode;

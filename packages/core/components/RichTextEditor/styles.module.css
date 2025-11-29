@@ -3,6 +3,7 @@
   word-wrap: break-word;
   cursor: text;
   outline: none;
+  position: relative;
 }
 
 .RichTextEditor :global(.ProseMirror *) {
@@ -95,6 +96,9 @@
 
 .RichTextEditor-menu {
   border-bottom: 1px solid var(--puck-color-grey-10);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .RichTextEditor--disabled .RichTextEditor-menu {

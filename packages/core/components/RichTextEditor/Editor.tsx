@@ -20,7 +20,7 @@ export const Editor = memo(
     onFocus,
     id,
   }: EditorProps) => {
-    const { tiptap = {}, options } = field;
+    const { maxHeight, tiptap = {}, options } = field;
     const { extensions = [] } = tiptap;
 
     const loadedExtensions = useMemo(
@@ -94,6 +94,7 @@ export const Editor = memo(
           disabled: readOnly,
         })}
         onKeyDownCapture={handleHotkeyCapture}
+        style={inline ? {} : { maxHeight: maxHeight ?? 256, overflowY: "auto" }}
       >
         {!inline && (
           <div className={getClassName("menu")}>
