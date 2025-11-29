@@ -1,0 +1,35 @@
+---
+title: <RichTextMenu.Group>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { RichTextMenu } from "@/puck";
+import { Bold, Italic, Underline } from "lucide-react";
+
+# \<RichTextMenu.Group\>
+
+Render a group of rich text controls. Always use inside `<RichTextMenu>`.
+
+```tsx showLineNumbers copy
+<RichTextMenu.Group>
+  <RichTextMenu.Bold />
+  <RichTextMenu.Italic />
+  <RichTextMenu.Underline />
+</RichTextMenu.Group>
+```
+
+## Props
+
+| Prop                    | Example                 | Type      | Status   |
+| ----------------------- | ----------------------- | --------- | -------- |
+| [`children`](#children) | `<RichTextMenu.Bold />` | ReactNode | Required |
+
+## Required Props
+
+### children
+
+The controls to render in this group, including:
+
+- [included controls](#included-controls)
+- custom controls using [`<RichTextMenu.Control>`](rich-text-menu-control)
+- additional custom UI
