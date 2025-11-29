@@ -17,7 +17,7 @@ export function Control({
   icon: ReactNode;
   disabled?: boolean;
   active?: boolean;
-  onClick: (e: SyntheticEvent) => void | Promise<void>;
+  onClick: (e: SyntheticEvent) => any;
   title: string;
 }) {
   const { inline } = useControlContext();
