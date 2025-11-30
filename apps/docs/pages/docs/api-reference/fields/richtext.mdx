@@ -4,7 +4,6 @@ import { Callout } from "nextra/components";
 import Superscript from "@tiptap/extension-superscript";
 import { SuperscriptControl } from "@/docs/components/Richtext/controls";
 import { superscriptSelector } from "@/docs/components/Richtext/selector";
-import { Render } from "@/core/components/RichTextEditor/Render";
 import { Highlighter, Quote } from "lucide-react";
 
 # Richtext
@@ -15,18 +14,18 @@ Render a Rich Text editor field. Extends [Base](base).
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
       },
     },
     defaultProps: {
-      richtext: "<p>Hello, world</p>",
+      body: "<p>Hello, <strong>world</strong></p>",
     },
-    render: ({ richtext }) => {
-      return <Render content={richtext} />;
-    },
+    render: ({ body }) => body,
   }}
-/>
+>
+  <Puck.Preview />
+</ConfigPreview>
 
 ```tsx {5-7} copy
 const config = {
@@ -37,9 +36,7 @@ const config = {
           type: "richtext",
         },
       },
-      render: ({ body }) => {
-        return <p>{body}</p>;
-      },
+      render: ({ body }) => body,
     },
   },
 };
@@ -101,25 +98,23 @@ const config = {
 };
 ```
 
-{/* TODO this example doesn't work */}
-
 <ConfigPreview
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         contentEditable: true,
       },
     },
     defaultProps: {
-      richtext: "<p>Edit me inline</p>",
+      body: "<p>Edit me <strong>inline</strong></p>",
     },
-    render: ({ richtext }) => {
-      return <Render content={richtext} />;
-    },
+    render: ({ body }) => body,
   }}
-/>
+>
+  <Puck.Preview />
+</ConfigPreview>
 
 ### `maxHeight`
 
@@ -176,7 +171,7 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         contentEditable: true,
         options: {
@@ -186,13 +181,13 @@ const config = {
       },
     },
     defaultProps: {
-      richtext: "<p>Hello, world</p>",
+      body: "<p>Hello, world</p>",
     },
-    render: ({ richtext }) => {
-      return <Render content={richtext} />;
-    },
+    render: ({ body }) => body,
   }}
-/>
+>
+  <Puck.Preview />
+</ConfigPreview>
 
 #### Included extensions
 
@@ -258,7 +253,7 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         renderMenu: ({ children }) => (
           <RichTextMenu>
@@ -272,13 +267,13 @@ const config = {
       },
     },
     defaultProps: {
-      richtext: "<p>Hello, world</p>",
+      body: "<p>Hello, world</p>",
     },
-    render: ({ richtext }) => {
-      return <Render content={richtext} />;
-    },
+    render: ({ body }) => body,
   }}
-/>
+>
+  <Puck.Preview />
+</ConfigPreview>
 
 ### `renderInlineMenu(props)`
 
@@ -319,34 +314,45 @@ const config = {
 };
 ```
 
-{/* TODO this example doesn't work */}
-
-<ConfigPreview
-  label="Example"
-  componentConfig={{
-    fields: {
-      richtext: {
-        type: "richtext",
-        contentEditable: true,
-        renderInlineMenu: ({ children }) => (
-          <RichTextMenu>
-            {children}
-            <RichTextMenu.Group>
-              <RichTextMenu.Blockquote />
-              <RichTextMenu.Control icon={<Highlighter />} />
-            </RichTextMenu.Group>
-          </RichTextMenu>
-        ),
+<PuckPreview
+  config={{
+    components: {
+      Example: {
+        fields: {
+          body: {
+            type: "richtext",
+            contentEditable: true,
+            renderInlineMenu: ({ children }) => (
+              <RichTextMenu>
+                {children}
+                <RichTextMenu.Group>
+                  <RichTextMenu.Blockquote />
+                  <RichTextMenu.Control icon={<Highlighter />} />
+                </RichTextMenu.Group>
+              </RichTextMenu>
+            ),
+          },
+        },
+        permissions: { drag: false, delete: false, duplicate: false },
+        render: ({ body }) => body,
       },
     },
-    defaultProps: {
-      richtext: "<p>Edit me inline</p>",
-    },
-    render: ({ richtext }) => {
-      return <Render content={richtext} />;
-    },
   }}
-/>
+  data={{
+    root: { props: {} },
+    content: [
+      {
+        type: "Example",
+        props: {
+          id: "Example-1",
+          body: "<p>Hello, <strong>world</strong></p>",
+        },
+      },
+    ],
+  }}
+>
+  <Puck.Preview />
+</PuckPreview>
 
 ### `tiptap.extensions`
 

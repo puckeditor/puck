@@ -29,16 +29,15 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
       },
     },
     defaultProps: {
-      richtext:
-        "<p>Hello, <strong>world</strong></p><ul><li><p>List item 1</p></li><li><p>List item 2</p></li><li><p>List item 3</p></li></ul>",
+      body: "<p>Hello, <strong>world</strong></p><ul><li><p>List item 1</p></li><li><p>List item 2</p></li><li><p>List item 3</p></li></ul>",
     },
-    render: ({ richtext }) => {
-      return richtext;
+    render: ({ body }) => {
+      return body;
     },
   }}
 >
@@ -69,17 +68,16 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         contentEditable: true,
       },
     },
     defaultProps: {
-      richtext:
-        "<p>Edit me <strong>inline:</strong></p><ul><li><p>List item 1</p></li><li><p>List item 2</p></li><li><p>List item 3</p></li></ul>",
+      body: "<p>Edit me <strong>inline:</strong></p><ul><li><p>List item 1</p></li><li><p>List item 2</p></li><li><p>List item 3</p></li></ul>",
     },
-    render: ({ richtext }) => {
-      return richtext;
+    render: ({ body }) => {
+      return body;
     },
   }}
   hideActionBar={false}
@@ -89,9 +87,9 @@ const config = {
 
 ## Customizing behavior
 
-### Disabling functionality
+The rich text field is built with [Tiptap](https://tiptap.dev), and comes with [several Tiptap extensions](/docs/api-reference/fields/richtext#included-extensions) pre-configured. Editor behavior can be customized by configuring these extensions.
 
-The rich text field is built with [Tiptap](https://tiptap.dev), and comes with [several Tiptap extensions](/docs/api-reference/fields/richtext#included-extensions) pre-configured.
+### Disabling functionality
 
 Disable any extension by setting it to `false` in [`options`](/docs/api-reference/fields/richtext#options):
 
@@ -118,16 +116,16 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         options: { bold: false },
       },
     },
     defaultProps: {
-      richtext: "<p>Hello, <strong>world</strong></p>",
+      body: "<p>Hello, <strong>world</strong></p>",
     },
-    render: ({ richtext }) => {
-      return richtext;
+    render: ({ body }) => {
+      return body;
     },
   }}
 >
@@ -162,16 +160,16 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         options: { heading: { levels: [1, 2] } },
       },
     },
     defaultProps: {
-      richtext: "<p>Hello, <strong>world</strong></p>",
+      body: "<p>Hello, <strong>world</strong></p>",
     },
-    render: ({ richtext }) => {
-      return richtext;
+    render: ({ body }) => {
+      return body;
     },
   }}
 >
@@ -213,7 +211,7 @@ const config = {
   label="Example"
   componentConfig={{
     fields: {
-      richtext: {
+      body: {
         type: "richtext",
         renderMenu: () => (
           <RichTextMenu>
@@ -225,10 +223,10 @@ const config = {
       },
     },
     defaultProps: {
-      richtext: "<p>Hello, <strong>world</strong></p>",
+      body: "<p>Hello, <strong>world</strong></p>",
     },
-    render: ({ richtext }) => {
-      return richtext;
+    render: ({ body }) => {
+      return body;
     },
   }}
 >
@@ -340,3 +338,5 @@ const config = {
 
 - [`richtext` field API reference](/docs/api-reference/fields/richtext)
 - [`<RichTextMenu>` API reference](/docs/api-reference/components/rich-text-menu)
+- [Tiptap Overview](https://tiptap.dev/docs/editor/getting-started/overview)
+- [Tiptap Extensions](https://tiptap.dev/docs/editor/extensions/overview)
