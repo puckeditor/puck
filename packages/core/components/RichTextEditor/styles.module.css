@@ -32,11 +32,13 @@
 }
 
 .RichTextEditor :global(.rich-text > *:first-child),
+.RichTextEditor :global(.ProseMirror > *:first-child),
 .RichTextEditor :global(.rich-text * p:first-of-type) {
   margin-top: 0;
 }
 
 .RichTextEditor :global(.rich-text > *:last-child),
+.RichTextEditor :global(.ProseMirror > *:last-child),
 .RichTextEditor :global(.rich-text * p:last-of-type) {
   margin-bottom: 0;
 }
