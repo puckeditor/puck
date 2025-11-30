@@ -29,7 +29,7 @@ import {
   Strikethrough,
   Underline,
 } from "./controls";
-import { ControlContext } from "./lib/use-control-context";
+import { ControlContext, useControlContext } from "./lib/use-control-context";
 import { Control } from "./components/Control";
 
 const getClassName = getClassNameFactory("RichTextMenu", styles);
@@ -38,17 +38,8 @@ const DefaultMenu = ({ children }: { children: ReactNode }) => {
   return <RichTextMenu>{children}</RichTextMenu>;
 };
 
-const DefaultInlineMenu = ({ children }: { children: ReactNode }) => {
-  return <RichTextMenu inline>{children}</RichTextMenu>;
-};
-
-export const RichTextMenu = ({
-  children,
-  inline,
-}: {
-  children: ReactNode;
-  inline?: Boolean;
-}) => {
+export const RichTextMenu = ({ children }: { children: ReactNode }) => {
+  const { inline } = useControlContext();
   return (
     <div className={getClassName({ inline, form: !inline })} data-puck-rte-menu>
       {children}
@@ -108,7 +99,7 @@ export const LoadedRichTextMenu = ({
   });
 
   const InlineMenu = useMemo(
-    () => renderInlineMenu || DefaultInlineMenu,
+    () => renderInlineMenu || DefaultMenu,
     [renderInlineMenu]
   );
 
