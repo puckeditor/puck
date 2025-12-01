@@ -45,7 +45,10 @@ export const replaceAction = <UserData extends Data>(
     });
   });
 
-  const stateWithDeepSlotsRemoved = { ...state };
+  const stateWithDeepSlotsRemoved = {
+    ...state,
+    ui: { ...state.ui, ...action.ui },
+  };
 
   Object.keys(state.indexes.zones).forEach((zoneCompound) => {
     const id = zoneCompound.split(":")[0];
