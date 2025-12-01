@@ -49,9 +49,6 @@ export const Select = ({
 
   const hasOptions = options.length > 0;
 
-  const PopoverTriggerEl = hasOptions && !disabled ? PopoverTrigger : "div";
-  const ButtonEl = hasOptions && !disabled ? "button" : "div";
-
   return (
     <div
       className={getClassName({
@@ -63,12 +60,21 @@ export const Select = ({
       })}
     >
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTriggerEl asChild>
-          <ButtonEl className={getClassName("button")}>
-            <span className={getClassName("buttonIcon")}>{children}</span>
-            <ChevronDown size={12} />
-          </ButtonEl>
-        </PopoverTriggerEl>
+        {hasOptions ? (
+          <PopoverTrigger asChild>
+            <button className={getClassName("button")}>
+              <span className={getClassName("buttonIcon")}>{children}</span>
+              <ChevronDown size={12} />
+            </button>
+          </PopoverTrigger>
+        ) : (
+          <div>
+            <div className={getClassName("button")}>
+              <span className={getClassName("buttonIcon")}>{children}</span>
+              <ChevronDown size={12} />
+            </div>
+          </div>
+        )}
 
         {options.length > 0 && (
           <PopoverPortal>
