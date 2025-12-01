@@ -19,6 +19,7 @@ export const Editor = memo(
     inline = false,
     onFocus,
     id,
+    name,
   }: EditorProps) => {
     const { maxHeight, tiptap = {}, options } = field;
     const { extensions = [] } = tiptap;
@@ -30,16 +31,18 @@ export const Editor = memo(
 
     const appStoreApi = useAppStoreApi();
 
-    const isFocused = useAppStore(
+    const isActive = useAppStore(
       (s) => s.currentRichText?.id === id && inline === s.currentRichText.inline
     );
+
+    const focusName = `${name}${inline ? "::inline" : ""}`;
 
     const editor = useSyncedEditor({
       content,
       onChange,
       extensions: loadedExtensions,
       editable: !readOnly,
-
+      name: focusName,
       onFocusChange: (editor) => {
         if (editor) {
           const s = appStoreApi.getState();
@@ -51,12 +54,21 @@ export const Editor = memo(
               id,
               inline,
             },
+            state: {
+              ...s.state,
+              ui: {
+                ...s.state.ui,
+                field: {
+                  ...s.state.ui.field,
+                  focus: focusName,
+                },
+              },
+            },
           });
 
           onFocus?.(editor);
         }
       },
-      isFocused,
     });
 
     const handleHotkeyCapture = useCallback(
@@ -90,7 +102,7 @@ export const Editor = memo(
         className={getClassName({
           editor: !inline,
           inline,
-          isFocused,
+          isActive,
           disabled: readOnly,
         })}
         onKeyDownCapture={handleHotkeyCapture}

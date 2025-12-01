@@ -48,6 +48,7 @@ const tidyState = (state: AppState): AppState => {
     ui: {
       ...state.ui,
       field: {
+        ...state.ui.field,
         focus: null,
       },
     },

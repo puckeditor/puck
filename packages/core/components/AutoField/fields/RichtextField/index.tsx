@@ -28,6 +28,7 @@ export const RichtextField = ({
           readOnly={readOnly}
           field={field as RichtextFieldType}
           id={id}
+          name={name}
         />
       </Label>
     </>

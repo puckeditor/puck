@@ -15,7 +15,7 @@ import {
 } from "react";
 import { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
 import { getSelectorForId } from "../../get-selector-for-id";
-import { RichtextField } from "../../../types";
+import { RichtextField, UiState } from "../../../types";
 
 const InlineEditorWrapper = memo(
   ({
@@ -56,7 +56,7 @@ const InlineEditorWrapper = memo(
     }, [portalRef.current]);
 
     const handleChange = useCallback(
-      async (content: string | JSONContent) => {
+      async (content: string | JSONContent, ui?: Partial<UiState>) => {
         const appStore = appStoreApi.getState();
         const node = appStore.state.indexes.nodes[componentId];
         const zoneCompound = `${node.parentId}:${node.zone}`;
@@ -77,6 +77,7 @@ const InlineEditorWrapper = memo(
           data: resolvedData.node,
           destinationIndex: index,
           destinationZone: zoneCompound,
+          ui,
         });
       },
       [appStoreApi, componentId, propPath]
@@ -118,6 +119,7 @@ const InlineEditorWrapper = memo(
           inline
           onFocus={handleFocus}
           id={id}
+          name={propPath}
         />
       </div>
     );

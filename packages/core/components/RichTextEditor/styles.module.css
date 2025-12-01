@@ -94,7 +94,7 @@
   background: var(--puck-color-grey-11);
 }
 
-.RichTextEditor:not(:focus-within):not(.RichTextEditor--isFocused) ::selection {
+.RichTextEditor:not(:focus-within):not(.RichTextEditor--isActive) ::selection {
   background-color: transparent;
 }
 
