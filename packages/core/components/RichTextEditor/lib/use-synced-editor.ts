@@ -23,7 +23,6 @@ export function useSyncedEditor({
   });
 
   const syncingRef = useRef(false);
-  const lastContent = useRef<string | null>(null);
 
   const editor = useEditor({
     extensions,
@@ -33,8 +32,9 @@ export function useSyncedEditor({
     parseOptions: { preserveWhitespace: "full" },
     onUpdate: ({ editor }) => {
       if (syncingRef.current) return;
+
       const html = editor.getHTML();
-      lastContent.current = html;
+
       setDebouncedHtml(html);
     },
   });
@@ -75,7 +75,7 @@ export function useSyncedEditor({
     // Compare current doc vs incoming doc; if same, skip
     const current = editor.getHTML();
 
-    if (current === content || content === lastContent.current) return;
+    if (current === content) return;
 
     syncingRef.current = true;
     editor.commands.setContent(content, { emitUpdate: false });
