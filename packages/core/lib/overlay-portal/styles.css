@@ -9,6 +9,6 @@
 }
 
 [data-puck-overlay-portal]:focus-within {
-  outline: 2px var(--puck-color-azure-07) solid;
+  outline: 2px var(--puck-color-azure-07) dashed;
   outline-offset: 2px;
 }
