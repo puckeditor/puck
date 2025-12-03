@@ -1,4 +1,10 @@
-import { memo, useCallback, useMemo, KeyboardEvent } from "react";
+import {
+  memo,
+  useCallback,
+  useMemo,
+  KeyboardEvent,
+  FocusEventHandler,
+} from "react";
 import { useSyncedEditor } from "./lib/use-synced-editor";
 import { PuckRichText } from "./extensions";
 import { EditorContent } from "@tiptap/react";
@@ -99,6 +105,23 @@ export const Editor = memo(
       return editor;
     });
 
+    const handleBlur = useCallback<FocusEventHandler<HTMLDivElement>>(
+      (e) => {
+        const targetInMenu = !!e.relatedTarget?.closest?.(
+          "[data-puck-rte-menu]"
+        );
+
+        if (e.relatedTarget && !targetInMenu) {
+          appStoreApi.setState({
+            currentRichText: null,
+          });
+        } else {
+          e.stopPropagation();
+        }
+      },
+      [appStoreApi]
+    );
+
     if (!editor) return null;
 
     return (
@@ -111,6 +134,7 @@ export const Editor = memo(
         })}
         onKeyDownCapture={handleHotkeyCapture}
         style={inline ? {} : { maxHeight: maxHeight ?? 256, overflowY: "auto" }}
+        onBlur={handleBlur}
       >
         {!inline && (
           <div className={getClassName("menu")}>

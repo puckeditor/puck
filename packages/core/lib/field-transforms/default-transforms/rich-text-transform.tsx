@@ -5,14 +5,7 @@ import { FieldTransforms } from "../../../types/API/FieldTransforms";
 import { useAppStoreApi } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
 import { registerOverlayPortal } from "../../../lib/overlay-portal";
-import {
-  useEffect,
-  useRef,
-  useCallback,
-  memo,
-  MouseEvent,
-  FocusEvent,
-} from "react";
+import { useEffect, useRef, useCallback, memo, MouseEvent } from "react";
 import { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
 import { getSelectorForId } from "../../get-selector-for-id";
 import { RichtextField, UiState } from "../../../types";
@@ -98,21 +91,11 @@ const InlineEditorWrapper = memo(
       [field, componentId]
     );
 
-    const handleBlur = useCallback((e: FocusEvent) => {
-      const targetInMenu = e.relatedTarget?.closest?.("[data-puck-rte-menu]");
-
-      if (e.relatedTarget && !targetInMenu) {
-        appStoreApi.setState({
-          currentRichText: null,
-        });
-      }
-    }, []);
-
     if (!field.contentEditable)
       return <RichTextRender content={value} field={field} />;
 
     return (
-      <div ref={portalRef} onClick={onClickHandler} onBlur={handleBlur}>
+      <div ref={portalRef} onClick={onClickHandler}>
         <Editor
           content={value}
           onChange={handleChange}
