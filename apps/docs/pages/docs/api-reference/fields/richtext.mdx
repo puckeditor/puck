@@ -1,9 +1,6 @@
 import { Puck, RichTextMenu } from "@/puck";
 import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
 import { Callout } from "nextra/components";
-import Superscript from "@tiptap/extension-superscript";
-import { SuperscriptControl } from "@/docs/components/Richtext/controls";
-import { superscriptSelector } from "@/docs/components/Richtext/selector";
 import { Highlighter, Quote } from "lucide-react";
 
 # Richtext
@@ -260,7 +257,12 @@ const config = {
             {children}
             <RichTextMenu.Group>
               <RichTextMenu.Control icon={<Quote />} />
-              <RichTextMenu.Control icon={<Highlighter />} />
+              <RichTextMenu.Control
+                icon={<Highlighter />}
+                onClick={() => {
+                  alert("Highlight clicked");
+                }}
+              />
             </RichTextMenu.Group>
           </RichTextMenu>
         ),
@@ -327,7 +329,12 @@ const config = {
                 {children}
                 <RichTextMenu.Group>
                   <RichTextMenu.Blockquote />
-                  <RichTextMenu.Control icon={<Highlighter />} />
+                  <RichTextMenu.Control
+                    icon={<Highlighter />}
+                    onClick={() => {
+                      alert("Highlight clicked");
+                    }}
+                  />
                 </RichTextMenu.Group>
               </RichTextMenu>
             ),

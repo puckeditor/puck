@@ -3928,11 +3928,6 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-strike/-/extension-strike-3.11.1.tgz#ff4af7e72e1947662f49a8cc100e29f3ec773ea1"
   integrity sha512-1LfkHNkrGR509cPRgcMr95+nWcAHE0JDm9LkuzdexunhCfJ2tl/h1rA14x3sic8GxQFqEnMefvBUpUbQwPydYw==
 
-"@tiptap/extension-superscript@^3.6.5":
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-superscript/-/extension-superscript-3.6.5.tgz#36e80cf4e3102b9dd73d9d61d8c6dd95174cbe27"
-  integrity sha512-DB4xQ7C4XmHDaYhBoX5mLR+2UVKUtg7KlMGSkCkpoA0nj+GNgyXkB9RJNFn9Bhex2DdJm1cbnGS02jQpz8mYoA==
-
 "@tiptap/extension-text-align@^3.11.1":
   version "3.11.1"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-text-align/-/extension-text-align-3.11.1.tgz#c74c9c1121ffbb71eca7230c70b25b914abe52b5"

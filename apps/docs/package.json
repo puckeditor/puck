@@ -17,7 +17,6 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@tiptap/extension-superscript": "^3.6.5",
     "next": "^14.2.11",
     "next-sitemap": "^4.2.3",
     "nextra": "^3.2.5",
