@@ -45,7 +45,7 @@ const config = {
 | ---------------------------------------------- | ------------------------------------------ | ---------------- | -------- |
 | [`type`](#type)                                | `type: "richtext"`                         | "richtext"       | Required |
 | [`contentEditable`](#contentEditable)          | `contentEditable: false`                   | Boolean          | -        |
-| [`maxHeight`](#maxheight)                      | `maxHeight: 312`                           | Number \| String | -        |
+| [`initialHeight`](#initialheight)              | `initialHeight: 312`                       | Number \| String | -        |
 | [`options`](#options)                          | `options: { bold: false }`                 | Object           | -        |
 | [`renderMenu()`](#rendermenuprops)             | `renderMenu: () => <RichTextMenu />`       | Function         | -        |
 | [`renderInlineMenu()`](#renderinlinemenuprops) | `renderInlineMenu: () => <RichTextMenu />` | Function         | -        |
@@ -113,9 +113,9 @@ const config = {
   <Puck.Preview />
 </ConfigPreview>
 
-### `maxHeight`
+### `initialHeight`
 
-Set the maximum height for the field input. Defaults to `256`.
+Set the initial height for the field input. Defaults to `256`.
 
 ```tsx {7} copy showLineNumbers
 const config = {
@@ -124,7 +124,7 @@ const config = {
       fields: {
         description: {
           type: "richtext",
-          maxHeight: 312,
+          initialHeight: 312,
         },
       },
       // ...

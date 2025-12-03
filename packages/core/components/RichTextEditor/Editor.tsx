@@ -27,7 +27,7 @@ export const Editor = memo(
     id,
     name,
   }: EditorProps) => {
-    const { maxHeight, tiptap = {}, options } = field;
+    const { initialHeight, tiptap = {}, options } = field;
     const { extensions = [] } = tiptap;
 
     const loadedExtensions = useMemo(
@@ -133,7 +133,9 @@ export const Editor = memo(
           disabled: readOnly,
         })}
         onKeyDownCapture={handleHotkeyCapture}
-        style={inline ? {} : { maxHeight: maxHeight ?? 256, overflowY: "auto" }}
+        style={
+          inline ? {} : { height: initialHeight ?? 256, overflowY: "auto" }
+        }
         onBlur={handleBlur}
       >
         {!inline && (

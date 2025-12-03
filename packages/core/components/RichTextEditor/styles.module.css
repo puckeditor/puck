@@ -52,9 +52,11 @@
   box-sizing: border-box;
   font-family: inherit;
   font-size: var(--puck-font-size-xxs);
+  resize: vertical;
   transition: border-color 50ms ease-in;
   width: 100%;
   max-width: 100%;
+  min-height: 128px;
 }
 
 /* Place padding on .rich-text, unless it contains .ProseMirror - in which case, apply to .ProseMirror */

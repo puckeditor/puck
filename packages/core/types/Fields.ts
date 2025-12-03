@@ -56,7 +56,7 @@ export interface RichtextField<
 > extends BaseField {
   type: "richtext";
   contentEditable?: boolean;
-  maxHeight?: CSSProperties["maxHeight"];
+  initialHeight?: CSSProperties["height"];
   options?: Partial<PuckRichTextOptions>;
   renderMenu?: (props: {
     children: ReactNode;
