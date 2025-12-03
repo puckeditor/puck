@@ -1,6 +1,11 @@
 import { useMemo } from "react";
-import { Render } from "../Render";
-import { BaseField, Fields, WithPuckProps } from "../../../types";
+import { RichTextRender } from "../Render";
+import {
+  BaseField,
+  Fields,
+  RichtextField,
+  WithPuckProps,
+} from "../../../types";
 
 export function useRichtextRenderer(
   fields:
@@ -37,7 +42,12 @@ export function useRichtextRenderer(
     if (!richtextKeys) return {};
 
     return richtextKeys.reduce((acc, key) => {
-      acc[key] = <Render content={props[key]} />;
+      acc[key] = (
+        <RichTextRender
+          content={props[key]}
+          field={fields![key] as RichtextField}
+        />
+      );
       return acc;
     }, {} as Record<string, React.ReactNode>);
   }, [richtextKeys, props]);

@@ -1,6 +1,6 @@
 "use client";
 import { Editor } from "../../../components/RichTextEditor";
-import { Render } from "../../../components/RichTextEditor/Render";
+import { RichTextRender } from "../../../components/RichTextEditor/Render";
 import { FieldTransforms } from "../../../types/API/FieldTransforms";
 import { useAppStoreApi } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
@@ -108,7 +108,8 @@ const InlineEditorWrapper = memo(
       }
     }, []);
 
-    if (!field.contentEditable) return <Render content={value} />;
+    if (!field.contentEditable)
+      return <RichTextRender content={value} field={field} />;
 
     return (
       <div ref={portalRef} onClick={onClickHandler} onBlur={handleBlur}>
@@ -132,7 +133,7 @@ export const getRichTextTransform = (): FieldTransforms => ({
   richtext: ({ value, componentId, field, propPath, isReadOnly }) => {
     const { contentEditable = true, tiptap } = field;
     if (contentEditable === false || isReadOnly) {
-      return <Render content={value} extensions={tiptap?.extensions} />;
+      return <RichTextRender content={value} field={field} />;
     }
 
     const id = `${componentId}_${field.type}_${propPath}`;

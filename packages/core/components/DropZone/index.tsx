@@ -50,7 +50,6 @@ import { getInlineTextTransform } from "../../lib/field-transforms/default-trans
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
-import { Render } from "../RichTextEditor/Render";
 import { useRichtextRenderer } from "../RichTextEditor/lib/use-richtext-renderer";
 
 const getClassName = getClassNameFactory("DropZone", styles);

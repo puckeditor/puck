@@ -4,19 +4,23 @@ import { useMemo } from "react";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 import { PuckRichText } from "./extensions";
+import { RichtextField } from "../../types";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 
-export function Render({
+export function RichTextRender({
   content,
-  extensions = [],
+  field,
 }: {
   content: string | JSONContent;
-  extensions?: Extensions;
+  field: RichtextField;
 }) {
+  const { tiptap = {}, options } = field;
+  const { extensions = [] } = tiptap;
+
   const loadedExtensions = useMemo(
-    () => (extensions?.length > 0 ? extensions : [PuckRichText]),
-    [extensions]
+    () => [PuckRichText.configure(options), ...extensions],
+    [field, extensions]
   );
 
   const normalized: JSONContent = useMemo(() => {
