@@ -9,7 +9,6 @@ import {
   AlignJustify,
   AlignLeft,
   AlignRight,
-  AlignSelect,
   Blockquote,
   Bold,
   BulletList,
@@ -25,6 +24,8 @@ import {
 } from "./controls";
 import { ControlContext, useControlContext } from "./lib/use-control-context";
 import { Control } from "./components/Control";
+import { AlignSelect } from "./controls/AlignSelect";
+import { LoadedRichTextMenuProps } from ".";
 
 const getClassName = getClassNameFactory("RichTextMenu", styles);
 
@@ -66,18 +67,12 @@ RichTextMenu.Strikethrough = Strikethrough;
 RichTextMenu.Underline = Underline;
 
 export const LoadedRichTextMenuInner = ({
-  editor,
-  editorState,
+  editor = null,
+  editorState = null,
   field,
   readOnly,
   inline,
-}: {
-  field: RichtextField;
-  editor: RichTextEditor | null;
-  editorState: EditorState | null;
-  readOnly: boolean;
-  inline?: boolean;
-}) => {
+}: LoadedRichTextMenuProps) => {
   const { renderMenu, renderInlineMenu } = field;
 
   const InlineMenu = useMemo(

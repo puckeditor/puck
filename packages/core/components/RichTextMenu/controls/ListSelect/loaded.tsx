@@ -1,24 +1,12 @@
 import { useEditorState } from "@tiptap/react";
-import { useControlContext } from "../lib/use-control-context";
-import { useMemo } from "react";
-import { List, ListOrdered } from "lucide-react";
-import { SelectControl } from "../components/SelectControl";
+import { useControlContext } from "../../lib/use-control-context";
+import { SelectControl } from "../../components/SelectControl";
+import { List } from "lucide-react";
+import { ListElement, useListOptions } from "./use-options";
 
-type ListElement = "ol" | "ul";
-
-const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
-  ul: { label: "Bullet list", icon: List },
-  ol: { label: "Numbered list", icon: ListOrdered },
-};
-
-export function ListSelect() {
+export function ListSelectLoaded() {
   const { options } = useControlContext();
-
-  let blockOptions: ListElement[] = [];
-
-  if (options?.listItem !== false) {
-    blockOptions = ["ul", "ol"];
-  }
+  const listOptions = useListOptions(options);
 
   const { editor } = useControlContext();
   const currentValue = useEditorState({
@@ -43,19 +31,9 @@ export function ListSelect() {
     }
   };
 
-  const loadedOptions = useMemo(
-    () =>
-      blockOptions.map((item) => ({
-        value: item,
-        label: optionNodes[item].label,
-        icon: optionNodes[item].icon,
-      })),
-    [blockOptions]
-  );
-
   return (
     <SelectControl<ListElement | "p">
-      options={loadedOptions}
+      options={listOptions}
       onChange={handleChange}
       value={currentValue ?? "p"}
       defaultValue="p"
