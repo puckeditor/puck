@@ -10,10 +10,10 @@ export function Strikethrough() {
       icon={<StrikethroughIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleStrike().run();
+        editor?.chain().focus().toggleStrike().run();
       }}
-      disabled={!editorState.canStrike}
-      active={editorState.isStrike}
+      disabled={!editorState?.canStrike}
+      active={editorState?.isStrike}
       title="Strikethrough"
     />
   );

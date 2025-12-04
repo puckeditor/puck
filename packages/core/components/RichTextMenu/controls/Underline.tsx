@@ -10,10 +10,10 @@ export function Underline() {
       icon={<UnderlineIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleUnderline().run();
+        editor?.chain().focus().toggleUnderline().run();
       }}
-      disabled={!editorState.canUnderline}
-      active={editorState.isUnderline}
+      disabled={!editorState?.canUnderline}
+      active={editorState?.isUnderline}
       title="Underline"
     />
   );

@@ -414,8 +414,8 @@ const config = {
           renderMenu: ({ editorState }) => (
             <RichTextMenu>
               <RichTextMenu.Group>
-                <button disabled={editorState.canHighlight}>
-                  {editorState.isHighlight ? "Unhighlight" : "Highlight"}
+                <button disabled={editorState?.canHighlight}>
+                  {editorState?.isHighlight ? "Unhighlight" : "Highlight"}
                 </button>
               </RichTextMenu.Group>
             </RichTextMenu>
@@ -431,11 +431,11 @@ const config = {
 
 Render props for [`renderMenu()`](rendermenuprops) and [`renderInlineMenu()`](#renderinlinemenuprops) APIs.
 
-| Param                         | Example   | Type        |
-| ----------------------------- | --------- | ----------- |
-| [`children`](#children)       | `<div />` | ReactNode   |
-| [`editor`](#editor)           | `<div />` | Editor      |
-| [`editorState`](#editorstate) | `<div />` | EditorState |
+| Param                         | Example          | Type                |
+| ----------------------------- | ---------------- | ------------------- |
+| [`children`](#children)       | `<div />`        | ReactNode           |
+| [`editor`](#editor)           | `{}`             | Editor \| null      |
+| [`editorState`](#editorstate) | `{isBold: true}` | EditorState \| null |
 
 ### `children`
 
@@ -487,7 +487,7 @@ const config = {
               <RichTextMenu.Group>
                 <button
                   onClick={() =>
-                    editor.chain().focus().toggleBlockquote().run()
+                    editor?.chain().focus().toggleBlockquote().run()
                   }
                 >
                   Quote
@@ -518,7 +518,7 @@ const config = {
           type: "richtext",
           renderMenu: ({ editorState }) => (
             <RichTextMenu>
-              {editorState.isBold ? "Bold" : "Not bold"}
+              {editorState?.isBold ? "Bold" : "Not bold"}
             </RichTextMenu>
           ),
         },

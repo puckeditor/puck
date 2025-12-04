@@ -10,10 +10,10 @@ export function BulletList() {
       icon={<ListIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleBulletList().run();
+        editor?.chain().focus().toggleBulletList().run();
       }}
-      disabled={!editorState.canBulletList}
-      active={editorState.isBulletList}
+      disabled={!editorState?.canBulletList}
+      active={editorState?.isBulletList}
       title="Bullet list"
     />
   );

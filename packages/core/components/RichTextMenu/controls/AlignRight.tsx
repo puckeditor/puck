@@ -10,10 +10,10 @@ export function AlignRight() {
       icon={<AlignRightIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().setTextAlign("right").run();
+        editor?.chain().focus().setTextAlign("right").run();
       }}
-      disabled={!editorState.canAlignRight}
-      active={editorState.isAlignRight}
+      disabled={!editorState?.canAlignRight}
+      active={editorState?.isAlignRight}
       title="Align right"
     />
   );

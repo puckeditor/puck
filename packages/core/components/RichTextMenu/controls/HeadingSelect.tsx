@@ -62,9 +62,9 @@ export function HeadingSelect() {
   const currentValue = useEditorState({
     editor,
     selector: (ctx) => {
-      if (ctx.editor.isActive("paragraph")) return "p";
+      if (ctx.editor?.isActive("paragraph")) return "p";
       for (let level = 1; level <= 6; level++) {
-        if (ctx.editor.isActive("heading", { level })) {
+        if (ctx.editor?.isActive("heading", { level })) {
           return `h${level}` as HeadingElement;
         }
       }
@@ -73,13 +73,13 @@ export function HeadingSelect() {
   });
 
   const handleChange = (val: HeadingElement | "p") => {
-    const chain = editor.chain();
+    const chain = editor?.chain();
 
     if (val === "p") {
-      chain.focus().setParagraph().run();
+      chain?.focus().setParagraph().run();
     } else {
       const level = parseInt(val.replace("h", ""), 10) as 1 | 2 | 3 | 4 | 5 | 6;
-      chain.focus().toggleHeading({ level }).run();
+      chain?.focus().toggleHeading({ level }).run();
     }
   };
 
@@ -97,7 +97,7 @@ export function HeadingSelect() {
     <SelectControl<HeadingElement | "p">
       options={loadedOptions}
       onChange={handleChange}
-      value={currentValue}
+      value={currentValue ?? "p"}
       defaultValue="p"
       renderDefaultIcon={Heading}
     />

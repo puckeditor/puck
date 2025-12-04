@@ -10,10 +10,10 @@ export function InlineCode() {
       icon={<CodeIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleCode().run();
+        editor?.chain().focus().toggleCode().run();
       }}
-      disabled={!editorState.canInlineCode}
-      active={editorState.isInlineCode}
+      disabled={!editorState?.canInlineCode}
+      active={editorState?.isInlineCode}
       title="Inline code"
     />
   );

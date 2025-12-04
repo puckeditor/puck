@@ -1,14 +1,34 @@
 "use client";
-import { Editor } from "../../../components/RichTextEditor";
-import { RichTextRender } from "../../../components/RichTextEditor/Render";
+import { EditorFallback } from "../../../components/RichTextEditor/EditorFallback";
+import { RichTextRenderFallback } from "../../../components/RichTextEditor/RenderFallback";
 import { FieldTransforms } from "../../../types/API/FieldTransforms";
 import { useAppStoreApi } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
 import { registerOverlayPortal } from "../../../lib/overlay-portal";
-import { useEffect, useRef, useCallback, memo, MouseEvent } from "react";
-import { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  memo,
+  MouseEvent,
+  lazy,
+  Suspense,
+} from "react";
+import type { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
 import { getSelectorForId } from "../../get-selector-for-id";
 import { RichtextField, UiState } from "../../../types";
+
+const Editor = lazy(() =>
+  import("../../../components/RichTextEditor/Editor").then((m) => ({
+    default: m.Editor,
+  }))
+);
+
+const RichTextRender = lazy(() =>
+  import("../../../components/RichTextEditor/Render").then((m) => ({
+    default: m.RichTextRender,
+  }))
+);
 
 const InlineEditorWrapper = memo(
   ({
@@ -92,19 +112,27 @@ const InlineEditorWrapper = memo(
     );
 
     if (!field.contentEditable)
-      return <RichTextRender content={value} field={field} />;
+      return (
+        <Suspense fallback={<RichTextRenderFallback content={value} />}>
+          <RichTextRender content={value} field={field} />
+        </Suspense>
+      );
+
+    const editorProps = {
+      content: value,
+      onChange: handleChange,
+      field: field,
+      inline: true,
+      onFocus: handleFocus,
+      id: id,
+      name: propPath,
+    };
 
     return (
       <div ref={portalRef} onClick={onClickHandler}>
-        <Editor
-          content={value}
-          onChange={handleChange}
-          field={field}
-          inline
-          onFocus={handleFocus}
-          id={id}
-          name={propPath}
-        />
+        <Suspense fallback={<EditorFallback {...editorProps} />}>
+          <Editor {...editorProps} />
+        </Suspense>
       </div>
     );
   }

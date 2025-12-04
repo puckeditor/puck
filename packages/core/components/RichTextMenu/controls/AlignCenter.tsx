@@ -10,10 +10,10 @@ export function AlignCenter() {
       icon={<AlignCenterIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().setTextAlign("center").run();
+        editor?.chain().focus().setTextAlign("center").run();
       }}
-      disabled={!editorState.canAlignCenter}
-      active={editorState.isAlignCenter}
+      disabled={!editorState?.canAlignCenter}
+      active={editorState?.isAlignCenter}
       title="Align center"
     />
   );

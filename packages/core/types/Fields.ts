@@ -1,6 +1,6 @@
 import { CSSProperties, ReactElement, ReactNode } from "react";
 import { DefaultComponentProps, FieldMetadata, UiState } from ".";
-import { Editor, Extensions } from "@tiptap/react";
+import type { Editor, Extensions } from "@tiptap/react";
 import {
   EditorState,
   RichTextSelector,
@@ -60,14 +60,14 @@ export interface RichtextField<
   options?: Partial<PuckRichTextOptions>;
   renderMenu?: (props: {
     children: ReactNode;
-    editor: Editor;
-    editorState: EditorState<UserSelector>;
+    editor: Editor | null;
+    editorState: EditorState<UserSelector> | null;
     readOnly: boolean;
   }) => ReactNode;
   renderInlineMenu?: (props: {
     children: ReactNode;
-    editor: Editor;
-    editorState: EditorState<UserSelector>;
+    editor: Editor | null;
+    editorState: EditorState<UserSelector> | null;
     readOnly: boolean;
   }) => ReactNode;
   tiptap?: {

@@ -318,10 +318,10 @@ const config = {
                 <RichTextMenu.Control
                   icon={<Superscript />}
                   onClick={() =>
-                    editor.chain().focus().toggleSuperscript().run()
+                    editor?.chain().focus().toggleSuperscript().run()
                   }
-                  active={editorState.isSuperscript}
-                  disabled={!editorState.canSuperscript}
+                  active={editorState?.isSuperscript}
+                  disabled={!editorState?.canSuperscript}
                 />
               </RichTextMenu.Group>
             </RichTextMenu>

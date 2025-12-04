@@ -10,10 +10,10 @@ export function OrderedList() {
       icon={<ListOrderedIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleOrderedList().run();
+        editor?.chain().focus().toggleOrderedList().run();
       }}
-      disabled={!editorState.canOrderedList}
-      active={editorState.isOrderedList}
+      disabled={!editorState?.canOrderedList}
+      active={editorState?.isOrderedList}
       title="Ordered list"
     />
   );

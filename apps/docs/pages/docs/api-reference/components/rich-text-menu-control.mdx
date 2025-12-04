@@ -77,7 +77,7 @@ Whether or not this control is currently active.
   icon={<Quote />}
   title="Quote"
   onClick={() => editor.chain().focus().toggleBlockquote().run()}
-  active={editorState.isBlockquote}
+  active={editorState?.isBlockquote}
 />
 ```
 
@@ -90,6 +90,6 @@ Whether or not this control is currently disabled.
   icon={<Quote />}
   title="Quote"
   onClick={() => editor.chain().focus().toggleBlockquote().run()}
-  disabled={editorState.canBlockquote}
+  disabled={editorState?.canBlockquote}
 />
 ```

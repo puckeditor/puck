@@ -10,10 +10,10 @@ export function AlignJustify() {
       icon={<AlignJustifyIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().setTextAlign("justify").run();
+        editor?.chain().focus().setTextAlign("justify").run();
       }}
-      disabled={!editorState.canAlignJustify}
-      active={editorState.isAlignJustify}
+      disabled={!editorState?.canAlignJustify}
+      active={editorState?.isAlignJustify}
       title="Justify"
     />
   );

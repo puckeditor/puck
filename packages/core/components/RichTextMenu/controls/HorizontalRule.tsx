@@ -10,9 +10,9 @@ export function HorizontalRule() {
       icon={<MinusIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().setHorizontalRule().run();
+        editor?.chain().focus().setHorizontalRule().run();
       }}
-      disabled={!editorState.canHorizontalRule}
+      disabled={!editorState?.canHorizontalRule}
       title="Horizontal rule"
     />
   );

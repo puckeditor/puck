@@ -41,27 +41,28 @@ export function AlignSelect() {
   }
 
   const { editor } = useControlContext();
-  const currentValue: AlignDirection = useEditorState({
-    editor,
-    selector: (ctx) => {
-      if (ctx.editor.isActive({ textAlign: "center" })) {
-        return "center";
-      } else if (ctx.editor.isActive({ textAlign: "right" })) {
-        return "right";
-      } else if (ctx.editor.isActive({ textAlign: "justify" })) {
-        return "justify";
-      }
+  const currentValue: AlignDirection =
+    useEditorState({
+      editor,
+      selector: (ctx) => {
+        if (ctx.editor?.isActive({ textAlign: "center" })) {
+          return "center";
+        } else if (ctx.editor?.isActive({ textAlign: "right" })) {
+          return "right";
+        } else if (ctx.editor?.isActive({ textAlign: "justify" })) {
+          return "justify";
+        }
 
-      return options?.textAlign
-        ? (options.textAlign.defaultAlignment as AlignDirection) ?? "left"
-        : "left";
-    },
-  });
+        return options?.textAlign
+          ? (options.textAlign.defaultAlignment as AlignDirection) ?? "left"
+          : "left";
+      },
+    }) ?? "left";
 
   const handleChange = (val: AlignDirection) => {
-    const chain = editor.chain();
+    const chain = editor?.chain();
 
-    chain.focus().setTextAlign(val).run();
+    chain?.focus().setTextAlign(val).run();
   };
 
   const loadedOptions = useMemo(

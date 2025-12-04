@@ -10,10 +10,10 @@ export function CodeBlock() {
       icon={<SquareCodeIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleCodeBlock().run();
+        editor?.chain().focus().toggleCodeBlock().run();
       }}
-      disabled={!editorState.canCodeBlock}
-      active={editorState.isCodeBlock}
+      disabled={!editorState?.canCodeBlock}
+      active={editorState?.isCodeBlock}
       title="Code block"
     />
   );

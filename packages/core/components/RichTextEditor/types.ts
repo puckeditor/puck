@@ -1,4 +1,4 @@
-import { Editor, EditorStateSnapshot, JSONContent } from "@tiptap/react";
+import type { Editor, EditorStateSnapshot, JSONContent } from "@tiptap/react";
 import { useSyncedEditor } from "./lib/use-synced-editor";
 import { defaultEditorState } from "./selector";
 import { RichtextField, UiState } from "../../types";

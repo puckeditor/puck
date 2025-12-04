@@ -10,10 +10,10 @@ export function Bold() {
       icon={<BoldIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleBold().run();
+        editor?.chain().focus().toggleBold().run();
       }}
-      disabled={!editorState.canBold}
-      active={editorState.isBold}
+      disabled={!editorState?.canBold}
+      active={editorState?.isBold}
       title="Bold"
     />
   );

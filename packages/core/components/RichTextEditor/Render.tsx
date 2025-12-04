@@ -1,4 +1,4 @@
-import { JSONContent } from "@tiptap/react";
+import type { JSONContent } from "@tiptap/react";
 import { generateHTML, generateJSON } from "@tiptap/html";
 import { useMemo } from "react";
 import getClassNameFactory from "../../lib/get-class-name-factory";

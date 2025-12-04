@@ -1,11 +1,12 @@
-import { useMemo } from "react";
-import { RichTextRender } from "../Render";
+import { lazy, Suspense, useMemo } from "react";
+import type { ReactNode } from "react";
 import {
   BaseField,
   Fields,
   RichtextField,
   WithPuckProps,
 } from "../../../types";
+import { RichTextRenderFallback } from "../RenderFallback";
 
 export function useRichtextProps(
   fields:
@@ -38,18 +39,24 @@ export function useRichtextProps(
   const richtextKeys = useMemo(() => findAllRichtextKeys(fields), [fields]);
 
   const richtextProps = useMemo(() => {
-    if (!richtextKeys) return {};
+    if (!richtextKeys?.length) return {};
+
+    const RichTextRender = lazy(() =>
+      import("../Render").then((m) => ({ default: m.RichTextRender }))
+    );
 
     return richtextKeys.reduce((acc, key) => {
       acc[key] = (
-        <RichTextRender
-          content={props[key]}
-          field={fields![key] as RichtextField}
-        />
+        <Suspense fallback={<RichTextRenderFallback content={props[key]} />}>
+          <RichTextRender
+            content={props[key]}
+            field={fields![key] as RichtextField}
+          />
+        </Suspense>
       );
       return acc;
-    }, {} as Record<string, React.ReactNode>);
-  }, [richtextKeys, props]);
+    }, {} as Record<string, ReactNode>);
+  }, [richtextKeys, props, fields]);
 
   return richtextProps;
 }

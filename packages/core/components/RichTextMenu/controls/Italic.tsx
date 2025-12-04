@@ -10,10 +10,10 @@ export function Italic() {
       icon={<ItalicIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleItalic().run();
+        editor?.chain().focus().toggleItalic().run();
       }}
-      disabled={!editorState.canItalic}
-      active={editorState.isItalic}
+      disabled={!editorState?.canItalic}
+      active={editorState?.isItalic}
       title="Italic"
     />
   );

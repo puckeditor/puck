@@ -24,22 +24,22 @@ export function ListSelect() {
   const currentValue = useEditorState({
     editor,
     selector: (ctx) => {
-      if (ctx.editor.isActive("bulletList")) return "ul";
-      if (ctx.editor.isActive("orderedList")) return "ol";
+      if (ctx.editor?.isActive("bulletList")) return "ul";
+      if (ctx.editor?.isActive("orderedList")) return "ol";
 
       return "p";
     },
   });
 
   const handleChange = (val: ListElement | "p") => {
-    const chain = editor.chain();
+    const chain = editor?.chain();
 
     if (val === "p") {
-      chain.focus().setParagraph().run();
+      chain?.focus().setParagraph().run();
     } else if (val === "ol") {
-      chain.focus().toggleOrderedList().run();
+      chain?.focus().toggleOrderedList().run();
     } else if (val === "ul") {
-      chain.focus().toggleBulletList().run();
+      chain?.focus().toggleBulletList().run();
     }
   };
 
@@ -57,7 +57,7 @@ export function ListSelect() {
     <SelectControl<ListElement | "p">
       options={loadedOptions}
       onChange={handleChange}
-      value={currentValue}
+      value={currentValue ?? "p"}
       defaultValue="p"
       renderDefaultIcon={List}
     />

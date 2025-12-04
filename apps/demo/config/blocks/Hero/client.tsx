@@ -101,9 +101,9 @@ export const Hero: ComponentConfig<{
               <RichTextMenu.Control
                 icon={<Quote />}
                 title="Quote"
-                active={editorState.isBlockquote}
+                active={editorState?.isBlockquote}
                 onClick={() => {
-                  editor.chain().focus().toggleBlockquote().run();
+                  editor?.chain().focus().toggleBlockquote().run();
                 }}
               />
             </RichTextMenu.Group>

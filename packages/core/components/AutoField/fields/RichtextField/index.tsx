@@ -1,7 +1,14 @@
+import { lazy, Suspense } from "react";
 import { Type } from "lucide-react";
 import { FieldPropsInternal } from "../..";
-import { Editor } from "../../../RichTextEditor";
 import { RichtextField as RichtextFieldType } from "../../../../types";
+import { EditorFallback } from "../../../RichTextEditor/EditorFallback";
+
+const Editor = lazy(() =>
+  import("../../../RichTextEditor/Editor").then((m) => ({
+    default: m.Editor,
+  }))
+);
 
 export const RichtextField = ({
   onChange,
@@ -14,6 +21,15 @@ export const RichtextField = ({
   field,
   id,
 }: FieldPropsInternal) => {
+  const editorProps = {
+    onChange: onChange,
+    content: typeof value === "undefined" ? "" : value,
+    readOnly: readOnly,
+    field: field as RichtextFieldType,
+    id: id,
+    name: name,
+  };
+
   return (
     <>
       <Label
@@ -22,14 +38,9 @@ export const RichtextField = ({
         readOnly={readOnly}
         el="div"
       >
-        <Editor
-          onChange={onChange}
-          content={typeof value === "undefined" ? "" : value}
-          readOnly={readOnly}
-          field={field as RichtextFieldType}
-          id={id}
-          name={name}
-        />
+        <Suspense fallback={<EditorFallback {...editorProps} />}>
+          <Editor {...editorProps} />
+        </Suspense>
       </Label>
     </>
   );

@@ -16,7 +16,7 @@ export { DropZone } from "../components/DropZone";
 export * from "../components/IconButton";
 export { Puck } from "../components/Puck";
 export * from "../components/Render";
-export { RichTextMenu } from "../components/RichTextMenu";
+export { RichTextMenu } from "../components/RichTextMenu/inner";
 
 export * from "../lib/migrate";
 export * from "../lib/transform-props";

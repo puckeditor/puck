@@ -10,10 +10,10 @@ export function Blockquote() {
       icon={<QuoteIcon />}
       onClick={(e) => {
         e.stopPropagation();
-        editor.chain().focus().toggleBlockquote().run();
+        editor?.chain().focus().toggleBlockquote().run();
       }}
-      disabled={!editorState.canBlockquote}
-      active={editorState.isBlockquote}
+      disabled={!editorState?.canBlockquote}
+      active={editorState?.isBlockquote}
       title="Blockquote"
     />
   );

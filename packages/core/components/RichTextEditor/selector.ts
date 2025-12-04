@@ -1,4 +1,4 @@
-import { EditorStateSnapshot } from "@tiptap/react";
+import type { EditorStateSnapshot } from "@tiptap/react";
 
 export const defaultEditorState = (
   ctx: EditorStateSnapshot,

@@ -1,4 +1,5 @@
-import { Extensions, JSONContent, useEditor, Editor } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
+import type { Extensions, JSONContent, Editor } from "@tiptap/react";
 import { useEffect, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import { UiState } from "../../../types";
