@@ -11,7 +11,9 @@ export type RichTextSelector = (
 export type DefaultEditorState = ReturnType<typeof defaultEditorState>;
 
 export type EditorState<Selector extends RichTextSelector = RichTextSelector> =
-  DefaultEditorState & Selector;
+  DefaultEditorState &
+    ReturnType<Selector> &
+    Record<string, boolean | undefined>;
 
 export type EditorProps = {
   onChange: (content: string | JSONContent, uiState?: Partial<UiState>) => void;
