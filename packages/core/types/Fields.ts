@@ -5,7 +5,7 @@ import {
   EditorState,
   RichTextSelector,
 } from "../components/RichTextEditor/types";
-import { PuckRichTextOptions } from "../components/RichTextEditor/extensions";
+import { PuckRichTextOptions } from "../components/RichTextEditor/extension";
 
 type FieldOption = {
   label: string;

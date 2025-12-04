@@ -1,10 +1,10 @@
 import { memo, useMemo } from "react";
-import { useSyncedEditor } from "./lib/use-synced-editor";
-import { PuckRichText } from "./extensions";
+import { useSyncedEditor } from "../lib/use-synced-editor";
+import { PuckRichText } from "../extension";
 import { EditorContent } from "@tiptap/react";
-import { EditorProps } from "./types";
-import { useAppStore, useAppStoreApi } from "../../store";
-import { LoadedRichTextMenu } from "../RichTextMenu";
+import { EditorProps } from "../types";
+import { useAppStore, useAppStoreApi } from "../../../store";
+import { LoadedRichTextMenu } from "../../RichTextMenu";
 import { EditorInner } from "./EditorInner";
 
 export const Editor = memo((props: EditorProps) => {

@@ -6,7 +6,7 @@ import {
   RichtextField,
   WithPuckProps,
 } from "../../../types";
-import { RichTextRenderFallback } from "../RenderFallback";
+import { RichTextRenderFallback } from "../components/RenderFallback";
 
 export function useRichtextProps(
   fields:
@@ -42,7 +42,9 @@ export function useRichtextProps(
     if (!richtextKeys?.length) return {};
 
     const RichTextRender = lazy(() =>
-      import("../Render").then((m) => ({ default: m.RichTextRender }))
+      import("../components/Render").then((m) => ({
+        default: m.RichTextRender,
+      }))
     );
 
     return richtextKeys.reduce((acc, key) => {

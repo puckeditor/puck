@@ -2,10 +2,10 @@ import { lazy, Suspense } from "react";
 import { Type } from "lucide-react";
 import { FieldPropsInternal } from "../..";
 import { RichtextField as RichtextFieldType } from "../../../../types";
-import { EditorFallback } from "../../../RichTextEditor/EditorFallback";
+import { EditorFallback } from "../../../RichTextEditor/components/EditorFallback";
 
 const Editor = lazy(() =>
-  import("../../../RichTextEditor/Editor").then((m) => ({
+  import("../../../RichTextEditor/components/Editor").then((m) => ({
     default: m.Editor,
   }))
 );

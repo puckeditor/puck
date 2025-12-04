@@ -1,6 +1,6 @@
 "use client";
-import { EditorFallback } from "../../../components/RichTextEditor/EditorFallback";
-import { RichTextRenderFallback } from "../../../components/RichTextEditor/RenderFallback";
+import { EditorFallback } from "../../../components/RichTextEditor/components/EditorFallback";
+import { RichTextRenderFallback } from "../../../components/RichTextEditor/components/RenderFallback";
 import { FieldTransforms } from "../../../types/API/FieldTransforms";
 import { useAppStoreApi } from "../../../store";
 import { setDeep } from "../../../lib/data/set-deep";
@@ -19,13 +19,13 @@ import { getSelectorForId } from "../../get-selector-for-id";
 import { RichtextField, UiState } from "../../../types";
 
 const Editor = lazy(() =>
-  import("../../../components/RichTextEditor/Editor").then((m) => ({
+  import("../../../components/RichTextEditor/components/Editor").then((m) => ({
     default: m.Editor,
   }))
 );
 
 const RichTextRender = lazy(() =>
-  import("../../../components/RichTextEditor/Render").then((m) => ({
+  import("../../../components/RichTextEditor/components/Render").then((m) => ({
     default: m.RichTextRender,
   }))
 );

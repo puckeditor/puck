@@ -1,10 +1,10 @@
 import type { JSONContent } from "@tiptap/react";
 import { generateHTML, generateJSON } from "@tiptap/html";
 import { useMemo } from "react";
-import getClassNameFactory from "../../lib/get-class-name-factory";
-import styles from "./styles.module.css";
-import { PuckRichText } from "./extensions";
-import { RichtextField } from "../../types";
+import getClassNameFactory from "../../../lib/get-class-name-factory";
+import styles from "../styles.module.css";
+import { PuckRichText } from "../extension";
+import { RichtextField } from "../../../types";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 

@@ -1,3 +1,5 @@
+/** Inner component. Should not contain any tiptap imports (except for types) */
+
 import {
   memo,
   ReactNode,
@@ -5,11 +7,11 @@ import {
   KeyboardEvent,
   FocusEventHandler,
 } from "react";
-import styles from "./styles.module.css";
-import getClassNameFactory from "../../lib/get-class-name-factory";
-import { EditorProps } from "./types";
+import styles from "../styles.module.css";
+import getClassNameFactory from "../../../lib/get-class-name-factory";
+import { EditorProps } from "../types";
 import type { Editor } from "@tiptap/core";
-import { useAppStore, useAppStoreApi } from "../../store";
+import { useAppStore, useAppStoreApi } from "../../../store";
 
 const getClassName = getClassNameFactory("RichTextEditor", styles);
 

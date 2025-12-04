@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { EditorState } from "../../RichTextEditor/types";
 import type { Editor } from "@tiptap/react";
-import type { PuckRichTextOptions } from "../../RichTextEditor/extensions";
+import type { PuckRichTextOptions } from "../../RichTextEditor/extension";
 
 type ControlContextType = {
   editor: Editor | null;

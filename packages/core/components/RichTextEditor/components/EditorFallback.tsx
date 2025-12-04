@@ -1,6 +1,8 @@
+/** Fallback component. Should not contain any tiptap imports (except for types) */
+
 import { memo } from "react";
-import { EditorProps } from "./types";
-import { LoadedRichTextMenuInner } from "../RichTextMenu/inner";
+import { EditorProps } from "../types";
+import { LoadedRichTextMenuInner } from "../../RichTextMenu/inner";
 import { EditorInner } from "./EditorInner";
 
 export const EditorFallback = memo((props: EditorProps) => {
