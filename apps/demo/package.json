@@ -13,13 +13,13 @@
     "lucide-react": "^0.468.0",
     "next": "^15.2.4",
     "rc-footer": "^0.6.8",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
   },
   "devDependencies": {
     "@types/node": "^17.0.12",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "eslint-config-custom": "*",
     "typescript": "^5.5.4"
   }
