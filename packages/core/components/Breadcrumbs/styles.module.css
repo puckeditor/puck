@@ -1,0 +1,40 @@
+.Breadcrumbs {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.Breadcrumbs-breadcrumbLabel {
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: var(--puck-color-azure-04);
+  cursor: pointer;
+  font: inherit;
+  flex-shrink: 0;
+  padding: 0;
+  transition: color 50ms ease-in;
+}
+
+.Breadcrumbs-breadcrumbLabel:focus-visible {
+  outline: 2px solid var(--puck-color-azure-05);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Breadcrumbs-breadcrumbLabel:hover {
+    color: var(--puck-color-azure-03);
+    transition: none;
+  }
+}
+
+.Breadcrumbs-breadcrumbLabel:active {
+  color: var(--puck-color-azure-02);
+  transition: none;
+}
+
+.Breadcrumbs-breadcrumb {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
