@@ -463,6 +463,13 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       ref,
     });
 
+    const setRefs = useCallback(
+      (node: any) => {
+        assignRefs<any>([ref, dropRef, userRef], node);
+      },
+      [dropRef]
+    );
+
     const El = as ?? "div";
 
     return (
@@ -475,9 +482,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           hasChildren: contentIds.length > 0,
           isAnimating,
         })}${className ? ` ${className}` : ""}`}
-        ref={(node: any) => {
-          assignRefs<any>([ref, dropRef, userRef], node);
-        }}
+        ref={setRefs}
         data-testid={`dropzone:${zoneCompound}`}
         data-puck-dropzone={zoneCompound}
         style={
