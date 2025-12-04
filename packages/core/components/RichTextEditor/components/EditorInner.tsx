@@ -79,7 +79,7 @@ export const EditorInner = memo(
           disabled: readOnly,
         })}
         style={
-          inline ? {} : { height: initialHeight ?? 256, overflowY: "auto" }
+          inline ? {} : { height: initialHeight ?? 192, overflowY: "auto" }
         }
         onKeyDownCapture={handleHotkeyCapture}
         onBlur={handleBlur}
