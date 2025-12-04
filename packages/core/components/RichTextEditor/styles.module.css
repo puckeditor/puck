@@ -50,6 +50,8 @@
   border-color: var(--puck-color-grey-09);
   border-radius: 4px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   font-family: inherit;
   font-size: var(--puck-font-size-xxs);
   resize: vertical;
@@ -59,9 +61,14 @@
   min-height: 128px;
 }
 
+.RichTextEditor--editor :global(.rich-text) {
+  flex-grow: 1;
+}
+
 /* Place padding on .rich-text, unless it contains .ProseMirror - in which case, apply to .ProseMirror */
 .RichTextEditor--editor :global(.rich-text:not(:has(.ProseMirror))),
 .RichTextEditor--editor :global(.rich-text .ProseMirror) {
+  height: 100%;
   padding: 12px 15px;
 }
 
