@@ -8,6 +8,10 @@
 
 .RichTextEditor :global(.rich-text *) {
   white-space: pre-wrap;
+
+  /* Reinstate user select (removed in data-puck-component) to ensure Firefox selection works with contentEditable  */
+  user-select: auto;
+  -webkit-user-select: auto;
 }
 
 .RichTextEditor :global(.rich-text blockquote) {
