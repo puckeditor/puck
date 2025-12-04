@@ -26,6 +26,7 @@ import {
   Config,
   DragAxis,
   Metadata,
+  Overrides,
   PuckContext,
   WithPuckProps,
 } from "../../types";
@@ -48,6 +49,7 @@ import { useFieldTransforms } from "../../lib/field-transforms/use-field-transfo
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { MemoizeComponent } from "../MemoizeComponent";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -63,6 +65,25 @@ export type DropZoneDndData = {
   depth: number;
   path: UniqueIdentifier[];
   isDroppableTarget: boolean;
+};
+
+const InsertPreview = ({
+  element,
+  label,
+  override,
+}: {
+  element?: Element;
+  label: string;
+  override?: Overrides["drawerItem"];
+}) => {
+  if (element) {
+    return (
+      // Safe to use this since the HTML is set by the user
+      <div dangerouslySetInnerHTML={{ __html: element.outerHTML }} />
+    );
+  }
+
+  return <DrawerItemInner name={label}>{override}</DrawerItemInner>;
 };
 
 export const DropZoneEditPure = (props: DropZoneProps) => (
@@ -155,25 +176,6 @@ const DropZoneChild = ({
 
   let label = componentConfig?.label ?? item?.type.toString() ?? "Component";
 
-  const renderPreview = useMemo(
-    () =>
-      function Preview() {
-        if (item && "element" in item && item.element) {
-          return (
-            // Safe to use this since the HTML is set by the user
-            <div dangerouslySetInnerHTML={{ __html: item.element.outerHTML }} />
-          );
-        }
-
-        return (
-          <DrawerItemInner name={label}>
-            {overrides.componentItem ?? overrides.drawerItem}
-          </DrawerItemInner>
-        );
-      },
-    [componentId, label, overrides]
-  );
-
   const defaultsProps = useMemo(
     () => ({
       ...componentConfig?.defaultProps,
@@ -218,7 +220,7 @@ const DropZoneChild = ({
 
   if (!item) return;
 
-  let Render = componentConfig
+  const Render = componentConfig
     ? componentConfig.render
     : () => (
         <div style={{ padding: 48, textAlign: "center" }}>
@@ -230,10 +232,6 @@ const DropZoneChild = ({
 
   const isInserting =
     "previewType" in item ? item.previewType === "insert" : false;
-
-  if (isInserting) {
-    Render = renderPreview;
-  }
 
   return (
     <DraggableComponent
@@ -249,23 +247,38 @@ const DropZoneChild = ({
       userDragAxis={collisionAxis}
       inDroppableZone={inDroppableZone}
     >
-      {(dragRef) =>
-        componentConfig?.inline && !isInserting ? (
-          <>
-            <Render
-              {...transformedProps}
-              puck={{
-                ...transformedProps.puck,
-                dragRef,
+      {(dragRef) => {
+        if (componentConfig?.inline && !isInserting) {
+          return (
+            <MemoizeComponent
+              Component={Render}
+              componentProps={{
+                ...transformedProps,
+                puck: { ...transformedProps.puck, dragRef },
               }}
             />
-          </>
-        ) : (
+          );
+        }
+
+        return (
           <div ref={dragRef}>
-            <Render {...transformedProps} />
+            {isInserting ? (
+              <InsertPreview
+                label={label}
+                override={overrides.componentItem ?? overrides.drawerItem}
+                element={
+                  "element" in item && item.element ? item.element : undefined
+                }
+              />
+            ) : (
+              <MemoizeComponent
+                Component={Render}
+                componentProps={transformedProps}
+              />
+            )}
           </div>
-        )
-      }
+        );
+      }}
     </DraggableComponent>
   );
 };
