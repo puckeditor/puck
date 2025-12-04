@@ -8,6 +8,7 @@ import { setupZone } from "../../lib/data/setup-zone";
 import { Config, Data, Metadata, UserGenerics } from "../../types";
 import { useSlots } from "../../lib/use-slots";
 import { SlotRenderPure } from "../SlotRender/server";
+import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 type DropZoneRenderProps = {
   zone: string;
@@ -120,9 +121,11 @@ export function Render<
     <SlotRenderPure {...props} config={config} metadata={metadata} />
   ));
 
+  const richtextProps = useRichtextProps(config.root?.fields, props);
+
   if (config.root?.render) {
     return (
-      <config.root.render {...propsWithSlots}>
+      <config.root.render {...propsWithSlots} {...richtextProps}>
         <DropZoneRender
           config={config}
           data={data}

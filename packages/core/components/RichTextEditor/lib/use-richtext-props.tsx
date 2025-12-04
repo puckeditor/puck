@@ -7,14 +7,13 @@ import {
   WithPuckProps,
 } from "../../../types";
 
-export function useRichtextRenderer(
+export function useRichtextProps(
   fields:
     | Fields<any, {}>
     | Fields<any, { type: string } & BaseField>
     | undefined,
   props: WithPuckProps<{
     [x: string]: any;
-    id: string;
   }>
 ) {
   const findAllRichtextKeys = (
@@ -38,7 +37,7 @@ export function useRichtextRenderer(
 
   const richtextKeys = useMemo(() => findAllRichtextKeys(fields), [fields]);
 
-  const richTextRenderer = useMemo(() => {
+  const richtextProps = useMemo(() => {
     if (!richtextKeys) return {};
 
     return richtextKeys.reduce((acc, key) => {
@@ -52,5 +51,5 @@ export function useRichtextRenderer(
     }, {} as Record<string, React.ReactNode>);
   }, [richtextKeys, props]);
 
-  return richTextRenderer;
+  return richtextProps;
 }

@@ -50,7 +50,7 @@ import { getInlineTextTransform } from "../../lib/field-transforms/default-trans
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
-import { useRichtextRenderer } from "../RichTextEditor/lib/use-richtext-renderer";
+import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -535,13 +535,13 @@ const DropZoneRenderItem = ({
     [props]
   );
 
-  const richTextRenderer = useRichtextRenderer(Component.fields, props);
+  const richtextProps = useRichtextProps(Component.fields, props);
 
   return (
     <DropZoneProvider key={props.id} value={nextContextValue}>
       <Component.render
         {...props}
-        {...richTextRenderer}
+        {...richtextProps}
         puck={{
           ...props.puck,
           renderDropZone: DropZoneRenderPure,

@@ -11,6 +11,7 @@ import {
 import React, { useMemo } from "react";
 import { SlotRender } from "../SlotRender";
 import { DropZoneContext } from "../DropZone/context";
+import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 export const renderContext = React.createContext<{
   config: Config;
@@ -66,6 +67,8 @@ export function Render<
     (props) => <SlotRender {...props} config={config} metadata={metadata} />
   );
 
+  const richtextProps = useRichtextProps(config.root?.fields, pageProps);
+
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
       mode: "render",
@@ -78,7 +81,7 @@ export function Render<
     return (
       <renderContext.Provider value={{ config, data: defaultedData, metadata }}>
         <DropZoneProvider value={nextContextValue}>
-          <config.root.render {...propsWithSlots}>
+          <config.root.render {...propsWithSlots} {...richtextProps}>
             <DropZoneRenderPure zone={rootZone} />
           </config.root.render>
         </DropZoneProvider>
