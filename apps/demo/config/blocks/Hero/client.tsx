@@ -3,7 +3,7 @@ import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
 import { AutoField, FieldLabel } from "@/core";
-import { Link2 } from "lucide-react";
+import { AppWindowMac, Link2 } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 
 export const Hero: ComponentConfig<{
@@ -15,6 +15,7 @@ export const Hero: ComponentConfig<{
     };
   };
 }> = {
+  icon: <AppWindowMac size={16} />,
   fields: {
     quote: {
       type: "external",

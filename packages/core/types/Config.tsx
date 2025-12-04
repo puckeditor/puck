@@ -43,6 +43,7 @@ type ComponentConfigInternal<
 > = {
   render: PuckComponent<RenderProps>;
   label?: string;
+  icon?: React.ReactNode;
   defaultProps?: FieldProps;
   fields?: Fields<FieldProps, UserField>;
   permissions?: Partial<Permissions>;

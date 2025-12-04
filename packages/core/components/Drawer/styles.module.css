@@ -30,6 +30,7 @@
   justify-content: space-between;
   align-items: center;
   transition: background-color 50ms ease-in, color 50ms ease-in;
+  gap: 8px;
 }
 
 .DrawerItem--disabled .DrawerItem-draggable {
@@ -64,4 +65,19 @@
   overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
+}
+
+.DrawerItem-componentIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.DrawerItem-componentIcon svg {
+  width: 16px;
+  height: 16px;
 }

@@ -4,6 +4,7 @@ import { ComponentConfig } from "@/core";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
+import { SquareDashedMousePointer } from "lucide-react";
 
 const getClassName = getClassNameFactory("Logos", styles);
 
@@ -15,6 +16,7 @@ export type LogosProps = {
 };
 
 export const Logos: ComponentConfig<LogosProps> = {
+  icon: <SquareDashedMousePointer size={16} />,
   fields: {
     logos: {
       type: "array",

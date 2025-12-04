@@ -10,9 +10,11 @@ const getClassName = getClassNameFactory("ComponentList", styles);
 const ComponentListItem = ({
   name,
   label,
+  icon,
 }: {
   name: string;
   label?: string;
+  icon?: ReactNode;
   index?: number; // TODO deprecate
 }) => {
   const overrides = useAppStore((s) => s.overrides);
@@ -33,7 +35,7 @@ const ComponentListItem = ({
   }, [overrides]);
 
   return (
-    <Drawer.Item label={label} name={name} isDragDisabled={!canInsert}>
+    <Drawer.Item label={label} name={name} icon={icon} isDragDisabled={!canInsert}>
       {overrides.componentItem ?? overrides.drawerItem}
     </Drawer.Item>
   );
@@ -87,13 +89,13 @@ const ComponentList = ({
         <Drawer>
           {children ||
             Object.keys(config.components).map((componentKey) => {
+              const componentConfig = config.components[componentKey];
               return (
                 <ComponentListItem
                   key={componentKey}
-                  label={
-                    config.components[componentKey]["label"] ?? componentKey
-                  }
+                  label={componentConfig["label"] ?? componentKey}
                   name={componentKey}
+                  icon={componentConfig["icon"]}
                 />
               );
             })}
