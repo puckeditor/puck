@@ -9,6 +9,10 @@ export type ItemWithId = {
 
 export type ArrayState = { items: ItemWithId[]; openId: string };
 
+export type HotkeyState = {
+  enabled: boolean;
+}
+
 export type UiState = {
   leftSideBarVisible: boolean;
   rightSideBarVisible: boolean;

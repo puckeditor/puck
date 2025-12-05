@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { useAppStore } from "../store";
 
 const keys = [
   "ctrl",
@@ -168,7 +169,12 @@ export const monitorHotkeys = (doc: Document) => {
 };
 
 export const useMonitorHotkeys = () => {
-  useEffect(() => monitorHotkeys(document), []);
+  const enabledHotkeys = useAppStore((s) => s.hotkeys.enabled);
+
+  useEffect(() => {
+    if (!enabledHotkeys) return;
+    return monitorHotkeys(document);
+  }, [enabledHotkeys]);
 };
 
 export const useHotkey = (combo: KeyMapStrict, cb: Function) => {
