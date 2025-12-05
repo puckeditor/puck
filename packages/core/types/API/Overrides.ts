@@ -81,3 +81,11 @@ export type FieldRenderFunctions<
   },
   "custom"
 >;
+
+export interface RenderOverrides {
+  slot?: RenderFunc<{
+    children?: ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
+  }>;
+}
