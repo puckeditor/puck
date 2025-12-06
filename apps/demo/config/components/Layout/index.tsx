@@ -87,6 +87,23 @@ Layout.displayName = "Layout";
 
 export { Layout };
 
+const gridLayoutFields = {
+  ...layoutField,
+  objectFields: {
+    spanCol: layoutField.objectFields.spanCol,
+    spanRow: layoutField.objectFields.spanRow,
+    padding: layoutField.objectFields.padding,
+  },
+};
+
+const flexLayoutFields = {
+  ...layoutField,
+  objectFields: {
+    grow: layoutField.objectFields.grow,
+    padding: layoutField.objectFields.padding,
+  },
+};
+
 export function withLayout<
   ThisComponentConfig extends ComponentConfig<any> = ComponentConfig
 >(componentConfig: ThisComponentConfig): ThisComponentConfig {
@@ -110,26 +127,13 @@ export function withLayout<
       if (params.parent?.type === "Grid") {
         return {
           ...componentConfig.fields,
-          layout: {
-            ...layoutField,
-            objectFields: {
-              spanCol: layoutField.objectFields.spanCol,
-              spanRow: layoutField.objectFields.spanRow,
-              padding: layoutField.objectFields.padding,
-            },
-          },
+          layout: gridLayoutFields,
         };
       }
       if (params.parent?.type === "Flex") {
         return {
           ...componentConfig.fields,
-          layout: {
-            ...layoutField,
-            objectFields: {
-              grow: layoutField.objectFields.grow,
-              padding: layoutField.objectFields.padding,
-            },
-          },
+          layout: flexLayoutFields,
         };
       }
 
