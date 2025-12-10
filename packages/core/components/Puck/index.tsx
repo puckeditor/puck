@@ -417,5 +417,6 @@ export function Puck<
 
 Puck.Components = Components;
 Puck.Fields = Fields;
+Puck.Layout = Layout;
 Puck.Outline = Outline;
 Puck.Preview = Preview;
