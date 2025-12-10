@@ -39,7 +39,7 @@ const FieldSideBar = () => {
   );
 
   return (
-    <SidebarSection noPadding noBorderTop showBreadcrumbs title={title}>
+    <SidebarSection noBorderTop showBreadcrumbs title={title}>
       <Fields />
     </SidebarSection>
   );
@@ -181,6 +181,11 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     "toggle" | "min-content"
   >("toggle");
 
+  const hasLegacySideBarPlugin = useMemo(
+    () => !!plugins?.find((p) => p.name === "legacy-side-bar"),
+    [plugins]
+  );
+
   const pluginItems = useMemo(() => {
     const details: Record<string, MenuItem & { render: () => ReactElement }> =
       {};
@@ -190,7 +195,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     const combinedPlugins: PluginInternal[] = [
       ...defaultPlugins,
       ...(plugins ?? []),
-    ];
+    ].sort((a) => (a.name === "legacy-side-bar" ? -1 : 1)); // Always place legacy-side-bar first
 
     if (!plugins?.some((p) => p.name === "fields")) {
       combinedPlugins.push(fieldsPlugin());
@@ -226,7 +231,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
           },
           isActive: leftSideBarVisible && currentPlugin === plugin.name,
           render: plugin.render,
-          mobileOnly: plugin.mobileOnly,
+          mobileOnly: hasLegacySideBarPlugin || plugin.mobileOnly,
+          desktopOnly: plugin.name === "legacy-side-bar" || plugin.desktopOnly,
         };
       }
     });
@@ -250,7 +256,12 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <div className={`Puck ${getClassName()}`} id={instanceId}>
+    <div
+      className={`Puck ${getClassName({
+        hidePlugins: hasLegacySideBarPlugin,
+      })}`}
+      id={instanceId}
+    >
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
           {children || (
@@ -273,7 +284,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                   style={layoutOptions}
                 >
                   <div className={getLayoutClassName("header")}>
-                    <Header />
+                    <Header hidePlugins={hasLegacySideBarPlugin} />
                   </div>
                   <div className={getLayoutClassName("nav")}>
                     <Nav

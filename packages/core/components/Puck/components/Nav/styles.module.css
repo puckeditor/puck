@@ -121,3 +121,13 @@
     display: none;
   }
 }
+
+.NavItem--desktopOnly {
+  display: none;
+}
+
+@media (min-width: 638px) {
+  .NavItem--desktopOnly {
+    display: block;
+  }
+}

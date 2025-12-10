@@ -11,6 +11,10 @@
   .PuckHeader {
     padding-left: 67px;
   }
+
+  .PuckHeader--hidePlugins {
+    padding-left: 0;
+  }
 }
 
 .PuckHeader-inner {
@@ -26,6 +30,10 @@
 @media (min-width: 638px) {
   .PuckHeader-inner {
     border-left: 1px solid var(--puck-color-grey-09);
+  }
+
+  .PuckHeader--hidePlugins .PuckHeader-inner {
+    border-left: none;
   }
 }
 

@@ -69,6 +69,10 @@
     grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
     grid-template-rows: min-content auto;
   }
+
+  .Puck--hidePlugins .PuckLayout-inner {
+    --puck-side-nav-width: 0;
+  }
 }
 
 .PuckLayout--mounted .PuckLayout-inner {
@@ -219,7 +223,7 @@
 .PuckPluginTab {
   display: none;
   flex-grow: 1;
-  overflow: hidden;
+  max-height: 100%;
 }
 
 .PuckPluginTab--visible {
@@ -229,5 +233,5 @@
 
 .PuckPluginTab-body {
   flex-grow: 1;
-  overflow: hidden;
+  max-height: 100%;
 }
