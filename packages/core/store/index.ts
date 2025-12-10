@@ -80,7 +80,7 @@ export type AppStore<
   setStatus: (status: Status) => void;
   iframe: IframeConfig;
   selectedItem?: G["UserData"]["content"][0] | null;
-
+  getCurrentData: () => G["UserData"]["content"][0] | G["UserData"]["root"];
   setUi: (ui: Partial<UiState>, recordHistory?: boolean) => void;
   getComponentConfig: (type?: string) => ComponentConfig | null | undefined;
   onAction?: (action: PuckAction, newState: AppState, state: AppState) => void;
@@ -128,6 +128,11 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
       history: createHistorySlice(set, get),
       nodes: createNodesSlice(set, get),
       permissions: createPermissionsSlice(set, get),
+      getCurrentData: () => {
+        const s = get();
+
+        return s.selectedItem ?? s.state.data.root;
+      },
       getComponentConfig: (type?: string) => {
         const { config, selectedItem } = get();
         const rootFields = config.root?.fields || defaultPageFields;

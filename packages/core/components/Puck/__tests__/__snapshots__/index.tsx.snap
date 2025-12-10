@@ -29,6 +29,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
     "loading": false,
   },
   "getComponentConfig": [Function],
+  "getCurrentData": [Function],
   "history": {
     "back": [Function],
     "currentHistory": [Function],

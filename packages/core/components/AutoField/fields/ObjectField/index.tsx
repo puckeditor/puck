@@ -1,29 +1,38 @@
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 import { MoreVertical } from "lucide-react";
-import { AutoFieldPrivate, FieldPropsInternal } from "../..";
-import { NestedFieldProvider, useNestedFieldContext } from "../../context";
+import { FieldPropsInternal } from "../..";
+import { useNestedFieldContext } from "../../context";
+import { useAppStore } from "../../../../store";
+import { getDeep } from "../../../../lib/data/get-deep";
+import { SubField } from "../../subfield";
+import { useFieldStoreApi } from "../../store";
 
 const getClassName = getClassNameFactory("ObjectField", styles);
 
 export const ObjectField = ({
   field,
   onChange,
-  value,
-  name,
+  id,
+  name = id,
   label,
   labelIcon,
   Label,
   readOnly,
-  id,
 }: FieldPropsInternal) => {
-  const { readOnlyFields, localName = name } = useNestedFieldContext();
+  const { localName = name } = useNestedFieldContext();
+
+  const fieldStore = useFieldStoreApi();
+
+  const canEdit = useAppStore(
+    (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
+  );
+
+  const getValue = () => getDeep(fieldStore.getState(), name) ?? {};
 
   if (field.type !== "object" || !field.objectFields) {
     return null;
   }
-
-  const data = value || {};
 
   return (
     <Label
@@ -36,45 +45,28 @@ export const ObjectField = ({
         <fieldset className={getClassName("fieldset")}>
           {Object.keys(field.objectFields!).map((subName) => {
             const subField = field.objectFields![subName];
-
             const subPath = `${localName}.${subName}`;
 
-            const subReadOnly = readOnly ? readOnly : readOnlyFields[subPath];
-
-            const label = subField.label || subName;
-
             return (
-              <NestedFieldProvider
+              <SubField
                 key={subPath}
-                name={localName || id}
+                id={`${id}_${subName}`}
+                name={name}
                 subName={subName}
-                readOnlyFields={readOnlyFields}
-              >
-                <AutoFieldPrivate
-                  name={subPath}
-                  label={subPath}
-                  id={`${id}_${subName}`}
-                  readOnly={subReadOnly}
-                  field={{
-                    ...subField,
-                    label, // May be used by custom fields
-                  }}
-                  value={data[subName]}
-                  onChange={(val, ui) => {
-                    // Skip onChange if value hasn't changed to prevent infinite loop
-                    if (data[subName] === val) {
-                      return;
-                    }
-                    onChange(
-                      {
-                        ...data,
-                        [subName]: val,
-                      },
-                      ui
-                    );
-                  }}
-                />
-              </NestedFieldProvider>
+                localName={localName}
+                field={subField}
+                forceReadOnly={!canEdit}
+                onChange={(subValue, ui, subName) => {
+                  const value = getValue();
+
+                  // Skip onChange if value hasn't changed
+                  if (value[subName] === subValue) {
+                    return;
+                  }
+
+                  onChange({ ...value, [subName]: subValue }, ui);
+                }}
+              />
             );
           })}
         </fieldset>

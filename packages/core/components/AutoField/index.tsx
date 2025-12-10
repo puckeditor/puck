@@ -1,6 +1,5 @@
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Field, FieldProps } from "../../types";
-import { UiState } from "../../types";
 
 import styles from "./styles.module.css";
 import {
@@ -10,7 +9,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from "react";
 import {
   RadioField,
@@ -21,96 +19,21 @@ import {
   TextareaField,
   RichtextField,
 } from "./fields";
-import { Lock } from "lucide-react";
 import { ObjectField } from "./fields/ObjectField";
 import { useAppStore } from "../../store";
 import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
+import { useShallow } from "zustand/react/shallow";
+import { getDeep } from "../../lib/data/get-deep";
+import type {
+  FieldLabelPropsInternal,
+  FieldPropsInternalOptional,
+} from "./FieldLabel";
+import { FieldLabelInternal } from "./FieldLabel";
+import { useFieldStore, useFieldStoreApi, fieldContextStore } from "./store";
 
 const getClassName = getClassNameFactory("Input", styles);
 const getClassNameWrapper = getClassNameFactory("InputWrapper", styles);
-
-export const FieldLabel = ({
-  children,
-  icon,
-  label,
-  el = "label",
-  readOnly,
-  className,
-}: {
-  children?: ReactNode;
-  icon?: ReactNode;
-  label: string;
-  el?: "label" | "div";
-  readOnly?: boolean;
-  className?: string;
-}) => {
-  const El = el;
-  return (
-    <El className={className}>
-      <div className={getClassName("label")}>
-        {icon ? <div className={getClassName("labelIcon")}>{icon}</div> : <></>}
-        {label}
-
-        {readOnly && (
-          <div className={getClassName("disabledIcon")} title="Read-only">
-            <Lock size="12" />
-          </div>
-        )}
-      </div>
-      {children}
-    </El>
-  );
-};
-
-type FieldLabelPropsInternal = {
-  children?: ReactNode;
-  icon?: ReactNode;
-  label?: string;
-  el?: "label" | "div";
-  readOnly?: boolean;
-};
-
-export const FieldLabelInternal = ({
-  children,
-  icon,
-  label,
-  el = "label",
-  readOnly,
-}: FieldLabelPropsInternal) => {
-  const overrides = useAppStore((s) => s.overrides);
-
-  const Wrapper = useMemo(
-    () => overrides.fieldLabel || FieldLabel,
-    [overrides]
-  );
-
-  if (!label) {
-    return <>{children}</>;
-  }
-
-  return (
-    <Wrapper
-      label={label}
-      icon={icon}
-      className={getClassName({ readOnly })}
-      readOnly={readOnly}
-      el={el}
-    >
-      {children}
-    </Wrapper>
-  );
-};
-
-type FieldPropsInternalOptional<ValueType = any, F = Field<any>> = FieldProps<
-  F,
-  ValueType
-> & {
-  Label?: React.FC<FieldLabelPropsInternal>;
-  label?: string;
-  labelIcon?: ReactNode;
-  name?: string;
-};
 
 export type FieldPropsInternal<ValueType = any, F = Field<any>> = FieldProps<
   F,
@@ -122,6 +45,8 @@ export type FieldPropsInternal<ValueType = any, F = Field<any>> = FieldProps<
   id: string;
   name?: string;
 };
+
+export { FieldLabel } from "./FieldLabel";
 
 const defaultFields = {
   array: ArrayField,
@@ -145,7 +70,7 @@ function AutoFieldInternal<
 ) {
   const dispatch = useAppStore((s) => s.dispatch);
   const overrides = useAppStore((s) => s.overrides);
-  const readOnly = useAppStore((s) => s.selectedItem?.readOnly);
+  const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
   const nestedFieldContext = useContext(NestedFieldContext);
 
   const { id, Label = FieldLabelInternal } = props;
@@ -174,6 +99,13 @@ function AutoFieldInternal<
     [overrides]
   );
 
+  const fieldValue = useFieldStore((s) => {
+    // Always set a value for custom fields, or when an override is provided
+    if (field.type === "custom" || overrides.fieldTypes?.[field.type]) {
+      return getDeep(s, props.name ?? resolvedId);
+    }
+  });
+
   const mergedProps = useMemo(
     () => ({
       ...props,
@@ -182,8 +114,9 @@ function AutoFieldInternal<
       labelIcon,
       Label,
       id: resolvedId,
+      value: fieldValue,
     }),
-    [props, field, label, labelIcon, Label, resolvedId]
+    [props, field, label, labelIcon, Label, resolvedId, fieldValue]
   );
 
   const onFocus = useCallback(
@@ -271,7 +204,7 @@ function AutoFieldInternal<
         }}
       >
         <FieldComponent {...mergedProps}>
-          <Children {...mergedProps} />
+          <Children {...(mergedProps as any)} />
         </FieldComponent>
       </div>
     </NestedFieldContext.Provider>
@@ -284,51 +217,18 @@ export function AutoFieldPrivate<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
+  props: Omit<FieldPropsInternalOptional<ValueType, FieldType>, "value"> & {
     Label?: React.FC<FieldLabelPropsInternal>;
+    value?: any;
   }
 ) {
-  const isFocused = useAppStore((s) => s.state.ui.field.focus === props.name);
-  const { value, onChange } = props;
-
-  const [localValue, setLocalValue] = useState(value);
-
-  const onChangeLocal = useCallback(
-    (val: any, ui?: Partial<UiState>) => {
-      setLocalValue(val);
-
-      onChange(val, ui);
-    },
-    [onChange]
-  );
-
-  useEffect(() => {
-    // Prevent global state from setting local state if this field is focused
-    if (!isFocused) {
-      setLocalValue(value);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    if (!isFocused) {
-      if (value !== localValue) {
-        setLocalValue(value);
-      }
-    }
-  }, [isFocused, value, localValue]);
-
-  const localProps = {
-    value: localValue,
-    onChange: onChangeLocal,
-  };
-
-  return <AutoFieldInternal<ValueType, FieldType> {...props} {...localProps} />;
+  return <AutoFieldInternal<ValueType, FieldType> {...props} />;
 }
 
-export function AutoField<
+function AutoFieldPublicInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->(props: FieldProps<FieldType, ValueType>) {
+>({ value, ...props }: FieldProps<FieldType, ValueType> & { value: any }) {
   const DefaultLabel = useMemo(() => {
     const DefaultLabel = (labelProps: any) => (
       <div
@@ -340,11 +240,47 @@ export function AutoField<
     return DefaultLabel;
   }, [props.readOnly]);
 
+  const fieldStore = useFieldStoreApi();
+
+  const onChange = useCallback(
+    (value: any) => {
+      if (!props.id) return;
+
+      fieldStore.setState({ [props.id]: value });
+
+      props.onChange(value);
+    },
+    [fieldStore, props.onChange, props.id]
+  );
+
+  useEffect(() => {
+    if (!props.id) return;
+
+    fieldStore.setState({ [props.id]: value });
+  }, [props.id, value, fieldStore]);
+
+  return (
+    <AutoFieldInternal<ValueType, FieldType>
+      {...props}
+      onChange={onChange}
+      Label={DefaultLabel}
+    />
+  );
+}
+
+export function AutoField<
+  ValueType = any,
+  FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
+>(props: FieldProps<FieldType, ValueType> & { value: any }) {
+  const id = useSafeId();
+
   if (props.field.type === "slot") {
     return null;
   }
 
   return (
-    <AutoFieldInternal<ValueType, FieldType> {...props} Label={DefaultLabel} />
+    <fieldContextStore.Provider value={{ [id]: props.value }}>
+      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={id} />
+    </fieldContextStore.Provider>
   );
 }

@@ -13,7 +13,7 @@ import { Modal } from "../Modal";
 import { Heading } from "../Heading";
 import { Loader } from "../Loader";
 import { Button } from "../Button";
-import { AutoFieldPrivate } from "../AutoField";
+import { AutoField, AutoFieldPrivate, FieldLabel } from "../AutoField";
 import { IconButton } from "../IconButton";
 
 const getClassName = getClassNameFactory("ExternalInput", styles);
@@ -236,23 +236,25 @@ export const ExternalInput = ({
                         className={getClassNameModal("field")}
                         key={fieldName}
                       >
-                        <AutoFieldPrivate
-                          field={filterField}
-                          name={fieldName}
-                          id={`external_field_${fieldName}_filter`}
-                          label={filterField.label || fieldName}
-                          value={filters[fieldName]}
-                          onChange={(value) => {
-                            const newFilters = {
-                              ...filters,
-                              [fieldName]: value,
-                            };
+                        <FieldLabel label={filterField.label || fieldName}>
+                          <AutoField
+                            field={filterField}
+                            id={`external_field_${fieldName}_filter`}
+                            value={filters[fieldName]}
+                            onChange={(value) => {
+                              setFilters((filters) => {
+                                const newFilters = {
+                                  ...filters,
+                                  [fieldName]: value,
+                                };
 
-                            setFilters(newFilters);
+                                search(searchQuery, newFilters);
 
-                            search(searchQuery, newFilters);
-                          }}
-                        />
+                                return newFilters;
+                              });
+                            }}
+                          />
+                        </FieldLabel>
                       </div>
                     );
                   })}

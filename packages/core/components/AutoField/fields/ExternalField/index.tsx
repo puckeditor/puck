@@ -1,24 +1,25 @@
 import { useEffect } from "react";
-import { FieldPropsInternal } from "../..";
+import type { FieldPropsInternal } from "../..";
 import type {
   ExternalField as ExternalFieldType,
   ExternalFieldWithAdaptor,
 } from "../../../../types";
-
 import { ExternalInput } from "../../../ExternalInput";
 import { Link } from "lucide-react";
+import { useDeepField } from "../../lib/use-deep-field";
 
 export const ExternalField = ({
   field,
   onChange,
-  value,
-  name,
+  id,
+  name = id,
   label,
   labelIcon,
   Label,
-  id,
   readOnly,
 }: FieldPropsInternal) => {
+  const value = useDeepField(name);
+
   // DEPRECATED
   const validField = field as ExternalFieldType;
   const deprecatedField = field as ExternalFieldWithAdaptor;
