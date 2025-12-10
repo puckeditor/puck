@@ -22,7 +22,11 @@ const getClassName = getClassNameFactory("PuckHeader", styles);
 const HeaderInner = <
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
->() => {
+>({
+  hidePlugins,
+}: {
+  hidePlugins: boolean;
+}) => {
   const {
     onPublish,
     renderHeader,
@@ -140,7 +144,11 @@ const HeaderInner = <
       }
     >
       <header
-        className={getClassName({ leftSideBarVisible, rightSideBarVisible })}
+        className={getClassName({
+          leftSideBarVisible,
+          rightSideBarVisible,
+          hidePlugins,
+        })}
       >
         <div className={getClassName("inner")}>
           <div className={getClassName("toggle")}>

@@ -11,6 +11,7 @@ export type MenuItem = {
   icon?: ReactNode;
   isActive?: boolean;
   mobileOnly?: boolean;
+  desktopOnly?: boolean;
 };
 
 export const MenuItem = ({
@@ -19,9 +20,16 @@ export const MenuItem = ({
   onClick,
   isActive,
   mobileOnly,
+  desktopOnly,
 }: MenuItem) => {
   return (
-    <li className={getClassNameItem({ active: isActive, mobileOnly })}>
+    <li
+      className={getClassNameItem({
+        active: isActive,
+        mobileOnly,
+        desktopOnly,
+      })}
+    >
       {onClick && (
         <div className={getClassNameItem("link")} onClick={onClick}>
           {icon && <span className={getClassNameItem("linkIcon")}>{icon}</span>}

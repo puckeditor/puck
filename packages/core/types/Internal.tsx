@@ -102,4 +102,7 @@ export type RenderFunc<
   Props extends { [key: string]: any } = { children: ReactNode }
 > = (props: Props) => ReactElement;
 
-export type PluginInternal = Plugin & { mobileOnly?: boolean };
+export type PluginInternal = Plugin & {
+  mobileOnly?: boolean;
+  desktopOnly?: boolean;
+};

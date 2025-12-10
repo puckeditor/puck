@@ -21,15 +21,7 @@
   border-top: 0px;
 }
 
-.SidebarSection-content {
-  padding: 16px;
-}
-
-.SidebarSection--noPadding > .SidebarSection-content {
-  padding: 0px;
-}
-
-.SidebarSection--noPadding > .SidebarSection-content:last-child {
+.SidebarSection-content:last-child {
   padding-bottom: 4px;
 }
 
