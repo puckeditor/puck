@@ -61,7 +61,7 @@ const PluginTab = ({
   );
 };
 
-export const Layout = ({ children }: { children: ReactNode }) => {
+export const Layout = ({ children }: { children?: ReactNode }) => {
   const {
     iframe: _iframe,
     dnd,
