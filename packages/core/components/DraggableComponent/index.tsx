@@ -261,7 +261,6 @@ export const DraggableComponent = ({
   const { style, recompute } = useOverlayTransform(ref.current, {
     container: portalContainerEl,
   });
-  console.log('style', style);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
 
@@ -275,7 +274,7 @@ export const DraggableComponent = ({
 
   useEffect(() => {
     registerNode(id, {
-      // keep sync exposed: DropZone triggers it after min-height animations to realign overlays once layout settles
+      // keep recompute here: DropZone triggers it after min-height animations to realign overlays once layout settles
       methods: { sync: recompute, showOverlay, hideOverlay },
       element: ref.current ?? null,
     });
@@ -433,7 +432,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     startTransition(() => {
       if (hover || indicativeHover || isSelected) {
-        // Geometry is already recalculated by useOverlayTransform observers; no manual recompute needed here.
+        recompute();
         setIsVisible(true);
         setThisWasDragging(false);
       } else {
@@ -447,7 +446,7 @@ export const DraggableComponent = ({
   const onDragFinished = useOnDragFinished((finished) => {
     if (finished) {
       startTransition(() => {
-        // Overlay transform already resyncs on scroll/resize/mutations; drag completion doesn't need a force recompute.
+        recompute();
         setDragFinished(true);
       });
     } else {
