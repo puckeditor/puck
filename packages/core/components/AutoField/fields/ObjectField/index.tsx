@@ -61,6 +61,10 @@ export const ObjectField = ({
                   }}
                   value={data[subName]}
                   onChange={(val, ui) => {
+                    // Skip onChange if value hasn't changed to prevent infinite loop
+                    if (data[subName] === val) {
+                      return;
+                    }
                     onChange(
                       {
                         ...data,

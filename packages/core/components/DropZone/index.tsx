@@ -27,6 +27,7 @@ import {
   DragAxis,
   Fields,
   Metadata,
+  Overrides,
   PuckContext,
   WithPuckProps,
 } from "../../types";
@@ -51,6 +52,7 @@ import { getSlotTransform } from "../../lib/field-transforms/default-transforms/
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
+import { MemoizeComponent } from "../MemoizeComponent";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -66,6 +68,25 @@ export type DropZoneDndData = {
   depth: number;
   path: UniqueIdentifier[];
   isDroppableTarget: boolean;
+};
+
+const InsertPreview = ({
+  element,
+  label,
+  override,
+}: {
+  element?: Element;
+  label: string;
+  override?: Overrides["drawerItem"];
+}) => {
+  if (element) {
+    return (
+      // Safe to use this since the HTML is set by the user
+      <div dangerouslySetInnerHTML={{ __html: element.outerHTML }} />
+    );
+  }
+
+  return <DrawerItemInner name={label}>{override}</DrawerItemInner>;
 };
 
 export const DropZoneEditPure = (props: DropZoneProps) => (
@@ -158,25 +179,6 @@ const DropZoneChild = ({
 
   let label = componentConfig?.label ?? item?.type.toString() ?? "Component";
 
-  const renderPreview = useMemo(
-    () =>
-      function Preview() {
-        if (item && "element" in item && item.element) {
-          return (
-            // Safe to use this since the HTML is set by the user
-            <div dangerouslySetInnerHTML={{ __html: item.element.outerHTML }} />
-          );
-        }
-
-        return (
-          <DrawerItemInner name={label}>
-            {overrides.componentItem ?? overrides.drawerItem}
-          </DrawerItemInner>
-        );
-      },
-    [componentId, label, overrides]
-  );
-
   const defaultsProps = useMemo(
     () => ({
       ...componentConfig?.defaultProps,
@@ -222,7 +224,7 @@ const DropZoneChild = ({
 
   if (!item) return;
 
-  let Render = componentConfig
+  const Render = componentConfig
     ? componentConfig.render
     : () => (
         <div style={{ padding: 48, textAlign: "center" }}>
@@ -234,10 +236,6 @@ const DropZoneChild = ({
 
   const isInserting =
     "previewType" in item ? item.previewType === "insert" : false;
-
-  if (isInserting) {
-    Render = renderPreview;
-  }
 
   return (
     <DraggableComponent
@@ -253,23 +251,38 @@ const DropZoneChild = ({
       userDragAxis={collisionAxis}
       inDroppableZone={inDroppableZone}
     >
-      {(dragRef) =>
-        componentConfig?.inline && !isInserting ? (
-          <>
-            <Render
-              {...transformedProps}
-              puck={{
-                ...transformedProps.puck,
-                dragRef,
+      {(dragRef) => {
+        if (componentConfig?.inline && !isInserting) {
+          return (
+            <MemoizeComponent
+              Component={Render}
+              componentProps={{
+                ...transformedProps,
+                puck: { ...transformedProps.puck, dragRef },
               }}
             />
-          </>
-        ) : (
+          );
+        }
+
+        return (
           <div ref={dragRef}>
-            <Render {...transformedProps} />
+            {isInserting ? (
+              <InsertPreview
+                label={label}
+                override={overrides.componentItem ?? overrides.drawerItem}
+                element={
+                  "element" in item && item.element ? item.element : undefined
+                }
+              />
+            ) : (
+              <MemoizeComponent
+                Component={Render}
+                componentProps={transformedProps}
+              />
+            )}
           </div>
-        )
-      }
+        );
+      }}
     </DraggableComponent>
   );
 };
@@ -467,6 +480,13 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       ref,
     });
 
+    const setRefs = useCallback(
+      (node: any) => {
+        assignRefs<any>([ref, dropRef, userRef], node);
+      },
+      [dropRef]
+    );
+
     const El = as ?? "div";
 
     return (
@@ -479,9 +499,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           hasChildren: contentIds.length > 0,
           isAnimating,
         })}${className ? ` ${className}` : ""}`}
-        ref={(node: any) => {
-          assignRefs<any>([ref, dropRef, userRef], node);
-        }}
+        ref={setRefs}
         data-testid={`dropzone:${zoneCompound}`}
         data-puck-dropzone={zoneCompound}
         style={
