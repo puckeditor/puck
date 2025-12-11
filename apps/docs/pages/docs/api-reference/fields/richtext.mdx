@@ -1,0 +1,564 @@
+import { Puck, RichTextMenu } from "@/puck";
+import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
+import { Callout } from "nextra/components";
+import { Highlighter, Quote } from "lucide-react";
+
+# Richtext
+
+Render a Rich Text editor field. Extends [Base](base).
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, <strong>world</strong></p>",
+    },
+    render: ({ body }) => body,
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+```tsx {5-7} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+## Params
+
+| Param                                          | Example                                    | Type             | Status   |
+| ---------------------------------------------- | ------------------------------------------ | ---------------- | -------- |
+| [`type`](#type)                                | `type: "richtext"`                         | "richtext"       | Required |
+| [`contentEditable`](#contentEditable)          | `contentEditable: false`                   | Boolean          | -        |
+| [`initialHeight`](#initialheight)              | `initialHeight: 312`                       | Number \| String | -        |
+| [`options`](#options)                          | `options: { bold: false }`                 | Object           | -        |
+| [`renderMenu()`](#rendermenuprops)             | `renderMenu: () => <RichTextMenu />`       | Function         | -        |
+| [`renderInlineMenu()`](#renderinlinemenuprops) | `renderInlineMenu: () => <RichTextMenu />` | Function         | -        |
+| [`tiptap.extensions`](#tiptapextensions)       | `extensions: []`                           | Array            | -        |
+| [`tiptap.selector`](#tiptapselector)           | `selector: (ctx) => ({ ... })`             | Function         | -        |
+
+## Required params
+
+### `type`
+
+The type of the field. Must be `"richtext"` for RichText fields.
+
+```tsx {6} copy showLineNumbers
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+## Optional params
+
+### `contentEditable`
+
+Enable inline text editing for this field. Defaults to `false`.
+
+```tsx {7} copy showLineNumbers
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          contentEditable: true,
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        contentEditable: true,
+      },
+    },
+    defaultProps: {
+      body: "<p>Edit me <strong>inline</strong></p>",
+    },
+    render: ({ body }) => body,
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+### `initialHeight`
+
+Set the initial height for the field input. Defaults to `192`.
+
+```tsx {7} copy showLineNumbers
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          initialHeight: 312,
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<Callout type="info">
+  Does not apply to inline fields when using
+  [`contentEditable`](#contenteditable).
+</Callout>
+
+### `options`
+
+The Rich Text field is built with [Tiptap](https://tiptap.dev). Configure Puck's [included Tiptap extensions](#included-extensions) to modify editing behaviour.
+
+```tsx {7-13} copy showLineNumbers
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          options: {
+            // Disable an included extension
+            bold: false,
+
+            // Configure an included extension
+            heading: { levels: [1, 2] },
+          },
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        contentEditable: true,
+        options: {
+          bold: false,
+          heading: { levels: [1, 2] },
+        },
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, world</p>",
+    },
+    render: ({ body }) => body,
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+#### Included extensions
+
+- [`Blockquote`](https://tiptap.dev/docs/editor/extensions/nodes/blockquote)
+- [`Bold`](https://tiptap.dev/docs/editor/extensions/marks/bold)
+- [`BulletList`](https://tiptap.dev/docs/editor/extensions/nodes/bullet-list)
+- [`Code`](https://tiptap.dev/docs/editor/extensions/marks/code)
+- [`CodeBlock`](https://tiptap.dev/docs/editor/extensions/nodes/code-block)
+- [`Document`](https://tiptap.dev/docs/editor/extensions/nodes/document)
+- [`HardBreak`](https://tiptap.dev/docs/editor/extensions/nodes/hard-break)
+- [`Heading`](https://tiptap.dev/docs/editor/extensions/nodes/heading)
+- [`HorizontalRule`](https://tiptap.dev/docs/editor/extensions/nodes/horizontal-rule)
+- [`Italic`](https://tiptap.dev/docs/editor/extensions/marks/italic)
+- [`ListItem`](https://tiptap.dev/docs/editor/extensions/nodes/list-item)
+- [`ListKeymap`](https://tiptap.dev/docs/editor/extensions/functionality/listkeymap)
+- [`Link`](https://tiptap.dev/docs/editor/extensions/marks/link)
+- [`OrderedList`](https://tiptap.dev/docs/editor/extensions/nodes/ordered-list)
+- [`Paragraph`](https://tiptap.dev/docs/editor/extensions/nodes/paragraph)
+- [`Strike`](https://tiptap.dev/docs/editor/extensions/marks/strike)
+- [`Text`](https://tiptap.dev/docs/editor/extensions/nodes/text)
+- [`TextAlign`](https://tiptap.dev/docs/editor/extensions/functionality/textalign)
+- [`Underline`](https://tiptap.dev/docs/editor/extensions/marks/underline)
+
+### `renderMenu(props)`
+
+Render a custom menu for the field. Use with the [`<RichTextMenu>`](/docs/api-reference/components-rich-text-menu) component to arrange existing controls, or introduce new ones.
+
+Receives [Menu Render Props](#menu-render-props).
+
+```tsx {1, 9-23} copy showLineNumbers
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          renderMenu: ({ children }) => (
+            <RichTextMenu>
+              {/* Render default menu */}
+              {children}
+
+              <RichTextMenu.Group>
+                {/* Render a Blockquote control */}
+                <RichTextMenu.Blockquote />
+
+                {/* Render a custom control */}
+                <RichTextMenu.Control {/* ... */} />
+
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        renderMenu: ({ children }) => (
+          <RichTextMenu>
+            {children}
+            <RichTextMenu.Group>
+              <RichTextMenu.Control icon={<Quote />} />
+              <RichTextMenu.Control
+                icon={<Highlighter />}
+                onClick={() => {
+                  alert("Highlight clicked");
+                }}
+              />
+            </RichTextMenu.Group>
+          </RichTextMenu>
+        ),
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, world</p>",
+    },
+    render: ({ body }) => body,
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+### `renderInlineMenu(props)`
+
+Render a custom inline menu when using [`contentEditable`](#contenteditable). Use with the [`<RichTextMenu>`](/docs/api-reference/components-rich-text-menu) component to arrange existing controls, or introduce new ones.
+
+Receives [Menu Render Props](#menu-render-props).
+
+```tsx {1, 10-24} copy showLineNumbers
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          contentEditable: true,
+          renderInlineMenu: ({ children }) => (
+            <RichTextMenu>
+              {/* Render default menu */}
+              {children}
+
+              <RichTextMenu.Group>
+                {/* Render a Blockquote control */}
+                <RichTextMenu.Blockquote />
+
+                {/* Render a custom control */}
+                <RichTextMenu.Control {/* ... */} />
+
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<PuckPreview
+  config={{
+    components: {
+      Example: {
+        fields: {
+          body: {
+            type: "richtext",
+            contentEditable: true,
+            renderInlineMenu: ({ children }) => (
+              <RichTextMenu>
+                {children}
+                <RichTextMenu.Group>
+                  <RichTextMenu.Blockquote />
+                  <RichTextMenu.Control
+                    icon={<Highlighter />}
+                    onClick={() => {
+                      alert("Highlight clicked");
+                    }}
+                  />
+                </RichTextMenu.Group>
+              </RichTextMenu>
+            ),
+          },
+        },
+        permissions: { drag: false, delete: false, duplicate: false },
+        render: ({ body }) => body,
+      },
+    },
+  }}
+  data={{
+    root: { props: {} },
+    content: [
+      {
+        type: "Example",
+        props: {
+          id: "Example-1",
+          body: "<p>Hello, <strong>world</strong></p>",
+        },
+      },
+    ],
+  }}
+>
+  <Puck.Preview />
+</PuckPreview>
+
+### `tiptap.extensions`
+
+Provide custom [Tiptap extensions](https://tiptap.dev/docs/editor/extensions/overview) to the editor to deeply customize behavior. See [included extensions](#included-extensions).
+
+```tsx {1, 10} copy showLineNumbers
+import Emoji from "@tiptap/extension-emoji";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          tiptap: {
+            extensions: [Emoji],
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+<Callout type="info">
+  TipTap maintains an extensive [library of
+  extensions](https://tiptap.dev/docs/editor/extensions/overview) and
+  documentation for [developing your
+  own](https://tiptap.dev/docs/editor/extensions/custom-extensions).
+</Callout>
+
+### `tiptap.selector`
+
+Extend the [default editor state](#included-state) to access additional editor information in the menu. See [Tiptap docs](https://tiptap.dev/docs/editor/getting-started/install/react#reacting-to-editor-state-changes).
+
+```tsx {9-15, 19-21} copy showLineNumbers
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          tiptap: {
+            selector: ({ editor, readOnly }) => ({
+              isHighlight: editor?.isActive("highlight"),
+              canHighlight:
+                !readOnly && editor?.can().chain().toggleHighlight().run(),
+            }),
+          },
+          renderMenu: ({ editorState }) => (
+            <RichTextMenu>
+              <RichTextMenu.Group>
+                <button disabled={editorState?.canHighlight}>
+                  {editorState?.isHighlight ? "Unhighlight" : "Highlight"}
+                </button>
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+    },
+  },
+};
+```
+
+## Menu Render Props
+
+Render props for [`renderMenu()`](rendermenuprops) and [`renderInlineMenu()`](#renderinlinemenuprops) APIs.
+
+| Param                         | Example          | Type                |
+| ----------------------------- | ---------------- | ------------------- |
+| [`children`](#children)       | `<div />`        | ReactNode           |
+| [`editor`](#editor)           | `{}`             | Editor \| null      |
+| [`editorState`](#editorstate) | `{isBold: true}` | EditorState \| null |
+
+### `children`
+
+The default menu items. Include this to extend the existing menu.
+
+```tsx {1, 9-19} copy showLineNumbers
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          renderMenu: ({ children }) => (
+            <RichTextMenu>
+              {/* Render default menu */}
+              {children}
+
+              <RichTextMenu.Group>
+                {/* Render a Blockquote control */}
+                <RichTextMenu.Blockquote />
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `editor`
+
+The Tiptap [Editor Instance](https://tiptap.dev/docs/editor/api/editor). Use this to implement custom controls based on Puck's [included extensions](#included-extensions), and additional extensions provided by [`tiptap.extensions`](#tiptapextensions).
+
+```tsx {9-21} copy showLineNumbers
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          renderMenu: ({ editor }) => (
+            <RichTextMenu>
+              <RichTextMenu.Group>
+                <button
+                  onClick={() =>
+                    editor?.chain().focus().toggleBlockquote().run()
+                  }
+                >
+                  Quote
+                </button>
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `editorState`
+
+Access editor state information without causing re-renders. Provides the [included state](#included-state), and additional state provided by [`tiptap.selector`](#tiptapselector).
+
+```tsx {9-13} copy showLineNumbers
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        description: {
+          type: "richtext",
+          renderMenu: ({ editorState }) => (
+            <RichTextMenu>
+              {editorState?.isBold ? "Bold" : "Not bold"}
+            </RichTextMenu>
+          ),
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+#### Included state
+
+- `isAlignLeft`
+- `canAlignLeft`
+- `isAlignCenter`
+- `canAlignCenter`
+- `isAlignRight`
+- `canAlignRight`
+- `isAlignJustify`
+- `canAlignJustify`
+- `isBold`
+- `canBold`
+- `isItalic`
+- `canItalic`
+- `isUnderline`
+- `canUnderline`
+- `isStrike`
+- `canStrike`
+- `isInlineCode`
+- `canInlineCode`
+- `isBulletList`
+- `canBulletList`
+- `isOrderedList`
+- `canOrderedList`
+- `isCodeBlock`
+- `canCodeBlock`
+- `isBlockquote`
+- `canBlockquote`
+- `canHorizontalRule`
+
+### `readOnly`
+
+Whether or not the field is currently read-only.

@@ -1,0 +1,95 @@
+---
+title: <RichTextMenu.Control>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { RichTextMenu } from "@/puck";
+import { Bold, Italic, Underline } from "lucide-react";
+
+# \<RichTextMenu.Control\>
+
+Render a custom rich text control. Always use inside [`<RichTextMenu.Group>`](rich-text-menu-group). See [included controls](rich-text-menu#included-controls).
+
+```tsx showLineNumbers copy
+<RichTextMenu.Control
+  icon={<Quote />}
+  title="Quote"
+  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+/>
+```
+
+## Control Props
+
+| Prop                    | Example     | Type      | Status   |
+| ----------------------- | ----------- | --------- | -------- |
+| [`icon`](#icon)         | `<Quote />` | ReactNode | Required |
+| [`title`](#title)       | `"Quote"`   | string    | Required |
+| [`onClick`](#onclick)   | `() => {}`  | Function  | Required |
+| [`active`](#active)     | `true`      | Boolean   | -        |
+| [`disabled`](#disabled) | `true`      | Boolean   | -        |
+
+## Required props
+
+### icon
+
+The icon to render for the control, as a React node. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
+
+```tsx showLineNumbers copy {2}
+<RichTextMenu.Control
+  icon={<Quote />}
+  title="Quote"
+  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+/>
+```
+
+### title
+
+An title for the icon control, for accessibility.
+
+```tsx showLineNumbers copy {3}
+<RichTextMenu.Control
+  icon={<Quote />}
+  title="Quote"
+  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+/>
+```
+
+### onClick
+
+A callback to trigger when the control is clicked.
+
+```tsx showLineNumbers copy {4}
+<RichTextMenu.Control
+  icon={<Quote />}
+  title="Quote"
+  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+/>
+```
+
+## Optional props
+
+### active
+
+Whether or not this control is currently active.
+
+```tsx showLineNumbers copy {5}
+<RichTextMenu.Control
+  icon={<Quote />}
+  title="Quote"
+  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+  active={editorState?.isBlockquote}
+/>
+```
+
+### disabled
+
+Whether or not this control is currently disabled.
+
+```tsx showLineNumbers copy {5}
+<RichTextMenu.Control
+  icon={<Quote />}
+  title="Quote"
+  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+  disabled={editorState?.canBlockquote}
+/>
+```

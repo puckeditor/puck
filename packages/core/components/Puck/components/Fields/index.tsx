@@ -1,5 +1,7 @@
 import { Loader } from "../../../Loader";
 import { rootDroppableId } from "../../../../lib/root-droppable-id";
+import { ItemSelector } from "../../../../lib/data/get-item";
+import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
@@ -7,7 +9,6 @@ import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
 import { memo, ReactNode, useCallback, useMemo } from "react";
-import { ItemSelector } from "../../../../lib/data/get-item";
 import { useRegisterFieldsSlice } from "../../../../store/slices/fields";
 import { useShallow } from "zustand/react/shallow";
 import { StoreApi } from "zustand";
@@ -27,62 +28,62 @@ const DefaultFields = ({
 const createOnChange =
   (fieldName: string, appStore: StoreApi<AppStore>) =>
   async (value: any, updatedUi?: Partial<UiState>) => {
-    let currentProps;
-
     const { dispatch, state, selectedItem, resolveComponentData } =
       appStore.getState();
 
     const { data, ui } = state;
     const { itemSelector } = ui;
 
-    // DEPRECATED
+    // DEPRECATED: root without props object
     const rootProps = data.root.props || data.root;
+    const currentProps = selectedItem ? selectedItem.props : rootProps;
 
-    if (selectedItem) {
-      currentProps = selectedItem.props;
-    } else {
-      currentProps = rootProps;
-    }
-
-    const newProps = {
-      ...currentProps,
-      [fieldName]: value,
-    };
+    const newProps = { ...currentProps, [fieldName]: value };
 
     if (selectedItem && itemSelector) {
+      const resolved = await resolveComponentData(
+        { ...selectedItem, props: newProps },
+        "replace"
+      );
+
+      const latestSelector = getSelectorForId(
+        appStore.getState().state,
+        selectedItem.props.id
+      );
+      if (!latestSelector) return;
+
       dispatch({
         type: "replace",
-        destinationIndex: itemSelector.index,
-        destinationZone: itemSelector.zone || rootDroppableId,
-        data: (
+        destinationIndex: latestSelector.index,
+        destinationZone: latestSelector.zone || rootDroppableId,
+        data: resolved.node,
+        ui: updatedUi,
+      });
+
+      return;
+    }
+
+    if (data.root.props) {
+      dispatch({
+        type: "replaceRoot",
+        root: (
           await resolveComponentData(
-            { ...selectedItem, props: newProps },
+            { ...data.root, props: newProps },
             "replace"
           )
         ).node,
-        ui: updatedUi,
+        ui: { ...ui, ...updatedUi },
+        recordHistory: true,
       });
-    } else {
-      if (data.root.props) {
-        dispatch({
-          type: "replaceRoot",
-          root: (
-            await resolveComponentData(
-              { ...data.root, props: newProps },
-              "replace"
-            )
-          ).node,
-          ui: { ...ui, ...updatedUi },
-          recordHistory: true,
-        });
-      } else {
-        // DEPRECATED
-        dispatch({
-          type: "setData",
-          data: { root: newProps },
-        });
-      }
+
+      return;
     }
+
+    // DEPRECATED: root without props object
+    dispatch({
+      type: "setData",
+      data: { root: newProps },
+    });
   };
 
 const FieldsChild = ({ fieldName }: { fieldName: string }) => {

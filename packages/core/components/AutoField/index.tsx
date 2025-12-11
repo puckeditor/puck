@@ -19,6 +19,7 @@ import {
   ArrayField,
   DefaultField,
   TextareaField,
+  RichtextField,
 } from "./fields";
 import { Lock } from "lucide-react";
 import { ObjectField } from "./fields/ObjectField";
@@ -131,6 +132,7 @@ const defaultFields = {
   radio: RadioField,
   text: DefaultField,
   number: DefaultField,
+  richtext: RichtextField,
 };
 
 function AutoFieldInternal<
@@ -166,6 +168,7 @@ function AutoFieldInternal<
       radio: overrides.fieldTypes?.radio || defaultFields.radio,
       text: overrides.fieldTypes?.text || defaultFields.text,
       number: overrides.fieldTypes?.number || defaultFields.number,
+      richtext: overrides.fieldTypes?.richtext || defaultFields.richtext,
     }),
     [overrides]
   );
@@ -220,6 +223,8 @@ function AutoFieldInternal<
     return (_props: any) => null;
   }, [field.type]);
 
+  const fieldKey = field.type === "custom" ? field.key : undefined;
+
   let FieldComponent: React.ComponentType<any> = useMemo(() => {
     if (field.type === "custom") {
       if (!field.render) {
@@ -229,7 +234,7 @@ function AutoFieldInternal<
     } else if (field.type !== "slot") {
       return render[field.type] as (props: FieldProps) => ReactElement;
     }
-  }, [field.type, render]);
+  }, [field.type, fieldKey, render]);
 
   const { visible = true } = props.field;
 

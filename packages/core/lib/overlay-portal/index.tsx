@@ -2,7 +2,10 @@ import "./styles.css";
 
 export const registerOverlayPortal = (
   el: HTMLElement | null | undefined,
-  opts: { disableDrag?: boolean; disableDragOnFocus?: boolean } = {}
+  opts: {
+    disableDrag?: boolean;
+    disableDragOnFocus?: boolean;
+  } = {}
 ) => {
   if (!el) return;
 

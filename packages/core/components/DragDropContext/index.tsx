@@ -353,7 +353,7 @@ const DragDropContextClient = ({
                     thisPreview.componentType,
                     thisPreview.zone,
                     thisPreview.index,
-                    appStore.getState()
+                    appStore
                   );
                 } else if (initialSelector.current) {
                   dispatch({

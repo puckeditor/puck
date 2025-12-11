@@ -14,6 +14,7 @@ import {
   ComponentData,
   RootDataWithProps,
   ResolveDataTrigger,
+  RichtextField,
 } from "../types";
 import { createReducer, PuckAction } from "../reducer";
 import { getItem } from "../lib/data/get-item";
@@ -35,6 +36,7 @@ import { toRoot } from "../lib/data/to-root";
 import { generateId } from "../lib/generate-id";
 import { defaultAppState } from "./default-app-state";
 import { FieldTransforms } from "../types/API/FieldTransforms";
+import type { Editor } from "@tiptap/react";
 
 export { defaultAppState };
 
@@ -78,6 +80,7 @@ export type AppStore<
   setStatus: (status: Status) => void;
   iframe: IframeConfig;
   selectedItem?: G["UserData"]["content"][0] | null;
+
   setUi: (ui: Partial<UiState>, recordHistory?: boolean) => void;
   getComponentConfig: (type?: string) => ComponentConfig | null | undefined;
   onAction?: (action: PuckAction, newState: AppState, state: AppState) => void;
@@ -87,6 +90,13 @@ export type AppStore<
   nodes: NodesSlice;
   permissions: PermissionsSlice;
   fieldTransforms: FieldTransforms;
+  currentRichText?: {
+    inlineComponentId?: string;
+    inline: boolean;
+    field: RichtextField;
+    editor: Editor;
+    id: string;
+  } | null;
 };
 
 export type AppStoreApi = StoreApi<AppStore>;

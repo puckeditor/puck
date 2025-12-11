@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "commander": "^10.0.1",
-    "glob": "^10.3.4",
+    "glob": "^11.1.0",
     "handlebars": "^4.7.7",
     "inquirer": "^9.2.7",
     "prettier": "^2.8.8"

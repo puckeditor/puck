@@ -590,7 +590,7 @@ The parent data object if this item is within a [DropZone](/docs/api-reference/c
 
 Dynamically set the [permissions](/docs/api-reference/permissions) for this component to toggle functionality. Can be used to control the permissions on a specific component instance. Inherits [`permissions`](#permissions). Supports asynchronous calls.
 
-This function is triggered when the component data changes.
+This function is triggered when [`<Puck>`](/docs/api-reference/components/puck) renders, when the component is inserted, when its data changes, or when it's moved to a different parent.
 
 ```tsx {4-12} copy filename="Setting permissions for a specific instance" showLineNumbers
 const config = {
@@ -613,10 +613,10 @@ const config = {
 
 #### Args
 
-| Prop     | Example                                                                             | Type   |
-| -------- | ----------------------------------------------------------------------------------- | ------ |
-| `data`   | `{ props: { title: "Hello, world" }, readOnly: {} }`                                | Object |
-| `params` | `{ appState: {}, changed: {}, permissions: {}, lastData: {}, lastPermissions: {} }` | Object |
+| Prop     | Example                                                                                         | Type   |
+| -------- | ----------------------------------------------------------------------------------------------- | ------ |
+| `data`   | `{ props: { title: "Hello, world" }, readOnly: {} }`                                            | Object |
+| `params` | `{ appState: {}, changed: {}, permissions: {}, lastData: {}, lastPermissions: {}, parent: {} }` | Object |
 
 ##### `data.props`
 
@@ -655,6 +655,12 @@ The data object from the previous run of this function.
 ##### `params.lastPermissions`
 
 The last permissions object created by the previous run of this function.
+
+##### `params.parent`
+
+The [component data](/docs/api-reference/data-model/component-data) of the parent.
+
+If the parent implements [resolveData](#resolvedatadata-params), this parameter will return the unresolved data on initial render.
 
 #### Returns
 

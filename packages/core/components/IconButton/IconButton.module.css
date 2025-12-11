@@ -11,6 +11,10 @@
   transition: background-color 50ms ease-in, color 50ms ease-in;
 }
 
+.IconButton--active {
+  color: var(--puck-color-azure-04);
+}
+
 .IconButton:focus-visible {
   outline: 2px solid var(--puck-color-azure-05);
   outline-offset: -2px;
@@ -18,7 +22,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
-    background: var(--puck-color-azure-12);
+    background: var(--puck-color-grey-10);
     color: var(--puck-color-azure-04);
     cursor: pointer;
     transition: none;

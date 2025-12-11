@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "rm -rf packages/core/dist && turbo run dev --filter=demo",
+    "dev": "rimraf packages/core/dist && turbo run dev --filter=demo",
     "lint": "turbo run lint",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,css}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx,css}\"",
@@ -26,6 +26,7 @@
     "lerna": "^9.0.0",
     "prettier": "^2.5.1",
     "puppeteer": "^24.8.2",
+    "rimraf": "^6.1.2",
     "standard-changelog": "^2.0.21",
     "turbo": "^2.5.8"
   },

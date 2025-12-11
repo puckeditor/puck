@@ -4,14 +4,14 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Button } from "@/core/components/Button";
 import { Section } from "../../components/Section";
-import { PuckComponent, Slot } from "@/core/types";
+import { PuckComponent, RichText, Slot } from "@/core/types";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
 export type HeroProps = {
   quote?: { index: number; label: string };
   title: string | ReactNode;
-  description: string;
+  description: RichText;
   align?: string;
   padding: string;
   image?: {
@@ -60,7 +60,7 @@ export const Hero: PuckComponent<HeroProps> = ({
       <div className={getClassName("inner")}>
         <div className={getClassName("content")}>
           <h1>{title}</h1>
-          <p className={getClassName("subtitle")}>{description}</p>
+          <div className={getClassName("subtitle")}>{description}</div>
           <div className={getClassName("actions")}>
             {buttons.map((button, i) => (
               <Button

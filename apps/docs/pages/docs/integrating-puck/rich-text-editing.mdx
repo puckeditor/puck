@@ -1,0 +1,342 @@
+import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
+import { Puck, RichTextMenu } from "@/puck";
+import { Callout } from "nextra/components";
+
+# Rich Text Editing
+
+Puck supports rich text editing via the [`richtext`](/docs/api-reference/fields/richtext) field.
+
+## Adding a rich text field
+
+To use rich text, add the `richtext` field to your component config:
+
+```tsx copy showLineNumbers {6}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, <strong>world</strong></p><ul><li><p>List item 1</p></li><li><p>List item 2</p></li><li><p>List item 3</p></li></ul>",
+    },
+    render: ({ body }) => {
+      return body;
+    },
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+## Enabling inline editing
+
+Set [`contentEditable`](/docs/api-reference/fields/richtext#contenteditable) to make the field editable inline:
+
+```tsx copy showLineNumbers {7}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          contenEditable: true,
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        contentEditable: true,
+      },
+    },
+    defaultProps: {
+      body: "<p>Edit me <strong>inline:</strong></p><ul><li><p>List item 1</p></li><li><p>List item 2</p></li><li><p>List item 3</p></li></ul>",
+    },
+    render: ({ body }) => {
+      return body;
+    },
+  }}
+  hideActionBar={false}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+## Customizing behavior
+
+The rich text field is built with [Tiptap](https://tiptap.dev), and comes with [several Tiptap extensions](/docs/api-reference/fields/richtext#included-extensions) pre-configured. Editor behavior can be customized by configuring these extensions.
+
+### Disabling functionality
+
+Disable any extension by setting it to `false` in [`options`](/docs/api-reference/fields/richtext#options):
+
+```ts showLineNumbers copy {7-10}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          options: {
+            // Disable bold extension
+            bold: false,
+          },
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        options: { bold: false },
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, <strong>world</strong></p>", // Check sanitization
+    },
+    render: ({ body }) => {
+      return body;
+    },
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+### Configuring extensions
+
+Provide configuration options for the [included extensions](/docs/api-reference/fields/richtext#included-extensions) directly to `options` for further customization:
+
+```ts showLineNumbers copy {7-11}
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          options: {
+            // Restrict headings to h1 and h2
+            // https://tiptap.dev/docs/editor/extensions/nodes/heading
+            heading: { levels: [1, 2] },
+          },
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        options: { heading: { levels: [1, 2] } },
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, <strong>world</strong></p>",
+    },
+    render: ({ body }) => {
+      return body;
+    },
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+## Customizing the menu bar
+
+Use [`renderMenu()`](/docs/api-reference/fields/richtext#rendermenuprops) to customize the menu bar layout using the [`<RichTextMenu>`](/docs/api-reference/components/rich-text-menu) component:
+
+```tsx showLineNumbers copy {1, 9-18}
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          renderMenu: () => (
+            {/*  Always wrap in <RichTextMenu> */}
+            <RichTextMenu>
+              {/* Group items in <RichTextMenu.Group> */}
+              <RichTextMenu.Group>
+                {/* Only include the bold control */}
+                <RichTextMenu.Bold />
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      body: {
+        type: "richtext",
+        renderMenu: () => (
+          <RichTextMenu>
+            <RichTextMenu.Group>
+              <RichTextMenu.Bold />
+            </RichTextMenu.Group>
+          </RichTextMenu>
+        ),
+      },
+    },
+    defaultProps: {
+      body: "<p>Hello, <strong>world</strong></p>",
+    },
+    render: ({ body }) => {
+      return body;
+    },
+  }}
+>
+  <Puck.Preview />
+</ConfigPreview>
+
+<Callout type="info">
+  Hiding a control does not disable the functionality. Users can still use
+  keyboard shortcuts and other input mechanisms. To disable functionality, use
+  [`options`](/docs/api-reference/fields/richtext#options).
+</Callout>
+
+A full list of controls is available in the [included controls API reference](/docs/api-reference/components/rich-text-menu#included-controls).
+
+## Adding custom extensions
+
+### Configure the extension
+
+Provide additional [Tiptap extensions](https://tiptap.dev/docs/editor/extensions/overview) to the [`tiptap.extensions`](/docs/api-reference/fields/richtext#tiptapextensions) parameter to introduce new functionality:
+
+```tsx copy showLineNumbers {1, 9-11}
+import Superscript from "@tiptap/extension-superscript";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          tiptap: {
+            extensions: [Superscript],
+          },
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+### Add a new control
+
+If you're adding a control for a new extension, first update the [`tiptap.selector`](/docs/api-reference/fields/richtext#tiptapselector) to make the state available to the menu:
+
+```tsx copy showLineNumbers {11-14}
+import Superscript from "@tiptap/extension-superscript";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          tiptap: {
+            extensions: [Superscript],
+            selector: ({ editor }) => ({
+              isSuperscript: editor?.isActive("superscript"),
+              canSuperscript: editor?.can().chain().toggleSuperscript().run(),
+            }),
+          },
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+Then implement a new control with [`<RichTextMenu.Control>`](/docs/api-reference/components/rich-text-menu-control) and render it with `renderMenu()`:
+
+```tsx copy showLineNumbers {2-3, 12-28}
+import Superscript from "@tiptap/extension-superscript";
+import { Superscript } from "lucide-react";
+import { RichTextMenu } from "@measured/puck";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        body: {
+          type: "richtext",
+          // ...
+          renderMenu: ({ children, editor, editorState }) => (
+            <RichTextMenu>
+              {/* Render the default controls */}
+              {children}
+
+              <RichTextMenu.Group>
+                <RichTextMenu.Control
+                  icon={<Superscript />}
+                  onClick={() =>
+                    editor?.chain().focus().toggleSuperscript().run()
+                  }
+                  active={editorState?.isSuperscript}
+                  disabled={!editorState?.canSuperscript}
+                />
+              </RichTextMenu.Group>
+            </RichTextMenu>
+          ),
+        },
+      },
+      render: ({ body }) => body,
+    },
+  },
+};
+```
+
+## Further reading
+
+- [`richtext` field API reference](/docs/api-reference/fields/richtext)
+- [`<RichTextMenu>` API reference](/docs/api-reference/components/rich-text-menu)
+- [Tiptap Overview](https://tiptap.dev/docs/editor/getting-started/overview)
+- [Tiptap Extensions](https://tiptap.dev/docs/editor/extensions/overview)

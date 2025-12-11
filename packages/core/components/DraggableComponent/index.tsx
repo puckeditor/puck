@@ -33,6 +33,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
+import { LoadedRichTextMenu } from "../RichTextMenu";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -598,6 +599,12 @@ export const DraggableComponent = ({
     ]
   );
 
+  const richText = useAppStore((s) =>
+    s.currentRichText?.inlineComponentId === id ? s.currentRichText : null
+  );
+
+  const hasNormalActions = permissions.duplicate || permissions.delete;
+
   return (
     <DropZoneProvider value={nextContextValue}>
       {dragFinished &&
@@ -639,6 +646,18 @@ export const DraggableComponent = ({
                   parentAction={parentAction}
                   label={DEBUG ? id : label}
                 >
+                  {richText && (
+                    <>
+                      <LoadedRichTextMenu
+                        editor={richText.editor}
+                        field={richText.field}
+                        inline
+                        readOnly={false}
+                      />
+                      {hasNormalActions && <ActionBar.Separator />}
+                    </>
+                  )}
+
                   {permissions.duplicate && (
                     <ActionBar.Action onClick={onDuplicate} label="Duplicate">
                       <Copy size={16} />

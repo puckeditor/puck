@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
 import { ZoneStoreContext } from "./../context";
 import { useContextStore } from "../../../lib/use-context-store";
 import { AppStoreApi, useAppStoreApi } from "../../../store";
@@ -13,7 +13,7 @@ export const useMinEmptyHeight = ({
   ref,
 }: {
   zoneCompound: string;
-  userMinEmptyHeight: number;
+  userMinEmptyHeight: CSSProperties["minHeight"] | number;
   ref: RefObject<HTMLDivElement | null>;
 }) => {
   const appStore = useAppStoreApi();
@@ -85,5 +85,9 @@ export const useMinEmptyHeight = ({
     }
   }, [ref.current, draggedItem, onDragFinished]);
 
-  return [prevHeight || userMinEmptyHeight, isAnimating];
+  const returnedMinHeight = isNaN(Number(userMinEmptyHeight))
+    ? userMinEmptyHeight
+    : `${userMinEmptyHeight}px`;
+
+  return [prevHeight ? `${prevHeight}px` : returnedMinHeight, isAnimating];
 };

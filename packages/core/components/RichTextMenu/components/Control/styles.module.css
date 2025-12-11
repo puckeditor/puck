@@ -1,0 +1,9 @@
+.Control :global(.lucide) {
+  height: 18px;
+  width: 18px;
+}
+
+.Control--inline :global(.lucide) {
+  height: 16px;
+  width: 16px;
+}

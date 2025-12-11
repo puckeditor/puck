@@ -9,6 +9,7 @@ import { Stats } from "./blocks/Stats";
 import { Template } from "./blocks/Template/server";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
+import { RichText } from "./blocks/RichText";
 import Root from "./root";
 import { UserConfig } from "./types";
 
@@ -43,6 +44,7 @@ const conf: UserConfig = {
     Template,
     Text,
     Space,
+    RichText,
   },
 };
 

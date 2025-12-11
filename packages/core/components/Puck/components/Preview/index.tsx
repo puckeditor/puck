@@ -9,6 +9,7 @@ import { DefaultRootRenderProps } from "../../../../types";
 import { Render } from "../../../Render";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
 import { useSlots } from "../../../../lib/use-slots";
+import { useRichtextProps } from "../../../RichTextEditor/lib/use-richtext-props";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
 
@@ -85,10 +86,17 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
         DropZoneEditPure
       );
 
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const richtextProps = useRichtextProps(
+        config.root?.fields ?? {},
+        pageProps
+      );
+
       return config.root?.render ? (
         config.root?.render({
           id: "puck-root",
           ...propsWithSlots,
+          ...richtextProps,
         })
       ) : (
         <>{propsWithSlots.children}</>

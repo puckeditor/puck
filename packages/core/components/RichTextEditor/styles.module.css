@@ -1,0 +1,125 @@
+.RichTextEditor :global(.ProseMirror) {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  cursor: text;
+  outline: none;
+  position: relative;
+}
+
+.RichTextEditor :global(.rich-text *) {
+  white-space: pre-wrap;
+
+  /* Reinstate user select (removed in data-puck-component) to ensure Firefox selection works with contentEditable  */
+  user-select: auto;
+  -webkit-user-select: auto;
+}
+
+.RichTextEditor :global(.rich-text blockquote) {
+  margin: 1em 0;
+  padding: 0 1em;
+  border-left: 4px solid var(--puck-color-grey-09);
+}
+
+.RichTextEditor :global(.rich-text code) {
+  background-color: var(--puck-color-grey-11);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.RichTextEditor :global(.rich-text p:empty::before) {
+  content: "\00a0";
+}
+
+.RichTextEditor :global(.rich-text pre code) {
+  display: block;
+  padding: 8px 12px;
+}
+
+.RichTextEditor :global(.rich-text > *:first-child),
+.RichTextEditor :global(.ProseMirror > *:first-child),
+.RichTextEditor :global(.rich-text * p:first-of-type) {
+  margin-top: 0;
+}
+
+.RichTextEditor :global(.rich-text > *:last-child),
+.RichTextEditor :global(.ProseMirror > *:last-child),
+.RichTextEditor :global(.rich-text * p:last-of-type) {
+  margin-bottom: 0;
+}
+
+.RichTextEditor--editor {
+  background: var(--puck-color-white);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--puck-color-grey-09);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+  font-size: var(--puck-font-size-xxs);
+  resize: vertical;
+  transition: border-color 50ms ease-in;
+  width: 100%;
+  max-width: 100%;
+  min-height: 128px;
+}
+
+.RichTextEditor--editor :global(.rich-text) {
+  flex-grow: 1;
+}
+
+/* Place padding on .rich-text, unless it contains .ProseMirror - in which case, apply to .ProseMirror */
+.RichTextEditor--editor :global(.rich-text:not(:has(.ProseMirror))),
+.RichTextEditor--editor :global(.rich-text .ProseMirror) {
+  height: 100%;
+  padding: 12px 15px;
+}
+
+.RichTextEditor--editor :global(.rich-text ul),
+.RichTextEditor--editor :global(.rich-text ol) {
+  padding-left: 24px;
+}
+
+.RichTextEditor--editor :global(.rich-text li) {
+  line-height: 1.5;
+}
+
+.RichTextEditor--editor :global(.rich-text p) {
+  margin-block: 12px;
+}
+
+.RichTextEditor--editor :global(.rich-text ul) {
+  list-style: disc;
+}
+
+.RichTextEditor--editor :global(.rich-text ol) {
+  list-style: decimal;
+}
+
+.RichTextEditor--editor:focus-within {
+  border-color: var(--puck-color-grey-05);
+  outline: 2px solid var(--puck-color-azure-05);
+  transition: none;
+}
+
+.RichTextEditor--editor.RichTextEditor--disabled {
+  background: var(--puck-color-grey-11);
+}
+
+.RichTextEditor:not(:focus-within):not(.RichTextEditor--isActive)
+  :global(.ProseMirror)
+  ::selection {
+  background-color: transparent;
+}
+
+.RichTextEditor-menu {
+  border-bottom: 1px solid var(--puck-color-grey-10);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.RichTextEditor--disabled .RichTextEditor-menu {
+  border-bottom: 1px solid var(--puck-color-grey-09);
+}

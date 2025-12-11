@@ -12,6 +12,7 @@ import { TextProps } from "./blocks/Text";
 import { SpaceProps } from "./blocks/Space";
 
 import { RootProps } from "./root";
+import { RichTextProps } from "./blocks/RichText";
 
 export type { RootProps } from "./root";
 
@@ -27,6 +28,7 @@ export type Components = {
   Template: TemplateProps;
   Text: TextProps;
   Space: SpaceProps;
+  RichText: RichTextProps;
 };
 
 export type UserConfig = Config<{

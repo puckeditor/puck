@@ -6,10 +6,10 @@ import { Loader } from "../Loader";
 const getClassName = getClassNameFactory("IconButton", styles);
 
 export const IconButton = ({
+  active = false,
   children,
   href,
   onClick,
-  variant = "primary",
   type,
   disabled,
   tabIndex,
@@ -17,10 +17,10 @@ export const IconButton = ({
   fullWidth,
   title,
 }: {
+  active?: boolean;
   children: ReactNode;
   href?: string;
   onClick?: (e: SyntheticEvent) => void | Promise<void>;
-  variant?: "primary" | "secondary";
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   tabIndex?: number;
@@ -35,8 +35,7 @@ export const IconButton = ({
   const el = (
     <ElementType
       className={getClassName({
-        primary: variant === "primary",
-        secondary: variant === "secondary",
+        active,
         disabled,
         fullWidth,
       })}
