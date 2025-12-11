@@ -2,7 +2,6 @@ import type { CSSProperties } from "react";
 import { useRef, useState, useLayoutEffect, useMemo, useCallback } from "react";
 import { getDeepScrollPosition } from "./get-deep-scroll-position";
 
-
 type Pt = { x: number; y: number };
 type Quad = { p1: Pt; p2: Pt; p3: Pt; p4: Pt };
 type Mode = "fixed" | "absolute";
@@ -53,7 +52,12 @@ export function useOverlayCoordinates(
     width: 0,
     height: 0,
     matrix: new DOMMatrix(),
-    quad: { p1: { x: 0, y: 0 }, p2: { x: 0, y: 0 }, p3: { x: 0, y: 0 }, p4: { x: 0, y: 0 } },
+    quad: {
+      p1: { x: 0, y: 0 },
+      p2: { x: 0, y: 0 },
+      p3: { x: 0, y: 0 },
+      p4: { x: 0, y: 0 },
+    },
     style: {
       position: "fixed",
       left: 0,
@@ -114,9 +118,21 @@ export function useOverlayCoordinates(
     const baseWidth = target.offsetWidth || rect.width || 0;
     const baseHeight = target.offsetHeight || rect.height || 0;
     if (baseWidth === 0 || baseHeight === 0) {
-      const position = last.current?.position ?? (mode === "fixed" ? "fixed" : "absolute");
-      if (!last.current || last.current.wStr !== "0px" || last.current.hStr !== "0px") {
-        last.current = { mode, wStr: "0px", hStr: "0px", left: 0, top: 0, position };
+      const position =
+        last.current?.position ?? (mode === "fixed" ? "fixed" : "absolute");
+      if (
+        !last.current ||
+        last.current.wStr !== "0px" ||
+        last.current.hStr !== "0px"
+      ) {
+        last.current = {
+          mode,
+          wStr: "0px",
+          hStr: "0px",
+          left: 0,
+          top: 0,
+          position,
+        };
         setSnap({
           mode,
           width: 0,
@@ -133,11 +149,24 @@ export function useOverlayCoordinates(
     const Mvp = matrixFromRectToQuadViewport(baseWidth, baseHeight, quad);
 
     // Convert transform into container/page space
-    const { matrix: M, position } = toContainerSpace(win, Mvp, mode, container, body);
+    const { matrix: M, position } = toContainerSpace(
+      win,
+      Mvp,
+      mode,
+      container,
+      body
+    );
 
     // Compute axis-aligned frame: left/top from bounding rect, width/height from scale
     // (Rotation/skew are intentionally ignored.)
-    const { x: left, y: top } = viewportPointToContainer(win, mode, container, body, rect.left, rect.top);
+    const { x: left, y: top } = viewportPointToContainer(
+      win,
+      mode,
+      container,
+      body,
+      rect.left,
+      rect.top
+    );
 
     let scaleX = 1;
     let scaleY = 1;
@@ -148,8 +177,12 @@ export function useOverlayCoordinates(
       scaleY = Math.hypot(M.c, M.d);
     } else {
       // Perspective: approximate scales from viewport quad edge lengths
-      const vx = Math.hypot(quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y) / Math.max(1, baseWidth);
-      const vy = Math.hypot(quad.p4.x - quad.p1.x, quad.p4.y - quad.p1.y) / Math.max(1, baseHeight);
+      const vx =
+        Math.hypot(quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y) /
+        Math.max(1, baseWidth);
+      const vy =
+        Math.hypot(quad.p4.x - quad.p1.x, quad.p4.y - quad.p1.y) /
+        Math.max(1, baseHeight);
       scaleX = vx || 1;
       scaleY = vy || 1;
     }
@@ -194,14 +227,16 @@ export function useOverlayCoordinates(
   useLayoutEffect(() => {
     if (!target) return;
 
-    const nodes = new Set<(Element | Window)>([
+    const nodes = new Set<Element | Window>([
       ...getScrollableAncestors(win, doc, body, target),
       ...(container ? getScrollableAncestors(win, doc, body, container) : []),
       ...(container ? [container] : []),
     ]);
 
     const onScroll = () => schedule();
-    nodes.forEach((n) => n.addEventListener("scroll", onScroll, { passive: true }));
+    nodes.forEach((n) =>
+      n.addEventListener("scroll", onScroll, { passive: true })
+    );
 
     const onResize = () => schedule();
     win.addEventListener("resize", onResize);
@@ -220,7 +255,10 @@ export function useOverlayCoordinates(
     let mo: MutationObserver | undefined;
     if (typeof MutationObserver !== "undefined") {
       mo = new MutationObserver(() => schedule());
-      mo.observe(target, { attributes: true, attributeFilter: ["style", "class"] });
+      mo.observe(target, {
+        attributes: true,
+        attributeFilter: ["style", "class"],
+      });
     }
 
     recompute();
@@ -255,13 +293,25 @@ function useStateStable<T>(initial: T) {
 /** Lightweight shallow comparison used to prevent redundant state writes. */
 function shallowEqual(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) return true;
-  if (typeof a !== "object" || typeof b !== "object" || a === null || b === null) return false;
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  )
+    return false;
   const ak = Object.keys(a as Record<string, unknown>);
   const bk = Object.keys(b as Record<string, unknown>);
   if (ak.length !== bk.length) return false;
   for (const k of ak) {
     if (!Object.prototype.hasOwnProperty.call(b, k)) return false;
-    if (!Object.is((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k])) return false;
+    if (
+      !Object.is(
+        (a as Record<string, unknown>)[k],
+        (b as Record<string, unknown>)[k]
+      )
+    )
+      return false;
   }
   return true;
 }
@@ -293,7 +343,10 @@ function getScrollableAncestors(
   let cur: HTMLElement | null = el.parentElement;
   while (cur && cur !== body && cur !== doc.documentElement) {
     const s = win.getComputedStyle(cur);
-    if (/(auto|scroll|overlay)/i.test(s.overflowX) || /(auto|scroll|overlay)/i.test(s.overflowY)) {
+    if (
+      /(auto|scroll|overlay)/i.test(s.overflowX) ||
+      /(auto|scroll|overlay)/i.test(s.overflowY)
+    ) {
       out.push(cur);
     }
     cur = cur.parentElement;
@@ -304,7 +357,6 @@ function getScrollableAncestors(
 
 /** Retrieve the element quad, preferring precise Box Quads when available. */
 function getQuad(el: Element): Quad {
-
   const r = el.getBoundingClientRect();
   return {
     p1: { x: r.left, y: r.top },
@@ -339,7 +391,10 @@ function multiply3x3(A: number[][], B: number[][]): number[][] {
 }
 
 /** Multiply a 3x3 matrix by a 3-vector. */
-function multiply3x3Vec(A: number[][], v: [number, number, number]): [number, number, number] {
+function multiply3x3Vec(
+  A: number[][],
+  v: [number, number, number]
+): [number, number, number] {
   return [
     A[0][0] * v[0] + A[0][1] * v[1] + A[0][2] * v[2],
     A[1][0] * v[0] + A[1][1] * v[1] + A[1][2] * v[2],
@@ -361,11 +416,12 @@ function invert3x3(M: number[][]): number[][] {
   const I = a * e - b * d;
   const det = a * A + b * B + c * C;
   // Near-zero determinant means the matrix cannot be inverted reliably.
-  if (Math.abs(det) < 1e-12) return [
-    [1, 0, 0],
-    [0, 1, 0],
-    [0, 0, 1],
-  ];
+  if (Math.abs(det) < 1e-12)
+    return [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ];
   const inv = 1 / det;
   return [
     [A * inv, D * inv, G * inv],
@@ -403,7 +459,11 @@ function homographyRectToQuad(w: number, h: number, q: Quad): number[][] {
 }
 
 /** Convert a width/height-aligned rect into a viewport-space matrix for the quad. */
-function matrixFromRectToQuadViewport(w: number, h: number, q: Quad): DOMMatrix {
+function matrixFromRectToQuadViewport(
+  w: number,
+  h: number,
+  q: Quad
+): DOMMatrix {
   if (isParallelogram(q)) {
     const a = (q.p2.x - q.p1.x) / w;
     const b = (q.p2.y - q.p1.y) / w;
@@ -415,10 +475,22 @@ function matrixFromRectToQuadViewport(w: number, h: number, q: Quad): DOMMatrix 
   }
   const H = homographyRectToQuad(w, h, q);
   return new DOMMatrix([
-    H[0][0], H[1][0], 0, H[2][0],
-    H[0][1], H[1][1], 0, H[2][1],
-    0,       0,       1, 0,
-    H[0][2], H[1][2], 0, H[2][2],
+    H[0][0],
+    H[1][0],
+    0,
+    H[2][0],
+    H[0][1],
+    H[1][1],
+    0,
+    H[2][1],
+    0,
+    0,
+    1,
+    0,
+    H[0][2],
+    H[1][2],
+    0,
+    H[2][2],
   ]);
 }
 
@@ -460,8 +532,12 @@ function viewportPointToContainer(
   return { x: vx + win.scrollX, y: vy + win.scrollY };
 }
 
-
 /** Zeroed-out quad used when an element is detached or size-less. */
 function emptyQuad(): Quad {
-  return { p1: { x: 0, y: 0 }, p2: { x: 0, y: 0 }, p3: { x: 0, y: 0 }, p4: { x: 0, y: 0 } };
+  return {
+    p1: { x: 0, y: 0 },
+    p2: { x: 0, y: 0 },
+    p3: { x: 0, y: 0 },
+    p4: { x: 0, y: 0 },
+  };
 }

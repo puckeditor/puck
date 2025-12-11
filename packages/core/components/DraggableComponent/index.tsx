@@ -252,11 +252,10 @@ export const DraggableComponent = ({
   }, [iframe.enabled, ref.current]);
 
   // Figure out which container the overlay is portaled into
-  const portalContainerEl =
-    iframe.enabled
-      ? null
-      : ref.current?.closest<HTMLElement>("[data-puck-preview]") ?? document.body;
-  
+  const portalContainerEl = iframe.enabled
+    ? null
+    : ref.current?.closest<HTMLElement>("[data-puck-preview]") ?? document.body;
+
   // Compute style/matrix with DOMMatrix + DOMQuad, adjusted for container/iframe.
   const { style, recompute } = useOverlayCoordinates(ref.current, {
     container: portalContainerEl,
