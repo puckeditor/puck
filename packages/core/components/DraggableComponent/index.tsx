@@ -18,22 +18,19 @@ import { Copy, CornerLeftUp, Trash } from "lucide-react";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { Loader } from "../Loader";
 import { ActionBar } from "../ActionBar";
-
 import { createPortal } from "react-dom";
-
 import { dropZoneContext, DropZoneProvider } from "../DropZone";
 import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
 import { DragAxis } from "../../types";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
-import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
 import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
 import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
+import { useOverlayTransform } from "./useOverlayTransform";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -254,64 +251,17 @@ export const DraggableComponent = ({
     );
   }, [iframe.enabled, ref.current]);
 
-  const getStyle = useCallback(() => {
-    if (!ref.current) return;
-
-    const rect = ref.current!.getBoundingClientRect();
-    const deepScrollPosition = getDeepScrollPosition(ref.current);
-
-    const portalContainerEl = iframe.enabled
+  // Figure out which container the overlay is portaled into
+  const portalContainerEl =
+    iframe.enabled
       ? null
-      : ref.current?.closest<HTMLElement>("[data-puck-preview]");
-
-    const portalContainerRect = portalContainerEl?.getBoundingClientRect();
-    const portalScroll = portalContainerEl
-      ? getDeepScrollPosition(portalContainerEl)
-      : { x: 0, y: 0 };
-
-    const scroll = {
-      x:
-        deepScrollPosition.x -
-        portalScroll.x -
-        (portalContainerRect?.left ?? 0),
-      y:
-        deepScrollPosition.y - portalScroll.y - (portalContainerRect?.top ?? 0),
-    };
-
-    const untransformed = {
-      height: ref.current.offsetHeight,
-      width: ref.current.offsetWidth,
-    };
-
-    const transform = accumulateTransform(ref.current);
-
-    const style: CSSProperties = {
-      left: `${(rect.left + scroll.x) / transform.scaleX}px`,
-      top: `${(rect.top + scroll.y) / transform.scaleY}px`,
-      height: `${untransformed.height}px`,
-      width: `${untransformed.width}px`,
-    };
-
-    return style;
-  }, [ref.current]);
-
-  const [style, setStyle] = useState<CSSProperties>();
-
-  const sync = useCallback(() => {
-    setStyle(getStyle());
-  }, [ref.current, iframe]);
-
-  useEffect(() => {
-    if (ref.current) {
-      const observer = new ResizeObserver(sync);
-
-      observer.observe(ref.current);
-
-      return () => {
-        observer.disconnect();
-      };
-    }
-  }, [ref.current]);
+      : ref.current?.closest<HTMLElement>("[data-puck-preview]") ?? document.body;
+  
+  // Compute style/matrix with DOMMatrix + DOMQuad, adjusted for container/iframe.
+  const { style, recompute } = useOverlayTransform(ref.current, {
+    container: portalContainerEl,
+  });
+  console.log('style', style);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
 
@@ -325,7 +275,8 @@ export const DraggableComponent = ({
 
   useEffect(() => {
     registerNode(id, {
-      methods: { sync, showOverlay, hideOverlay },
+      // keep sync exposed: DropZone triggers it after min-height animations to realign overlays once layout settles
+      methods: { sync: recompute, showOverlay, hideOverlay },
       element: ref.current ?? null,
     });
 
@@ -339,7 +290,7 @@ export const DraggableComponent = ({
         element: null,
       });
     };
-  }, [id, zoneCompound, index, componentType, sync]);
+  }, [id, zoneCompound, index, componentType, recompute]);
 
   const CustomActionBar = useMemo(
     () => overrides.actionBar || DefaultActionBar,
@@ -482,7 +433,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     startTransition(() => {
       if (hover || indicativeHover || isSelected) {
-        sync();
+        // Geometry is already recalculated by useOverlayTransform observers; no manual recompute needed here.
         setIsVisible(true);
         setThisWasDragging(false);
       } else {
@@ -496,7 +447,7 @@ export const DraggableComponent = ({
   const onDragFinished = useOnDragFinished((finished) => {
     if (finished) {
       startTransition(() => {
-        sync();
+        // Overlay transform already resyncs on scroll/resize/mutations; drag completion doesn't need a force recompute.
         setDragFinished(true);
       });
     } else {
