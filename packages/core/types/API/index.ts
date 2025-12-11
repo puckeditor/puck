@@ -7,7 +7,6 @@ import { ComponentDataOptionalId, Content, Data } from "./../Data";
 import { Overrides } from "./Overrides";
 import { FieldTransforms } from "./FieldTransforms";
 import { Config, DefaultComponents } from "../Config";
-import { ReactNode } from "react";
 
 export type Permissions = {
   drag: boolean;
