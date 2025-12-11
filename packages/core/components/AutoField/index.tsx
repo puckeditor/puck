@@ -160,6 +160,7 @@ function AutoFieldInternal<
   const render = useMemo(
     () => ({
       ...overrides.fieldTypes,
+      custom: overrides.fieldTypes?.custom,
       array: overrides.fieldTypes?.array || defaultFields.array,
       external: overrides.fieldTypes?.external || defaultFields.external,
       object: overrides.fieldTypes?.object || defaultFields.object,
@@ -226,7 +227,8 @@ function AutoFieldInternal<
   const fieldKey = field.type === "custom" ? field.key : undefined;
 
   let FieldComponent: React.ComponentType<any> = useMemo(() => {
-    if (field.type === "custom") {
+    // if there's an override provided for custom fields, fallback to standard behavior
+    if (field.type === "custom" && !render[field.type]) {
       if (!field.render) {
         return null;
       }

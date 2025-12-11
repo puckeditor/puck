@@ -45,6 +45,11 @@
       "import": "./dist/rsc.mjs",
       "require": "./dist/rsc.js"
     },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "import": "./dist/internal.mjs",
+      "require": "./dist/internal.js"
+    },
     "./puck.css": "./dist/index.css",
     "./no-external.css": "./dist/no-external.css",
     "./dist/index.css": "./dist/index.css",
@@ -60,7 +65,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
     "test": "jest",
     "prepare": "cp ../../README.md . && yarn build",
     "postpublish": "rm README.md"
@@ -76,8 +81,8 @@
     "@types/flat": "^5.0.5",
     "@types/jest": "^29.5.14",
     "@types/object-hash": "^3.0.6",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "@types/uuid": "^10.0.0",
     "css-box-model": "^1.2.1",
     "eslint": "^7.32.0",
