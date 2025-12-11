@@ -30,7 +30,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
-import { useOverlayTransform } from "./useOverlayTransform";
+import { useOverlayCoordinates } from "../../lib/use-overlay-coordinates";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -258,7 +258,7 @@ export const DraggableComponent = ({
       : ref.current?.closest<HTMLElement>("[data-puck-preview]") ?? document.body;
   
   // Compute style/matrix with DOMMatrix + DOMQuad, adjusted for container/iframe.
-  const { style, recompute } = useOverlayTransform(ref.current, {
+  const { style, recompute } = useOverlayCoordinates(ref.current, {
     container: portalContainerEl,
   });
 

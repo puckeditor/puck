@@ -1,23 +1,23 @@
 import type { CSSProperties } from "react";
 import { useRef, useState, useLayoutEffect, useMemo, useCallback } from "react";
-import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
+import { getDeepScrollPosition } from "./get-deep-scroll-position";
 
 
 type Pt = { x: number; y: number };
 type Quad = { p1: Pt; p2: Pt; p3: Pt; p4: Pt };
 type Mode = "fixed" | "absolute";
 
-type UseOverlayTransformOptions = {
+type UseOverlayCoordinatesOptions = {
   container?: HTMLElement | null;
 };
 
-type OverlayTransformResult = {
+type OverlayCoordinatesResult = {
   /** Axis-aligned frame style (no transform): left/top/width/height in container/page space */
   style: CSSProperties;
   recompute: () => void;
 };
 
-type OverlaySnap = {
+type CoordinateSnapshot = {
   mode: Mode;
   width: number;
   height: number;
@@ -26,7 +26,7 @@ type OverlaySnap = {
   style: CSSProperties;
 };
 
-type LastSnapshot = {
+type LastCoordinateSnapshot = {
   mode: Mode;
   /** Scaled output width/height used in style (not the unscaled box) */
   wStr: string;
@@ -38,17 +38,17 @@ type LastSnapshot = {
   position: CSSProperties["position"];
 };
 
-export function useOverlayTransform(
+export function useOverlayCoordinates(
   target: HTMLElement | null,
-  options: UseOverlayTransformOptions = {}
-): OverlayTransformResult {
+  options: UseOverlayCoordinatesOptions = {}
+): OverlayCoordinatesResult {
   const container = options.container ?? null;
 
   const win = target?.ownerDocument?.defaultView ?? window;
   const doc = target?.ownerDocument ?? document;
   const body = doc.body;
 
-  const [snap, setSnap] = useStateStable<OverlaySnap>({
+  const [snap, setSnap] = useStateStable<CoordinateSnapshot>({
     mode: "fixed",
     width: 0,
     height: 0,
@@ -63,7 +63,7 @@ export function useOverlayTransform(
     },
   });
 
-  const last = useRef<LastSnapshot | null>(null);
+  const last = useRef<LastCoordinateSnapshot | null>(null);
 
   const scheduled = useRef(false);
   const schedule = () => {
@@ -179,7 +179,7 @@ export function useOverlayTransform(
       mode,
       width: baseWidth,
       height: baseHeight,
-      matrix: M, // still expose the full matrix for consumers who want it
+      matrix: M,
       quad,
       style: {
         position,
@@ -187,8 +187,6 @@ export function useOverlayTransform(
         top,
         width: wStr,
         height: hStr,
-        // No transform here: we intentionally ignore rotation/skew/perspective for the overlay UI
-        // as this can cause the action bar to scale/rotate unexpectedly.
       },
     });
   }, [body, container, doc, snap.height, snap.width, target, win]);
