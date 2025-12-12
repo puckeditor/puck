@@ -1,4 +1,9 @@
-import { Config, UserGenerics, ResolveDataTrigger } from "../types";
+import {
+  Config,
+  UserGenerics,
+  ResolveDataTrigger,
+  ComponentData,
+} from "../types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AppStore, useAppStoreApi } from "../store";
 import {
@@ -12,7 +17,6 @@ import { getItem, ItemSelector } from "./data/get-item";
 import { resolveDataById } from "./data/resolve-data-by-id";
 import { resolveDataBySelector } from "./data/resolve-data-by-selector";
 import { getSelectorForId } from "./get-selector-for-id";
-import { PuckNodeData } from "../types/Internal";
 
 export type UsePuckData<
   UserConfig extends Config = Config,
