@@ -309,6 +309,12 @@ export const ArrayField = ({
     [regenerateArrayState, setUi, mapArrayStateToUi, onChange]
   );
 
+  // Reset array state if number of items changes
+  useEffect(() => {
+    const newArrayState = regenerateArrayState(getValue());
+    setUi(mapArrayStateToUi(newArrayState), false);
+  }, [numItems]);
+
   if (field.type !== "array" || !field.arrayFields) {
     return null;
   }
