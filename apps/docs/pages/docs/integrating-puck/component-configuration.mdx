@@ -75,7 +75,7 @@ The data payload and Config together tell `<Render>` how to render the page. It 
 If you're using TypeScript, we recommend strictly typing your config:
 
 ```tsx copy {1,3-5} /Components/2
-import type { Config } from "@measured/puck";
+import type { Config } from "@puckeditor/core";
 
 type Components = {
   HeadingBlock: {};
@@ -154,7 +154,7 @@ When the user modifies the input, the editor will produce a data payload like th
 It's best to define the props for the component if using TypeScript. This enables strict type checking for your fields.
 
 ```tsx copy {5}
-import type { Config } from "@measured/puck";
+import type { Config } from "@puckeditor/core";
 
 type Components = {
   HeadingBlock: {

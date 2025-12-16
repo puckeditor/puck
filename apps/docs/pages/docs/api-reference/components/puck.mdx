@@ -7,7 +7,7 @@ title: <Puck>
 Render the Puck editor.
 
 ```tsx copy
-import { Puck } from "@measured/puck";
+import { Puck } from "@puckeditor/core";
 
 const config = {
   components: {},
@@ -383,7 +383,7 @@ export function Editor() {
 An array of plugins to enhance Puck's behaviour. See the [Plugin API reference](/docs/api-reference/plugin).
 
 ```tsx {6} copy
-import headingAnalyzer from "@measured/puck-plugin-heading-analyzer";
+import headingAnalyzer from "@puckeditor/plugin-heading-analyzer";
 
 export function Editor() {
   return (

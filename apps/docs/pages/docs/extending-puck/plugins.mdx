@@ -23,7 +23,7 @@ Please see the [awesome-puck repo](https://github.com/measuredco/awesome-puck) f
 To load a plugin, provide it to the [`plugins` prop](/docs/api-reference/components/puck#plugins) on the `<Puck>` component.
 
 ```tsx showLineNumbers {2,8}
-import { Puck } from "@measured/puck";
+import { Puck } from "@puckeditor/core";
 import myPlugin from "my-puck-plugin";
 
 export function Editor() {
@@ -86,7 +86,7 @@ Both the field transforms and overrides let you introduce [entirely new field ty
 This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can modified directly in the editor preview.
 
 ```tsx showLineNumbers copy {6-8, 12-20}
-import { registerOverlayPortal } from "@measured/puck";
+import { registerOverlayPortal } from "@puckeditor/core";
 
 const plugin = {
   overrides: {

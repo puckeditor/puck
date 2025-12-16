@@ -18,7 +18,7 @@ You can access [`PuckApi`](/docs/api-reference/puck-api) via two hooks:
 To access the API within your render lifecycle, use the `usePuck` hook. You can use a selector to limit re-rendering to a specific part of the API.
 
 ```tsx copy
-import { createUsePuck } from "@measured/puck";
+import { createUsePuck } from "@puckeditor/core";
 
 const usePuck = createUsePuck();
 
@@ -37,7 +37,7 @@ See the [`usePuck`](/docs/api-reference/functions/use-puck) docs for a full API 
 Often it's not necessary to re-render your component when the PuckApi changes. Puck provides the `useGetPuck` hook for accessing the latest `PuckApi` at call time.
 
 ```tsx copy
-import { useGetPuck } from "@measured/puck";
+import { useGetPuck } from "@puckeditor/core";
 
 const Example = () => {
   const getPuck = useGetPuck();
@@ -62,7 +62,7 @@ Generally, you'll want to combine this with composition, UI overrides or custom 
 Here's an example using the internal API to render the page data as JSON using composition:
 
 ```tsx
-import { Puck, createUsePuck } from "@measured/puck";
+import { Puck, createUsePuck } from "@puckeditor/core";
 
 const usePuck = createUsePuck();
 
