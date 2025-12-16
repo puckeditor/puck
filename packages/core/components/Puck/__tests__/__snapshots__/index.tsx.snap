@@ -169,6 +169,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
     "enabled": false,
     "waitForStyles": true,
   },
+  "instanceId": "_r_5_",
   "metadata": undefined,
   "nodes": {
     "nodes": {},
@@ -280,6 +281,12 @@ exports[`Puck should generate the correct state on mount 1`] = `
       "icon": "Monitor",
       "label": "Large",
       "width": 1280,
+    },
+    {
+      "height": "auto",
+      "icon": "FullWidth",
+      "label": "Full-width",
+      "width": "100%",
     },
   ],
   "zoomConfig": {
