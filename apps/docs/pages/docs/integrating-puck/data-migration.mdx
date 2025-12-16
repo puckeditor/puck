@@ -7,7 +7,7 @@ Puck follows semantic versioning. Major releases may introduce breaking changes 
 Puck provides the [`migrate`](/docs/api-reference/functions/migrate) helper method to help migrate legacy data payloads to the latest data model, transforming any deprecated properties to their latest counterparts as described by the [Data API reference](/docs/api-reference/data-model/data).
 
 ```tsx
-import { migrate } from "@measured/puck";
+import { migrate } from "@puckeditor/core";
 
 migrate(legacyData);
 ```
@@ -36,7 +36,7 @@ const config = {
 It will often be preferrable to update the underlying [Data](/docs/api-reference/data-model/data) payload. Puck provides the [`transformProps`](/docs/api-reference/functions/transform-props) utility method to conveniently transform the props for a given component throughout the payload.
 
 ```tsx copy showLineNumbers {15-18}
-import { transformProps } from "@measured/puck";
+import { transformProps } from "@puckeditor/core";
 
 const config = {
   // Renamed `title` prop to `heading`
@@ -62,7 +62,7 @@ console.log(updatedData);
 You may choose to run this transform every time you render your content, or perform a batch operation against your database.
 
 ```tsx copy showLineNumbers filename="Example showing data being updated before rendering"
-import { Puck, Render, transformProps } from "@measured/puck";
+import { Puck, Render, transformProps } from "@puckeditor/core";
 
 const transforms = {
   HeadingBlock: ({ title, ...props }) => ({ heading: title, ...props }),

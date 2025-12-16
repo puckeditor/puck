@@ -6,7 +6,7 @@
     "paths": {
       "@/core": ["../../packages/core"],
       "@/core/*": ["../../packages/core/*"],
-      "@measured/puck": ["../../packages/core"],
+      "@puckeditor/core": ["../../packages/core"],
       "@/plugin-heading-analyzer": ["../../packages/plugin-heading-analyzer"],
       "@/plugin-heading-analyzer/*": [
         "../../packages/plugin-heading-analyzer/*"

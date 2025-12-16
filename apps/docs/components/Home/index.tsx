@@ -37,7 +37,7 @@ export const Home = () => {
         </div>
         <div style={{ paddingTop: 32 }} />
         <pre style={{ padding: 0, margin: 0 }}>
-          <span style={{ userSelect: "none" }}>~ </span>npm i @measured/puck
+          <span style={{ userSelect: "none" }}>~ </span>npm i @puckeditor/core
           --save
         </pre>
       </div>

@@ -6,7 +6,7 @@ export default {
   // publicPath: "/build/",
   // serverBuildPath: "build/index.js",
   /**
-   * @see https://github.com/measuredco/puck/issues/112
+   * @see https://github.com/puckeditor/puck/issues/112
    */
   browserNodeBuiltinsPolyfill: { modules: { crypto: true } },
 };

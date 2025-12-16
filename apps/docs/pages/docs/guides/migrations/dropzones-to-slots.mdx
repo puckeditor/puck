@@ -109,7 +109,7 @@ The slot data model is inline and recursive. This means that instead of storing 
 For new slots, you don't need to do anything. If you're migrating existing DropZones to slots, you will need to migrate your the data accordingly. Puck provides the [`migrate()` helper](/docs/api-reference/functions/migrate) to help with this:
 
 ```tsx
-import { migrate } from "@measured/puck";
+import { migrate } from "@puckeditor/core";
 import config from "puck.config.tsx";
 
 const newData = migrate(legacyData, config);

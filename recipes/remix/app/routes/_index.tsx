@@ -1,4 +1,4 @@
-import { Render, type Config } from "@measured/puck";
+import { Render, type Config } from "@puckeditor/core";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";

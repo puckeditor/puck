@@ -72,7 +72,7 @@ The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) up
 You can add your own label, but it's recommended to use the [`<FieldLabel>` component](/docs/api-reference/components/field-label) provided by Puck to seamlessly integrate into the Puck field UI.
 
 ```tsx copy showLineNumbers {1, 11-13}
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const config = {
   components: {
@@ -133,7 +133,7 @@ const config = {
 Use the [`<AutoField>` component](/docs/api-reference/components/auto-field) to render Puck fields within your custom field.
 
 ```tsx copy showLineNumbers {1, 12-16}
-import { AutoField } from "@measured/puck";
+import { AutoField } from "@puckeditor/core";
 
 const config = {
   components: {

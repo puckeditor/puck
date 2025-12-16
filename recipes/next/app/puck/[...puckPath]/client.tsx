@@ -1,7 +1,7 @@
 "use client";
 
-import type { Data } from "@measured/puck";
-import { Puck } from "@measured/puck";
+import type { Data } from "@puckeditor/core";
+import { Puck } from "@puckeditor/core";
 import config from "../../../puck.config";
 
 export function Client({ path, data }: { path: string; data: Partial<Data> }) {

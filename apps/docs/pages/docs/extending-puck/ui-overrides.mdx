@@ -16,7 +16,7 @@ There are many different overrides available. See the [`overrides` API reference
 Use the [`overrides` prop](/docs/api-reference/components/puck#overrides) to implement an override:
 
 ```tsx showLineNumbers copy {7-12}
-import { Puck } from "@measured/puck";
+import { Puck } from "@puckeditor/core";
 
 export function Editor() {
   return (
@@ -38,7 +38,7 @@ export function Editor() {
 You can override all fields of certain type by specifying the [`fieldTypes` override](/docs/api-reference/overrides/field-types).
 
 ```tsx showLineNumbers copy {8-18}
-import { Puck } from "@measured/puck";
+import { Puck } from "@puckeditor/core";
 
 export function Editor() {
   return (
@@ -67,7 +67,7 @@ export function Editor() {
 Specify new field types to expose new fields to your components.
 
 ```tsx showLineNumbers copy {9}
-import { Puck } from "@measured/puck";
+import { Puck } from "@puckeditor/core";
 
 export function Editor() {
   return (
@@ -98,7 +98,7 @@ A common use case is to override the Puck header. You can either use the [`heade
 Here's an example that also leverage the [internal Puck API](/docs/extending-puck/internal-puck-api) to replace the default publish button with a custom one:
 
 ```tsx showLineNumbers copy {10-30}
-import { Puck, createUsePuck } from "@measured/puck";
+import { Puck, createUsePuck } from "@puckeditor/core";
 
 const usePuck = createUsePuck();
 

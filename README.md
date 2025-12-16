@@ -34,15 +34,15 @@ Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-o
 Install the package:
 
 ```sh
-npm i @measured/puck --save # or npx create-puck-app my-app
+npm i @puckeditor/core --save # or npx create-puck-app my-app
 ```
 
 Render the editor:
 
 ```jsx
 // Editor.jsx
-import { Puck } from "@measured/puck";
-import "@measured/puck/puck.css";
+import { Puck } from "@puckeditor/core";
+import "@puckeditor/core/puck.css";
 
 // Create Puck component config
 const config = {
@@ -76,8 +76,8 @@ Render the page:
 
 ```jsx
 // Page.jsx
-import { Render } from "@measured/puck";
-import "@measured/puck/puck.css";
+import { Render } from "@puckeditor/core";
+import "@puckeditor/core/puck.css";
 
 export function Page() {
   return <Render config={config} data={data} />;

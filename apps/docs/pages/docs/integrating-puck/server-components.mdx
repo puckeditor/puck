@@ -46,7 +46,7 @@ Many modern component libraries will require some degree of client-side behaviou
 To achieve this, you must import each of those component from a separate file:
 
 ```tsx copy showLineNumbers filename="puck.config.tsx"
-import type { Config } from "@measured/puck";
+import type { Config } from "@puckeditor/core";
 import type { HeadingBlockProps } from "./components/HeadingBlock";
 import HeadingBlock from "./components/HeadingBlock";
 
@@ -113,7 +113,7 @@ Alternatively, consider entirely separate configs for the `<Puck>` and `<Render>
 Create a shared config type:
 
 ```tsx copy showLineNumbers filename="puck-types.ts"
-import type { Config } from "@measured/puck";
+import type { Config } from "@puckeditor/core";
 
 type Props = {
   HeadingBlock: {

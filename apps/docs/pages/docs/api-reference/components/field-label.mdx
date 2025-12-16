@@ -34,7 +34,7 @@ Render a styled `label` when creating [`custom` fields](/docs/api-reference/fiel
 />
 
 ```tsx {1,4-6} copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const CustomField = () => (
   <FieldLabel label="Title">
@@ -74,7 +74,7 @@ const config = {
 The label string for the fields.
 
 ```tsx /label="Title"/ copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const CustomField = () => (
   <FieldLabel label="Title">
@@ -92,7 +92,7 @@ const CustomField = () => (
 A node to render inside the FieldLabel's internal `<label>` element. You can also define your input element as a sibling.
 
 ```tsx {5} copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const CustomField = () => (
   <FieldLabel label="Title">
@@ -108,7 +108,7 @@ const CustomField = () => (
 Define a custom class for the field label.
 
 ```tsx /className="MyClass"/ copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const CustomField = () => (
   <FieldLabel className="MyClass" label="Title">
@@ -124,7 +124,7 @@ const CustomField = () => (
 Specify whether to render a `label` or `div`. **Defaults to `"label"`**.
 
 ```tsx /el="div"/ copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const CustomField = () => (
   <FieldLabel el="div" label="Title">
@@ -140,7 +140,7 @@ const CustomField = () => (
 Render an icon before the label text. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
 
 ```tsx /icon={<Globe size="16" />}/ copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 import { Globe } from "lucide-react";
 
 const CustomField = () => (
@@ -178,7 +178,7 @@ const CustomField = () => (
 Indicate to the user that this field is in a read-only state by showing a padlock icon to the right of the text.
 
 ```tsx /readOnly/1 copy
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 
 const CustomField = () => (
   <FieldLabel label="Title" readOnly>

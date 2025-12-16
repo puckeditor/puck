@@ -13,17 +13,17 @@ The [plugin API](/docs/api-reference/plugins) enables developers to share extens
 
 Puck provides official plugins for common use-cases:
 
-- [`emotion-cache`](https://github.com/measuredco/puck/tree/main/packages/plugin-emotion-cache): Inject emotion cache into the Puck iframe.
-- [`heading-analyzer`](https://github.com/measuredco/puck/tree/main/packages/plugin-heading-analyzer): Analyze the heading outline of your page and be warned when you're not respecting WCAG 2 accessibility standards.
+- [`emotion-cache`](https://github.com/puckeditor/puck/tree/main/packages/plugin-emotion-cache): Inject emotion cache into the Puck iframe.
+- [`heading-analyzer`](https://github.com/puckeditor/puck/tree/main/packages/plugin-heading-analyzer): Analyze the heading outline of your page and be warned when you're not respecting WCAG 2 accessibility standards.
 
-Please see the [awesome-puck repo](https://github.com/measuredco/awesome-puck) for a full list of community plugins.
+Please see the [awesome-puck repo](https://github.com/puckeditor/awesome-puck) for a full list of community plugins.
 
 ## Loading a Plugin
 
 To load a plugin, provide it to the [`plugins` prop](/docs/api-reference/components/puck#plugins) on the `<Puck>` component.
 
 ```tsx showLineNumbers {2,8}
-import { Puck } from "@measured/puck";
+import { Puck } from "@puckeditor/core";
 import myPlugin from "my-puck-plugin";
 
 export function Editor() {
@@ -86,7 +86,7 @@ Both the field transforms and overrides let you introduce [entirely new field ty
 This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can modified directly in the editor preview.
 
 ```tsx showLineNumbers copy {6-8, 12-20}
-import { registerOverlayPortal } from "@measured/puck";
+import { registerOverlayPortal } from "@puckeditor/core";
 
 const plugin = {
   overrides: {
