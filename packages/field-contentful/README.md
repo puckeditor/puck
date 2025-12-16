@@ -129,4 +129,4 @@ const config: Config<MyProps> = {
 
 ## License
 
-MIT © [The Puck Contributors](https://github.com/measuredco/puck/graphs/contributors)
+MIT © [The Puck Contributors](https://github.com/puckeditor/puck/graphs/contributors)
