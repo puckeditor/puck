@@ -12,7 +12,7 @@ If you're unsure whether or not you've encountered a bug, feel free to ask first
 
 There are several ways to ask questions or ask for help:
 
-- Open a [discussion](https://github.com/measuredco/puck/discussions) via GitHub
+- Open a [discussion](https://github.com/puckeditor/puck/discussions) via GitHub
 - Use the #chat or #help channels in our [Discord server](https://discord.gg/D9e4E3MQVZ)
 
 _Please only use GitHub issues for bugs and feature requests, and not for questions._
