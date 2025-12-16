@@ -1,5 +1,5 @@
 {
-  "name": "@measured/puck-plugin-heading-analyzer",
+  "name": "@puckeditor/plugin-heading-analyzer",
   "version": "0.20.2",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",

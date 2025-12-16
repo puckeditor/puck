@@ -1,5 +1,5 @@
 {
-  "name": "@measured/puck-plugin-emotion-cache",
+  "name": "@puckeditor/plugin-emotion-cache",
   "version": "0.20.2",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
