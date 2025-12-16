@@ -16,8 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
-      "@measured/puck": ["../../packages/core/index.ts"],
-      "@measured/puck/puck.css": ["../../packages/core/bundle/index.css"]
+      "@puckeditor/core": ["../../packages/core/index.ts"],
+      "@puckeditor/core/puck.css": ["../../packages/core/bundle/index.css"]
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,

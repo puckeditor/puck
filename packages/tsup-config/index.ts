@@ -11,7 +11,7 @@ const config: Options = {
   external: [
     "react",
     "react-dom",
-    "@measured/puck",
+    "@puckeditor/core",
     "@dnd-kit/react",
     "@dnd-kit/dom",
     "@dnd-kit/abstract",

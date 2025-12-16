@@ -25,7 +25,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@measured/puck": "^0.20.2",
+    "@puckeditor/core": "^0.20.2",
     "@types/minimatch": "3.0.5",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",

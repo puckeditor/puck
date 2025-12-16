@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from "react";
 
 import styles from "./HeadingAnalyzer.module.css";
 
-import { createUsePuck } from "@measured/puck";
+import { createUsePuck } from "@puckeditor/core";
 import { Plugin } from "@/core/types";
 import { SidebarSection } from "@/core/components/SidebarSection";
 import { OutlineList } from "@/core/components/OutlineList";
