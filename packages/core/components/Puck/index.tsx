@@ -27,7 +27,6 @@ import type {
   Metadata,
   AsFieldProps,
   DefaultComponentProps,
-  ComponentData,
 } from "../../types";
 
 import { SidebarSection } from "../SidebarSection";
