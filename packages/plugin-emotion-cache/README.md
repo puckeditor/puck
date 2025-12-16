@@ -35,4 +35,4 @@ Key to pass to Emotion's [`createCache` method](https://emotion.sh/docs/@emotion
 
 ## License
 
-MIT © [The Puck Contributors](https://github.com/measuredco/puck/graphs/contributors)
+MIT © [The Puck Contributors](https://github.com/puckeditor/puck/graphs/contributors)

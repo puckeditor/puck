@@ -3,7 +3,7 @@
   "version": "0.20.2",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
-  "bugs": "https://github.com/measuredco/puck/issues",
+  "bugs": "https://github.com/puckeditor/puck/issues",
   "homepage": "https://puckeditor.com",
   "private": false,
   "main": "./dist/index.js",
