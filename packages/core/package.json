@@ -4,7 +4,7 @@
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "measuredco/puck",
-  "bugs": "https://github.com/measuredco/puck/issues",
+  "bugs": "https://github.com/puckeditor/puck/issues",
   "homepage": "https://puckeditor.com",
   "keywords": [
     "puck",
