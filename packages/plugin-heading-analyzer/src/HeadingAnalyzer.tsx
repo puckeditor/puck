@@ -161,7 +161,7 @@ export const HeadingAnalyzer = () => {
         }}
       >
         Heading analyzer styles not loaded. Please review the{" "}
-        <a href="https://github.com/measuredco/puck/blob/main/packages/plugin-heading-analyzer/README.md">
+        <a href="https://github.com/puckeditor/puck/blob/main/packages/plugin-heading-analyzer/README.md">
           README
         </a>
         .
