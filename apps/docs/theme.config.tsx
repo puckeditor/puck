@@ -98,7 +98,7 @@ const theme: DocsThemeConfig = {
     </div>
   ),
   project: {
-    link: "https://github.com/measuredco/puck",
+    link: "https://github.com/puckeditor/puck",
   },
   footer: {
     content: (
@@ -107,7 +107,7 @@ const theme: DocsThemeConfig = {
           MIT © {new Date().getFullYear()}{" "}
           <a
             style={{ textDecoration: "underline" }}
-            href="https://github.com/measuredco/puck/graphs/contributors"
+            href="https://github.com/puckeditor/puck/graphs/contributors"
           >
             The Puck Contributors
           </a>
@@ -140,7 +140,7 @@ const theme: DocsThemeConfig = {
           key: "v0.18.0",
           content: (
             <a
-              href="https://github.com/measuredco/puck/releases"
+              href="https://github.com/puckeditor/puck/releases"
               target="_blank"
             >
               <b>🎈 Puck 0.18</b>: The new drag-and-drop engine is here, with
@@ -149,7 +149,7 @@ const theme: DocsThemeConfig = {
           ),
         }
       : {},
-  docsRepositoryBase: "https://github.com/measuredco/puck/tree/main/apps/docs",
+  docsRepositoryBase: "https://github.com/puckeditor/puck/tree/main/apps/docs",
   navbar: {
     extraContent: () => (
       <Viewport desktop>
