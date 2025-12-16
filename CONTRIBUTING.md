@@ -96,7 +96,7 @@ yarn dev
 
 #### CSS
 
-- Class names must follow the [SUIT CSS](https://suitcss.github.io) methodology. This is a tooling-angostic convention used at [@measuredco](https://github.com/measuredco) for all CSS work.
+- Class names must follow the [SUIT CSS](https://suitcss.github.io) methodology. This is a tooling-angostic convention used at [@puckeditor](https://github.com/puckeditor) for all CSS work.
 - Don't rely on global styles. Puck is deployed into hostile third-party environments and we have no control over what CSS may be running on the page.
 
 #### Commits
