@@ -12,7 +12,7 @@ export const initialData: Record<string, UserData> = {
           buttons: [
             {
               label: "Visit GitHub",
-              href: "https://github.com/measuredco/puck",
+              href: "https://github.com/puckeditor/puck",
             },
             { label: "Edit this page", href: "/edit", variant: "secondary" },
           ],
@@ -372,7 +372,7 @@ export const initialData: Record<string, UserData> = {
               type: "Button",
               props: {
                 label: "Visit GitHub",
-                href: "https://github.com/measuredco/puck",
+                href: "https://github.com/puckeditor/puck",
                 variant: "primary",
                 id: "Button-bd41007c-6627-414d-839a-e261d470d8f9",
               },
