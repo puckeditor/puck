@@ -7,13 +7,13 @@ Visualise your heading outline structure and identify missing heading levels. Re
 ## Quick start
 
 ```sh
-npm i @measured/puck-plugin-heading-analyzer
+npm i @puckeditor/plugin-heading-analyzer
 ```
 
 ```jsx
-import { Puck } from "@measured/puck";
-import headingAnalyzer from "@measured/puck-plugin-heading-analyzer";
-import "@measured/puck-plugin-heading-analyzer/dist/index.css";
+import { Puck } from "@puckeditor/core";
+import headingAnalyzer from "@puckeditor/plugin-heading-analyzer";
+import "@puckeditor/plugin-heading-analyzer/dist/index.css";
 
 ...
 
