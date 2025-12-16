@@ -141,66 +141,6 @@ function PuckProvider<
 
     let clientUiState: Partial<G["UserAppState"]["ui"]> = {};
 
-    if (typeof window !== "undefined") {
-      // Hide side bars on mobile
-      if (window.matchMedia("(max-width: 638px)").matches) {
-        clientUiState = {
-          ...clientUiState,
-          leftSideBarVisible: false,
-          rightSideBarVisible: false,
-        };
-      }
-
-      const viewportWidth = window.innerWidth;
-
-      const fullWidthViewport = Object.values(viewports).find(
-        (v) => v.width === "100%"
-      );
-
-      const containsFullWidthViewport = !!fullWidthViewport;
-
-      const viewportDifferences = Object.entries(viewports)
-        .filter(([_, value]) => value.width !== "100%")
-        .map(([key, value]) => ({
-          key,
-          diff: Math.abs(
-            viewportWidth -
-              (typeof value.width === "string" ? viewportWidth : value.width)
-          ),
-          value,
-        }))
-        .sort((a, b) => (a.diff > b.diff ? 1 : -1));
-
-      let closestViewport = viewportDifferences[0].value;
-
-      // Select full width viewport if it exists, and the closest viewport is smaller than the window
-      if (
-        (closestViewport.width as number) < viewportWidth &&
-        containsFullWidthViewport
-      ) {
-        closestViewport = fullWidthViewport;
-      }
-
-      if (iframe.enabled) {
-        clientUiState = {
-          ...clientUiState,
-          viewports: {
-            ...initial.viewports,
-
-            current: {
-              ...initial.viewports.current,
-              height:
-                initialUi?.viewports?.current?.height ||
-                closestViewport?.height ||
-                "auto",
-              width:
-                initialUi?.viewports?.current?.width || closestViewport?.width,
-            },
-          },
-        };
-      }
-    }
-
     // DEPRECATED
     if (
       Object.keys(initialData?.root || {}).length > 0 &&
