@@ -2,7 +2,7 @@
   "name": "@puckeditor/field-contentful",
   "version": "0.20.2",
   "author": "Chris Villa <chris@puckeditor.com>",
-  "repository": "measuredco/puck",
+  "repository": "puckeditor/puck",
   "bugs": "https://github.com/puckeditor/puck/issues",
   "homepage": "https://puckeditor.com",
   "private": false,
