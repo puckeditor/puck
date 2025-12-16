@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAppStore } from "../../../../store";
+import { useAppStore, useAppStoreApi } from "../../../../store";
 import { ViewportControls } from "../../../ViewportControls";
 import styles from "./styles.module.css";
 import { getClassNameFactory, useResetAutoZoom } from "../../../../lib";
@@ -17,6 +17,7 @@ import { Loader } from "../../../Loader";
 import { useShallow } from "zustand/react/shallow";
 import { useCanvasFrame } from "../../../../lib/frame-context";
 import { usePropsContext } from "../..";
+import { defaultViewports } from "../../../ViewportControls/default-viewports";
 
 const getClassName = getClassNameFactory("PuckCanvas", styles);
 
@@ -27,7 +28,10 @@ export const Canvas = () => {
   const { frameRef } = useCanvasFrame();
   const resetAutoZoom = useResetAutoZoom(frameRef);
 
-  const { _experimentalFullScreenCanvas } = usePropsContext();
+  const {
+    _experimentalFullScreenCanvas,
+    viewports: viewportOptions = defaultViewports,
+  } = usePropsContext();
 
   const {
     dispatch,
@@ -149,6 +153,69 @@ export const Canvas = () => {
       setShowLoader(true);
     }, 500);
   }, []);
+
+  const appStoreApi = useAppStoreApi();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const viewportWidth = window.innerWidth;
+    const frameWidth = frameRef.current?.getBoundingClientRect().width;
+
+    if (!viewportWidth) return;
+    if (!frameWidth) return;
+    if (viewportOptions.length === 0) return;
+
+    const fullWidthViewport = Object.values(viewportOptions).find(
+      (v) => v.width === "100%"
+    );
+
+    const containsFullWidthViewport = !!fullWidthViewport;
+
+    const viewportDifferences = Object.entries(viewportOptions)
+      .filter(([_, value]) => value.width !== "100%")
+      .map(([key, value]) => ({
+        key,
+        diff: Math.abs(
+          viewportWidth -
+            (typeof value.width === "string" ? viewportWidth : value.width)
+        ),
+        value,
+      }))
+      .sort((a, b) => (a.diff > b.diff ? 1 : -1));
+
+    let closestViewport = viewportDifferences[0].value;
+
+    // Select full width viewport if it exists, and the closest viewport is smaller than the window
+    if (
+      (closestViewport.width as number) < frameWidth &&
+      containsFullWidthViewport
+    ) {
+      closestViewport = fullWidthViewport;
+    }
+
+    if (iframe.enabled) {
+      const s = appStoreApi.getState();
+
+      appStoreApi.setState({
+        state: {
+          ...s.state,
+          ui: {
+            ...s.state.ui,
+            viewports: {
+              ...s.state.ui.viewports,
+
+              current: {
+                ...s.state.ui.viewports.current,
+                height: closestViewport?.height || "auto",
+                width: closestViewport?.width,
+              },
+            },
+          },
+        },
+      });
+    }
+  }, [viewportOptions, frameRef.current, iframe, appStoreApi]);
 
   return (
     <div
