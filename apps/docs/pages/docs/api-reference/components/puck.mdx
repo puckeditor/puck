@@ -25,26 +25,28 @@ export function Editor() {
 
 ## Props
 
-| Param                                                 | Example                                            | Type                                                       | Status       |
-| ----------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------- | ------------ |
-| [`config`](#config)                                   | `config: { components: {} }`                       | [Config](/docs/api-reference/configuration/config)         | Required     |
-| [`data`](#data)                                       | `data: {}`                                         | [Data](/docs/api-reference/data-model/data)                | Required     |
-| [`dnd`](#dnd)                                         | `dnd: {}`                                          | [DndConfig](#dnd-params)                                   | -            |
-| [`children`](#children)                               | `children: <Puck.Preview />`                       | ReactNode                                                  | -            |
-| [`fieldTransforms`](#fieldtransforms)                 | `fieldTransforms: {text: () => <div />}`           | [FieldTransforms](/docs/api-reference/field-transforms)    | -            |
-| [`headerPath`](#headerpath)                           | `headerPath: "/my-page"`                           | String                                                     | -            |
-| [`headerTitle`](#headertitle)                         | `headerTitle: "My Page"`                           | String                                                     | -            |
-| [`iframe`](#iframe)                                   | `iframe: {}`                                       | [IframeConfig](#iframe-params)                             | -            |
-| [`initialHistory`](#initialhistory)                   | `initialHistory: {}`                               | [InitialHistory](#initialhistory-params)                   | -            |
-| [`metadata`](#metadata)                               | `metadata: {}`                                     | Object                                                     | -            |
-| [`onAction()`](#onactionaction-appstate-prevappstate) | `onAction: (action, appState, prevAppState) => {}` | Function                                                   | -            |
-| [`onChange()`](#onchangedata)                         | `onChange: (data) => {}`                           | Function                                                   | -            |
-| [`onPublish()`](#onpublishdata)                       | `onPublish: async (data) => {}`                    | Function                                                   | -            |
-| [`overrides`](#overrides)                             | `overrides: { header: () => <div /> }`             | [Overrides](/docs/api-reference/overrides)                 | Experimental |
-| [`permissions`](#permissions)                         | `permissions: {}`                                  | [Plugin\[\]](/docs/api-reference/plugin)                   | Experimental |
-| [`plugins`](#plugins)                                 | `plugins: [myPlugin]`                              | [Plugin\[\]](/docs/api-reference/plugin)                   | Experimental |
-| [`ui`](#ui)                                           | `ui: {leftSideBarVisible: false}`                  | [AppState.ui](/docs/api-reference/data-model/app-state#ui) | -            |
-| [`viewports`](#viewports)                             | `viewports: [{ width: 1440 }]`                     | [Viewport\[\]](#viewport-params)                           | -            |
+| Param                                                             | Example                                            | Type                                                                     | Status       |
+| ----------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
+| [`config`](#config)                                               | `config: { components: {} }`                       | [Config](/docs/api-reference/configuration/config)                       | Required     |
+| [`data`](#data)                                                   | `data: {}`                                         | [Data](/docs/api-reference/data-model/data)                              | Required     |
+| [`dnd`](#dnd)                                                     | `dnd: {}`                                          | [DndConfig](#dnd-params)                                                 | -            |
+| [`children`](#children)                                           | `children: <Puck.Preview />`                       | ReactNode                                                                | -            |
+| [`fieldTransforms`](#fieldtransforms)                             | `fieldTransforms: {text: () => <div />}`           | [FieldTransforms](/docs/api-reference/field-transforms)                  | -            |
+| [`headerPath`](#headerpath)                                       | `headerPath: "/my-page"`                           | String                                                                   | -            |
+| [`headerTitle`](#headertitle)                                     | `headerTitle: "My Page"`                           | String                                                                   | -            |
+| [`height`](#height)                                               | `height: "100%"`                                   | String \| Number                                                         | -            |
+| [`iframe`](#iframe)                                               | `iframe: {}`                                       | [IframeConfig](#iframe-params)                                           | -            |
+| [`initialHistory`](#initialhistory)                               | `initialHistory: {}`                               | [InitialHistory](#initialhistory-params)                                 | -            |
+| [`metadata`](#metadata)                                           | `metadata: {}`                                     | Object                                                                   | -            |
+| [`onAction()`](#onactionaction-appstate-prevappstate)             | `onAction: (action, appState, prevAppState) => {}` | Function                                                                 | -            |
+| [`onChange()`](#onchangedata)                                     | `onChange: (data) => {}`                           | Function                                                                 | -            |
+| [`onPublish()`](#onpublishdata)                                   | `onPublish: async (data) => {}`                    | Function                                                                 | -            |
+| [`overrides`](#overrides)                                         | `overrides: { header: () => <div /> }`             | [Overrides](/docs/api-reference/overrides)                               | Experimental |
+| [`permissions`](#permissions)                                     | `permissions: {}`                                  | [Permissions\[\]](/docs/api-reference/permissions#supported-permissions) | -            |
+| [`plugins`](#plugins)                                             | `plugins: [myPlugin]`                              | [Plugin\[\]](/docs/api-reference/plugin)                                 | Experimental |
+| [`ui`](#ui)                                                       | `ui: {leftSideBarVisible: false}`                  | [AppState.ui](/docs/api-reference/data-model/app-state#ui)               | -            |
+| [`viewports`](#viewports)                                         | `viewports: [{ width: 1440 }]`                     | [Viewport\[\]](#viewport-params)                                         | -            |
+| [`_experimentalFullScreenCanvas`](#_experimentalfullscreencanvas) | `_experimentalFullScreenCanvas: true`              | Boolean                                                                  | Experimental |
 
 ## Required props
 
@@ -170,6 +172,21 @@ export function Editor() {
   return (
     <Puck
       headerTitle="My page"
+      // ...
+    />
+  );
+}
+```
+
+### `height`
+
+Modify the height of Puck when using the standard layout. Defaults to `100dvh`.
+
+```tsx {4} copy
+export function Editor() {
+  return (
+    <Puck
+      height="100%"
       // ...
     />
   );
@@ -493,4 +510,19 @@ By default, Puck exposes small, medium and large viewports based on common viewp
     "label": "Full-width"
   }
 ]
+```
+
+### `_experimentalFullScreenCanvas`
+
+Use a full screen mode for the Puck canvas, with floating viewport switcher. **This param is experimental.**
+
+```tsx {4-8} copy
+export function Editor() {
+  return (
+    <Puck
+      _experimentalFullScreenCanvas
+      // ...
+    />
+  );
+}
 ```
