@@ -261,6 +261,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
         hidePlugins: hasLegacySideBarPlugin,
       })}`}
       id={instanceId}
+      style={{ height }}
     >
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
