@@ -1,0 +1,23 @@
+---
+title: blocksPlugin
+---
+
+# blocksPlugin
+
+Show the component drawer for dragging new blocks onto the canvas.
+
+```tsx copy
+import { Puck, blocksPlugin } from "@measured/puck";
+
+const blocks = blocksPlugin();
+
+export function Editor() {
+  return <Puck plugins={[blocks]} />;
+}
+```
+
+**This plugin is included by default.** Explicitly including it allows you to reorder plugins.
+
+## Params
+
+This plugin does not accept any params.

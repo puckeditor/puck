@@ -2,17 +2,26 @@
 
 import { Callout } from "nextra/components";
 
-<Callout>
-  The plugin API is highly experimental and is likely to experience breaking
-  changes.
-</Callout>
+The [plugin API](/docs/api-reference/plugins) enables developers to share extensions to Puck.
 
-The [plugin API](/docs/api-reference/plugins) enables developers to share extensions to Puck, and are generally built on top of existing APIs.
+Plugins can display dedicated UI in the **Plugin Rail** on the left hand side of the screen (bottom on mobile), configure their own [overrides](ui-overrides), or [field transforms](field-transforms).
 
 ## Official plugins
 
-Puck provides official plugins for common use-cases:
+### Core plugins
 
+These plugins are included in the core package:
+
+- [`blocks`](/docs/api-reference/plugins/blocks-plugin): show the component drawer for dragging onto the canvas
+- [`fields`](/docs/api-reference/plugins/fields-plugin): render the fields for the currently selected component
+- [`outline`](/docs/api-reference/plugins/outline-plugin): display an outline of the current page structure
+- [`legacy-side-bar`](/docs/api-reference/plugins/legacy-side-bar-plugin): disable the plugin rail in favor of stacked "Components" / "Outline" sections
+
+### Enhancements
+
+Puck provides official plugins that can be installed for common use-cases:
+
+- [`ai`](https://puckeditor.com/docs/ai/overview): Use AI to generate pages using your own components.
 - [`emotion-cache`](https://github.com/measuredco/puck/tree/main/packages/plugin-emotion-cache): Inject emotion cache into the Puck iframe.
 - [`heading-analyzer`](https://github.com/measuredco/puck/tree/main/packages/plugin-heading-analyzer): Analyze the heading outline of your page and be warned when you're not respecting WCAG 2 accessibility standards.
 
@@ -40,6 +49,41 @@ export function Editor() {
 
 If you're familiar with Puck, you can likely already build a Puck plugin. See the [Plugin API reference](/docs/api-reference/plugins) for a full breakdown of available APIs.
 
+### Rendering UI in the Plugin Rail
+
+Plugins can render dedicated UI in a panel shown by the Plugin Rail. To add a plugin to the rail, create a new plugin and provide some parameters:
+
+```tsx showLineNumbers copy
+import { Coffee } from "lucide-react";
+
+const myPlugin = {
+  name: "my-plugin", // Globally unique name
+  label: "My Plugin", // Human-readable name shown in the rail
+  icon: <Coffee />, // Icon shown in the rail (use lucide to match Puck)
+  render: () => <div>My plugin UI</div>, // Component rendered in plugin panel
+};
+```
+
+You can leverage the [internal Puck API](internal-puck-api) to make integrate Puck behavior with your plugin:
+
+```tsx showLineNumbers copy {2, 4, 10-14}
+import { Coffee } from "lucide-react";
+import { createUsePuck } from "@measured/puck";
+
+const usePuck = createUsePuck();
+
+const myPlugin = {
+  name: "my-plugin",
+  label: "My Plugin",
+  icon: <Coffee />,
+  render: () => {
+    const type = usePuck((s) => s.selectedItem?.type || "Nothing");
+
+    return <h2>{type} selected</h2>;
+  },
+};
+```
+
 ### Transforming fields
 
 Plugins support [Field Transforms](/docs/extending-puck/field-transforms), enabling you to modify prop data before it's rendered in the `<Puck>` preview.
@@ -47,7 +91,7 @@ Plugins support [Field Transforms](/docs/extending-puck/field-transforms), enabl
 ```tsx showLineNumbers copy
 const plugin = {
   fieldTransforms: {
-    // Make all props powered by "text" field pink in the editor
+    // Make all props powered by "text" field pink in the canvas
     text: ({ value }) => <span style={{ color: "hotpink" }}>{value}</span>,
   },
 };

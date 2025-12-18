@@ -30,6 +30,7 @@ The current state of the Puck editor interface.
 | [`itemSelector`](#uiitemselector)               | `{ index: 0, zone: "my-content" }`                    | [ItemSelector](item-selector) |
 | [`leftSideBarVisible`](#uileftsidebarvisible)   | `false`                                               | Boolean                       |
 | [`leftSideBarWidth`](#uileftsidebarwidth)       | `200`                                                 | Number                        |
+| [`mobilePanelExpanded`](#uimobilepanelexpanded) | `true`                                                | Boolean                       |
 | [`plugin`](#uiplugin)                           | `{ current: "blocks" }`                               | Object                        |
 | [`previewMode`](#uipreviewmode)                 | `"edit"`                                              | String                        |
 | [`rightSideBarVisible`](#uirightsidebarvisible) | `false`                                               | Boolean                       |
@@ -100,15 +101,21 @@ Current width of the left side bar in pixels.
 
 ---
 
+### `ui.mobilePanelExpanded`
+
+Indicates whether the mobile plugin panel is expanded when the [`mobilePanelHeight` parameter](/docs/api-reference/plugin#mobilepanelheight) is set to `"toggle"`. Users toggle this value via the maximize/minimize button that appears on smaller viewports.
+
+---
+
 ### `ui.plugin`
 
 | Param                         | Example    | Type   |
 | ----------------------------- | ---------- | ------ |
-| [`current`](#uiplugincurrent) | `"blocks:` | String |
+| [`current`](#uiplugincurrent) | `"blocks"` | String |
 
 #### `ui.plugin.current`
 
-The currently visible plugin. Matches the plugin `name` parameter.
+The currently visible plugin. Matches the plugin [`name` parameter](/docs/api-reference/plugin#name).
 
 ---
 
