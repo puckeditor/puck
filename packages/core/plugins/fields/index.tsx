@@ -21,8 +21,8 @@ const CurrentTitle = () => {
 };
 
 export const fieldsPlugin: (params?: {
-  mobileOnly?: boolean;
-}) => PluginInternal = ({ mobileOnly = true } = {}) => ({
+  desktopSideBar?: "left" | "right";
+}) => PluginInternal = ({ desktopSideBar = "right" } = {}) => ({
   name: "fields",
   label: "Fields",
   render: () => (
@@ -36,5 +36,5 @@ export const fieldsPlugin: (params?: {
     </div>
   ),
   icon: <FormInput />,
-  mobileOnly,
+  mobileOnly: desktopSideBar === "right",
 });
