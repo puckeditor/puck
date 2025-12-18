@@ -1,7 +1,18 @@
 import { findZonesForArea } from "../../lib/data/find-zones-for-area";
-import type { PrivateAppState, PuckNodeData } from "../../types/Internal";
+import type {
+  NodeIndex,
+  PuckNodeData,
+  ZoneIndex,
+} from "../../types/Internal";
 
 export type UniqueIdentifier = string | number;
+
+export type FlattenState = {
+  indexes: {
+    nodes: NodeIndex;
+    zones: ZoneIndex;
+  };
+};
 
 /**
  * ZoneNode: Synthetic node representing a named zone (e.g., "items", "content")
@@ -63,7 +74,7 @@ function getComponentIdFromCompound(zoneCompound: string): string {
  * Emits ZoneNodes for each zone, followed by their content items
  */
 export function flattenPuckZones(
-  state: PrivateAppState,
+  state: FlattenState,
   expandedItems: Set<string>,
   selectedItemId?: string
 ): FlattenedPuckItem[] {
@@ -116,7 +127,7 @@ export function flattenPuckZones(
 }
 
 function flattenZone(
-  state: PrivateAppState,
+  state: FlattenState,
   zoneCompound: string,
   parentZoneNodeId: string | null,
   depth: number,
@@ -211,7 +222,7 @@ function flattenZone(
 }
 
 function checkIfHasSelectedChild(
-  state: PrivateAppState,
+  state: FlattenState,
   itemId: string,
   selectedItemId?: string
 ): boolean {
@@ -230,7 +241,7 @@ function checkIfHasSelectedChild(
  * Check if a zone contains the selected item (directly or in descendants)
  */
 function checkIfZoneHasSelectedChild(
-  state: PrivateAppState,
+  state: FlattenState,
   zoneCompound: string,
   selectedItemId?: string
 ): boolean {

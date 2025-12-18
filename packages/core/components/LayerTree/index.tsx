@@ -272,10 +272,9 @@ export const LayerTree = ({
     );
 
   const state = useMemo(
-    () =>
-      ({
-        indexes: { zones: zonesIndex, nodes: nodesIndex },
-      } as any),
+    () => ({
+      indexes: { zones: zonesIndex, nodes: nodesIndex },
+    }),
     [zonesIndex, nodesIndex]
   );
 
