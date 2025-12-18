@@ -44,14 +44,14 @@ export const Nav = ({
   items,
   mobileActions,
 }: {
-  items: Record<string, MenuItem>;
+  items: (MenuItem & { id: string })[];
   mobileActions?: ReactNode;
 }) => {
   return (
     <nav className={getClassName()}>
       <ul className={getClassName("list")}>
-        {Object.entries(items).map(([key, item]) => (
-          <MenuItem key={key} {...item} />
+        {items.map(({ id, ...item }) => (
+          <MenuItem key={id} {...item} />
         ))}
       </ul>
       {mobileActions && (

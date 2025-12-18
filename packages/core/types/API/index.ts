@@ -28,7 +28,6 @@ export type OnAction<UserData extends Data = Data> = (
 ) => void;
 
 export type Plugin<UserConfig extends Config = Config> = {
-  name?: string;
   label?: string;
   icon?: ReactNode;
   render?: () => ReactElement;

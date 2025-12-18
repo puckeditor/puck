@@ -39,7 +39,7 @@ export type UiState = {
   };
   field: { focus?: string | null; metadata?: Record<string, any> };
   plugin: {
-    current: string | null;
+    current: number | null;
   };
 };
 

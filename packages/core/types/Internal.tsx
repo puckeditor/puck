@@ -103,6 +103,7 @@ export type RenderFunc<
 > = (props: Props) => ReactElement;
 
 export type PluginInternal = Plugin & {
+  __name?: string;
   mobileOnly?: boolean;
   desktopOnly?: boolean;
 };

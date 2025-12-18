@@ -23,7 +23,7 @@ const CurrentTitle = () => {
 export const fieldsPlugin: (params?: {
   mobileOnly?: boolean;
 }) => PluginInternal = ({ mobileOnly = true } = {}) => ({
-  name: "fields",
+  __name: "fields",
   label: "Fields",
   render: () => (
     <div className={getClassName()}>

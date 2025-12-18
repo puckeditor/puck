@@ -104,11 +104,11 @@ Current width of the left side bar in pixels.
 
 | Param                         | Example    | Type   |
 | ----------------------------- | ---------- | ------ |
-| [`current`](#uiplugincurrent) | `"blocks:` | String |
+| [`current`](#uiplugincurrent) | `0` | Number |
 
 #### `ui.plugin.current`
 
-The currently visible plugin. Matches the plugin `name` parameter.
+Zero-based index of the currently visible plugin. It maps to the order of the resolved plugin list (defaults first unless you override the order via the `plugins` prop).
 
 ---
 

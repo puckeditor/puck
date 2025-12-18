@@ -4,7 +4,7 @@ import { IframeConfig, UiState } from "../../../../types";
 import { usePropsContext } from "../..";
 import styles from "./styles.module.css";
 import { useInjectGlobalCss } from "../../../../lib/use-inject-css";
-import { useAppStore, useAppStoreApi } from "../../../../store";
+import { useAppStore } from "../../../../store";
 import { DefaultOverride } from "../../../DefaultOverride";
 import { monitorHotkeys, useMonitorHotkeys } from "../../../../lib/use-hotkey";
 import { getFrame } from "../../../../lib/get-frame";
@@ -60,6 +60,19 @@ const PluginTab = ({
     </div>
   );
 };
+
+type PluginMenuItem = MenuItem & {
+  id: string;
+  render: () => ReactElement;
+  pluginIndex: number;
+  __name?: string;
+};
+
+const isLegacySideBar = (plugin?: PluginInternal) =>
+  plugin?.__name === "legacy-side-bar";
+
+const isFieldsPlugin = (plugin?: PluginInternal) =>
+  plugin?.__name === "fields";
 
 export const Layout = ({ children }: { children?: ReactNode }) => {
   const {
@@ -174,82 +187,121 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   }
 
   const setUi = useAppStore((s) => s.setUi);
-  const currentPlugin = useAppStore((s) => s.state.ui.plugin?.current);
-  const appStoreApi = useAppStoreApi();
+  const currentPluginIndex = useAppStore((s) => {
+    const value = s.state.ui.plugin?.current;
+
+    return typeof value === "number" ? value : null;
+  });
 
   const [mobilePanelHeightMode, setMobilePanelHeightMode] = useState<
     "toggle" | "min-content"
   >("toggle");
 
   const hasLegacySideBarPlugin = useMemo(
-    () => !!plugins?.find((p) => p.name === "legacy-side-bar"),
+    () =>
+      (plugins ?? []).some((plugin) =>
+        isLegacySideBar(plugin as PluginInternal)
+      ),
     [plugins]
   );
 
-  const pluginItems = useMemo(() => {
-    const details: Record<string, MenuItem & { render: () => ReactElement }> =
-      {};
-
+  const pluginItems = useMemo<PluginMenuItem[]>(() => {
+    const providedPlugins = (plugins ?? []) as PluginInternal[];
     const defaultPlugins: PluginInternal[] = [blocksPlugin(), outlinePlugin()];
 
-    const combinedPlugins: PluginInternal[] = [
-      ...defaultPlugins,
-      ...(plugins ?? []),
-    ].sort((a) => (a.name === "legacy-side-bar" ? -1 : 1)); // Always place legacy-side-bar first
+    const normalizedProvidedPlugins = [
+      ...providedPlugins.filter((plugin) => isLegacySideBar(plugin)),
+      ...providedPlugins.filter((plugin) => !isLegacySideBar(plugin)),
+    ];
 
-    if (!plugins?.some((p) => p.name === "fields")) {
+    const missingDefaults = defaultPlugins.filter(
+      (defaultPlugin) =>
+        !normalizedProvidedPlugins.some(
+          (plugin) => plugin.__name === defaultPlugin.__name
+        )
+    );
+
+    const combinedPlugins: PluginInternal[] = [
+      ...missingDefaults,
+      ...normalizedProvidedPlugins,
+    ];
+
+    if (!normalizedProvidedPlugins.some((plugin) => isFieldsPlugin(plugin))) {
       combinedPlugins.push(fieldsPlugin());
     }
 
-    combinedPlugins?.forEach((plugin) => {
-      if (plugin.name && plugin.render) {
-        if (details[plugin.name]) {
-          // Delete existing plugins with this name to enable user sorting
-          delete details[plugin.name];
-        }
+    const pluginMap = new Map<string, PluginInternal>();
 
-        details[plugin.name] = {
-          label: plugin.label ?? plugin.name,
-          icon: plugin.icon ?? <ToyBrick />,
-          onClick: () => {
-            setMobilePanelHeightMode(plugin.mobilePanelHeight ?? "toggle");
-
-            if (plugin.name === currentPlugin) {
-              if (leftSideBarVisible) {
-                setUi({ leftSideBarVisible: false });
-              } else {
-                setUi({ leftSideBarVisible: true });
-              }
-            } else {
-              if (plugin.name) {
-                setUi({
-                  plugin: { current: plugin.name },
-                  leftSideBarVisible: true,
-                });
-              }
-            }
-          },
-          isActive: leftSideBarVisible && currentPlugin === plugin.name,
-          render: plugin.render,
-          mobileOnly: hasLegacySideBarPlugin || plugin.mobileOnly,
-          desktopOnly: plugin.name === "legacy-side-bar" || plugin.desktopOnly,
-        };
+    combinedPlugins.forEach((plugin, idx) => {
+      if (!plugin.render) {
+        return;
       }
+
+      const key = plugin.__name ?? `plugin-${idx}`;
+
+      if (pluginMap.has(key)) {
+        pluginMap.delete(key);
+      }
+
+      pluginMap.set(key, plugin);
     });
 
-    return details;
-  }, [plugins, currentPlugin, appStoreApi, leftSideBarVisible]);
+    return Array.from(pluginMap.entries()).map(([id, plugin], index) => ({
+      id,
+      __name: plugin.__name,
+      pluginIndex: index,
+      label: plugin.label ?? plugin.__name ?? `Plugin ${index + 1}`,
+      icon: plugin.icon ?? <ToyBrick />,
+      onClick: () => {
+        setMobilePanelHeightMode(plugin.mobilePanelHeight ?? "toggle");
+
+        if (index === currentPluginIndex) {
+          if (leftSideBarVisible) {
+            setUi({ leftSideBarVisible: false });
+          } else {
+            setUi({ leftSideBarVisible: true });
+          }
+        } else {
+          setUi({
+            plugin: { current: index },
+            leftSideBarVisible: true,
+          });
+        }
+      },
+      isActive: leftSideBarVisible && currentPluginIndex === index,
+      render: plugin.render!,
+      mobileOnly: hasLegacySideBarPlugin || plugin.mobileOnly,
+      desktopOnly: isLegacySideBar(plugin) || plugin.desktopOnly,
+    }));
+  }, [
+    plugins,
+    currentPluginIndex,
+    leftSideBarVisible,
+    hasLegacySideBarPlugin,
+    setUi,
+    setMobilePanelHeightMode,
+  ]);
 
   useEffect(() => {
-    if (!currentPlugin) {
-      const names = Object.keys(pluginItems);
-
-      setUi({ plugin: { current: names[0] } });
+    if (!pluginItems.length) {
+      return;
     }
-  }, [pluginItems, currentPlugin]);
+
+    if (
+      currentPluginIndex === null ||
+      currentPluginIndex === undefined ||
+      currentPluginIndex >= pluginItems.length
+    ) {
+      setUi({ plugin: { current: 0 } });
+    }
+  }, [pluginItems, currentPluginIndex, setUi]);
+
+  const fieldsPluginItem = pluginItems.find(
+    (item) => item.__name === "fields"
+  );
 
   const hasDesktopFieldsPlugin =
-    pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;
+    !!fieldsPluginItem && fieldsPluginItem.mobileOnly === false;
 
   const mobilePanelExpanded = useAppStore(
     (s) => s.state.ui.mobilePanelExpanded ?? false
@@ -318,11 +370,11 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                     onResize={setLeftWidth}
                     onResizeEnd={handleLeftSidebarResizeEnd}
                   >
-                    {Object.entries(pluginItems).map(
-                      ([id, { mobileOnly, render: Render, label }]) => (
+                    {pluginItems.map(
+                      ({ id, mobileOnly, render: Render, pluginIndex }) => (
                         <PluginTab
                           key={id}
-                          visible={currentPlugin === id}
+                          visible={currentPluginIndex === pluginIndex}
                           mobileOnly={mobileOnly}
                         >
                           <Render />
