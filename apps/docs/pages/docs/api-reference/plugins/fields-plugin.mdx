@@ -1,0 +1,37 @@
+---
+title: fieldsPlugin
+---
+
+# fieldsPlugin
+
+Show the fields for the current component. On desktop, the fields will appear in the right-hand sidebar. On mobile, they will appear in the plugin rail.
+
+```tsx copy
+import { Puck, fieldsPlugin } from "@measured/puck";
+
+const fields = fieldsPlugin();
+
+export function Editor() {
+  return <Puck plugins={[fields]} />;
+}
+```
+
+**This plugin is included by default.** Explicitly including it allows you to reorder plugins, and configure behavior.
+
+## Params
+
+| Param            | Example                  | Type              | Status |
+| ---------------- | ------------------------ | ----------------- | ------ |
+| `desktopSideBar` | `desktopSideBar: "left"` | "left" \| "right" | -      |
+
+## Optional params
+
+### `desktopSideBar`
+
+Display the plugin in the left or right sidebar on desktop. This field is `"right"` by default.
+
+```tsx copy
+const fields = fieldsPlugin({
+  desktopSideBar: "left",
+});
+```
