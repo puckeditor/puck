@@ -60,7 +60,7 @@ const MyPlugin = {
 
 ### `fieldTransforms`
 
-Transform the value of a field before rendering in the editor.Implements the [Field Transforms API](/docs/api-reference/field-transforms).
+Transform the value of a field before rendering in the editor. Implements the [Field Transforms API](/docs/api-reference/field-transforms).
 
 ```tsx {2-5}
 const MyPlugin = {
@@ -80,7 +80,7 @@ Controls how the plugin panel behaves on mobile screens.
 
 ### `name`
 
-A globally unique name for the plugin. When `render` is provided, `name` is required and for the plugin to appear within the plugin rail. The current open plugin is tracked in [`ui.plugin.current`](/docs/api-reference/data-model/app-state#uiplugincurrent)
+A globally unique name for the plugin. When `render` is provided, `name` is required for the plugin to appear within the plugin rail. The currently open plugin is tracked in [`ui.plugin.current`](/docs/api-reference/data-model/app-state#uiplugincurrent).
 
 ```tsx {2}
 const MyPlugin = {
@@ -103,7 +103,7 @@ const MyPlugin = {
 
 ### `render`
 
-Render function for the plugin pane, shown when the plugin is selected in the plugin rail.
+Render function for the plugin panel, shown when the plugin is selected in the plugin rail.
 
 ```tsx {2}
 const MyPlugin = {

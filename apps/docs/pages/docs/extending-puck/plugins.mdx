@@ -4,7 +4,7 @@ import { Callout } from "nextra/components";
 
 The [plugin API](/docs/api-reference/plugins) enables developers to share extensions to Puck.
 
-Plugins can display dedicated UI in the **Plugin Rail** on the left hand side of the screen (bottom on mobile), configure their own [overrides](ui-overrides), or [field transforms](field-transforms).
+Plugins can display dedicated UI in the **Plugin Rail** on the left-hand side of the screen (bottom on mobile), configure their own [overrides](ui-overrides), or apply [field transforms](field-transforms).
 
 ## Official plugins
 
@@ -12,7 +12,7 @@ Plugins can display dedicated UI in the **Plugin Rail** on the left hand side of
 
 These plugins are included in the core package:
 
-- [`blocks`](/docs/api-reference/plugins/blocks-plugin): show the component drawer for dragging onto the canvas
+- [`blocks`](/docs/api-reference/plugins/blocks-plugin): show the component drawer for dragging components onto the canvas
 - [`fields`](/docs/api-reference/plugins/fields-plugin): render the fields for the currently selected component
 - [`outline`](/docs/api-reference/plugins/outline-plugin): display an outline of the current page structure
 - [`legacy-side-bar`](/docs/api-reference/plugins/legacy-side-bar-plugin): disable the plugin rail in favor of stacked "Components" / "Outline" sections
@@ -64,7 +64,7 @@ const myPlugin = {
 };
 ```
 
-You can leverage the [internal Puck API](internal-puck-api) to make integrate Puck behavior with your plugin:
+You can leverage the [internal Puck API](internal-puck-api) to integrate Puck behavior with your plugin:
 
 ```tsx showLineNumbers copy {2, 4, 10-14}
 import { Coffee } from "lucide-react";
