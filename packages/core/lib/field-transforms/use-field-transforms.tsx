@@ -1,21 +1,12 @@
-import {
-  ComponentData,
-  Config,
-  ExtractField,
-  Field,
-  UserGenerics,
-} from "../../types";
+import { ComponentData, Config } from "../../types";
 import { useMemo } from "react";
-import { mapFields, MapFnParams, Mappers } from "../data/map-fields";
-import {
-  FieldTransformFn,
-  FieldTransforms,
-} from "../../types/API/FieldTransforms";
+import { mapFields, Mappers } from "../data/map-fields";
+import { FieldTransforms } from "../../types/API/FieldTransforms";
+import { buildMappers } from "./build-mappers";
 
 export function useFieldTransforms<
   T extends ComponentData,
-  UserConfig extends Config,
-  G extends UserGenerics<UserConfig>
+  UserConfig extends Config
 >(
   config: UserConfig,
   item: T,
@@ -23,44 +14,13 @@ export function useFieldTransforms<
   readOnly?: T["readOnly"],
   forceReadOnly?: boolean
 ): T["props"] {
-  // Transformers are the same as mappers, except they receive the additional `isReadOnly` param.
-  // This converts transformers to mappers by adding the `isReadOnly` param
-  const mappers = useMemo<Mappers>(() => {
-    return Object.keys(transforms).reduce<Mappers>((acc, _fieldType) => {
-      const fieldType = _fieldType as Field["type"]; // Not strictly true, as could include user fields, but this should be safe enough
-
-      return {
-        ...acc,
-        [fieldType]: ({
-          parentId,
-          ...params
-        }: MapFnParams<ExtractField<G["UserField"], Field["type"]>>) => {
-          const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
-
-          const isReadOnly =
-            readOnly?.[params.propPath] ||
-            readOnly?.[wildcardPath] ||
-            forceReadOnly ||
-            false;
-
-          const fn = transforms[fieldType] as FieldTransformFn<
-            ExtractField<G["UserField"], Field["type"]>
-          >;
-
-          return fn?.({
-            ...params,
-            isReadOnly,
-            componentId: parentId,
-          });
-        },
-      };
-    }, {});
-  }, [transforms, readOnly, forceReadOnly]);
+  const mappers = useMemo<Mappers>(
+    () => buildMappers(transforms, readOnly, forceReadOnly),
+    [transforms, readOnly, forceReadOnly]
+  );
 
   const transformedProps = useMemo(() => {
-    const mapped = mapFields(item, mappers, config).props;
-
-    return mapped;
+    return mapFields(item, mappers, config).props;
   }, [config, item, mappers]);
 
   const mergedProps = useMemo(
