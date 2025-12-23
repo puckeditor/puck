@@ -204,21 +204,24 @@ export function mapFields<T extends ComponentData | RootData>(
   item: T,
   mappers: Mappers<MapFn>,
   config: Config,
-  recurseSlots?: boolean
+  recurseSlots?: boolean,
+  shouldDefaultSlots?: boolean
 ): T;
 
 export function mapFields<T extends ComponentData | RootData>(
   item: T,
   mappers: Mappers<PromiseMapFn>,
   config: Config,
-  recurseSlots?: boolean
+  recurseSlots?: boolean,
+  shouldDefaultSlots?: boolean
 ): Promise<T>;
 
 export function mapFields(
   item: any,
   mappers: Mappers,
   config: Config,
-  recurseSlots: boolean = false
+  recurseSlots: boolean = false,
+  shouldDefaultSlots: boolean = true
 ): any {
   const itemType = "type" in item ? item.type : "root";
 
@@ -226,7 +229,9 @@ export function mapFields(
     itemType === "root" ? config.root : config.components?.[itemType];
 
   const newProps = walkObject({
-    value: defaultSlots(item.props ?? {}, componentConfig?.fields ?? {}),
+    value: shouldDefaultSlots
+      ? defaultSlots(item.props ?? {}, componentConfig?.fields ?? {})
+      : item.props,
     fields: componentConfig?.fields ?? {},
     mappers,
     id: item.props ? item.props.id ?? "root" : "root",
