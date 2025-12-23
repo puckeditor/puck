@@ -197,7 +197,7 @@ export const Canvas = () => {
     if (iframe.enabled) {
       const s = appStoreApi.getState();
 
-      appStoreApi.setState({
+      const appState = {
         state: {
           ...s.state,
           ui: {
@@ -213,7 +213,15 @@ export const Canvas = () => {
             },
           },
         },
-      });
+      };
+
+      let history = s.history;
+
+      if (s.history.histories.length === 1) {
+        history = { ...history, histories: [appState] };
+      }
+
+      appStoreApi.setState({ ...appState, history });
     }
   }, [viewportOptions, frameRef.current, iframe, appStoreApi]);
 
