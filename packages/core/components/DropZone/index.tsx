@@ -487,7 +487,14 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       [dropRef]
     );
 
-    const El = as ?? "div";
+    const config = useAppStore((s) => s.config);
+
+    const Wrapper = useMemo(
+      () => config.overrides?.slot || "div",
+      [config.overrides]
+    );
+
+    const El = as ?? Wrapper;
 
     return (
       <El
@@ -583,6 +590,11 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     let zoneCompound = `${areaId}:${zone}`;
     let content = data?.content || [];
 
+    const Wrapper = useMemo(
+      () => config.overrides?.slot || "div",
+      [config.overrides]
+    );
+
     // Register zones if running Render mode inside editor (i.e. previewMode === "interactive")
     useEffect(() => {
       // Only register zones, not slots
@@ -593,7 +605,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       }
     }, [content]);
 
-    const El = as ?? "div";
+    const El = as ?? Wrapper;
 
     if (!data || !config) {
       return null;
