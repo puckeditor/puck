@@ -34,6 +34,35 @@ import { setDeep } from "../../../../bundle";
 const getClassName = getClassNameFactory("ArrayField", styles);
 const getClassNameItem = getClassNameFactory("ArrayFieldItem", styles);
 
+const ItemSummaryInner = ({
+  index,
+  originalIndex,
+  field,
+  name,
+}: {
+  index: number;
+  originalIndex: number;
+  field: ArrayFieldType;
+  name?: string;
+}) => {
+  const data = useFieldStore((s) => {
+    const path = `${[name]}[${index}]`;
+    return getDeep(s, path);
+  });
+
+  const itemSummary = useMemo(() => {
+    if (data && field.getItemSummary) {
+      return field.getItemSummary(data, index);
+    }
+
+    return `Item #${originalIndex}`;
+  }, [data, field, originalIndex, index]);
+
+  return itemSummary;
+};
+
+const ItemSummary = memo(ItemSummaryInner);
+
 const ArrayFieldItemInternal = ({
   id,
   arrayId,
@@ -66,17 +95,6 @@ const ArrayFieldItemInternal = ({
     return s.state.ui.arrayState[arrayId]?.openId === id;
   });
 
-  const itemSummary = useFieldStore((s) => {
-    const path = `${[name]}[${index}]`;
-    const data = getDeep(s, path);
-
-    if (data && field.getItemSummary) {
-      return field.getItemSummary(data, index);
-    }
-
-    return `Item #${originalIndex}`;
-  });
-
   // NB this will prevent array fields from being used outside of Puck
   const canEdit = useAppStore(
     (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
@@ -105,7 +123,12 @@ const ArrayFieldItemInternal = ({
             }}
             className={getClassNameItem("summary")}
           >
-            {itemSummary}
+            <ItemSummary
+              index={index}
+              originalIndex={originalIndex}
+              field={field}
+              name={name}
+            />
             <div className={getClassNameItem("rhs")}>
               {!readOnly && (
                 <div className={getClassNameItem("actions")}>{actions}</div>
