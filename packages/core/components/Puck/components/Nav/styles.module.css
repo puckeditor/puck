@@ -1,0 +1,134 @@
+.Nav {
+  display: flex;
+}
+
+.Nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  gap: 8px;
+}
+
+@media (min-width: 638px) {
+  .Nav-list {
+    padding-top: 32px;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+}
+
+.Nav-mobileActions {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-inline-start: auto;
+  padding: 4px 16px;
+  border-inline-start: 1px solid var(--puck-color-grey-09);
+}
+
+@media (min-width: 638px) {
+  .Nav-mobileActions {
+    display: none;
+  }
+}
+
+.NavItem-link {
+  text-align: center;
+  align-items: center;
+  color: var(--puck-color-grey-03);
+  display: flex;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 8px 4px;
+  width: 64px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 638px) {
+  .NavItem-link {
+    width: auto;
+  }
+}
+
+.NavItem:first-of-type {
+  padding-left: 16px;
+}
+
+.NavItem:last-of-type {
+  padding-right: 16px;
+}
+
+@media (min-width: 638px) {
+  .NavItem:first-of-type,
+  .NavItem:last-of-type {
+    padding: 0;
+  }
+}
+
+.NavItem-link {
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-radius: 0;
+  flex-direction: column;
+  font-size: var(--puck-font-size-xxxs);
+}
+
+@media (min-width: 638px) {
+  .NavItem-link {
+    border: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+  }
+}
+
+.NavItem-linkIcon {
+  height: 24px;
+  width: 24px;
+}
+
+.NavItem--active > .NavItem-link {
+  background-color: var(--puck-color-azure-10);
+  color: var(--puck-color-azure-04);
+  font-weight: 600;
+}
+
+.NavItem--active > .NavItem-link {
+  background-color: transparent;
+  border-top-color: var(--puck-color-azure-04);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  font-weight: 600;
+}
+
+@media (min-width: 638px) {
+  .NavItem--active > .NavItem-link {
+    border-top-color: transparent;
+    border-right-color: var(--puck-color-azure-04);
+  }
+}
+
+.NavItem:not(.NavItem--active) > .NavItem-link:hover {
+  background-color: var(--puck-color-azure-11);
+  color: var(--puck-color-azure-04);
+}
+
+@media (min-width: 638px) {
+  .NavItem--mobileOnly {
+    display: none;
+  }
+}
+
+.NavItem--desktopOnly {
+  display: none;
+}
+
+@media (min-width: 638px) {
+  .NavItem--desktopOnly {
+    display: block;
+  }
+}

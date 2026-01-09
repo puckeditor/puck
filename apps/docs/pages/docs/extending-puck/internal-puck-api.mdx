@@ -4,7 +4,7 @@ title: Internal Puck API
 
 # Internal Puck API
 
-Puck exposes it's internal API as [`PuckApi`](/docs/api-reference/puck-api) for extending Puck with custom functionality within [custom fields](/docs/extending-puck/custom-fields), [compositional interfaces](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides).
+Puck exposes its internal API as [`PuckApi`](/docs/api-reference/puck-api) for extending Puck with custom functionality within [custom fields](/docs/extending-puck/custom-fields), [compositional interfaces](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides).
 
 ## Accessing the internal API
 
@@ -57,25 +57,33 @@ See the [`useGetPuck`](/docs/api-reference/functions/use-get-puck) docs for a fu
 
 ## Usage in practice
 
-Generally, you'll want to combine this with composition, UI overrides or custom fields. **PuckApi cannot currently be accessed outside of these contexts**.
+Generally, you'll want to combine this with composition, UI overrides or custom fields.
 
-Here's an example using the internal API to render the page data as JSON using composition:
+Here's an example using the internal API to log the page data as JSON while retaining the standard Puck UI:
 
 ```tsx
 import { Puck, createUsePuck } from "@measured/puck";
 
 const usePuck = createUsePuck();
 
-const JSONRenderer = () => {
+const JSONLogger = ({ children }) => {
   const appState = usePuck((s) => s.appState);
 
-  return <div>{JSON.stringify(appState.data)}</div>;
+  useEffect(() => {
+    console.log(appState);
+  }, [appState]);
+
+  return <>{children}</>;
 };
 
 export function Editor() {
   return (
+    // Render the Puck context
     <Puck>
-      <JSONRenderer />
+      <JSONLogger>
+        {/* Since we're overriding Puck's children, we restore the standard Puck UI */}
+        <Puck.Layout />
+      </JSONLogger>
     </Puck>
   );
 }
@@ -86,6 +94,7 @@ export function Editor() {
 - [`PuckApi` API reference](/docs/api-reference/puck-api)
 - [`usePuck` API reference](/docs/api-reference/functions/use-puck)
 - [`useGetPuck` API reference](/docs/api-reference/functions/use-get-puck)
+- [`<Puck.Layout>` API reference](/docs/api-reference/components/puck-layout)
 - [Composition](/docs/extending-puck/composition)
 - [Custom fields](/docs/extending-puck/custom-fields)
 - [UI overrides](/docs/extending-puck/ui-overrides)

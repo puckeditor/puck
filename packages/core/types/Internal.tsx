@@ -1,4 +1,5 @@
-import { Slot } from "./API";
+import { ReactElement, ReactNode } from "react";
+import { Plugin, Slot } from "./API";
 import { AppState } from "./AppState";
 import { DefaultComponents } from "./Config";
 import { ComponentData, Data } from "./Data";
@@ -95,3 +96,13 @@ export type AssertHasValue<T, True = T, False = never> = [keyof T] extends [
 ]
   ? False
   : True;
+
+// Plugins can use `usePuck` instead of relying on props
+export type RenderFunc<
+  Props extends { [key: string]: any } = { children: ReactNode }
+> = (props: Props) => ReactElement;
+
+export type PluginInternal = Plugin & {
+  mobileOnly?: boolean;
+  desktopOnly?: boolean;
+};

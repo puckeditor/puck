@@ -1,0 +1,236 @@
+/*
+ * Puck's responsive layout uses minimum viewport widths slightly _below_ common
+ * framework/device breakpoints, and ensures that the width of the resulting
+ * Puck page preview (zoomed at 75%) is slightly _above_ common framework/device
+ * breakpoints. This can help alleviate some of the pain when editing responsive
+ * pages in a preview area that is narrower than the reported viewport width.
+ *
+ * Viewport | Puck page @ zoom 0.75
+ * --------------------------------
+ * -        | 322px
+ * 766px    | 322px
+ * 990px    | 604px
+ * 1022px   | 646px
+ * 1198px   | 801px
+ * 1398px   | 1025px
+ * 1598px   | 1212px
+ */
+
+.Puck {
+  --puck-space-px: 16px;
+  font-family: var(--puck-font-family);
+  overflow-x: hidden;
+}
+
+@media (min-width: 766px) {
+  .Puck {
+    overflow-x: auto;
+  }
+}
+
+.Puck-portal {
+  position: relative;
+  z-index: 2;
+}
+
+.PuckLayout {
+  height: 100dvh;
+}
+
+.PuckLayout-inner {
+  --puck-frame-width: auto;
+  --puck-side-nav-width: min-content;
+  --puck-side-bar-width: 0px;
+  --puck-left-side-bar-width: var(
+    --puck-user-left-side-bar-width,
+    var(--puck-side-bar-width)
+  );
+  --puck-right-side-bar-width: var(
+    --puck-user-right-side-bar-width,
+    var(--puck-side-bar-width)
+  );
+  background-color: var(--puck-color-grey-12);
+  display: grid;
+  grid-template-areas: "header" "editor" "left" "right" "sidenav";
+  grid-template-columns: var(--puck-frame-width);
+  grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
+  height: 100%;
+  position: relative;
+  transition: grid-template-rows 150ms ease-in;
+  z-index: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 638px) {
+  .PuckLayout-inner {
+    --puck-side-nav-width: 68px;
+    grid-template-areas: "header header header header" "sidenav left editor right";
+    grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
+    grid-template-rows: min-content auto;
+  }
+
+  .Puck--hidePlugins .PuckLayout-inner {
+    --puck-side-nav-width: 0;
+  }
+}
+
+.PuckLayout--mounted .PuckLayout-inner {
+  --puck-side-bar-width: 186px;
+}
+
+.PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
+  .PuckLayout-inner {
+  /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
+  grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
+}
+
+.PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+  .PuckLayout-inner {
+  /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
+  grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
+    .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+        --puck-frame-width
+      )
+      0;
+    grid-template-rows: min-content auto;
+  }
+}
+
+.PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible
+  .PuckLayout-inner,
+.PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+  .PuckLayout-inner {
+  /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
+  grid-template-rows: 0 auto min-content 0 var(--puck-side-nav-width);
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
+    .PuckLayout-inner,
+  .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+    .PuckLayout-inner,
+  .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible
+    .PuckLayout-inner,
+  .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
+    .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+        --puck-frame-width
+      )
+      0;
+    grid-template-rows: min-content auto;
+  }
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--rightSideBarVisible .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) 0 var(--puck-frame-width)
+      var(--puck-right-side-bar-width);
+  }
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
+    .PuckLayout-inner {
+    grid-template-columns:
+      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+        --puck-frame-width
+      )
+      var(--puck-right-side-bar-width);
+  }
+}
+
+@media (min-width: 458px) {
+  .PuckLayout-mounted .PuckLayout-inner {
+    --puck-frame-width: minmax(266px, auto);
+  }
+}
+
+@media (min-width: 638px) {
+  .PuckLayout .PuckLayout-inner {
+    --puck-side-bar-width: minmax(186px, 250px);
+  }
+}
+
+@media (min-width: 766px) {
+  .PuckLayout .PuckLayout-inner {
+    --puck-frame-width: auto;
+  }
+}
+
+@media (min-width: 990px) {
+  .PuckLayout .PuckLayout-inner {
+    --puck-side-bar-width: 256px;
+  }
+}
+
+@media (min-width: 1198px) {
+  .PuckLayout .PuckLayout-inner {
+    --puck-side-bar-width: 274px;
+  }
+}
+
+@media (min-width: 1398px) {
+  .PuckLayout .PuckLayout-inner {
+    --puck-side-bar-width: 290px;
+  }
+}
+
+@media (min-width: 1598px) {
+  .PuckLayout .PuckLayout-inner {
+    --puck-side-bar-width: 320px;
+  }
+}
+
+.PuckLayout-nav {
+  border-top: 1px solid var(--puck-color-grey-09);
+  background-color: var(--puck-color-grey-12);
+  grid-area: sidenav;
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (min-width: 638px) {
+  .PuckLayout-nav {
+    border-top: 0;
+    border-right: 1px solid var(--puck-color-grey-09);
+    box-sizing: border-box;
+  }
+}
+
+.PuckLayout-header {
+  grid-area: header;
+}
+
+.PuckLayout--leftSideBarVisible .PuckLayout-header {
+  overflow: hidden;
+}
+
+@media (min-width: 638px) {
+  .PuckLayout--leftSideBarVisible .PuckLayout-header {
+    overflow: auto;
+  }
+}
+
+.PuckPluginTab {
+  display: none;
+  flex-grow: 1;
+  max-height: 100%;
+}
+
+.PuckPluginTab--visible {
+  display: flex;
+  flex-direction: column;
+}
+
+.PuckPluginTab-body {
+  flex-grow: 1;
+  max-height: 100%;
+}

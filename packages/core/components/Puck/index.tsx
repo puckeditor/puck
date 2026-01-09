@@ -2,6 +2,7 @@
 import {
   Context,
   createContext,
+  CSSProperties,
   PropsWithChildren,
   ReactElement,
   ReactNode,
@@ -29,66 +30,29 @@ import type {
   DefaultComponentProps,
 } from "../../types";
 
-import { SidebarSection } from "../SidebarSection";
-
 import { PuckAction } from "../../reducer";
-import getClassNameFactory from "../../lib/get-class-name-factory";
-import {
-  createAppStore,
-  defaultAppState,
-  useAppStore,
-  appStoreContext,
-} from "../../store";
-import styles from "./styles.module.css";
+import { createAppStore, defaultAppState, appStoreContext } from "../../store";
 import { Fields } from "./components/Fields";
 import { Components } from "./components/Components";
 import { Preview } from "./components/Preview";
 import { Outline } from "./components/Outline";
-import { Canvas } from "./components/Canvas";
 import { defaultViewports } from "../ViewportControls/default-viewports";
 import { Viewports } from "../../types";
-import { DragDropContext } from "../DragDropContext";
 import { useLoadedOverrides } from "../../lib/use-loaded-overrides";
-import { DefaultOverride } from "../DefaultOverride";
-import { useInjectGlobalCss } from "../../lib/use-inject-css";
-import { usePreviewModeHotkeys } from "../../lib/use-preview-mode-hotkeys";
-import { useDeleteHotkeys } from "../../lib/use-delete-hotkeys";
 import { useRegisterHistorySlice } from "../../store/slices/history";
 import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
-import { monitorHotkeys, useMonitorHotkeys } from "../../lib/use-hotkey";
-import { getFrame } from "../../lib/get-frame";
 import {
   UsePuckStoreContext,
   useRegisterUsePuckStore,
 } from "../../lib/use-puck";
-import { FrameProvider } from "../../lib/frame-context";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
 import fdeq from "fast-deep-equal";
-import { Header } from "./components/Header";
-import { Sidebar } from "./components/Sidebar";
-import { useSidebarResize } from "../../lib/use-sidebar-resize";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
 import { toComponent } from "../../lib/data/to-component";
-
-const getClassName = getClassNameFactory("Puck", styles);
-const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
-
-const FieldSideBar = () => {
-  const title = useAppStore((s) =>
-    s.selectedItem
-      ? s.config.components[s.selectedItem.type]?.["label"] ??
-        s.selectedItem.type.toString()
-      : "Page"
-  );
-
-  return (
-    <SidebarSection noPadding noBorderTop showBreadcrumbs title={title}>
-      <Fields />
-    </SidebarSection>
-  );
-};
+import { Layout } from "./components/Layout";
+import { useSafeId } from "../../lib/use-safe-id";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -123,6 +87,8 @@ type PuckProps<
   };
   initialHistory?: InitialHistory;
   metadata?: Metadata;
+  height?: CSSProperties["height"];
+  _experimentalFullScreenCanvas?: boolean;
 };
 
 const propsContext = createContext<Partial<PuckProps>>({});
@@ -173,48 +139,6 @@ function PuckProvider<
     const initial = { ...defaultAppState.ui, ...initialUi };
 
     let clientUiState: Partial<G["UserAppState"]["ui"]> = {};
-
-    if (typeof window !== "undefined") {
-      // Hide side bars on mobile
-      if (window.matchMedia("(max-width: 638px)").matches) {
-        clientUiState = {
-          ...clientUiState,
-          leftSideBarVisible: false,
-          rightSideBarVisible: false,
-        };
-      }
-
-      const viewportWidth = window.innerWidth;
-
-      const viewportDifferences = Object.entries(viewports)
-        .map(([key, value]) => ({
-          key,
-          diff: Math.abs(viewportWidth - value.width),
-        }))
-        .sort((a, b) => (a.diff > b.diff ? 1 : -1));
-
-      const closestViewport = viewportDifferences[0].key as any;
-
-      if (iframe.enabled) {
-        clientUiState = {
-          ...clientUiState,
-          viewports: {
-            ...initial.viewports,
-
-            current: {
-              ...initial.viewports.current,
-              height:
-                initialUi?.viewports?.current?.height ||
-                viewports[closestViewport]?.height ||
-                "auto",
-              width:
-                initialUi?.viewports?.current?.width ||
-                viewports[closestViewport]?.width,
-            },
-          },
-        };
-      }
-    }
 
     // DEPRECATED
     if (
@@ -326,9 +250,12 @@ function PuckProvider<
     };
   }, [fieldTransforms, plugins]);
 
+  const instanceId = useSafeId();
+
   const generateAppStore = useCallback(
     (state?: PrivateAppState) => {
       return {
+        instanceId,
         state,
         config,
         plugins: plugins || [],
@@ -341,6 +268,7 @@ function PuckProvider<
       };
     },
     [
+      instanceId,
       initialAppState,
       config,
       plugins,
@@ -413,170 +341,6 @@ function PuckProvider<
   );
 }
 
-function PuckLayout<
-  UserConfig extends Config = Config,
-  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
->({ children }: PropsWithChildren) {
-  const {
-    iframe: _iframe,
-    dnd,
-    initialHistory: _initialHistory,
-  } = usePropsContext();
-
-  const iframe: IframeConfig = useMemo(
-    () => ({
-      enabled: true,
-      waitForStyles: true,
-      ..._iframe,
-    }),
-    [_iframe]
-  );
-
-  useInjectGlobalCss(iframe.enabled);
-
-  const dispatch = useAppStore((s) => s.dispatch);
-  const leftSideBarVisible = useAppStore((s) => s.state.ui.leftSideBarVisible);
-  const rightSideBarVisible = useAppStore(
-    (s) => s.state.ui.rightSideBarVisible
-  );
-
-  const {
-    width: leftWidth,
-    setWidth: setLeftWidth,
-    sidebarRef: leftSidebarRef,
-    handleResizeEnd: handleLeftSidebarResizeEnd,
-  } = useSidebarResize("left", dispatch);
-
-  const {
-    width: rightWidth,
-    setWidth: setRightWidth,
-    sidebarRef: rightSidebarRef,
-    handleResizeEnd: handleRightSidebarResizeEnd,
-  } = useSidebarResize("right", dispatch);
-
-  useEffect(() => {
-    if (!window.matchMedia("(min-width: 638px)").matches) {
-      dispatch({
-        type: "setUi",
-        ui: {
-          leftSideBarVisible: false,
-          rightSideBarVisible: false,
-        },
-      });
-    }
-
-    const handleResize = () => {
-      if (!window.matchMedia("(min-width: 638px)").matches) {
-        dispatch({
-          type: "setUi",
-          ui: (ui: UiState) => ({
-            ...ui,
-            ...(ui.rightSideBarVisible ? { leftSideBarVisible: false } : {}),
-          }),
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const overrides = useAppStore((s) => s.overrides);
-
-  const CustomPuck = useMemo(
-    () => overrides.puck || DefaultOverride,
-    [overrides]
-  );
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const ready = useAppStore((s) => s.status === "READY");
-
-  useMonitorHotkeys();
-  useDeleteHotkeys();
-
-  useEffect(() => {
-    if (ready && iframe.enabled) {
-      const frameDoc = getFrame();
-
-      if (frameDoc) {
-        return monitorHotkeys(frameDoc);
-      }
-    }
-  }, [ready, iframe.enabled]);
-
-  usePreviewModeHotkeys();
-
-  const layoutOptions: Record<string, any> = {};
-
-  if (leftWidth) {
-    layoutOptions["--puck-user-left-side-bar-width"] = `${leftWidth}px`;
-  }
-
-  if (rightWidth) {
-    layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
-  }
-
-  return (
-    <div className={`Puck ${getClassName()}`}>
-      <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
-        <CustomPuck>
-          {children || (
-            <FrameProvider>
-              <div
-                className={getLayoutClassName({
-                  leftSideBarVisible,
-                  mounted,
-                  rightSideBarVisible,
-                })}
-              >
-                <div
-                  className={getLayoutClassName("inner")}
-                  style={layoutOptions}
-                >
-                  <Header />
-                  <Sidebar
-                    position="left"
-                    sidebarRef={leftSidebarRef}
-                    isVisible={leftSideBarVisible}
-                    onResize={setLeftWidth}
-                    onResizeEnd={handleLeftSidebarResizeEnd}
-                  >
-                    <SidebarSection title="Components" noBorderTop>
-                      <Components />
-                    </SidebarSection>
-                    <SidebarSection title="Outline">
-                      <Outline />
-                    </SidebarSection>
-                  </Sidebar>
-                  <Canvas />
-                  <Sidebar
-                    position="right"
-                    sidebarRef={rightSidebarRef}
-                    isVisible={rightSideBarVisible}
-                    onResize={setRightWidth}
-                    onResizeEnd={handleRightSidebarResizeEnd}
-                  >
-                    <FieldSideBar />
-                  </Sidebar>
-                </div>
-              </div>
-            </FrameProvider>
-          )}
-        </CustomPuck>
-      </DragDropContext>
-      <div id="puck-portal-root" className={getClassName("portal")} />
-    </div>
-  );
-}
-
 export function Puck<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
@@ -584,7 +348,7 @@ export function Puck<
   return (
     <PropsProvider {...props}>
       <PuckProvider {...props}>
-        <PuckLayout {...props} />
+        <Layout>{props.children}</Layout>
       </PuckProvider>
     </PropsProvider>
   );
@@ -592,5 +356,6 @@ export function Puck<
 
 Puck.Components = Components;
 Puck.Fields = Fields;
+Puck.Layout = Layout;
 Puck.Outline = Outline;
 Puck.Preview = Preview;

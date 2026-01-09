@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAppStore } from "../../../../store";
+import { useAppStore, useAppStoreApi } from "../../../../store";
 import { ViewportControls } from "../../../ViewportControls";
 import styles from "./styles.module.css";
 import { getClassNameFactory, useResetAutoZoom } from "../../../../lib";
@@ -16,6 +16,8 @@ import { UiState } from "../../../../types";
 import { Loader } from "../../../Loader";
 import { useShallow } from "zustand/react/shallow";
 import { useCanvasFrame } from "../../../../lib/frame-context";
+import { usePropsContext } from "../..";
+import { defaultViewports } from "../../../ViewportControls/default-viewports";
 
 const getClassName = getClassNameFactory("PuckCanvas", styles);
 
@@ -25,6 +27,11 @@ const TRANSITION_DURATION = 150;
 export const Canvas = () => {
   const { frameRef } = useCanvasFrame();
   const resetAutoZoom = useResetAutoZoom(frameRef);
+
+  const {
+    _experimentalFullScreenCanvas,
+    viewports: viewportOptions = defaultViewports,
+  } = usePropsContext();
 
   const {
     dispatch,
@@ -147,11 +154,83 @@ export const Canvas = () => {
     }, 500);
   }, []);
 
+  const appStoreApi = useAppStoreApi();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const viewportWidth = window.innerWidth;
+    const frameWidth = frameRef.current?.getBoundingClientRect().width;
+
+    if (!viewportWidth) return;
+    if (!frameWidth) return;
+    if (viewportOptions.length === 0) return;
+
+    const fullWidthViewport = Object.values(viewportOptions).find(
+      (v) => v.width === "100%"
+    );
+
+    const containsFullWidthViewport = !!fullWidthViewport;
+
+    const viewportDifferences = Object.entries(viewportOptions)
+      .filter(([_, value]) => value.width !== "100%")
+      .map(([key, value]) => ({
+        key,
+        diff: Math.abs(
+          viewportWidth -
+            (typeof value.width === "string" ? viewportWidth : value.width)
+        ),
+        value,
+      }))
+      .sort((a, b) => (a.diff > b.diff ? 1 : -1));
+
+    let closestViewport = viewportDifferences[0].value;
+
+    // Select full width viewport if it exists, and the closest viewport is smaller than the window
+    if (
+      (closestViewport.width as number) < frameWidth &&
+      containsFullWidthViewport
+    ) {
+      closestViewport = fullWidthViewport;
+    }
+
+    if (iframe.enabled) {
+      const s = appStoreApi.getState();
+
+      const appState = {
+        state: {
+          ...s.state,
+          ui: {
+            ...s.state.ui,
+            viewports: {
+              ...s.state.ui.viewports,
+
+              current: {
+                ...s.state.ui.viewports.current,
+                height: closestViewport?.height || "auto",
+                width: closestViewport?.width,
+              },
+            },
+          },
+        },
+      };
+
+      let history = s.history;
+
+      if (s.history.histories.length === 1) {
+        history = { ...history, histories: [appState] };
+      }
+
+      appStoreApi.setState({ ...appState, history });
+    }
+  }, [viewportOptions, frameRef.current, iframe, appStoreApi]);
+
   return (
     <div
       className={getClassName({
         ready: status === "READY" || !iframe.enabled || !iframe.waitForStyles,
         showLoader,
+        fullScreen: _experimentalFullScreenCanvas,
       })}
       onClick={(e) => {
         const el = e.target as Element;
@@ -171,6 +250,7 @@ export const Canvas = () => {
       {viewports.controlsVisible && iframe.enabled && (
         <div className={getClassName("controls")}>
           <ViewportControls
+            fullScreen={_experimentalFullScreenCanvas}
             autoZoom={zoomConfig.autoZoom}
             zoom={zoomConfig.zoom}
             onViewportChange={(viewport) => {

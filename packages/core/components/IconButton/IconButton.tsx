@@ -16,6 +16,7 @@ export const IconButton = ({
   newTab,
   fullWidth,
   title,
+  suppressHydrationWarning,
 }: {
   active?: boolean;
   children: ReactNode;
@@ -27,6 +28,7 @@ export const IconButton = ({
   newTab?: boolean;
   fullWidth?: boolean;
   title: string;
+  suppressHydrationWarning?: boolean;
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -54,6 +56,7 @@ export const IconButton = ({
       rel={newTab ? "noreferrer" : undefined}
       href={href}
       title={title}
+      suppressHydrationWarning={suppressHydrationWarning}
     >
       <span className={getClassName("title")}>{title}</span>
       {children}
