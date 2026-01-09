@@ -348,7 +348,7 @@ const DragDropContextClient = ({
                   );
                 }
               }
-              
+
               dispatch({
                 type: "setUi",
                 ui: {
@@ -356,7 +356,7 @@ const DragDropContextClient = ({
                   isDragging: false,
                 },
               });
-              
+
               dragListeners.dragend?.forEach((fn) => {
                 fn(event, manager);
               });
