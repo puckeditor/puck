@@ -5,6 +5,7 @@ const menu = {
   fields: {},
   functions: {},
   overrides: {},
+  plugins: { title: "Plugins" },
 };
 
 export default menu;

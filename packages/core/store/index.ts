@@ -54,6 +54,7 @@ export type AppStore<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 > = {
+  instanceId: string;
   state: G["UserAppState"];
   dispatch: (action: PuckAction) => void;
   config: UserConfig;
@@ -108,6 +109,7 @@ const defaultPageFields: Record<string, Field> = {
 export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
   create<AppStore>()(
     subscribeWithSelector((set, get) => ({
+      instanceId: generateId(),
       state: defaultAppState,
       config: { components: {} },
       componentState: {},
@@ -261,7 +263,13 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
           return { ...s, state, selectedItem };
         }),
       resolveComponentData: async (componentData, trigger) => {
-        const { config, metadata, setComponentLoading, permissions } = get();
+        const { config, metadata, setComponentLoading, permissions, state } =
+          get();
+        const componentId =
+          "id" in componentData.props ? componentData.props.id : "root";
+        const parentId = state.indexes.nodes[componentId]?.parentId;
+        const parentNode = parentId ? state.indexes.nodes[parentId] : null;
+        const parentData = parentNode?.data ?? null;
 
         const timeouts: Record<string, () => void> = {};
 
@@ -284,7 +292,8 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
 
             timeouts[id]();
           },
-          trigger
+          trigger,
+          parentData
         );
       },
       resolveAndCommitData: async () => {

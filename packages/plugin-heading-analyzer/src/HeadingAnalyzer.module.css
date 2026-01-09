@@ -1,5 +1,6 @@
 .HeadingAnalyzer {
   display: block;
+  padding: 16px;
 }
 
 .HeadingAnalyzer-cssWarning {

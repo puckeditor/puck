@@ -15,6 +15,7 @@ export type UiState = {
   rightSideBarVisible: boolean;
   leftSideBarWidth?: number | null;
   rightSideBarWidth?: number | null;
+  mobilePanelExpanded?: boolean;
   itemSelector: ItemSelector | null;
   arrayState: Record<string, ArrayState | undefined>;
   previewMode: "interactive" | "edit";
@@ -30,13 +31,16 @@ export type UiState = {
   isDragging: boolean;
   viewports: {
     current: {
-      width: number;
+      width: number | "100%";
       height: number | "auto";
     };
     controlsVisible: boolean;
     options: Viewport[];
   };
   field: { focus?: string | null; metadata?: Record<string, any> };
+  plugin: {
+    current: string | null;
+  };
 };
 
 export type AppState<UserData extends Data = Data> = {

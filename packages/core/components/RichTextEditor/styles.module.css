@@ -59,6 +59,7 @@
   font-family: inherit;
   font-size: var(--puck-font-size-xxs);
   resize: vertical;
+  text-align: initial;
   transition: border-color 50ms ease-in;
   width: 100%;
   max-width: 100%;

@@ -5,6 +5,36 @@ import { stripSlots } from "./strip-slots";
 // Explicitly destructure to account for flat module issues: https://github.com/puckeditor/puck/issues/1089
 const { flatten, unflatten } = flat;
 
+function isEmptyArrayOrObject(val: any): boolean {
+  if (Array.isArray(val)) {
+    return val.length === 0;
+  }
+
+  if (
+    val != null &&
+    Object.prototype.toString.call(val) === "[object Object]"
+  ) {
+    return Object.keys(val).length === 0;
+  }
+
+  return false;
+}
+
+function stripEmptyObjects(props: Record<string, any>) {
+  const result: Record<string, any> = {};
+
+  for (const key in props) {
+    if (!Object.prototype.hasOwnProperty.call(props, key)) continue;
+
+    const val = props[key];
+    if (isEmptyArrayOrObject(val)) continue;
+
+    result[key] = val;
+  }
+
+  return result;
+}
+
 export const flattenNode = <
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
@@ -14,7 +44,7 @@ export const flattenNode = <
 ) => {
   return {
     ...node,
-    props: flatten(stripSlots(node, config).props),
+    props: stripEmptyObjects(flatten(stripSlots(node, config).props)),
   };
 };
 

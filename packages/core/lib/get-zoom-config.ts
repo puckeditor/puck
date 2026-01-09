@@ -18,7 +18,10 @@ export const getZoomConfig = (
   let rootHeight = 0;
   let autoZoom = 1;
 
-  if (uiViewport.width > frameWidth || viewportHeight > frameHeight) {
+  if (
+    typeof uiViewport.width === "number" &&
+    (uiViewport.width > frameWidth || viewportHeight > frameHeight)
+  ) {
     const widthZoom = Math.min(frameWidth / uiViewport.width, 1);
     const heightZoom = Math.min(frameHeight / viewportHeight, 1);
 

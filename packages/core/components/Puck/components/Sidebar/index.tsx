@@ -22,11 +22,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onResizeEnd,
   children,
 }) => {
-  if (!isVisible) return null;
-
   return (
     <>
-      <div ref={sidebarRef} className={getClassName({ [position]: true })}>
+      <div
+        ref={sidebarRef}
+        className={getClassName({ [position]: true, isVisible })}
+      >
         {children}
       </div>
       <div className={`${getClassName("resizeHandle")}`}>

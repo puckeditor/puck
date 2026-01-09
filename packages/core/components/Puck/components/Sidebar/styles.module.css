@@ -1,20 +1,37 @@
 .Sidebar {
+  border-block-start: 1px solid var(--puck-color-grey-09);
   position: relative;
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow-y: auto;
 }
 
+.Sidebar--isVisible {
+  display: flex;
+}
+
 .Sidebar--left {
   background: var(--puck-color-grey-12);
-  border-inline-end: 1px solid var(--puck-color-grey-09);
   grid-area: left;
+}
+
+@media (min-width: 766px) {
+  .Sidebar--left {
+    border-block-start: 0;
+    border-inline-end: 1px solid var(--puck-color-grey-09);
+  }
 }
 
 .Sidebar--right {
   background: var(--puck-color-white);
-  border-inline-start: 1px solid var(--puck-color-grey-09);
   grid-area: right;
+}
+
+@media (min-width: 766px) {
+  .Sidebar--right {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--puck-color-grey-09);
+  }
 }
 
 .Sidebar-resizeHandle {

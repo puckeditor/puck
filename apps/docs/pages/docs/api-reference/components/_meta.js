@@ -11,6 +11,7 @@ const menu = {
   puck: {},
   "puck-components": {},
   "puck-fields": {},
+  "puck-layout": {},
   "puck-outline": {},
   "puck-preview": {},
   render: {},

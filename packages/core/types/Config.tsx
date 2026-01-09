@@ -24,7 +24,12 @@ export type PuckComponent<Props> = (
   >
 ) => JSX.Element;
 
-export type ResolveDataTrigger = "insert" | "replace" | "load" | "force";
+export type ResolveDataTrigger =
+  | "insert"
+  | "replace"
+  | "load"
+  | "force"
+  | "move";
 
 type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
   T,
@@ -66,6 +71,7 @@ type ComponentConfigInternal<
       lastData: DataShape | null;
       metadata: ComponentMetadata;
       trigger: ResolveDataTrigger;
+      parent: ComponentData | null;
     }
   ) =>
     | Promise<WithPartialProps<DataShape, FieldProps>>
