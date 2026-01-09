@@ -3368,12 +3368,25 @@
   resolved "https://registry.yarnpkg.com/@remix-run/node-fetch-server/-/node-fetch-server-0.9.0.tgz#4f881ad0c9019a37471e98fd25815c2d7f4b12fb"
   integrity sha512-SoLMv7dbH+njWzXnOY6fI08dFMI5+/dQ+vY3n8RnnbdG7MdJEgiP28Xj/xWlnRnED/aB6SFw56Zop+LbmaaKqA==
 
-"@remix-run/node@2.17.1", "@remix-run/node@^2.2.0":
+"@remix-run/node@2.17.1":
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.17.1.tgz#96cc45e72d567bf2589a7d14a349cfd66e93b4d9"
   integrity sha512-pHmHTuLE1Lwazulx3gjrHobgBCsa+Xiq8WUO0ruLeDfEw2DU0c0SNSiyNkugu3rIZautroBwRaOoy7CWJL9xhQ==
   dependencies:
     "@remix-run/server-runtime" "2.17.1"
+    "@remix-run/web-fetch" "^4.4.2"
+    "@web3-storage/multipart-parser" "^1.0.0"
+    cookie-signature "^1.1.0"
+    source-map-support "^0.5.21"
+    stream-slice "^0.1.2"
+    undici "^6.21.2"
+
+"@remix-run/node@^2.2.0":
+  version "2.17.2"
+  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.17.2.tgz#c9ef51a3e9d23a25dcdbe7ae9663180c9ac3f354"
+  integrity sha512-NHBIQI1Fap3ZmyHMPVsMcma6mvi2oUunvTzOcuWHHkkx1LrvWRzQTlaWqEnqCp/ff5PfX5r0eBEPrSkC8zrHRQ==
+  dependencies:
+    "@remix-run/server-runtime" "2.17.2"
     "@remix-run/web-fetch" "^4.4.2"
     "@web3-storage/multipart-parser" "^1.0.0"
     cookie-signature "^1.1.0"
@@ -3415,6 +3428,19 @@
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-2.17.1.tgz#f48945d26f13cfb616be054282559467d640cf62"
   integrity sha512-d1Vp9FxX4KafB111vP2E5C1fmWzPI+gHZ674L1drq+N8Bp9U6FBspi7GAZSU5K5Kxa4T6UF+aE1gK6pVi9R8sw==
+  dependencies:
+    "@remix-run/router" "1.23.0"
+    "@types/cookie" "^0.6.0"
+    "@web3-storage/multipart-parser" "^1.0.0"
+    cookie "^0.7.2"
+    set-cookie-parser "^2.4.8"
+    source-map "^0.7.3"
+    turbo-stream "2.4.1"
+
+"@remix-run/server-runtime@2.17.2":
+  version "2.17.2"
+  resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-2.17.2.tgz#0f10520ee5517f5e39294b2c0df000c3d8cabba0"
+  integrity sha512-dTrAG1SgOLgz1DFBDsLHN0V34YqLsHEReVHYOI4UV/p+ALbn/BRQMw1MaUuqGXmX21ZTuCzzPegtTLNEOc8ixA==
   dependencies:
     "@remix-run/router" "1.23.0"
     "@types/cookie" "^0.6.0"
