@@ -100,13 +100,23 @@ const ArrayFieldItemInternal = ({
     (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
   );
 
+  const hasVisibleFields = useMemo(() => {
+    if (!field.arrayFields) {
+      return false;
+    }
+
+    return Object.values(field.arrayFields).some(
+      (subField) => subField.type !== "slot" && subField.visible !== false
+    );
+  }, [field.arrayFields]);
+
   return (
     <Sortable id={id} index={dragIndex} disabled={readOnly}>
       {({ isDragging, ref, handleRef }) => (
         <div
           ref={ref}
           className={getClassNameItem({
-            isExpanded,
+            isExpanded: isExpanded && hasVisibleFields,
             isDragging,
             readOnly,
           })}
@@ -114,7 +124,7 @@ const ArrayFieldItemInternal = ({
           <div
             ref={handleRef}
             onClick={(e) => {
-              if (isDragging) return;
+              if (isDragging || !hasVisibleFields) return;
 
               e.preventDefault();
               e.stopPropagation();
@@ -139,7 +149,7 @@ const ArrayFieldItemInternal = ({
             </div>
           </div>
           <div className={getClassNameItem("body")}>
-            {isExpanded && (
+            {isExpanded && hasVisibleFields && (
               <fieldset className={getClassNameItem("fieldset")}>
                 {Object.keys(field.arrayFields!).map((subName) => {
                   const subField = field.arrayFields![subName];
