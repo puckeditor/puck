@@ -5,7 +5,7 @@ import { ComponentData, ComponentMetadata, RootData } from "./Data";
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
 import { AppState } from "./AppState";
 import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
-import { Permissions } from "./API";
+import { Permissions, RenderOverrides } from "./API";
 import { DropZoneProps } from "../components/DropZone/types";
 import {
   AssertHasValue,
@@ -181,6 +181,7 @@ type ConfigInternal<
     >;
   };
   root?: RootConfigInternal<RootProps, UserField>;
+  overrides?: RenderOverrides;
 };
 
 // This _deliberately_ casts as any so the user can pass in something that widens the types
