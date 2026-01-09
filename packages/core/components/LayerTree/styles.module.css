@@ -12,12 +12,21 @@
   color: var(--puck-color-grey-05);
   font-size: var(--puck-font-size-xxxs);
   text-transform: uppercase;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 4px;
 }
 
 .LayerTree-helper {
   text-align: center;
   color: var(--puck-color-grey-07);
   margin: 8px 4px;
+}
+
+.LayerTree-zoneIcon {
+  color: var(--puck-color-grey-08);
+  margin-top: 4px;
 }
 
 .Layer {
@@ -30,6 +39,8 @@
   border: 1px solid transparent;
   border-radius: 4px;
   transition: color 50ms ease-in;
+  display: flex;
+  align-items: center;
 }
 
 .Layer--containsZone > .Layer-inner {
@@ -74,18 +85,14 @@
   background: var(--puck-color-azure-10);
 }
 
-.Layer--isSelected > .Layer-inner > .Layer-clickable > .Layer-chevron,
-.Layer--childIsSelected > .Layer-inner > .Layer-clickable > .Layer-chevron {
-  transform: scaleY(-1);
-}
 
 .Layer-zones {
   display: none;
   margin-inline-start: 12px;
 }
 
-.Layer--isSelected > .Layer-zones,
-.Layer--childIsSelected > .Layer-zones {
+/* Show zones when expanded */
+.Layer--isExpanded > .Layer-zones {
   display: block;
 }
 
@@ -93,8 +100,7 @@
   margin-inline-start: 12px;
 }
 
-.Layer-title,
-.LayerTree-zoneTitle {
+.Layer-title {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -113,7 +119,106 @@
   margin-top: 4px;
 }
 
-.Layer-zoneIcon {
-  color: var(--puck-color-grey-08);
-  margin-top: 4px;
+.Layer-chevron {
+  color: var(--puck-color-grey-05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  margin-right: 4px;
+  transition: transform 150ms ease-in-out;
+  cursor: pointer;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.Layer-chevron:hover {
+  background: var(--puck-color-grey-10);
+}
+
+.Layer-chevron:focus-visible {
+  outline: 2px solid var(--puck-color-azure-05);
+  outline-offset: 2px;
+}
+
+/* Rotate chevron when expanded */
+.Layer--isExpanded .Layer-chevron {
+  transform: rotate(180deg);
+}
+
+.Layer-dragHandle {
+  color: var(--puck-color-grey-07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  margin: -4px;
+  margin-right: 4px;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+  border-radius: 2px;
+}
+
+.Layer-dragHandle:hover {
+  background: var(--puck-color-grey-10);
+}
+
+.Layer:hover .Layer-dragHandle {
+  opacity: 1;
+}
+
+.Layer-dragHandle:active {
+  cursor: grabbing;
+}
+
+/* Item being dragged - stays in place but faded */
+.Layer--isDragging {
+  opacity: 0.4;
+}
+
+/* Drop Indicator - thin blue line showing where drop will happen */
+.Layer--indicator {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 2px;
+  position: relative;
+}
+
+.Layer--indicator .Layer-inner {
+  position: relative;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--puck-color-azure-07) 8px,
+    var(--puck-color-azure-07)
+  );
+  border: none;
+  padding: 0;
+}
+
+.Layer--indicator .Layer-inner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--puck-color-azure-07);
+}
+
+/* Clone (DragOverlay) styles */
+.Layer--clone {
+  display: inline-block;
+  pointer-events: none;
+  list-style: none;
+}
+
+.Layer--clone .Layer-inner {
+  border-radius: 4px;
+  box-shadow: 0px 15px 15px 0 rgba(34, 33, 81, 0.1);
+  background: var(--puck-color-white);
 }
