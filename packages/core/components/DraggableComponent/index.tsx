@@ -30,7 +30,6 @@ import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
 import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
@@ -257,49 +256,63 @@ export const DraggableComponent = ({
   const getStyle = useCallback(() => {
     if (!ref.current) return;
 
-    const rect = ref.current!.getBoundingClientRect();
-    const deepScrollPosition = getDeepScrollPosition(ref.current);
-
+    const el = ref.current!;
+    const rect = el.getBoundingClientRect();
     const portalContainerEl = iframe.enabled
       ? null
-      : ref.current?.closest<HTMLElement>("[data-puck-preview]");
+      : el.closest<HTMLElement>("[data-puck-preview]");
+
+    const targetIsFixed = (() => {
+      let node: HTMLElement | null = el;
+
+      while (node && node !== document.documentElement) {
+        if (getComputedStyle(node).position === "fixed") {
+          return true;
+        }
+        node = node.parentElement;
+      }
+
+      return false;
+    })();
 
     const portalContainerRect = portalContainerEl?.getBoundingClientRect();
     const portalScroll = portalContainerEl
       ? getDeepScrollPosition(portalContainerEl)
       : { x: 0, y: 0 };
+    const deepScrollPosition = targetIsFixed
+      ? { x: 0, y: 0 }
+      : getDeepScrollPosition(el);
 
-    const scroll = {
-      x:
-        deepScrollPosition.x -
-        portalScroll.x -
-        (portalContainerRect?.left ?? 0),
-      y:
-        deepScrollPosition.y - portalScroll.y - (portalContainerRect?.top ?? 0),
-    };
-
-    const untransformed = {
-      height: ref.current.offsetHeight,
-      width: ref.current.offsetWidth,
-    };
-
-    const transform = accumulateTransform(ref.current);
+    const scroll = targetIsFixed
+      ? { x: 0, y: 0 }
+      : {
+          x:
+            deepScrollPosition.x -
+            portalScroll.x -
+            (portalContainerRect?.left ?? 0),
+          y:
+            deepScrollPosition.y -
+            portalScroll.y -
+            (portalContainerRect?.top ?? 0),
+        };
 
     const style: CSSProperties = {
-      left: `${(rect.left + scroll.x) / transform.scaleX}px`,
-      top: `${(rect.top + scroll.y) / transform.scaleY}px`,
-      height: `${untransformed.height}px`,
-      width: `${untransformed.width}px`,
+      left: `${rect.left + scroll.x}px`,
+      top: `${rect.top + scroll.y}px`,
+      height: `${rect.height}px`,
+      width: `${rect.width}px`,
+      position: targetIsFixed ? "fixed" : undefined,
     };
 
     return style;
-  }, [ref.current]);
+  }, [iframe.enabled]);
 
   const [style, setStyle] = useState<CSSProperties>();
+  const lastRectRef = useRef<DOMRectReadOnly | null>(null);
 
   const sync = useCallback(() => {
     setStyle(getStyle());
-  }, [ref.current, iframe]);
+  }, [getStyle]);
 
   useEffect(() => {
     if (ref.current) {
@@ -311,7 +324,61 @@ export const DraggableComponent = ({
         observer.disconnect();
       };
     }
-  }, [ref.current]);
+  }, [ref.current, sync]);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const tick = () => {
+      const el = ref.current;
+
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const prev = lastRectRef.current;
+
+        const changed =
+          !prev ||
+          Math.abs(rect.x - prev.x) > 0.5 ||
+          Math.abs(rect.y - prev.y) > 0.5 ||
+          Math.abs(rect.width - prev.width) > 0.5 ||
+          Math.abs(rect.height - prev.height) > 0.5;
+
+        if (changed) {
+          lastRectRef.current = rect;
+          sync();
+        }
+      }
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, [sync]);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          ["style", "class"].includes(mutation.attributeName || "")
+        )
+      ) {
+        sync();
+      }
+    });
+
+    observer.observe(ref.current, {
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
+
+    return () => observer.disconnect();
+  }, [ref.current, sync]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
 
