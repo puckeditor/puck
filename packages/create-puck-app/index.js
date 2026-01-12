@@ -103,7 +103,16 @@ program
       },
     ];
     const answers = await inquirer.prompt(questions);
-    const appName = answers.appName || _appName;
+
+    // Check the app name
+    const appNameInput = answers.appName || _appName;
+    const appName = typeof appNameInput === "string" ? appNameInput.trim() : "";
+
+    if (!appName) {
+      console.error("Please provide a name for your app.");
+      return;
+    }
+
     const recipe = answers.recipe;
 
     // Copy template files to the new directory
