@@ -101,7 +101,17 @@ program
           },
         ],
       },
+      {
+        type: "confirm",
+        name: "puckAi",
+        message: `Puck AI (beta) lets you generate pages using your own components. Learn more: ${ansiColors.cyan}https://puckeditor.com/docs/ai/overview${ansiColors.reset}
+
+  Add Puck AI to the editor? (Requires a Puck Cloud account)`,
+        required: true,
+        default: true,
+      },
     ];
+
     const answers = await inquirer.prompt(questions);
 
     // Check the app name
@@ -114,9 +124,11 @@ program
     }
 
     const recipe = answers.recipe;
+    const usesPuckAi = answers.puckAi;
 
     // Copy template files to the new directory
-    const templatePath = path.join(__dirname, "./templates", recipe);
+    const recipeName = `${recipe}${usesPuckAi ? "-ai" : ""}`;
+    const templatePath = path.join(__dirname, "./templates", recipeName);
     const appPath = path.join(process.cwd(), appName);
 
     if (!recipe) {
@@ -125,7 +137,7 @@ program
     }
 
     if (!fs.existsSync(templatePath)) {
-      console.error(`No recipe named ${recipe} exists.`);
+      console.error(`No recipe named ${recipeName} exists.`);
       return;
     }
 
@@ -215,8 +227,11 @@ program
     console.log("\nDone! Now run:\n");
     console.log(`  cd ${appName}`);
     console.log(`  ${packageManager} run dev\n`);
-    console.log(
-      `⭐ Don't forget to star Puck on Github: ${ansiColors.cyan}https://github.com/puckeditor/puck${ansiColors.reset}`
-    );
+
+    if (usesPuckAi) {
+      console.log(
+        `Configure Puck AI access: ${ansiColors.cyan}https://cloud.puckeditor.com/onboarding/integrate${ansiColors.reset}`
+      );
+    }
   })
   .parse(process.argv);
