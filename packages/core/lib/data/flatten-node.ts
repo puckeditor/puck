@@ -19,7 +19,7 @@ function encodeEmptyObjects(props: Record<string, any> = {}) {
 
     const val = props[key];
 
-    if (Array.isArray(val)) {
+    if (Array.isArray(val) && val.length === 0) {
       result[key] = emptyArrayStr;
     } else if (isPureObject(val) && Object.keys(val).length === 0) {
       result[key] = emptyObjectStr;
