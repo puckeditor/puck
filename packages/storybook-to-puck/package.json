@@ -1,0 +1,40 @@
+{
+  "name": "@puckeditor/storybook-to-puck",
+  "version": "0.20.2",
+  "author": "Chris Villa <chris@puckeditor.com>",
+  "repository": "puckeditor/puck",
+  "bugs": "https://github.com/puckeditor/puck/issues",
+  "homepage": "https://puckeditor.com",
+  "private": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "rm -rf dist && tsup index.ts",
+    "prepare": "yarn build"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@puckeditor/core": "^0.20.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "tsconfig": "*",
+    "tsup-config": "*",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "@puckeditor/core": "^0.20.2",
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
+  }
+}

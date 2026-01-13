@@ -1,3 +1,11 @@
+.home {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
 .app {
   width: min(560px, 100%);
   display: flex;
@@ -20,13 +28,13 @@
   text-transform: uppercase;
 }
 
-h1 {
+.app h1 {
   margin: 0;
   font-size: 2.2rem;
   line-height: 1.1;
 }
 
-p {
+.app p {
   margin: 0;
   font-size: 1.05rem;
   color: #475569;
@@ -55,11 +63,17 @@ p {
 }
 
 .primary {
-  background: #f97316;
+  background: var(--accent, #f97316);
   color: #ffffff;
 }
 
 .secondary {
   background: #e2e8f0;
   color: #0f172a;
+}
+
+.tertiary {
+  border: 1px solid #cbd5f5;
+  color: #3730a3;
+  background: #eef2ff;
 }

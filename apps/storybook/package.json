@@ -10,6 +10,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@puckeditor/core": "^0.20.2",
+    "@puckeditor/storybook-to-puck": "*",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
