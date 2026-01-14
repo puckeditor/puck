@@ -1,0 +1,330 @@
+.mkt {
+  --mkt-accent: #6366f1;
+  --mkt-accent-strong: #4f46e5;
+  --mkt-ink: #0f172a;
+  --mkt-muted: #475569;
+  --mkt-surface: #ffffff;
+  --mkt-surface-alt: #f8fafc;
+  --mkt-border: #e2e8f0;
+  --mkt-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+  color: var(--mkt-ink);
+  font-family: "Avenir Next", "Avenir", "Futura", "Trebuchet MS", sans-serif;
+}
+
+.mkt * {
+  box-sizing: border-box;
+}
+
+.mkt-shell {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mkt-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--mkt-accent-strong);
+}
+
+.mkt-title {
+  margin: 0;
+  font-size: clamp(2.1rem, 4vw, 3.3rem);
+  line-height: 1.05;
+}
+
+.mkt-subtitle {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--mkt-muted);
+  max-width: 560px;
+}
+
+.mkt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mkt-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mkt-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.15);
+}
+
+.mkt-button--primary {
+  background: var(--mkt-accent);
+  color: #ffffff;
+}
+
+.mkt-button--secondary {
+  border: 1px solid var(--mkt-border);
+  color: var(--mkt-ink);
+  background: var(--mkt-surface);
+}
+
+.mkt-badge {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(79, 70, 229, 0.12);
+  color: var(--mkt-accent-strong);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.mkt-hero {
+  padding: 72px 24px 90px;
+  background: radial-gradient(circle at top, #eef2ff 0%, #ffffff 55%, #f8fafc 100%);
+}
+
+.mkt-hero__grid {
+  display: grid;
+  gap: 32px;
+  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.mkt-hero__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mkt-hero__image {
+  border-radius: 32px;
+  overflow: hidden;
+  background: #0f172a;
+  box-shadow: var(--mkt-shadow);
+}
+
+.mkt-hero__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mkt-feature-grid {
+  padding: 72px 24px;
+  background: #ffffff;
+}
+
+.mkt-features {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.mkt-card {
+  background: var(--mkt-surface-alt);
+  border: 1px solid var(--mkt-border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mkt-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.mkt-card p {
+  margin: 0;
+  color: var(--mkt-muted);
+  font-size: 0.95rem;
+}
+
+.mkt-logo-cloud {
+  padding: 64px 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.mkt-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.mkt-logo-pill {
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid var(--mkt-border);
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: 0.04em;
+}
+
+.mkt-testimonials {
+  padding: 72px 24px;
+  background: #ffffff;
+}
+
+.mkt-testimonial-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.mkt-quote {
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--mkt-surface-alt);
+  border: 1px solid var(--mkt-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mkt-quote p {
+  margin: 0;
+  color: var(--mkt-ink);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.mkt-quote__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mkt-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.15);
+  color: var(--mkt-accent-strong);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.mkt-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.mkt-stats {
+  padding: 64px 24px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--mkt-accent-strong) 0%, #0f172a 100%);
+}
+
+.mkt-stats .mkt-subtitle {
+  color: rgba(248, 250, 252, 0.8);
+}
+
+.mkt-stats-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.mkt-stat {
+  background: rgba(15, 23, 42, 0.2);
+  border: 1px solid rgba(248, 250, 252, 0.15);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.mkt-stat h3 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.mkt-stat span {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.7);
+}
+
+.mkt-pricing {
+  padding: 72px 24px;
+  background: #ffffff;
+}
+
+.mkt-pricing-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.mkt-plan {
+  border: 1px solid var(--mkt-border);
+  border-radius: 22px;
+  padding: 24px;
+  background: var(--mkt-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mkt-plan--highlight {
+  border-color: var(--mkt-accent);
+  box-shadow: var(--mkt-shadow);
+}
+
+.mkt-plan h3 {
+  margin: 0;
+}
+
+.mkt-price {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.mkt-plan ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--mkt-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mkt-cta {
+  padding: 72px 24px;
+  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.2), transparent 55%),
+    #0f172a;
+  color: #ffffff;
+}
+
+.mkt-cta .mkt-title {
+  color: #ffffff;
+}
+
+.mkt-cta .mkt-subtitle {
+  color: rgba(248, 250, 252, 0.75);
+}
+
+@media (max-width: 768px) {
+  .mkt-hero {
+    padding: 60px 20px;
+  }
+
+  .mkt-shell {
+    gap: 16px;
+  }
+}
