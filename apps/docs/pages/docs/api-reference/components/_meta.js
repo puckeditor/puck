@@ -3,6 +3,7 @@ const menu = {
   "action-bar-action": {},
   "action-bar-group": {},
   "action-bar-label": {},
+  "action-bar-separator": {},
   "auto-field": {},
   drawer: {},
   "drawer-item": {},

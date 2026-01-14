@@ -1,0 +1,34 @@
+---
+title: <ActionBar.Separator>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { ActionBar } from "@/puck";
+
+# \<ActionBar.Label\>
+
+Render a separator in the [`<ActionBar>`](action-bar). An alternative to [`<ActionBar.Group>`](action-bar-group) that avoids wrapping elements.
+
+```tsx showLineNumbers {2,4} copy
+<ActionBar>
+  <ActionBar.Label label="Label 1" />
+  <ActionBar.Separator />
+  <ActionBar.Label label="Label 2" />
+  <ActionBar.Action>★</ActionBar.Action>
+</ActionBar>
+```
+
+<PuckPreview>
+  <div style={{ display: "flex" }}>
+    <ActionBar>
+      <ActionBar.Label label="Label 1" />
+      <ActionBar.Separator />
+      <ActionBar.Label label="Label 2" />
+      <ActionBar.Action>★</ActionBar.Action>
+    </ActionBar>
+  </div>
+</PuckPreview>
+
+## Props
+
+This component doesn't accept any props.
