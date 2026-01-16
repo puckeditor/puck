@@ -34,7 +34,7 @@ const FieldSideBar = () => {
   const title = useAppStore((s) =>
     s.selectedItem
       ? s.config.components[s.selectedItem.type]?.["label"] ??
-        s.selectedItem.type.toString()
+      s.selectedItem.type.toString()
       : s.config.root?.label || "Page"
   );
 
