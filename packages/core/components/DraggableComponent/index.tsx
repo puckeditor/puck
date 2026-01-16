@@ -563,52 +563,52 @@ export const DraggableComponent = ({
   // PERFORMANCE: when visible, respond to scroll/resize + track layout shifts without a global rAF loop
   useEffect(() => {
     if (!dragFinished || !(isSelected || thisIsDragging)) return;
-  
+
     const el = ref.current;
     if (!el) return;
-  
+
     const doc = el.ownerDocument;
     const view = doc.defaultView;
     if (!view) return;
-  
+
     lastMeasureRef.current = 0;
     scheduleSync(); // immediate position on show
-  
+
     const onScroll = () => scheduleSync();
     const onResize = () => scheduleSync();
-  
+
     doc.addEventListener("scroll", onScroll, true);
     view.addEventListener("resize", onResize);
-  
+
     let frame = 0;
     const tick = (t: number) => {
       if (t - lastMeasureRef.current >= MEASURE_EVERY_MS) {
         lastMeasureRef.current = t;
-  
+
         const node = ref.current;
         if (node) {
           const rect = node.getBoundingClientRect();
           const prev = lastRectRef.current;
-  
+
           const changed =
             !prev ||
             Math.abs(rect.x - prev.x) > 0.5 ||
             Math.abs(rect.y - prev.y) > 0.5 ||
             Math.abs(rect.width - prev.width) > 0.5 ||
             Math.abs(rect.height - prev.height) > 0.5;
-  
+
           if (changed) {
             lastRectRef.current = rect;
             scheduleSync();
           }
         }
       }
-  
+
       frame = requestAnimationFrame(tick);
     };
-  
+
     frame = requestAnimationFrame(tick);
-  
+
     return () => {
       doc.removeEventListener("scroll", onScroll, true);
       view.removeEventListener("resize", onResize);
