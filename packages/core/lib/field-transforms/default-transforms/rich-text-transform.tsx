@@ -50,6 +50,11 @@ const InlineEditorWrapper = memo(
     const onClickHandler = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
+    };
+
+    const onClickCaptureHandler = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
       const itemSelector = getSelectorForId(
         appStoreApi.getState().state,
@@ -129,7 +134,11 @@ const InlineEditorWrapper = memo(
     };
 
     return (
-      <div ref={portalRef} onClick={onClickHandler}>
+      <div
+        ref={portalRef}
+        onClick={onClickHandler}
+        onClickCapture={onClickCaptureHandler}
+      >
         <Suspense fallback={<EditorFallback {...editorProps} />}>
           <Editor {...editorProps} />
         </Suspense>

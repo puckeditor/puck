@@ -5,11 +5,11 @@ Select [entries](https://www.contentful.com/developers/docs/references/content-d
 ## Quick start
 
 ```sh
-npm i @measured/puck-field-contentful
+npm i @puckeditor/field-contentful
 ```
 
 ```jsx
-import createFieldContentful from "@measured/puck-field-contentful";
+import createFieldContentful from "@puckeditor/field-contentful";
 
 const config = {
   components: {
@@ -129,4 +129,4 @@ const config: Config<MyProps> = {
 
 ## License
 
-MIT © [The Puck Contributors](https://github.com/measuredco/puck/graphs/contributors)
+MIT © [The Puck Contributors](https://github.com/puckeditor/puck/graphs/contributors)

@@ -3,6 +3,7 @@ import { Type } from "lucide-react";
 import { FieldPropsInternal } from "../..";
 import { RichtextField as RichtextFieldType } from "../../../../types";
 import { EditorFallback } from "../../../RichTextEditor/components/EditorFallback";
+import { useDeepField } from "../../lib/use-deep-field";
 
 const Editor = lazy(() =>
   import("../../../RichTextEditor/components/Editor").then((m) => ({
@@ -13,17 +14,18 @@ const Editor = lazy(() =>
 export const RichtextField = ({
   onChange,
   readOnly = false,
-  value,
-  name,
+  id,
+  name = id,
   label,
   labelIcon,
   Label,
   field,
-  id,
 }: FieldPropsInternal) => {
+  const content = useDeepField(name);
+
   const editorProps = {
     onChange: onChange,
-    content: typeof value === "undefined" ? "" : value,
+    content,
     readOnly: readOnly,
     field: field as RichtextFieldType,
     id: id,

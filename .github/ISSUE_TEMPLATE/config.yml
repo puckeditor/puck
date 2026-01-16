@@ -4,5 +4,5 @@ contact_links:
       url: https://discord.gg/V9mDAhuxyZ
       about: This issue tracker is not for guidance. Please refer to the Discord server for live help and general guidance.
     - name: Questions and Help - Github Discussions 💬
-      url: https://github.com/measuredco/puck/discussions
+      url: https://github.com/puckeditor/puck/discussions
       about: This issue tracker is not for support questions. Please open a discussion for that.

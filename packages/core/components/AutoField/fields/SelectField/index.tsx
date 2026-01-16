@@ -2,6 +2,7 @@ import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "../../styles.module.css";
 import { ChevronDown } from "lucide-react";
 import { FieldPropsInternal } from "../..";
+import { useDeepField } from "../../lib/use-deep-field";
 
 const getClassName = getClassNameFactory("Input", styles);
 
@@ -11,11 +12,12 @@ export const SelectField = ({
   label,
   labelIcon,
   Label,
-  value,
-  name,
-  readOnly,
   id,
+  name = id,
+  readOnly,
 }: FieldPropsInternal) => {
+  const value = useDeepField(name);
+
   if (field.type !== "select" || !field.options) {
     return null;
   }

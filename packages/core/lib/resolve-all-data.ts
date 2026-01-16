@@ -9,6 +9,7 @@ import {
   RootData,
 } from "../types";
 import { resolveComponentData } from "./resolve-component-data";
+import { groupZonesByComponent } from "./group-zones-by-component";
 import { defaultData } from "./data/default-data";
 import { toComponent } from "./data/to-component";
 import { mapFields } from "./data/map-fields";
@@ -25,7 +26,14 @@ export async function resolveAllData<
 ) {
   const defaultedData = defaultData(data);
 
-  const resolveNode = async <T extends ComponentData | RootData>(_node: T) => {
+  const zonesByComponent = groupZonesByComponent(defaultedData);
+
+  let resolvedZones: Record<string, Content> = {};
+
+  const resolveNode = async <T extends ComponentData | RootData>(
+    _node: T,
+    parent: ComponentData | null
+  ) => {
     const node = toComponent(_node);
 
     onResolveStart?.(node);
@@ -37,45 +45,60 @@ export async function resolveAllData<
         metadata,
         () => {},
         () => {},
-        "force"
+        "force",
+        parent
       )
     ).node as T;
 
-    const resolvedDeep = (await mapFields(
+    const resolvedAsComponent = toComponent(resolved);
+
+    // Resolve any slots concurrently
+    const resolvedDeepPromise = mapFields(
       resolved,
-      { slot: ({ value }) => processContent(value) },
+      {
+        slot: ({ value }) => processContent(value, resolvedAsComponent),
+      },
       config
-    )) as T;
+    ) as unknown as Promise<T>;
+
+    let resolveZonePromises: Promise<void>[] = [];
+
+    // Resolve any zones concurrently
+    if (zonesByComponent[resolvedAsComponent.props.id]) {
+      resolveZonePromises = zonesByComponent[resolvedAsComponent.props.id].map(
+        async ({ zoneCompound, content }) => {
+          resolvedZones[zoneCompound] = await processContent(
+            content,
+            resolvedAsComponent
+          );
+        }
+      );
+    }
+
+    // Await all concurrent children
+    const resolvedDeep = await resolvedDeepPromise;
+    await Promise.all(resolveZonePromises);
 
     onResolveEnd?.(toComponent(resolvedDeep));
 
     return resolvedDeep;
   };
 
-  const processContent = async (content: Content) => {
-    return Promise.all(content.map(resolveNode));
+  const processContent = async (
+    content: Content,
+    parent: ComponentData | null
+  ) => {
+    return Promise.all(content.map((item) => resolveNode(item, parent)));
   };
 
-  const processZones = async () => {
-    const zones = data.zones ?? {};
+  const result: Data = defaultData({});
 
-    Object.entries(zones).forEach(async ([zoneKey, content]) => {
-      zones[zoneKey] = await Promise.all(content.map(resolveNode));
-    });
+  result.root = await resolveNode(defaultedData.root, null);
+  result.content = await processContent(
+    defaultedData.content,
+    toComponent(result.root)
+  );
+  result.zones = resolvedZones;
 
-    return zones;
-  };
-
-  const dynamic: Data = {
-    root: await resolveNode(defaultedData.root),
-    content: await processContent(defaultedData.content),
-    zones: await processZones(),
-  };
-
-  Object.keys(defaultedData.zones ?? {}).forEach(async (zoneKey) => {
-    const content = defaultedData.zones![zoneKey];
-    dynamic.zones![zoneKey] = await processContent(content);
-  }, {});
-
-  return dynamic as Data<Components, RootProps>;
+  return result as Data<Components, RootProps>;
 }

@@ -1,7 +1,6 @@
-import { RefObject, useCallback, useEffect, useRef } from "react";
-import { useAppStore, useAppStoreApi } from "../store";
+import { RefObject } from "react";
+import { useAppStoreApi } from "../store";
 import { getZoomConfig } from "./get-zoom-config";
-import { useShallow } from "zustand/react/shallow";
 import { UiState } from "../types";
 
 type ResetAutoZoomOptions = {

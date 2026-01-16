@@ -1,0 +1,23 @@
+---
+title: outlinePlugin
+---
+
+# outlinePlugin
+
+Show an outline of the components currently on the canvas.
+
+```tsx copy
+import { Puck, outlinePlugin } from "@puckeditor/core";
+
+const outline = outlinePlugin();
+
+export function Editor() {
+  return <Puck plugins={[outline]} />;
+}
+```
+
+**This plugin is included by default.** Explicitly including it allows you to change the order in the plugin rail.
+
+## Params
+
+This plugin does not accept any params.
