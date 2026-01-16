@@ -2,13 +2,14 @@ import { ReactElement, useEffect, useState } from "react";
 
 import styles from "./HeadingAnalyzer.module.css";
 
-import { createUsePuck } from "@measured/puck";
+import { createUsePuck } from "@puckeditor/core";
 import { Plugin } from "@/core/types";
-import { SidebarSection } from "@/core/components/SidebarSection";
 import { OutlineList } from "@/core/components/OutlineList";
 
 import { scrollIntoView } from "@/core/lib/scroll-into-view";
 import { getFrame } from "@/core/lib/get-frame";
+
+import { Heading1 } from "lucide-react";
 
 import { getClassNameFactory } from "@/core/lib";
 
@@ -161,7 +162,7 @@ export const HeadingAnalyzer = () => {
         }}
       >
         Heading analyzer styles not loaded. Please review the{" "}
-        <a href="https://github.com/measuredco/puck/blob/main/packages/plugin-heading-analyzer/README.md">
+        <a href="https://github.com/puckeditor/puck/blob/main/packages/plugin-heading-analyzer/README.md">
           README
         </a>
         .
@@ -243,18 +244,10 @@ export const HeadingAnalyzer = () => {
 };
 
 const headingAnalyzer: Plugin = {
-  overrides: {
-    fields: ({ children, itemSelector }) => (
-      <>
-        {children}
-        <div style={{ display: itemSelector ? "none" : "block" }}>
-          <SidebarSection title="Heading Outline">
-            <HeadingAnalyzer />
-          </SidebarSection>
-        </div>
-      </>
-    ),
-  },
+  name: "heading-analyzer",
+  label: "Audit",
+  render: HeadingAnalyzer,
+  icon: <Heading1 />,
 };
 
 export default headingAnalyzer;

@@ -7,6 +7,7 @@ import {
   RootDataWithProps,
 } from "../types";
 import { mapFields } from "./data/map-fields";
+import { toComponent } from "./data/to-component";
 import { getChanged } from "./get-changed";
 import { deepEqual } from "fast-equals";
 
@@ -22,7 +23,8 @@ export const resolveComponentData = async <
   metadata: Metadata = {},
   onResolveStart?: (item: T) => void,
   onResolveEnd?: (item: T) => void,
-  trigger: ResolveDataTrigger = "replace"
+  trigger: ResolveDataTrigger = "replace",
+  parent: ComponentData | null = null
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -38,9 +40,22 @@ export const resolveComponentData = async <
   const id = "id" in item.props ? item.props.id : "root";
 
   if (shouldRunResolver) {
-    const { item: oldItem = null, resolved = {} } = cache.lastChange[id] || {};
+    const {
+      item: oldItem = null,
+      resolved = {},
+      parentId: oldParentId = null,
+    } = cache.lastChange[id] || {};
+    // Skip inserted nodes for "move" trigger
+    // This is done this way to mitigate race conditions on insertion
+    const isRootOrInserted = oldParentId === null;
+    const parentChanged = !isRootOrInserted && parent?.props.id !== oldParentId;
+    const dataChanged = item && !deepEqual(item, oldItem);
 
-    if (trigger !== "force" && item && deepEqual(item, oldItem)) {
+    const shouldSkip =
+      (trigger === "move" && !parentChanged) ||
+      (trigger !== "move" && trigger !== "force" && !dataChanged);
+
+    if (shouldSkip) {
       return { node: resolved, didChange: false };
     }
 
@@ -56,6 +71,7 @@ export const resolveComponentData = async <
         lastData: oldItem,
         metadata: { ...metadata, ...configForItem.metadata },
         trigger,
+        parent,
       });
 
     resolvedItem.props = {
@@ -67,6 +83,8 @@ export const resolveComponentData = async <
       resolvedItem.readOnly = readOnly;
     }
   }
+
+  const itemAsComponentData: ComponentData = toComponent(resolvedItem);
 
   let itemWithResolvedChildren = await mapFields(
     resolvedItem,
@@ -84,7 +102,8 @@ export const resolveComponentData = async <
                   metadata,
                   onResolveStart,
                   onResolveEnd,
-                  trigger
+                  trigger,
+                  itemAsComponentData
                 )
               ).node
           )
@@ -101,6 +120,7 @@ export const resolveComponentData = async <
   cache.lastChange[id] = {
     item: item,
     resolved: itemWithResolvedChildren,
+    parentId: parent?.props.id,
   };
 
   return {

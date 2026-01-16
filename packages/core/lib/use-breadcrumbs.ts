@@ -21,7 +21,7 @@ export const useBreadcrumbs = (renderCount?: number) => {
 
         if (componentId === "root") {
           return {
-            label: "Page",
+            label: config?.root?.label || "Page",
             selector: null,
           };
         }

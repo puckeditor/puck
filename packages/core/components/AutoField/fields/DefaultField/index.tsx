@@ -3,20 +3,21 @@ import styles from "../../styles.module.css";
 import { Hash, Type } from "lucide-react";
 import { FieldPropsInternal } from "../..";
 
+import { useLocalValue } from "../../lib/use-local-value";
+
 const getClassName = getClassNameFactory("Input", styles);
 
 export const DefaultField = ({
   field,
   onChange,
   readOnly,
-  value: _value,
-  name,
+  id,
+  name = id,
   label,
   labelIcon,
   Label,
-  id,
 }: FieldPropsInternal) => {
-  const value = _value as string | number | undefined | null;
+  const [localValue, onChangeLocal] = useLocalValue(name, onChange);
 
   return (
     <Label
@@ -37,7 +38,7 @@ export const DefaultField = ({
         type={field.type}
         title={label || name}
         name={name}
-        value={value?.toString ? value.toString() : ""}
+        value={localValue}
         onChange={(e) => {
           if (field.type === "number") {
             const numberValue = Number(e.currentTarget.value);
@@ -50,9 +51,9 @@ export const DefaultField = ({
               return;
             }
 
-            onChange(numberValue);
+            onChangeLocal(numberValue);
           } else {
-            onChange(e.currentTarget.value);
+            onChangeLocal(e.currentTarget.value);
           }
         }}
         readOnly={readOnly}

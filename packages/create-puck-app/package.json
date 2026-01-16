@@ -1,9 +1,9 @@
 {
   "name": "create-puck-app",
-  "version": "0.20.2",
+  "version": "0.21.0",
   "author": "Chris Villa <chris@puckeditor.com>",
-  "repository": "measuredco/puck",
-  "bugs": "https://github.com/measuredco/puck/issues",
+  "repository": "puckeditor/puck",
+  "bugs": "https://github.com/puckeditor/puck/issues",
   "homepage": "https://puckeditor.com",
   "private": false,
   "license": "MIT",

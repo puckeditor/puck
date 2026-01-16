@@ -1,3 +1,4 @@
+import { ReactElement, ReactNode } from "react";
 import { PuckAction } from "../../reducer";
 import { WithDeepSlots } from "../Internal";
 import { DefaultComponentProps } from "../Props";
@@ -6,7 +7,6 @@ import { ComponentDataOptionalId, Content, Data } from "./../Data";
 import { Overrides } from "./Overrides";
 import { FieldTransforms } from "./FieldTransforms";
 import { Config, DefaultComponents } from "../Config";
-import { ReactNode } from "react";
 
 export type Permissions = {
   drag: boolean;
@@ -28,8 +28,13 @@ export type OnAction<UserData extends Data = Data> = (
 ) => void;
 
 export type Plugin<UserConfig extends Config = Config> = {
+  name?: string;
+  label?: string;
+  icon?: ReactNode;
+  render?: () => ReactElement;
   overrides?: Partial<Overrides<UserConfig>>;
   fieldTransforms?: FieldTransforms<UserConfig>;
+  mobilePanelHeight?: "toggle" | "min-content";
 };
 
 export type History<D = any> = {

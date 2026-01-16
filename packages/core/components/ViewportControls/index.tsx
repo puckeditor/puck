@@ -1,7 +1,15 @@
-import { Monitor, Smartphone, Tablet, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  Expand,
+  Monitor,
+  Smartphone,
+  Tablet,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import { IconButton } from "../IconButton";
 import { useAppStore } from "../../store";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { getClassNameFactory } from "../../lib";
 
 import styles from "./styles.module.css";
@@ -11,43 +19,33 @@ const icons = {
   Smartphone: <Smartphone size={16} />,
   Tablet: <Tablet size={16} />,
   Monitor: <Monitor size={16} />,
+  FullWidth: <Expand size={16} />,
 };
 
 const getClassName = getClassNameFactory("ViewportControls", styles);
 const getClassNameButton = getClassNameFactory("ViewportButton", styles);
 
-const ViewportButton = ({
+const ActionButton = ({
   children,
-  height = "auto",
   title,
-  width,
   onClick,
+  isActive,
+  disabled,
 }: {
   children: ReactNode;
-  height?: number | "auto";
   title: string;
-  width: number;
-  onClick: (viewport: Viewport) => void;
+  onClick: (e: SyntheticEvent) => void;
+  isActive?: boolean;
+  disabled?: boolean;
 }) => {
-  const viewports = useAppStore((s) => s.state.ui.viewports);
-
-  const [isActive, setIsActive] = useState(false);
-
-  // We use an effect so this doesn't cause hydration warnings with SSR
-  useEffect(() => {
-    setIsActive(width === viewports.current.width);
-  }, [width, viewports.current.width]);
-
   return (
-    <span className={getClassNameButton({ isActive })}>
+    <span className={getClassNameButton({ isActive })} suppressHydrationWarning>
       <IconButton
         type="button"
         title={title}
-        disabled={isActive}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick({ width, height });
-        }}
+        disabled={disabled || isActive}
+        onClick={onClick}
+        suppressHydrationWarning
       >
         <span className={getClassNameButton("inner")}>{children}</span>
       </IconButton>
@@ -71,13 +69,16 @@ export const ViewportControls = ({
   zoom,
   onViewportChange,
   onZoom,
+  fullScreen,
 }: {
   autoZoom: number;
   zoom: number;
   onViewportChange: (viewport: Viewport) => void;
   onZoom: (zoom: number) => void;
+  fullScreen?: boolean;
 }) => {
   const viewports = useAppStore((s) => s.viewports);
+  const uiViewports = useAppStore((s) => s.state.ui.viewports);
 
   const defaultsContainAutoZoom = defaultZoomOptions.find(
     (option) => option.value === autoZoom
@@ -101,82 +102,112 @@ export const ViewportControls = ({
     [autoZoom]
   );
 
-  return (
-    <div className={getClassName()}>
-      {viewports.map((viewport, i) => (
-        <ViewportButton
-          key={i}
-          height={viewport.height}
-          width={viewport.width}
-          title={
-            viewport.label
-              ? `Switch to ${viewport.label} viewport`
-              : "Switch viewport"
-          }
-          onClick={onViewportChange}
-        >
-          {typeof viewport.icon === "string"
-            ? icons[viewport.icon as keyof typeof icons] || viewport.icon
-            : viewport.icon || icons.Smartphone}
-        </ViewportButton>
-      ))}
-      <div className={getClassName("divider")} />
-      <IconButton
-        type="button"
-        title="Zoom viewport out"
-        disabled={zoom <= zoomOptions[0]?.value}
-        onClick={(e) => {
-          e.stopPropagation();
-          onZoom(
-            zoomOptions[
-              Math.max(
-                zoomOptions.findIndex((option) => option.value === zoom) - 1,
-                0
-              )
-            ].value
-          );
-        }}
-      >
-        <ZoomOut size={16} />
-      </IconButton>
-      <IconButton
-        type="button"
-        title="Zoom viewport in"
-        disabled={zoom >= zoomOptions[zoomOptions.length - 1]?.value}
-        onClick={(e) => {
-          e.stopPropagation();
+  const [activeViewport, setActiveViewport] = useState(
+    uiViewports.current.width
+  );
 
-          onZoom(
-            zoomOptions[
-              Math.min(
-                zoomOptions.findIndex((option) => option.value === zoom) + 1,
-                zoomOptions.length - 1
-              )
-            ].value
-          );
-        }}
+  useEffect(() => {
+    setActiveViewport(uiViewports.current.width);
+  }, [uiViewports.current]);
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div
+      className={getClassName({ isExpanded, fullScreen })}
+      suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
+    >
+      <div className={getClassName("actions")}>
+        <div className={getClassName("actionsInner")}>
+          {viewports.map((viewport, i) => (
+            <ActionButton
+              key={i}
+              title={
+                viewport.label
+                  ? `Switch to ${viewport.label} viewport`
+                  : "Switch viewport"
+              }
+              onClick={() => {
+                setActiveViewport(viewport.width);
+                onViewportChange(viewport);
+              }}
+              isActive={activeViewport === viewport.width}
+            >
+              {typeof viewport.icon === "string"
+                ? icons[viewport.icon as keyof typeof icons] || viewport.icon
+                : viewport.icon || icons.Smartphone}
+            </ActionButton>
+          ))}
+          <div className={getClassName("divider")} />
+          <ActionButton
+            title="Zoom viewport out"
+            disabled={zoom <= zoomOptions[0]?.value}
+            onClick={(e) => {
+              e.stopPropagation();
+              onZoom(
+                zoomOptions[
+                  Math.max(
+                    zoomOptions.findIndex((option) => option.value === zoom) -
+                      1,
+                    0
+                  )
+                ].value
+              );
+            }}
+          >
+            <ZoomOut size={16} />
+          </ActionButton>
+          <ActionButton
+            title="Zoom viewport in"
+            disabled={zoom >= zoomOptions[zoomOptions.length - 1]?.value}
+            onClick={(e) => {
+              e.stopPropagation();
+
+              onZoom(
+                zoomOptions[
+                  Math.min(
+                    zoomOptions.findIndex((option) => option.value === zoom) +
+                      1,
+                    zoomOptions.length - 1
+                  )
+                ].value
+              );
+            }}
+          >
+            <ZoomIn size={16} />
+          </ActionButton>
+
+          <div className={getClassName("zoom")}>
+            <div className={getClassName("divider")} />
+            <select
+              className={getClassName("zoomSelect")}
+              value={zoom.toString()}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              onChange={(e) => {
+                onZoom(parseFloat(e.currentTarget.value));
+              }}
+            >
+              {zoomOptions.map((option) => (
+                <option
+                  key={option.label}
+                  value={option.value}
+                  label={option.label}
+                />
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button
+        className={getClassName("toggleButton")}
+        title="Toggle viewport menu"
+        onClick={() => setIsExpanded((s) => !s)}
       >
-        <ZoomIn size={16} />
-      </IconButton>
-      <div className={getClassName("divider")} />
-      <select
-        className={getClassName("zoomSelect")}
-        value={zoom.toString()}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        onChange={(e) => {
-          onZoom(parseFloat(e.currentTarget.value));
-        }}
-      >
-        {zoomOptions.map((option) => (
-          <option
-            key={option.label}
-            value={option.value}
-            label={option.label}
-          />
-        ))}
-      </select>
+        {isExpanded ? <X size={16} /> : <Monitor size={16} />}
+      </button>
     </div>
   );
 };

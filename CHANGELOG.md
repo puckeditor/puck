@@ -2,6 +2,81 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.21.0](https://github.com/measuredco/puck/compare/v0.20.2...v0.21.0) (2026-01-14)
+
+
+### Bug Fixes
+
+* account for drags during slow resolveData on insert ([dfecd01](https://github.com/measuredco/puck/commit/dfecd012a0f1a7527f2d3b58449448d3f770dc6e))
+* account for drags during slow resolveData on update ([304940a](https://github.com/measuredco/puck/commit/304940aedd9c7d8bf72686d923dc8c4d9b9b91b6))
+* add missing ref prop to Slot render types ([ac9eba2](https://github.com/measuredco/puck/commit/ac9eba2f603bcea4bfa9508af3e57272ed23eafa))
+* automatically set IDs for slots in root defaultProps ([f5820ce](https://github.com/measuredco/puck/commit/f5820ce9366bea60e02a62d8ed215dbb8a7d13fb))
+* check the user provides a name in create-puck-app ([b1de8bf](https://github.com/measuredco/puck/commit/b1de8bf3c155e177e6ff3e600dad85232508aad6))
+* don't unmount sidebars on hide ([ceebd0f](https://github.com/measuredco/puck/commit/ceebd0fb3deb5ce0853cbaf0aa37ffa8c24ed49c))
+* handle exits gracefully from create-puck-app ([abfa3c3](https://github.com/measuredco/puck/commit/abfa3c3972ebd1487e6495cbf40614bb9f1503a7))
+* memoize initialHistoryIndex and check the index provided by the user is not out of bounds ([ec77dd9](https://github.com/measuredco/puck/commit/ec77dd9f118f36f424be5695df95e8285d890102))
+* mitigate CVE-2025-57822 in Next.js recipe ([74d9a16](https://github.com/measuredco/puck/commit/74d9a16040dcc135dbac9cdd82792ef35383680c))
+* prevent empty objects from causing parent re-render ([a4bfae4](https://github.com/measuredco/puck/commit/a4bfae4f202ddaab12294cfffd2664d809e7cb54))
+* prevent frame overflowing on small viewports when embedded ([5c9515c](https://github.com/measuredco/puck/commit/5c9515c9b45b926ceb07da0a4c1dd74146ad2e9f))
+* prevent valueOf errors due to fast-deep-equals ([16a3eee](https://github.com/measuredco/puck/commit/16a3eee1a81f4df275dfbbb0903d4274ecaeb400))
+* prioritize disableDrag in overlay portals ([1df9dde](https://github.com/measuredco/puck/commit/1df9ddebfaf400ad6a65f90d4750dd95009f2549))
+* reset keystrokes when window is blurred ([5333fc7](https://github.com/measuredco/puck/commit/5333fc7e3d0a5b08b531aaccea60086f64d34b36))
+* respect custom root label in breadcrumb navigation ([de0baf3](https://github.com/measuredco/puck/commit/de0baf3937f5c902472c97c03c59c994b20643e4))
+* respect ui changes in replace action ([af2d5ac](https://github.com/measuredco/puck/commit/af2d5ac8534798f9460743f63f077b80019b2909))
+* restore valid type for renderDropZone prop ([29ef713](https://github.com/measuredco/puck/commit/29ef7131cfb43172c9194d2ab74fa89cc4bb630a))
+* retain overlay if dragRef changes ([e310a17](https://github.com/measuredco/puck/commit/e310a1755eda8dd1b60999c047bf0708440c9679))
+* run resolve permissions in slots ([cf074bc](https://github.com/measuredco/puck/commit/cf074bc6cb52e66e08bf6e36199ad9e89b0f19fb))
+* show title instead of undefined in React Router recipe ([68f8542](https://github.com/measuredco/puck/commit/68f8542800eae35f28863de2f53a31864e995618))
+* use latest reference for onChange callback ([b818cb1](https://github.com/measuredco/puck/commit/b818cb1fa24ba673d9264f1525b75bc62599e301))
+
+
+### Features
+
+* add "as" API to change slot element type ([1cec93c](https://github.com/measuredco/puck/commit/1cec93c4e698fba94a80bf0b4f6354b7317714fc))
+* add "richtext" field ([301595f](https://github.com/measuredco/puck/commit/301595f6232da4883eb3e5ed3b48aabeea7027ab))
+* add ActionBar.Separator component ([410819e](https://github.com/measuredco/puck/commit/410819e7cc6b507e6b95a9d1f07dd2721f567c81))
+* add active API to IconButton ([8116c86](https://github.com/measuredco/puck/commit/8116c86168a27a52655ff2dcdc7dfdda849abb22))
+* add cache control to external fields ([a5160e5](https://github.com/measuredco/puck/commit/a5160e5d600989c1651ae85ea05628ab0ed5cd1a))
+* add delete hotkeys for removing components ([20aafb6](https://github.com/measuredco/puck/commit/20aafb6a89f601c6a14fa0765f40288793977f4f))
+* add disabled option to ActionBar.Action ([32d0666](https://github.com/measuredco/puck/commit/32d0666afa1be3e873a7a4f05c14eb5a9d57569e))
+* add experimental full-screen canvas support ([c15c4f8](https://github.com/measuredco/puck/commit/c15c4f876c3fedba4146e6df226cd0d64fbd1832))
+* add full-width viewport to fit to container ([7373a6b](https://github.com/measuredco/puck/commit/7373a6bdf06524f53dd7ac97d8fc3d79b8e95d22))
+* add getParentById for getting the parent data for a child id ([38e79ba](https://github.com/measuredco/puck/commit/38e79ba80a1eef9fcd42f2d8b980c7a198306d57))
+* add key parameter to force custom field remounting ([ace4c8b](https://github.com/measuredco/puck/commit/ace4c8b354107b8bf7b4cd54a3924911f23beb10))
+* add parent to resolveData APIs and trigger resolveData on move ([7c2f928](https://github.com/measuredco/puck/commit/7c2f92837723cd772791e373b98a704de89b1214))
+* add Plugin Rail, a menu for plugins ([86526e7](https://github.com/measuredco/puck/commit/86526e7c3d1afedf088b0cc31284f058c04ad698))
+* add puck ai option to create-puck-app ([d1f05aa](https://github.com/measuredco/puck/commit/d1f05aa0ee05105b30c516198f8e3b84ce50ae95))
+* add resolveDataById utility to Puck API ([12f0a21](https://github.com/measuredco/puck/commit/12f0a2194d4d76a18e9d54d101483777bb9db181))
+* add resolveDataBySelector utility to Puck API ([4f0b390](https://github.com/measuredco/puck/commit/4f0b390e691b327038cf112a471f4ef9fe7844a9))
+* de-select component on second click ([ccff0d8](https://github.com/measuredco/puck/commit/ccff0d8e33f5424556fff398667178a0d8bb79f7))
+* enable modification of Puck height ([538f7bf](https://github.com/measuredco/puck/commit/538f7bffa8be556a828b5f5566a1fbfbc00702c3))
+* export ConfigParams and ComponentConfigParams for convenience ([0f9606c](https://github.com/measuredco/puck/commit/0f9606c645afd9e1f5097cb05cc53f729bcbb803))
+* expose default layout via Puck.Layout ([4a8e38f](https://github.com/measuredco/puck/commit/4a8e38f8d0356b59d04e41a47e1cc2138b61b63a))
+* extend Plugin API with support for Plugin Rail ([d68edca](https://github.com/measuredco/puck/commit/d68edcae12f2740dd89b4c2206718f5ce0cb22bf))
+* improve mobile interface ([3daa05e](https://github.com/measuredco/puck/commit/3daa05e762b241b4d8b739f4e2be4cfeaa8c94b1))
+* provide metadata to resolveFields ([6dae6cb](https://github.com/measuredco/puck/commit/6dae6cb73d63dae6ad119f0c0721f4e69e989770))
+* provide parent data to resolvePermissions API ([1b69a8f](https://github.com/measuredco/puck/commit/1b69a8f3ef2d5f44f592598c302cec5ebc787cde))
+* rename package to @puckeditor/core ([d1c0d6a](https://github.com/measuredco/puck/commit/d1c0d6a25d01d51f2489391e65540566c72278ab))
+* support CSS units for minEmptyHeight in slots ([79a2684](https://github.com/measuredco/puck/commit/79a2684949b6aaa98cd85c4ca6ed13e3e585124f))
+* support dynamic props for default array items via function ([6c44fdb](https://github.com/measuredco/puck/commit/6c44fdb9704618d2189157edc183be9e21432436))
+* support extending all field types via declaration merging ([26fd286](https://github.com/measuredco/puck/commit/26fd286164d41b14e90804187fa28adca1e1be43))
+* support extending ComponentConfig via declaration merging ([3c46c44](https://github.com/measuredco/puck/commit/3c46c447b6dae5b6c23f4ad238820bf4c700e465))
+* support overrides for custom fields ([89038d0](https://github.com/measuredco/puck/commit/89038d0c986f54c70202b27fb6ed836678828b8d))
+* support React nodes in getItemSummary for array fields ([73b98fb](https://github.com/measuredco/puck/commit/73b98fb4671bbac87a408538f6561bbb402c9b1c))
+* support typing metadata via declaration merging ([66c5aa3](https://github.com/measuredco/puck/commit/66c5aa399a197b1fef1a18a1bad106794dffdca5))
+* use dashed outline for overlay portals ([f79baa9](https://github.com/measuredco/puck/commit/f79baa98320854af545be8f31b125af7e1733b83))
+* use next@^16.0.8 in create-puck-app ([313bbb5](https://github.com/measuredco/puck/commit/313bbb53cb426c5c6ae0fbf519a1b7536c56141f))
+
+
+### Performance Improvements
+
+* don't remount slot when parent changes ([a7a6599](https://github.com/measuredco/puck/commit/a7a659972e4229050edc7d3cecf868146f5abf6d))
+* eliminate unnecessary re-renders in fields ([b633e3b](https://github.com/measuredco/puck/commit/b633e3b5339ba660c769838054b2bbf1fa781e43))
+* prevent re-rendering of user components on hover ([a62292f](https://github.com/measuredco/puck/commit/a62292fd052ba62f21b04b95148bdcb281ff2457))
+
+
+
+
 ## [0.20.2](https://github.com/measuredco/puck/compare/v0.20.1...v0.20.2) (2025-09-05)
 
 

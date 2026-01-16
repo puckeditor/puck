@@ -2,6 +2,7 @@ import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "../../styles.module.css";
 import { CheckCircle } from "lucide-react";
 import { FieldPropsInternal } from "../..";
+import { useDeepField } from "../../lib/use-deep-field";
 
 const getClassName = getClassNameFactory("Input", styles);
 
@@ -9,13 +10,14 @@ export const RadioField = ({
   field,
   onChange,
   readOnly,
-  value,
-  name,
   id,
+  name = id,
   label,
   labelIcon,
   Label,
 }: FieldPropsInternal) => {
+  const value = useDeepField(name);
+
   if (field.type !== "radio" || !field.options) {
     return null;
   }

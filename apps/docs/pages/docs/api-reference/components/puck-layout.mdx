@@ -1,0 +1,34 @@
+---
+title: <Puck.Layout>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+
+# \<Puck.Layout\>
+
+Render the standard Puck layout. This is useful for implementing behavior using the [internal Puck API](/docs/extending-puck/internal-puck-api) without changing the default UI.
+
+```tsx {13} showLineNumbers copy
+import { Puck } from "@puckeditor/core";
+
+const Example = ({ children }) => {
+  useEffect(() => console.log("Hello, world"), []);
+
+  return <>{children}</>;
+};
+
+export function Editor() {
+  return (
+    <Puck>
+      <Example>
+        <Puck.Layout />
+      </Example>
+    </Puck>
+  );
+}
+```
+
+## Props
+
+This component doesn't accept any props.

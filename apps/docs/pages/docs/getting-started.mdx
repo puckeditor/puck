@@ -5,10 +5,10 @@
 Install the package
 
 ```sh npm2yarn copy
-npm i @measured/puck --save
+npm i @puckeditor/core --save
 ```
 
-Or generate a Puck application using a [recipe](https://github.com/measuredco/puck#recipes)
+Or generate a Puck application using a [recipe](https://github.com/puckeditor/puck#recipes)
 
 ```sh copy
 npx create-puck-app my-app
@@ -17,8 +17,8 @@ npx create-puck-app my-app
 ## Render the editor
 
 ```jsx copy filename="Editor.jsx"
-import { Puck } from "@measured/puck";
-import "@measured/puck/puck.css";
+import { Puck } from "@puckeditor/core";
+import "@puckeditor/core/puck.css";
 
 // Create Puck component config
 const config = {
@@ -51,7 +51,7 @@ export function Editor() {
 ## Render the page
 
 ```jsx copy filename="Page.jsx"
-import { Render } from "@measured/puck";
+import { Render } from "@puckeditor/core";
 
 export function Page() {
   return <Render config={config} data={data} />;

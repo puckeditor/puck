@@ -1,23 +1,15 @@
-import { Callout } from "nextra/components";
-
 # Plugin
 
-<Callout>
-  The plugin API is highly experimental and is likely to experience breaking
-  changes.
-</Callout>
+A plugin is an extension that enhances the capabilities of Puck.
 
-A plugins is an extensions that enhances the capabilities of Puck.
-
-```tsx showLineNumbers copy {3-9, 15}
-import { Puck } from "@measured/puck";
+```tsx showLineNumbers copy {3-8, 14}
+import { Puck } from "@puckeditor/core";
 
 const MyPlugin = {
-  overrides: {
-    drawerItem: ({ name }) => (
-      <div style={{ backgroundColor: "hotpink" }}>{name}</div>
-    ),
-  },
+  name: "my-plugin", // Globally unique name
+  label: "My plugin", // Plugin rail label
+  icon: <svg />, // Icon for plugin rail
+  render: () => <div>My plugin</div>, // UI for plugin panel
 };
 
 export function Editor() {
@@ -32,15 +24,89 @@ export function Editor() {
 
 ## Params
 
-| Prop                                  | Example                                    | Type                                                    | Status |
-| ------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ------ |
-| [`fieldTransforms`](#fieldtransforms) | `fieldTransforms: { text: () => <div /> }` | [FieldTransforms](/docs/api-reference/field-transforms) | -      |
-| [`overrides`](#overrides)             | `overrides: { fields: () => <div /> }`     | [Overrides](/docs/api-reference/overrides)              | -      |
+| Prop                                      | Example                                    | Type                                                    | Status |
+| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ------ |
+| [`icon`](#icon)                           | `icon: <Heading1 />`                       | ReactNode                                               | -      |
+| [`label`](#label)                         | `label: "Audit"`                           | String                                                  | -      |
+| [`fieldTransforms`](#fieldtransforms)     | `fieldTransforms: { text: () => <div /> }` | [FieldTransforms](/docs/api-reference/field-transforms) | -      |
+| [`mobilePanelHeight`](#mobilepanelheight) | `mobilePanelHeight: "min-content"`         | `"toggle" \| "min-content"`                             | -      |
+| [`name`](#name)                           | `name: "audit"`                            | String                                                  | -      |
+| [`render`](#render)                       | `render: () => <div />`                    | `() => ReactElement`                                    | -      |
+| [`overrides`](#overrides)                 | `overrides: { fields: () => <div /> }`     | [Overrides](/docs/api-reference/overrides)              | -      |
+
+## Optional params
+
+### `icon`
+
+React node displayed alongside `label` in the plugin rail.
+
+```tsx {4}
+const MyPlugin = {
+  icon: <MyIcon />,
+};
+```
+
+Puck uses [Lucide icons](https://lucide.dev/icons/). You can use [lucide-react](https://lucide.dev/guide/packages/lucide-react) to choose a similar icon, if desired.
+
+### `label`
+
+Human-readable label shown in the plugin rail. Falls back to `name`.
+
+```tsx {2}
+const MyPlugin = {
+  label: "My plugin", // Human-readable label
+};
+```
 
 ### `fieldTransforms`
 
-Transform the value of a field before rendering in the editor.Implements the [Field Transforms API](/docs/api-reference/field-transforms).
+Transform the value of a field before rendering in the editor. Implements the [Field Transforms API](/docs/api-reference/field-transforms).
+
+```tsx {2-5}
+const MyPlugin = {
+  fieldTransforms: {
+    // Make all props powered by "text" field pink in the editor
+    text: ({ value }) => <span style={{ color: "hotpink" }}>{value}</span>,
+  },
+};
+```
+
+### `mobilePanelHeight`
+
+Controls how the plugin panel behaves on mobile screens.
+
+- `"toggle"` (default): show a smaller plugin panel with a maximize button to expand it.
+- `"min-content"`: size the panel to the height of its content.
+
+### `name`
+
+A globally unique name for the plugin. When `render` is provided, `name` is required for the plugin to appear within the plugin rail. The currently open plugin is tracked in [`ui.plugin.current`](/docs/api-reference/data-model/app-state#uiplugincurrent).
+
+```tsx {2}
+const MyPlugin = {
+  name: "my-plugin", // Globally unique identifier
+};
+```
 
 ### `overrides`
 
 Override the render functions for specific portions of the Puck UI. Implements the [`overrides` API](/docs/api-reference/overrides).
+
+```tsx {2-5}
+const MyPlugin = {
+  overrides: {
+    // Make all drawer items pink
+    drawerItem: ({ name }) => <div style={{ color: "hotpink" }}>{name}</div>,
+  },
+};
+```
+
+### `render`
+
+Render function for the plugin panel, shown when the plugin is selected in the plugin rail.
+
+```tsx {2}
+const MyPlugin = {
+  render: () => <div>My plugin</div>,
+};
+```

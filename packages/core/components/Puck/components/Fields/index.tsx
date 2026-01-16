@@ -4,11 +4,18 @@ import { ItemSelector } from "../../../../lib/data/get-item";
 import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
+import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
-
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
-import { memo, ReactNode, useCallback, useMemo } from "react";
+import {
+  memo,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import { useRegisterFieldsSlice } from "../../../../store/slices/fields";
 import { useShallow } from "zustand/react/shallow";
 import { StoreApi } from "zustand";
@@ -86,7 +93,7 @@ const createOnChange =
     });
   };
 
-const FieldsChild = ({ fieldName }: { fieldName: string }) => {
+const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   const field = useAppStore((s) => s.fields.fields[fieldName]);
   const isReadOnly = useAppStore(
     (s) =>
@@ -94,15 +101,6 @@ const FieldsChild = ({ fieldName }: { fieldName: string }) => {
         ? s.selectedItem.readOnly
         : s.state.data.root.readOnly) || {})[fieldName]
   );
-
-  const value = useAppStore((s) => {
-    // DEPRECATED
-    const rootProps = s.state.data.root.props || s.state.data.root;
-
-    return s.selectedItem
-      ? s.selectedItem.props[fieldName]
-      : rootProps[fieldName];
-  });
 
   const id = useAppStore((s) => {
     if (!field) return null;
@@ -130,6 +128,21 @@ const FieldsChild = ({ fieldName }: { fieldName: string }) => {
 
   const { visible = true } = field ?? {};
 
+  const fieldStore = useContext(fieldContextStore.ctx);
+
+  useEffect(() => {
+    return appStore.subscribe(
+      (s) => {
+        const data = s.getCurrentData();
+
+        return data.props?.[fieldName];
+      },
+      (value) => {
+        fieldStore.setState({ [fieldName]: value });
+      }
+    );
+  }, [appStore, fieldStore]);
+
   if (!field || !id || !visible) return null;
 
   if (field.type === "slot") return null;
@@ -141,10 +154,25 @@ const FieldsChild = ({ fieldName }: { fieldName: string }) => {
         name={fieldName}
         id={id}
         readOnly={!permissions.edit || isReadOnly}
-        value={value}
         onChange={onChange}
       />
     </div>
+  );
+};
+
+const FieldsChild = ({ fieldName }: { fieldName: string }) => {
+  const appStore = useAppStoreApi();
+
+  const initialValue = useMemo(() => {
+    const value = appStore.getState().getCurrentData().props?.[fieldName];
+
+    return { [fieldName]: value };
+  }, []);
+
+  return (
+    <fieldContextStore.Provider value={initialValue}>
+      <FieldsChildInner fieldName={fieldName} />
+    </fieldContextStore.Provider>
   );
 };
 

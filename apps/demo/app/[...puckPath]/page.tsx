@@ -30,3 +30,5 @@ export default async function Page({
 
   return <Client isEdit={isEdit} path={path} />;
 }
+
+export const dynamic = "force-dynamic";

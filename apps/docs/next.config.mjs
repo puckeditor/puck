@@ -44,7 +44,7 @@ export default withNextra({
       },
     ];
   },
-  transpilePackages: ["@measured/puck"],
+  transpilePackages: ["@puckeditor/core"],
   basePath: IS_RELEASE_BRANCH
     ? `/v/${packageJson.version}`
     : process.env.NEXT_PUBLIC_IS_CANARY

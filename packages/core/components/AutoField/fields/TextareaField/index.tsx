@@ -2,6 +2,7 @@ import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "../../styles.module.css";
 import { Type } from "lucide-react";
 import { FieldPropsInternal } from "../..";
+import { useLocalValue } from "../../lib/use-local-value";
 
 const getClassName = getClassNameFactory("Input", styles);
 
@@ -9,13 +10,14 @@ export const TextareaField = ({
   field,
   onChange,
   readOnly,
-  value,
-  name,
+  id,
+  name = id,
   label,
   labelIcon,
   Label,
-  id,
 }: FieldPropsInternal) => {
+  const [localValue, onChangeLocal] = useLocalValue(name, onChange);
+
   return (
     <Label
       label={label || name}
@@ -27,8 +29,8 @@ export const TextareaField = ({
         className={getClassName("input")}
         autoComplete="off"
         name={name}
-        value={typeof value === "undefined" ? "" : value}
-        onChange={(e) => onChange(e.currentTarget.value)}
+        value={typeof localValue === "undefined" ? "" : localValue}
+        onChange={(e) => onChangeLocal(e.currentTarget.value)}
         readOnly={readOnly}
         tabIndex={readOnly ? -1 : undefined}
         rows={5}

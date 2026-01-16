@@ -40,7 +40,7 @@ const getStyleSheet = (el: HTMLElement) => {
 const getStyles = (styleSheet?: CSSStyleSheet) => {
   if (styleSheet) {
     try {
-      return [...Array.from(styleSheet.cssRules)]
+      return Array.from(styleSheet.cssRules)
         .map((rule) => rule.cssText)
         .join("");
     } catch (e) {
