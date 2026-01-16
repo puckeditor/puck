@@ -37,6 +37,7 @@ import { LoadedRichTextMenu } from "../RichTextMenu";
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
 const DEBUG = false;
+const MEASURE_EVERY_MS = 100; // 10fps
 
 // Magic numbers are used to position actions overlay 8px from top of component, bottom of component (when sticky scrolling) and side of preview
 const space = 8;
@@ -118,6 +119,7 @@ export const DraggableComponent = ({
   const overrides = useAppStore((s) => s.overrides);
   const dispatch = useAppStore((s) => s.dispatch);
   const iframe = useAppStore((s) => s.iframe);
+  const lastMeasureRef = useRef(0);
 
   const ctx = useContext(dropZoneContext);
 
@@ -251,7 +253,7 @@ export const DraggableComponent = ({
         : ref.current?.closest<HTMLElement>("[data-puck-preview]") ??
             document.body
     );
-  }, [iframe.enabled, ref.current]);
+  }, [iframe.enabled]);
 
   const getStyle = useCallback(() => {
     if (!ref.current) return;
@@ -310,13 +312,35 @@ export const DraggableComponent = ({
   const [style, setStyle] = useState<CSSProperties>();
   const lastRectRef = useRef<DOMRectReadOnly | null>(null);
 
+  // PERFORMANCE: coalesce multiple triggers into a single rAF'd sync
+  const syncRafRef = useRef<number | null>(null);
+
   const sync = useCallback(() => {
     setStyle(getStyle());
   }, [getStyle]);
 
+  const scheduleSync = useCallback(() => {
+    if (syncRafRef.current != null) return;
+
+    syncRafRef.current = requestAnimationFrame(() => {
+      syncRafRef.current = null;
+      sync();
+    });
+  }, [sync]);
+
+  useEffect(() => {
+    return () => {
+      if (syncRafRef.current != null) {
+        cancelAnimationFrame(syncRafRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (ref.current) {
-      const observer = new ResizeObserver(sync);
+      const observer = new ResizeObserver(() => {
+        scheduleSync();
+      });
 
       observer.observe(ref.current);
 
@@ -324,61 +348,7 @@ export const DraggableComponent = ({
         observer.disconnect();
       };
     }
-  }, [ref.current, sync]);
-
-  useEffect(() => {
-    let frame = 0;
-
-    const tick = () => {
-      const el = ref.current;
-
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        const prev = lastRectRef.current;
-
-        const changed =
-          !prev ||
-          Math.abs(rect.x - prev.x) > 0.5 ||
-          Math.abs(rect.y - prev.y) > 0.5 ||
-          Math.abs(rect.width - prev.width) > 0.5 ||
-          Math.abs(rect.height - prev.height) > 0.5;
-
-        if (changed) {
-          lastRectRef.current = rect;
-          sync();
-        }
-      }
-
-      frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(frame);
-    };
-  }, [sync]);
-
-  useEffect(() => {
-    if (!ref.current) return;
-
-    const observer = new MutationObserver((mutations) => {
-      if (
-        mutations.some((mutation) =>
-          ["style", "class"].includes(mutation.attributeName || "")
-        )
-      ) {
-        sync();
-      }
-    });
-
-    observer.observe(ref.current, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-
-    return () => observer.disconnect();
-  }, [ref.current, sync]);
+  }, [scheduleSync]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
 
@@ -549,7 +519,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     startTransition(() => {
       if (hover || indicativeHover || isSelected) {
-        sync();
+        scheduleSync();
         setIsVisible(true);
         setThisWasDragging(false);
       } else {
@@ -563,7 +533,7 @@ export const DraggableComponent = ({
   const onDragFinished = useOnDragFinished((finished) => {
     if (finished) {
       startTransition(() => {
-        sync();
+        scheduleSync();
         setDragFinished(true);
       });
     } else {
@@ -580,6 +550,62 @@ export const DraggableComponent = ({
   useEffect(() => {
     if (thisWasDragging) return onDragFinished();
   }, [thisWasDragging, onDragFinished]);
+
+  // PERFORMANCE: when visible, respond to scroll/resize + track layout shifts without a global rAF loop
+  useEffect(() => {
+    if (!dragFinished || !(isSelected || thisIsDragging)) return;
+  
+    const el = ref.current;
+    if (!el) return;
+  
+    const doc = el.ownerDocument;
+    const view = doc.defaultView;
+    if (!view) return;
+  
+    lastMeasureRef.current = 0;
+    scheduleSync(); // immediate position on show
+  
+    const onScroll = () => scheduleSync();
+    const onResize = () => scheduleSync();
+  
+    doc.addEventListener("scroll", onScroll, true);
+    view.addEventListener("resize", onResize);
+  
+    let frame = 0;
+    const tick = (t: number) => {
+      if (t - lastMeasureRef.current >= MEASURE_EVERY_MS) {
+        lastMeasureRef.current = t;
+  
+        const node = ref.current;
+        if (node) {
+          const rect = node.getBoundingClientRect();
+          const prev = lastRectRef.current;
+  
+          const changed =
+            !prev ||
+            Math.abs(rect.x - prev.x) > 0.5 ||
+            Math.abs(rect.y - prev.y) > 0.5 ||
+            Math.abs(rect.width - prev.width) > 0.5 ||
+            Math.abs(rect.height - prev.height) > 0.5;
+  
+          if (changed) {
+            lastRectRef.current = rect;
+            scheduleSync();
+          }
+        }
+      }
+  
+      frame = requestAnimationFrame(tick);
+    };
+  
+    frame = requestAnimationFrame(tick);
+  
+    return () => {
+      doc.removeEventListener("scroll", onScroll, true);
+      view.removeEventListener("resize", onResize);
+      cancelAnimationFrame(frame);
+    };
+  }, [dragFinished, isSelected, thisIsDragging, scheduleSync]);
 
   const syncActionsPosition = useCallback(
     (el: HTMLDivElement | null | undefined) => {
