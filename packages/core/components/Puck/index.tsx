@@ -176,19 +176,19 @@ function PuckProvider<
         // Store categories under componentList on state to allow render functions and plugins to modify
         componentList: config.categories
           ? Object.entries(config.categories).reduce(
-              (acc, [categoryName, category]) => {
-                return {
-                  ...acc,
-                  [categoryName]: {
-                    title: category.title,
-                    components: category.components,
-                    expanded: category.defaultExpanded,
-                    visible: category.visible,
-                  },
-                };
-              },
-              {}
-            )
+            (acc, [categoryName, category]) => {
+              return {
+                ...acc,
+                [categoryName]: {
+                  title: category.title,
+                  components: category.components,
+                  expanded: category.defaultExpanded,
+                  visible: category.visible,
+                },
+              };
+            },
+            {}
+          )
           : {},
       },
     } as G["UserAppState"];
