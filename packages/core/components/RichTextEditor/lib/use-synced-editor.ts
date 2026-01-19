@@ -56,12 +56,13 @@ export function useSyncedEditor({
     immediatelyRender: false,
     parseOptions: { preserveWhitespace: "full" },
     onUpdate: ({ editor }) => {
-      // This can trigger during undo/redo history loads
-      if (syncingRef.current || !isFocused) {
-        appStoreApi.getState().setUi({ field: { focus: name } });
-
+      // Skip during sync operations (undo/redo history loads)
+      if (syncingRef.current) {
         return;
       }
+
+      // Ensure focus state is tracked
+      appStoreApi.getState().setUi({ field: { focus: name } });
 
       const html = editor.getHTML();
 
