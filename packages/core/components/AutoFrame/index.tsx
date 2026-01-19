@@ -66,14 +66,18 @@ const syncAttributes = (sourceElement: Element, targetElement: Element) => {
 
 const defer = (fn: () => void) => setTimeout(fn, 0);
 
+const STYLESHEET_LOAD_TIMEOUT = 10000; // 10 seconds
+
 const CopyHostStyles = ({
   children,
   debug = false,
   onStylesLoaded = () => null,
+  customStylesheets = [],
 }: {
   children: ReactNode;
   debug?: boolean;
   onStylesLoaded?: () => void;
+  customStylesheets?: string[];
 }) => {
   const { document: doc, window: win } = useFrame();
 
@@ -266,29 +270,71 @@ const CopyHostStyles = ({
         (el) => typeof el !== "undefined"
       ) as HTMLStyleElement[];
 
+      // Create link elements for custom stylesheets
+      const customLinks: HTMLLinkElement[] = customStylesheets.map((href) => {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href;
+        return link;
+      });
+
+      const totalStylesheets = filtered.length + customLinks.length;
+      let stylesLoadedCalled = false;
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+      const checkAllLoaded = () => {
+        if (!stylesLoadedCalled && stylesLoaded >= totalStylesheets) {
+          stylesLoadedCalled = true;
+          if (timeoutId) clearTimeout(timeoutId);
+          onStylesLoaded();
+        }
+      };
+
+      // Set up timeout fallback for reliability
+      timeoutId = setTimeout(() => {
+        if (!stylesLoadedCalled) {
+          if (debug) {
+            console.warn(
+              `AutoFrame: Stylesheet loading timed out after ${STYLESHEET_LOAD_TIMEOUT}ms. Proceeding anyway.`
+            );
+          }
+          stylesLoadedCalled = true;
+          onStylesLoaded();
+        }
+      }, STYLESHEET_LOAD_TIMEOUT);
+
       filtered.forEach((mirror) => {
         mirror.onload = () => {
           stylesLoaded = stylesLoaded + 1;
-
-          if (stylesLoaded >= filtered.length) {
-            onStylesLoaded();
-          }
+          checkAllLoaded();
         };
         mirror.onerror = () => {
           console.warn(`AutoFrame couldn't load a stylesheet`);
           stylesLoaded = stylesLoaded + 1;
+          checkAllLoaded();
+        };
+      });
 
-          if (stylesLoaded >= filtered.length) {
-            onStylesLoaded();
+      customLinks.forEach((link) => {
+        link.onload = () => {
+          stylesLoaded = stylesLoaded + 1;
+          if (debug) {
+            console.log(`AutoFrame: Loaded custom stylesheet ${link.href}`);
           }
+          checkAllLoaded();
+        };
+        link.onerror = () => {
+          console.warn(`AutoFrame couldn't load custom stylesheet: ${link.href}`);
+          stylesLoaded = stylesLoaded + 1;
+          checkAllLoaded();
         };
       });
 
       // Reset HTML (inside the promise) so in case running twice (i.e. for React Strict mode)
       doc.head.innerHTML = "";
 
-      // Inject initial values in bulk
-      doc.head.append(...filtered);
+      // Inject host styles first, then custom stylesheets
+      doc.head.append(...filtered, ...customLinks);
 
       observer.observe(parentDocument.head, { childList: true, subtree: true });
 
@@ -297,6 +343,11 @@ const CopyHostStyles = ({
 
         hashes[elHash] = true;
       });
+
+      // Handle case where there are no stylesheets to load
+      if (totalStylesheets === 0) {
+        checkAllLoaded();
+      }
     });
 
     return () => {
@@ -315,6 +366,11 @@ export type AutoFrameProps = {
   onReady?: () => void;
   onNotReady?: () => void;
   frameRef: RefObject<HTMLIFrameElement | null>;
+  /**
+   * Array of stylesheet URLs to inject into the iframe.
+   * These are loaded after host styles and before onReady is called.
+   */
+  customStylesheets?: string[];
 };
 
 type AutoFrameContext = {
@@ -334,6 +390,7 @@ function AutoFrame({
   onReady = () => {},
   onNotReady = () => {},
   frameRef,
+  customStylesheets,
   ...props
 }: AutoFrameProps) {
   const [loaded, setLoaded] = useState(false);
@@ -379,6 +436,7 @@ function AutoFrame({
           <CopyHostStyles
             debug={debug}
             onStylesLoaded={() => setStylesLoaded(true)}
+            customStylesheets={customStylesheets}
           >
             {createPortal(children, mountTarget)}
           </CopyHostStyles>
