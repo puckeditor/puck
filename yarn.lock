@@ -2986,15 +2986,15 @@
   resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.12.1.tgz#714b489bb35d9874cc44b35706a9dc27da8d21c4"
   integrity sha512-BwbTXpj+9QutoZLQvbttRg5x3l5468qaV2kufh+51yha1c53ep5dY4kTuZR35+3pAZxpfQerGJiQqg34ZNZ6uA==
 
-"@puckeditor/cloud-client@0.5.0-canary.dd1cead3":
-  version "0.5.0-canary.dd1cead3"
-  resolved "https://registry.yarnpkg.com/@puckeditor/cloud-client/-/cloud-client-0.5.0-canary.dd1cead3.tgz#e2926ef86a7a71fb5028eb9532ebf35264ff239b"
-  integrity sha512-/ufKP0OsP3uyH3wDbGhVinaGE9IFQjXt5OyEtmjWJEkvYikcYkNXP9stTLxfOz5f5PhJ+roULnxII2tRPjJCGw==
+"@puckeditor/cloud-client@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@puckeditor/cloud-client/-/cloud-client-0.5.0.tgz#e94794d3cf5b900ad30c77ecc58268731c428850"
+  integrity sha512-v04eFeiWf1fa07Z2NbbUgCcmu0QN9Ud4wiPEJs0XykZLpwhw3ydQtXARV3hlAWZaCqLgXRlb/kocHtVtt7PnHw==
 
-"@puckeditor/plugin-ai@0.5.0-canary.dd1cead3":
-  version "0.5.0-canary.dd1cead3"
-  resolved "https://registry.yarnpkg.com/@puckeditor/plugin-ai/-/plugin-ai-0.5.0-canary.dd1cead3.tgz#5ed861da7ebdb96b74f15487f47bb8c028a51076"
-  integrity sha512-8bV3RrqFhtkCqP8apzku2uPVI+WOU2LDkfgNzovjSkZP8oG0bGDmK2LsZ/gVcF9P+sia1fgLYJ5twV3XMFQpxA==
+"@puckeditor/plugin-ai@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@puckeditor/plugin-ai/-/plugin-ai-0.5.0.tgz#005918207aad96f0f3628924accd61cccaa1ac2d"
+  integrity sha512-j/MSkqvPpSn2Z8rSTCKD+e6iGG47QCwuajIwi5/CsdG38MsNV2B0/lDXKTHn3rIonm1WH90/7SCsKSsavSII9g==
   dependencies:
     ai "^5.0.29"
     html2canvas-pro "^1.5.13"
@@ -7392,14 +7392,14 @@ diff-sequences@^29.6.3:
   integrity sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==
 
 diff@^4.0.1:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
-  integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.4.tgz#7a6dbfda325f25f07517e9b518f897c08332e07d"
+  integrity sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==
 
 diff@^5.0.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
-  integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-5.2.2.tgz#0a4742797281d09cfa699b79ea32d27723623bad"
+  integrity sha512-vtcDfH3TOjP8UekytvnHH1o1P4FcUdt4eQ1Y+Abap1tk/OB2MWQvcwS2ClCd1zuIhc3JKOx6p3kod8Vfys3E+A==
 
 dir-glob@^3.0.1:
   version "3.0.1"
