@@ -53,6 +53,10 @@ import { getRichTextTransform } from "../../lib/field-transforms/default-transfo
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
+import {
+  VirtualizedContent,
+  VIRTUALIZATION_CONFIG,
+} from "./VirtualizedContent";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -489,6 +493,26 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
 
     const El = as ?? "div";
 
+    // Enable virtualization for large content lists to handle 5,000+ components
+    const shouldVirtualize =
+      contentIdsWithPreview.length > VIRTUALIZATION_CONFIG.threshold;
+
+    // Memoized render function for virtualized items
+    const renderItem = useCallback(
+      (componentId: string, index: number) => (
+        <DropZoneChildMemo
+          key={componentId}
+          zoneCompound={zoneCompound}
+          componentId={componentId}
+          dragAxis={dragAxis}
+          index={index}
+          collisionAxis={collisionAxis}
+          inDroppableZone={targetAccepted}
+        />
+      ),
+      [zoneCompound, dragAxis, collisionAxis, targetAccepted]
+    );
+
     return (
       <El
         className={`${getClassName({
@@ -509,11 +533,23 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
             backgroundColor: RENDER_DEBUG
               ? getRandomColor()
               : style?.backgroundColor,
+            // Add overflow for virtualization scrolling
+            ...(shouldVirtualize && { overflow: "auto" }),
           } as CSSProperties
         }
       >
-        {contentIdsWithPreview.map((componentId, i) => {
-          return (
+        {shouldVirtualize ? (
+          <VirtualizedContent
+            contentIds={contentIdsWithPreview}
+            zoneCompound={zoneCompound}
+            dragAxis={dragAxis}
+            collisionAxis={collisionAxis}
+            inDroppableZone={targetAccepted}
+            parentRef={ref}
+            renderItem={renderItem}
+          />
+        ) : (
+          contentIdsWithPreview.map((componentId, i) => (
             <DropZoneChildMemo
               key={componentId}
               zoneCompound={zoneCompound}
@@ -523,8 +559,8 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
               collisionAxis={collisionAxis}
               inDroppableZone={targetAccepted}
             />
-          );
-        })}
+          ))
+        )}
       </El>
     );
   }

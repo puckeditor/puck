@@ -100,6 +100,7 @@
   "dependencies": {
     "@dnd-kit/helpers": "0.1.18",
     "@dnd-kit/react": "0.1.18",
+    "@tanstack/react-virtual": "^3.13.0",
     "@radix-ui/react-popover": "^1.1.15",
     "@tiptap/core": "^3.11.1",
     "@tiptap/extension-blockquote": "^3.11.1",
@@ -124,6 +125,7 @@
     "deep-diff": "^1.0.2",
     "fast-equals": "5.2.2",
     "flat": "^5.0.2",
+    "immer": "^10.1.1",
     "happy-dom": "^20.0.10",
     "object-hash": "^3.0.0",
     "react-hotkeys-hook": "^4.6.1",
