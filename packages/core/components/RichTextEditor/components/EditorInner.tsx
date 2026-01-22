@@ -49,6 +49,11 @@ export const EditorInner = memo(
           event.preventDefault();
           editor?.commands.toggleItalic?.();
         }
+
+        // Prevent event propagation for backspace. When propagated, it will trigger block deletion
+        if (event.key.toLowerCase() === "backspace") {
+          event.stopPropagation();
+        }
       },
       [editor]
     );
