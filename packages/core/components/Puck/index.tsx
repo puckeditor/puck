@@ -47,7 +47,7 @@ import {
 } from "../../lib/use-puck";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
-import fdeq from "fast-deep-equal";
+import { deepEqual } from "fast-equals";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
 import { toComponent } from "../../lib/data/to-component";
@@ -312,7 +312,7 @@ function PuckProvider<
       (s) => s.state.data,
       (data) => {
         if (onChange) {
-          if (fdeq(data, previousData.current)) return;
+          if (deepEqual(data, previousData.current)) return;
 
           onChange(data as G["UserData"]);
 
