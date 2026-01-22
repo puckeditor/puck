@@ -179,7 +179,9 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Blockquote.configure(options.blockquote));
     }
 
-    if (options.bulletList !== false) {
+    // When we want bullet lists, we also need list items
+    // https://tiptap.dev/docs/editor/extensions/nodes/bullet-list#install
+    if (options.bulletList !== false && options.listItem !== false) {
       extensions.push(BulletList.configure(options.bulletList));
     }
 
@@ -223,7 +225,9 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Link.configure(options?.link));
     }
 
-    if (options.orderedList !== false) {
+    // When we want ordered lists, we also need list items
+    // https://tiptap.dev/docs/editor/extensions/nodes/ordered-list#install
+    if (options.orderedList !== false && options.listItem !== false) {
       extensions.push(OrderedList.configure(options.orderedList));
     }
 
