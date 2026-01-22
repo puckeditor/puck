@@ -234,10 +234,12 @@ export const Canvas = () => {
       })}
       onClick={(e) => {
         const el = e.target as Element;
+        const hasItemSelected = !!appStoreApi.getState().state.ui.itemSelector;
 
         if (
           !el.hasAttribute("data-puck-component") &&
-          !el.hasAttribute("data-puck-dropzone")
+          !el.hasAttribute("data-puck-dropzone") &&
+          hasItemSelected
         ) {
           dispatch({
             type: "setUi",
