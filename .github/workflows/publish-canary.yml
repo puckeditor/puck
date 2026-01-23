@@ -12,7 +12,7 @@ jobs:
     # Don't run on regular releases
     if: "!startsWith(github.event.head_commit.message, 'release: ')"
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
