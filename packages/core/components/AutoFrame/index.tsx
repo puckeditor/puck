@@ -270,7 +270,7 @@ const CopyHostStyles = ({
         mirror.onload = () => {
           stylesLoaded = stylesLoaded + 1;
 
-          if (stylesLoaded >= elements.length) {
+          if (stylesLoaded >= filtered.length) {
             onStylesLoaded();
           }
         };
@@ -278,7 +278,7 @@ const CopyHostStyles = ({
           console.warn(`AutoFrame couldn't load a stylesheet`);
           stylesLoaded = stylesLoaded + 1;
 
-          if (stylesLoaded >= elements.length) {
+          if (stylesLoaded >= filtered.length) {
             onStylesLoaded();
           }
         };
