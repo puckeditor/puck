@@ -1,6 +1,6 @@
 {
   "name": "@puckeditor/core",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",

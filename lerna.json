@@ -7,7 +7,7 @@
     "packages/plugin-emotion-cache",
     "packages/plugin-heading-analyzer"
   ],
-  "version": "0.21.0",
+  "version": "0.21.1",
   "npmClient": "yarn",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
