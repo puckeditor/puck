@@ -115,7 +115,8 @@ export const monitorHotkeys = (doc: Document) => {
           );
 
         // Call hotkey with event; skip preventDefault if callback returns false to allow native input behavior.
-        if (conditionMet) {
+        // Also skip if AltGraph is pressed, as it's used for typing special characters
+        if (conditionMet && !e.getModifierState("AltGraph")) {
           const handled = cb(e);
           if (handled !== false) {
             e.preventDefault();
