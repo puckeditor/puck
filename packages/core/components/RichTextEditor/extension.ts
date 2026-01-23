@@ -179,12 +179,6 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Blockquote.configure(options.blockquote));
     }
 
-    // When we want bullet lists, we also need list items
-    // https://tiptap.dev/docs/editor/extensions/nodes/bullet-list#install
-    if (options.bulletList !== false && options.listItem !== false) {
-      extensions.push(BulletList.configure(options.bulletList));
-    }
-
     if (options.code !== false) {
       extensions.push(Code.configure(options.code));
     }
@@ -213,8 +207,17 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Italic.configure(options.italic));
     }
 
+    // Bullet lists and ordered lists require listItem
     if (options.listItem !== false) {
       extensions.push(ListItem.configure(options.listItem));
+
+      if (options.bulletList !== false) {
+        extensions.push(BulletList.configure(options.bulletList));
+      }
+
+      if (options.orderedList !== false) {
+        extensions.push(OrderedList.configure(options.orderedList));
+      }
     }
 
     if (options.listKeymap !== false) {
@@ -223,12 +226,6 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
 
     if (options.link !== false) {
       extensions.push(Link.configure(options?.link));
-    }
-
-    // When we want ordered lists, we also need list items
-    // https://tiptap.dev/docs/editor/extensions/nodes/ordered-list#install
-    if (options.orderedList !== false && options.listItem !== false) {
-      extensions.push(OrderedList.configure(options.orderedList));
     }
 
     if (options.paragraph !== false) {
