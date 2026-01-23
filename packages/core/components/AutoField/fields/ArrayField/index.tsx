@@ -118,7 +118,7 @@ const ArrayFieldItemInternal = ({
           className={getClassNameItem({
             isExpanded: isExpanded && hasVisibleFields,
             isDragging,
-            readOnly,
+            noFields: !hasVisibleFields,
           })}
         >
           <div

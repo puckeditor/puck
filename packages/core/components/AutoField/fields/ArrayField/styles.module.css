@@ -119,6 +119,10 @@
   transition: background-color 50ms ease-in;
 }
 
+.ArrayFieldItem--noFields > .ArrayFieldItem-summary {
+  cursor: grab;
+}
+
 .ArrayFieldItem:first-of-type > .ArrayFieldItem-summary {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
