@@ -12,12 +12,12 @@ jobs:
     # Don't run on regular releases
     if: "!startsWith(github.event.head_commit.message, 'release: ')"
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"

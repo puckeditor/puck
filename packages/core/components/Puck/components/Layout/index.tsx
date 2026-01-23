@@ -192,10 +192,15 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
     const defaultPlugins: PluginInternal[] = [blocksPlugin(), outlinePlugin()];
 
+    const isLegacy = (plugin: PluginInternal) =>
+      plugin.name === "legacy-side-bar" ? -1 : 0;
+
+    // Always place legacy-side-bar first
+    // Stable tie-break ensures consistent order for non-legacy plugins
     const combinedPlugins: PluginInternal[] = [
       ...defaultPlugins,
       ...(plugins ?? []),
-    ].sort((a) => (a.name === "legacy-side-bar" ? -1 : 1)); // Always place legacy-side-bar first
+    ].sort((a, b) => isLegacy(a) - isLegacy(b));
 
     if (!plugins?.some((p) => p.name === "fields")) {
       combinedPlugins.push(fieldsPlugin());

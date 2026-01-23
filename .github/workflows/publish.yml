@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     if: "startsWith(github.event.head_commit.message, 'release: ')"
     steps:
-      - uses: actions/checkout@v2.0.0
+      - uses: actions/checkout@v6.0.2
       - name: Extract version
         shell: bash
         run: echo "TAG_NAME=$(git log -1 --oneline --pretty=%B | sed 's/release:\ //g')" >> $GITHUB_ENV
@@ -21,7 +21,7 @@ jobs:
           tag: ${{ env.TAG_NAME }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
