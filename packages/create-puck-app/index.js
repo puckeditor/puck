@@ -99,6 +99,10 @@ program
             name: "Remix",
             value: "remix",
           },
+          {
+            name: "TanStack",
+            value: "tanstack",
+          }
         ],
       },
       {
