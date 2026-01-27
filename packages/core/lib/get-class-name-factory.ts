@@ -25,7 +25,7 @@ const getClassNameFactory =
     styles: Record<string, string>,
     config: { baseClass?: string } = { baseClass: "" }
   ) =>
-  (options: Options = {}) => {
+  (options: Options = {}, params: { excludeBase?: boolean } = {}) => {
     if (typeof options === "string") {
       const descendant = options;
 
@@ -46,7 +46,7 @@ const getClassNameFactory =
           modifiers[modifier];
       }
 
-      const c = styles[rootClass];
+      const c = !params.excludeBase ? styles[rootClass] : "";
 
       return (
         config.baseClass +
