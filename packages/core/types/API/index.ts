@@ -19,6 +19,7 @@ export type Permissions = {
 export type IframeConfig = {
   enabled?: boolean;
   waitForStyles?: boolean;
+  srcDoc?: string;
 };
 
 export type OnAction<UserData extends Data = Data> = (
