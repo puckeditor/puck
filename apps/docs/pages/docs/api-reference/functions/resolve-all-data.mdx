@@ -16,10 +16,15 @@ This is useful if you need to run your resolvers before passing your data to [`<
 
 ## Args
 
-| Param    | Example              | Type                                               |
-| -------- | -------------------- | -------------------------------------------------- |
-| `data`   | `{}`                 | [Data](/docs/api-reference/data-model/data)        |
-| `config` | `{ components: {} }` | [Config](/docs/api-reference/configuration/config) |
+| Param            | Example              | Type                                                    |
+| ---------------- | -------------------- | ------------------------------------------------------- |
+| `data`           | `{}`                 | [Data](/docs/api-reference/data-model/data)             |
+| `config`         | `{ components: {} }` | [Config](/docs/api-reference/configuration/config)      |
+| `metadata`       | `{}`                 | [Metadata](/docs/api-reference/data-model/metadata)     |
+
+### metadata
+
+An optional [Metadata](/docs/api-reference/data-model/metadata) object to pass to the resolvers. Defaults to `{}`.
 
 ## Returns
 
