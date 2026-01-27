@@ -8,6 +8,7 @@ import {
 } from "react";
 import hash from "object-hash";
 import { createPortal } from "react-dom";
+import { usePropsContext } from "../Puck";
 
 const styleSelector = 'style, link[rel="stylesheet"]';
 
@@ -340,6 +341,9 @@ function AutoFrame({
   const [ctx, setCtx] = useState<AutoFrameContext>({});
   const [mountTarget, setMountTarget] = useState<HTMLElement | null>();
   const [stylesLoaded, setStylesLoaded] = useState(false);
+  const {
+    srcDoc = '<!DOCTYPE html><html><head></head><body><div id="frame-root" data-puck-entry></div></body></html>',
+  } = usePropsContext().iframe ?? {};
 
   useEffect(() => {
     if (frameRef.current) {
@@ -368,7 +372,7 @@ function AutoFrame({
       {...props}
       className={className}
       id={id}
-      srcDoc='<!DOCTYPE html><html><head></head><body><div id="frame-root" data-puck-entry></div></body></html>'
+      srcDoc={srcDoc}
       ref={frameRef}
       onLoad={() => {
         setLoaded(true);
