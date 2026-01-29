@@ -67,7 +67,7 @@ export const walkField = ({
   const map = mappers[fieldType];
 
   if (map && fieldType === "slot") {
-    const content = (value as Content) || [];
+    const content = Array.isArray(value) ? value : [];
 
     const mappedContent = recurseSlots
       ? content.map((el) => {
