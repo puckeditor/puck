@@ -124,10 +124,12 @@ const ArrayFieldItemInternal = ({
           <div
             ref={handleRef}
             onClick={(e) => {
-              if (isDragging || !hasVisibleFields) return;
+              if (isDragging) return;
 
               e.preventDefault();
               e.stopPropagation();
+
+              if (!hasVisibleFields) return;
 
               onToggleExpand(id, isExpanded);
             }}
