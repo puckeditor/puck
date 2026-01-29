@@ -31,6 +31,7 @@ export const Canvas = () => {
   const {
     _experimentalFullScreenCanvas,
     viewports: viewportOptions = defaultViewports,
+    ui: uiProp,
   } = usePropsContext();
 
   const {
@@ -156,8 +157,12 @@ export const Canvas = () => {
 
   const appStoreApi = useAppStoreApi();
 
+  // Select closest viewport on load
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Don't override if user has set a viewport
+    if (uiProp?.viewports?.current) return;
 
     const viewportWidth = window.innerWidth;
     const frameWidth = frameRef.current?.getBoundingClientRect().width;
@@ -223,7 +228,13 @@ export const Canvas = () => {
 
       appStoreApi.setState({ ...appState, history });
     }
-  }, [viewportOptions, frameRef.current, iframe, appStoreApi]);
+  }, [
+    viewportOptions,
+    frameRef.current,
+    iframe,
+    appStoreApi,
+    uiProp?.viewports?.current,
+  ]);
 
   return (
     <div
