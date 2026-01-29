@@ -181,11 +181,11 @@ export function useRegisterHistorySlice(
     appStore.getState().history.forward();
   };
 
-  useHotkey({ meta: true, z: true }, back);
-  useHotkey({ meta: true, shift: true, z: true }, forward);
-  useHotkey({ meta: true, y: true }, forward);
+  useHotkey({ altRight: false, meta: true, z: true }, back);
+  useHotkey({ altRight: false, meta: true, shift: true, z: true }, forward);
+  useHotkey({ altRight: false, meta: true, y: true }, forward);
 
-  useHotkey({ ctrl: true, z: true }, back);
-  useHotkey({ ctrl: true, shift: true, z: true }, forward);
-  useHotkey({ ctrl: true, y: true }, forward);
+  useHotkey({ altRight: false, ctrl: true, z: true }, back);
+  useHotkey({ altRight: false, ctrl: true, shift: true, z: true }, forward);
+  useHotkey({ altRight: false, ctrl: true, y: true }, forward);
 }
