@@ -19,6 +19,15 @@ export type Permissions = {
 export type IframeConfig = {
   enabled?: boolean;
   waitForStyles?: boolean;
+  /**
+   * Array of stylesheet URLs to inject into the iframe.
+   * These are loaded after host styles and before onStylesLoaded is called.
+   */
+  stylesheets?: string[];
+  /**
+   * Callback fired when all stylesheets (host + custom) have loaded.
+   */
+  onStylesLoaded?: () => void;
 };
 
 export type OnAction<UserData extends Data = Data> = (

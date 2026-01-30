@@ -160,11 +160,13 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
           data-rfd-iframe
           onReady={() => {
             setStatus("READY");
+            iframe.onStylesLoaded?.();
           }}
           onNotReady={() => {
             setStatus("MOUNTED");
           }}
           frameRef={ref}
+          customStylesheets={iframe.stylesheets}
         >
           <autoFrameContext.Consumer>
             {({ document }) => {
