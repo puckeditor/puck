@@ -4,7 +4,7 @@ import { WithDeepSlots } from "../Internal";
 import { DefaultComponentProps } from "../Props";
 import { AppState } from "./../AppState";
 import { ComponentDataOptionalId, Content, Data } from "./../Data";
-import { Overrides } from "./Overrides";
+import { Overrides, RenderOverrides } from "./Overrides";
 import { FieldTransforms } from "./FieldTransforms";
 import { Config, DefaultComponents } from "../Config";
 
@@ -80,6 +80,6 @@ export type RichText = string | ReactNode;
 export * from "./DropZone";
 export * from "./Viewports";
 
-export type { Overrides };
+export type { Overrides, RenderOverrides };
 
 export * from "./FieldTransforms";
