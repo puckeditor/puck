@@ -28,7 +28,7 @@
     "@types/minimatch": "3.0.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.0.2",
-    "eslint": "^7.32.0",
+    "eslint": "^9.26.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",
     "tsup": "^8.2.4",
