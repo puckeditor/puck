@@ -1,6 +1,6 @@
 # `tanstack` recipe
 
-The `tanstack` recipe showcases one of the most powerful ways to implement Puck using to provide an authoring tool for any route in your Next app.
+The `tanstack` recipe showcases one of the most powerful ways to implement Puck using it to provide an authoring tool for any route in your TanStack app.
 
 ## Demonstrates
 
