@@ -21,7 +21,7 @@
     "asciichart": "^1.5.25",
     "conventional-changelog-angular": "^4.0.0",
     "conventional-recommended-bump": "^6.0.5",
-    "eslint": "^7.32.0",
+    "eslint": "^9.26.0",
     "eslint-config-custom": "*",
     "lerna": "^9.0.0",
     "prettier": "^2.5.1",
