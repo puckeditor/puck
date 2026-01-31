@@ -93,10 +93,7 @@ export function useSyncedEditor({
     if (debouncedState) {
       const { ui } = appStoreApi.getState().state;
       const currentData = appStoreApi.getState().getCurrentData();
-      const currentFieldValue = getDeep(
-        currentData.props,
-        name ?? "",
-      );
+      const currentFieldValue = getDeep(currentData.props, name ?? "");
 
       // Avoid echoing back same content
       if (currentFieldValue === debouncedState.html) {
