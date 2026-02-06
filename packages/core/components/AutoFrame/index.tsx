@@ -270,7 +270,7 @@ const CopyHostStyles = ({
         mirror.onload = () => {
           stylesLoaded = stylesLoaded + 1;
 
-          if (stylesLoaded >= elements.length) {
+          if (stylesLoaded >= filtered.length) {
             onStylesLoaded();
           }
         };
@@ -278,7 +278,7 @@ const CopyHostStyles = ({
           console.warn(`AutoFrame couldn't load a stylesheet`);
           stylesLoaded = stylesLoaded + 1;
 
-          if (stylesLoaded >= elements.length) {
+          if (stylesLoaded >= filtered.length) {
             onStylesLoaded();
           }
         };
@@ -289,6 +289,17 @@ const CopyHostStyles = ({
 
       // Inject initial values in bulk
       doc.head.append(...filtered);
+
+      // Count <style> elements as immediately loaded (they don't fire onload)
+      filtered.forEach((mirror) => {
+        if (mirror.nodeName === "STYLE") {
+          stylesLoaded = stylesLoaded + 1;
+        }
+      });
+
+      if (stylesLoaded >= filtered.length) {
+        onStylesLoaded();
+      }
 
       observer.observe(parentDocument.head, { childList: true, subtree: true });
 
