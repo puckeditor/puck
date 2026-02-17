@@ -203,7 +203,7 @@ type ConfigInternal<
       "type"
     >;
   };
-  root?: RootConfigInternal<RootProps, UserField>;
+  root?: RootConfigInternal<RootProps, keyof Props, UserField>;
 };
 
 // This _deliberately_ casts as any so the user can pass in something that widens the types
