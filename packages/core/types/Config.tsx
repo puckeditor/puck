@@ -14,7 +14,9 @@ import {
   WithDeepSlots,
 } from "./Internal";
 
-export type SlotComponent<T = string> = (props?: Omit<DropZoneProps<T>, "zone">) => ReactNode;
+export type SlotComponent<T = string> = (
+  props?: Omit<DropZoneProps<T>, "zone">
+) => ReactNode;
 
 export type PuckComponent<Props, T = string> = (
   props: WithId<
@@ -109,7 +111,13 @@ export type ComponentConfig<
   infer ParamsRenderProps,
   never
 >
-  ? ComponentConfigInternal<ParamsRenderProps, Components, FieldProps, DataShape, {}>
+  ? ComponentConfigInternal<
+      ParamsRenderProps,
+      Components,
+      FieldProps,
+      DataShape,
+      {}
+    >
   : RenderPropsOrParams extends ComponentConfigParams<
       infer ParamsRenderProps,
       infer ParamsFields
@@ -121,7 +129,12 @@ export type ComponentConfig<
       DataShape,
       ParamsFields[keyof ParamsFields] & BaseField
     >
-  : ComponentConfigInternal<RenderPropsOrParams, Components, FieldProps, DataShape>;
+  : ComponentConfigInternal<
+      RenderPropsOrParams,
+      Components,
+      FieldProps,
+      DataShape
+    >;
 
 type RootConfigInternal<
   RootProps extends DefaultComponentProps = DefaultComponentProps,
@@ -158,7 +171,9 @@ export type RootConfig<
         UserFields[keyof UserFields] & BaseField
       >
     >
-  : Partial<RootConfigInternal<WithChildren<RootPropsOrParams>, Components, {}>>;
+  : Partial<
+      RootConfigInternal<WithChildren<RootPropsOrParams>, Components, {}>
+    >;
 
 type Category<ComponentName> = {
   components?: ComponentName[];
