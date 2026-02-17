@@ -3,7 +3,10 @@ import { withLayout } from "../../components/Layout";
 import TemplateComponent, { TemplateProps } from "./Template";
 import { Components } from "../../types";
 
-export const TemplateInternal: ComponentConfig<TemplateProps, keyof Components> = {
+export const TemplateInternal: ComponentConfig<
+  TemplateProps,
+  keyof Components
+> = {
   render: TemplateComponent,
 };
 
