@@ -5,6 +5,7 @@ import { quotes } from "./quotes";
 import { AutoField, FieldLabel, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
+import { Components } from "../../types";
 
 export const Hero: ComponentConfig<{
   props: HeroProps;
@@ -14,7 +15,7 @@ export const Hero: ComponentConfig<{
       option: boolean;
     };
   };
-}> = {
+}, keyof Components> = {
   fields: {
     quote: {
       type: "external",
