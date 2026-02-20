@@ -359,23 +359,14 @@ export const DraggableComponent = ({
         e.stopPropagation();
       }
 
-      if (isSelected) {
-        dispatch({
-          type: "setUi",
-          ui: {
-            itemSelector: null,
-          },
-        });
-      } else {
-        dispatch({
-          type: "setUi",
-          ui: {
-            itemSelector: { index, zone: zoneCompound },
-          },
-        });
-      }
+      dispatch({
+        type: "setUi",
+        ui: {
+          itemSelector: { index, zone: zoneCompound },
+        },
+      });
     },
-    [index, zoneCompound, id, isSelected]
+    [index, zoneCompound, id]
   );
 
   const appStore = useAppStoreApi();
