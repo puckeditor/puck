@@ -19,6 +19,52 @@ type DropZoneRenderProps = {
   metadata?: Metadata;
 };
 
+type DropZoneRenderItemProps = {
+  item: Data["content"][number];
+  data: Data;
+  config: Config;
+  metadata: Metadata;
+};
+
+function DropZoneRenderItem({
+  item,
+  data,
+  config,
+  metadata,
+}: DropZoneRenderItemProps) {
+  const Component = config.components[item.type];
+
+  const props = {
+    ...item.props,
+    puck: {
+      renderDropZone: ({ zone }: { zone: string }) => (
+        <DropZoneRender
+          zone={zone}
+          data={data}
+          areaId={item.props.id}
+          config={config}
+          metadata={metadata}
+        />
+      ),
+      metadata,
+      dragRef: null,
+      isEditing: false,
+    },
+  };
+
+  const renderItem = { ...item, props };
+  const propsWithSlots = useSlots(config, renderItem, (slotProps) => (
+    <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
+  ));
+  const richtextProps = useRichtextProps(Component?.fields, propsWithSlots);
+
+  if (!Component) {
+    return null;
+  }
+
+  return <Component.render {...propsWithSlots} {...richtextProps} />;
+}
+
 export function DropZoneRender({
   zone,
   data,
@@ -41,40 +87,15 @@ export function DropZoneRender({
   return (
     <>
       {content.map((item) => {
-        const Component = config.components[item.type];
-
-        const props = {
-          ...item.props,
-          puck: {
-            renderDropZone: ({ zone }: { zone: string }) => (
-              <DropZoneRender
-                zone={zone}
-                data={data}
-                areaId={item.props.id}
-                config={config}
-                metadata={metadata}
-              />
-            ),
-            metadata,
-            dragRef: null,
-            isEditing: false,
-          },
-        };
-
-        const renderItem = { ...item, props };
-
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const propsWithSlots = useSlots(config, renderItem, (props) => (
-          <SlotRenderPure {...props} config={config} metadata={metadata} />
-        ));
-
-        if (Component) {
-          return (
-            <Component.render key={renderItem.props.id} {...propsWithSlots} />
-          );
-        }
-
-        return null;
+        return (
+          <DropZoneRenderItem
+            key={item.props.id}
+            item={item}
+            data={data}
+            config={config}
+            metadata={metadata}
+          />
+        );
       })}
     </>
   );
