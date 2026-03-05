@@ -376,13 +376,16 @@ const DragDropContextClient = ({
                   appStore
                 );
               } else if (initialSelector.current) {
+                const shouldRecordHistory =
+                  initialSelector.current.zone !== thisPreview.zone ||
+                  initialSelector.current.index !== thisPreview.index;
                 dispatch({
                   type: "move",
                   sourceIndex: initialSelector.current.index,
                   sourceZone: initialSelector.current.zone,
                   destinationIndex: thisPreview.index,
                   destinationZone: thisPreview.zone,
-                  recordHistory: false,
+                  recordHistory: shouldRecordHistory,
                 });
               }
             }
@@ -393,7 +396,7 @@ const DragDropContextClient = ({
                 itemSelector: { index, zone },
                 isDragging: false,
               },
-              recordHistory: true,
+              recordHistory: false,
             });
 
             dragListeners.dragend?.forEach((fn) => {
