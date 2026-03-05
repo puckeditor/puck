@@ -29,14 +29,12 @@ export const Editor = memo((props: EditorProps) => {
 
   const appStoreApi = useAppStoreApi();
 
-  const focusName = `${name}${inline ? "::inline" : ""}`;
-
   const editor = useSyncedEditor({
     content,
     onChange,
     extensions: loadedExtensions,
     editable: !readOnly,
-    name: focusName,
+    name: name,
     onFocusChange: (editor) => {
       if (editor) {
         const s = appStoreApi.getState();
@@ -54,7 +52,7 @@ export const Editor = memo((props: EditorProps) => {
               ...s.state.ui,
               field: {
                 ...s.state.ui.field,
-                focus: focusName,
+                focus: name,
               },
             },
           },
