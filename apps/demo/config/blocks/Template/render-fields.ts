@@ -1,9 +1,9 @@
-import { ComponentConfig } from "@/core/types";
+import { SlotField } from "@/core/types";
 import { TemplateProps } from "./Template";
 
-export const templateRenderFields: NonNullable<
-  ComponentConfig<TemplateProps>["fields"]
-> = {
+export const templateRenderFields: {
+  children: SlotField;
+} = {
   children: {
     type: "slot",
   },
