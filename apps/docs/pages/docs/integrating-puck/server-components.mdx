@@ -152,7 +152,7 @@ export const config: UserConfig = {
 };
 ```
 
-Define a server config using the shared types for use within the `<Render>` component, excluding fields as they are unnecessary in this environment:
+Define a server config using the shared types for use within the `<Render>` component, excluding editor-only behaviour where possible but preserving any fields required for render-time transforms like [`richtext`](/docs/api-reference/fields/richtext) and [`slot`](/docs/api-reference/fields/slot):
 
 ```tsx copy showLineNumbers filename="puck.config.server.tsx"
 import type { UserConfig } from "./puck-types.ts";
@@ -183,3 +183,5 @@ export default async function Page() {
   return <Render data={data} config={config} />;
 }
 ```
+
+If your server config omits those render-relevant fields entirely, Puck cannot infer which props should be transformed before render. In practice this means rich text will be escaped as plain strings, and slot data will not be converted into nested components.
