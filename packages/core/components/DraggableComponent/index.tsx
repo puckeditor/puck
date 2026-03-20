@@ -114,9 +114,7 @@ export const DraggableComponent = ({
   userDragAxis?: DragAxis;
   inDroppableZone: boolean;
 }) => {
-  const {
-    _experimentalFullScreenCanvas
-  } = usePropsContext();
+  const { _experimentalFullScreenCanvas } = usePropsContext();
 
   const zoom = useAppStore((s) =>
     s.selectedItem?.props.id === id ? s.zoomConfig.zoom : 1
