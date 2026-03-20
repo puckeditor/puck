@@ -34,7 +34,6 @@ import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
-import { usePropsContext } from "../Puck";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -114,7 +113,9 @@ export const DraggableComponent = ({
   userDragAxis?: DragAxis;
   inDroppableZone: boolean;
 }) => {
-  const { _experimentalFullScreenCanvas } = usePropsContext();
+  const _experimentalFullScreenCanvas = useAppStore(
+    (s) => s._experimentalFullScreenCanvas
+  );
 
   const zoom = useAppStore((s) =>
     s.selectedItem?.props.id === id ? s.zoomConfig.zoom : 1

@@ -124,6 +124,7 @@ function PuckProvider<
     metadata,
     onAction,
     fieldTransforms,
+    _experimentalFullScreenCanvas = false,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -265,6 +266,7 @@ function PuckProvider<
         onAction,
         metadata,
         fieldTransforms: loadedFieldTransforms,
+        _experimentalFullScreenCanvas,
       };
     },
     [
@@ -278,6 +280,7 @@ function PuckProvider<
       onAction,
       metadata,
       loadedFieldTransforms,
+      _experimentalFullScreenCanvas,
     ]
   );
 
@@ -297,7 +300,16 @@ function PuckProvider<
     appStore.setState({
       ...generateAppStore(state),
     });
-  }, [config, plugins, loadedOverrides, viewports, iframe, onAction, metadata]);
+  }, [
+    config,
+    plugins,
+    loadedOverrides,
+    viewports,
+    iframe,
+    onAction,
+    metadata,
+    _experimentalFullScreenCanvas,
+  ]);
 
   useRegisterHistorySlice(appStore, {
     histories: blendedHistories,
