@@ -98,6 +98,7 @@ export type AppStore<
     editor: Editor;
     id: string;
   } | null;
+  _experimentalFullScreenCanvas: boolean;
 };
 
 export type AppStoreApi = StoreApi<AppStore>;
@@ -125,6 +126,7 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
       iframe: {},
       metadata: {},
       fieldTransforms: {},
+      _experimentalFullScreenCanvas: false,
       ...initialAppStore,
       fields: createFieldsSlice(set, get),
       history: createHistorySlice(set, get),

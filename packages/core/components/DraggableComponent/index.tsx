@@ -113,6 +113,10 @@ export const DraggableComponent = ({
   userDragAxis?: DragAxis;
   inDroppableZone: boolean;
 }) => {
+  const _experimentalFullScreenCanvas = useAppStore(
+    (s) => s._experimentalFullScreenCanvas
+  );
+
   const zoom = useAppStore((s) =>
     s.selectedItem?.props.id === id ? s.zoomConfig.zoom : 1
   );
@@ -359,11 +363,11 @@ export const DraggableComponent = ({
         e.stopPropagation();
       }
 
-      if (isSelected) {
+      if (_experimentalFullScreenCanvas) {
         dispatch({
           type: "setUi",
           ui: {
-            itemSelector: null,
+            itemSelector: isSelected ? null : { index, zone: zoneCompound },
           },
         });
       } else {
@@ -375,7 +379,7 @@ export const DraggableComponent = ({
         });
       }
     },
-    [index, zoneCompound, id, isSelected]
+    [index, zoneCompound, id, isSelected, _experimentalFullScreenCanvas]
   );
 
   const appStore = useAppStoreApi();
