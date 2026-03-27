@@ -328,26 +328,9 @@ const DragDropContextClient = ({
             if (event.canceled || target?.type === "void") {
               zoneStore.setState({ previewIndex: {} });
 
-              // Finalise the drag
-              if (thisPreview) {
-                zoneStore.setState({ previewIndex: {} });
-
-                if (thisPreview.type === "insert") {
-                  insertComponent(
-                    thisPreview.componentType,
-                    thisPreview.zone,
-                    thisPreview.index,
-                    appStore
-                  );
-                } else if (initialSelector.current) {
-                  moveComponent(
-                    thisPreview.props.id,
-                    initialSelector.current,
-                    thisPreview,
-                    appStore
-                  );
-                }
-              }
+              dragListeners.dragend?.forEach((fn) => {
+                fn(event, manager);
+              });
 
               dispatch({
                 type: "setUi",
@@ -355,10 +338,6 @@ const DragDropContextClient = ({
                   itemSelector: null,
                   isDragging: false,
                 },
-              });
-
-              dragListeners.dragend?.forEach((fn) => {
-                fn(event, manager);
               });
 
               return;
@@ -376,14 +355,12 @@ const DragDropContextClient = ({
                   appStore
                 );
               } else if (initialSelector.current) {
-                dispatch({
-                  type: "move",
-                  sourceIndex: initialSelector.current.index,
-                  sourceZone: initialSelector.current.zone,
-                  destinationIndex: thisPreview.index,
-                  destinationZone: thisPreview.zone,
-                  recordHistory: false,
-                });
+                moveComponent(
+                  thisPreview.props.id,
+                  initialSelector.current,
+                  thisPreview,
+                  appStore
+                );
               }
             }
 
