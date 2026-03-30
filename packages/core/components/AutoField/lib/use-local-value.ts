@@ -8,10 +8,13 @@ export const useLocalValue = (path: string, onChange: (val: any) => void) => {
 
   const [localValue, setLocalValue] = useState(value?.toString());
 
-  const onChangeLocal = useCallback((val: any) => {
-    setLocalValue(val);
-    onChange(val);
-  }, []);
+  const onChangeLocal = useCallback(
+    (val: any) => {
+      setLocalValue(val);
+      onChange(val);
+    },
+    [onChange]
+  );
 
   useEffect(() => {
     // Prevent global state from setting local state if this field is focused
