@@ -252,7 +252,7 @@ export const Canvas = () => {
           dispatch({
             type: "setUi",
             ui: { itemSelector: null },
-            recordHistory: true,
+            recordHistory: false,
           });
         }
       }}

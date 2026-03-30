@@ -370,7 +370,7 @@ const DragDropContextClient = ({
                 itemSelector: { index, zone },
                 isDragging: false,
               },
-              recordHistory: true,
+              recordHistory: false,
             });
 
             dragListeners.dragend?.forEach((fn) => {
