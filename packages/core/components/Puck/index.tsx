@@ -124,6 +124,7 @@ function PuckProvider<
     metadata,
     onAction,
     fieldTransforms,
+    _experimentalFullScreenCanvas,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -262,6 +263,7 @@ function PuckProvider<
         overrides: loadedOverrides,
         viewports,
         iframe,
+        _experimentalFullScreenCanvas: !!_experimentalFullScreenCanvas,
         onAction,
         metadata,
         fieldTransforms: loadedFieldTransforms,
@@ -275,6 +277,7 @@ function PuckProvider<
       loadedOverrides,
       viewports,
       iframe,
+      _experimentalFullScreenCanvas,
       onAction,
       metadata,
       loadedFieldTransforms,
@@ -297,7 +300,16 @@ function PuckProvider<
     appStore.setState({
       ...generateAppStore(state),
     });
-  }, [config, plugins, loadedOverrides, viewports, iframe, onAction, metadata]);
+  }, [
+    config,
+    plugins,
+    loadedOverrides,
+    viewports,
+    iframe,
+    _experimentalFullScreenCanvas,
+    onAction,
+    metadata,
+  ]);
 
   useRegisterHistorySlice(appStore, {
     histories: blendedHistories,
