@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import { UiState } from "../../../types";
 import { useAppStore, useAppStoreApi } from "../../../store";
-import { getDeep } from "../../../lib/data/get-deep";
 
 export function useSyncedEditor({
   content,
@@ -92,13 +91,6 @@ export function useSyncedEditor({
   useEffect(() => {
     if (debouncedState) {
       const { ui } = appStoreApi.getState().state;
-      const currentData = appStoreApi.getState().getCurrentData();
-      const currentFieldValue = getDeep(currentData.props, name ?? "");
-
-      // Avoid echoing back same content
-      if (currentFieldValue === debouncedState.html) {
-        return;
-      }
 
       onChange(debouncedState.html, {
         field: {
