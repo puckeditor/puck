@@ -156,7 +156,7 @@ export type CustomFieldRender<Value extends any> = (props: {
   name: string;
   id: string;
   value: Value;
-  onChange: (value: Value) => void;
+  onChange: (value: Value, uiState?: Partial<UiState>) => void;
   readOnly?: boolean;
 }) => ReactElement;
 
