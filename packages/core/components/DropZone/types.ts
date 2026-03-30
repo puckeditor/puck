@@ -1,10 +1,10 @@
 import { CSSProperties, ElementType, Ref } from "react";
 import { DragAxis } from "../../types";
 
-export type DropZoneProps = {
+export type DropZoneProps<T = string> = {
   zone: string;
-  allow?: string[];
-  disallow?: string[];
+  allow?: T[];
+  disallow?: T[];
   style?: CSSProperties;
   minEmptyHeight?: CSSProperties["minHeight"] | number;
   className?: string;

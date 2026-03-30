@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
 import { PuckComponent } from "@/core/types";
+import { Components } from "../../types";
 
 const getClassName = getClassNameFactory("Template", styles);
 
@@ -12,7 +13,7 @@ export type TemplateProps = {
   children: Slot;
 };
 
-export const Template: PuckComponent<TemplateProps> = ({
+export const Template: PuckComponent<TemplateProps, keyof Components> = ({
   children: Children,
 }) => {
   return (
