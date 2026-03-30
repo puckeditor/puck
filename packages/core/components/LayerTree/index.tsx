@@ -78,6 +78,8 @@ const Layer = ({
     config.components[nodeData.data.type];
   const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
 
+  const shouldRenderChildren = isSelected || childIsSelected;
+
   return (
     <li
       className={getClassNameLayer({
@@ -151,6 +153,7 @@ const Layer = ({
         </button>
       </div>
       {containsZone &&
+        shouldRenderChildren &&
         zonesForItem.map((subzone) => (
           <div key={subzone} className={getClassNameLayer("zones")}>
             <LayerTree zoneCompound={subzone} />
