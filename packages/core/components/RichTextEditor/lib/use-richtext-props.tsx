@@ -1,5 +1,4 @@
 import { lazy, Suspense, useMemo } from "react";
-import type { ReactNode } from "react";
 import {
   BaseField,
   Fields,
@@ -7,6 +6,13 @@ import {
   WithPuckProps,
 } from "../../../types";
 import { RichTextRenderFallback } from "../components/RenderFallback";
+import { generateId } from "../../../lib/generate-id";
+import { mapDeep } from "./mapDeep";
+
+type RichtextPath = {
+  path: string[];
+  field: RichtextField;
+};
 
 export function useRichtextProps(
   fields:
@@ -21,15 +27,29 @@ export function useRichtextProps(
     fields:
       | Fields<any, {}>
       | Fields<any, { type: string } & BaseField>
-      | undefined
-  ): string[] => {
+      | undefined,
+    path: string[] = []
+  ): RichtextPath[] => {
     if (!fields) return [];
 
-    const result: string[] = [];
+    const result: RichtextPath[] = [];
 
     for (const [key, field] of Object.entries(fields)) {
+      const currentPath = [...path, key];
+
       if (field.type === "richtext") {
-        result.push(key);
+        result.push({
+          path: currentPath,
+          field: field as RichtextField,
+        });
+      }
+
+      if (field.type === "array" && "arrayFields" in field) {
+        result.push(...findAllRichtextKeys(field.arrayFields, currentPath));
+      }
+
+      if (field.type === "object" && "objectFields" in field) {
+        result.push(...findAllRichtextKeys(field.objectFields, currentPath));
       }
     }
 
@@ -47,17 +67,20 @@ export function useRichtextProps(
       }))
     );
 
-    return richtextKeys.reduce((acc, key) => {
-      acc[key] = (
-        <Suspense fallback={<RichTextRenderFallback content={props[key]} />}>
-          <RichTextRender
-            content={props[key]}
-            field={fields![key] as RichtextField}
-          />
+    let result = { ...props };
+
+    for (const { path, field } of richtextKeys) {
+      result = mapDeep(result, path, (content) => (
+        <Suspense
+          key={generateId()}
+          fallback={<RichTextRenderFallback content={content} />}
+        >
+          <RichTextRender content={content} field={field} />
         </Suspense>
-      );
-      return acc;
-    }, {} as Record<string, ReactNode>);
+      ));
+    }
+
+    return result;
   }, [richtextKeys, props, fields]);
 
   return richtextProps;

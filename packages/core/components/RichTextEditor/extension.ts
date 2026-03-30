@@ -179,10 +179,6 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Blockquote.configure(options.blockquote));
     }
 
-    if (options.bulletList !== false) {
-      extensions.push(BulletList.configure(options.bulletList));
-    }
-
     if (options.code !== false) {
       extensions.push(Code.configure(options.code));
     }
@@ -211,8 +207,17 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
       extensions.push(Italic.configure(options.italic));
     }
 
+    // Bullet lists and ordered lists require listItem
     if (options.listItem !== false) {
       extensions.push(ListItem.configure(options.listItem));
+
+      if (options.bulletList !== false) {
+        extensions.push(BulletList.configure(options.bulletList));
+      }
+
+      if (options.orderedList !== false) {
+        extensions.push(OrderedList.configure(options.orderedList));
+      }
     }
 
     if (options.listKeymap !== false) {
@@ -221,10 +226,6 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
 
     if (options.link !== false) {
       extensions.push(Link.configure(options?.link));
-    }
-
-    if (options.orderedList !== false) {
-      extensions.push(OrderedList.configure(options.orderedList));
     }
 
     if (options.paragraph !== false) {

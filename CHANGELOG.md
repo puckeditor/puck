@@ -2,6 +2,22 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.21.1](https://github.com/measuredco/puck/compare/v0.21.0...v0.21.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* don't throw when disabling listItem rich text extension ([4ca0a46](https://github.com/measuredco/puck/commit/4ca0a46e895e8a378bc743c4c06451dca8c00838))
+* enforce disabled styles for rich text menu with no options ([3d56139](https://github.com/measuredco/puck/commit/3d56139a84912fcc5cc13142bd31df8b2d187368))
+* ensure consistent plugin ordering in Firefox ([274c5f6](https://github.com/measuredco/puck/commit/274c5f6abd8585d015ece2b59d11da0b4914b6d0))
+* ensure nested richtext fields render in <Render/> ([501a164](https://github.com/measuredco/puck/commit/501a1649afbb5fb4125146541e63b0f3fec3a962))
+* prevent array item expansion when empty ([1a6682a](https://github.com/measuredco/puck/commit/1a6682a3bc0eaaae2f6ffe1a2d20656d8d647a65))
+* prevent block deletion on backspace in rich text in Firefox ([71c8664](https://github.com/measuredco/puck/commit/71c8664dd7f0fe7d971ebcd4992167df2e45bcc1)), closes [#1529](https://github.com/measuredco/puck/issues/1529)
+* replace missed fast-deep-equals with fast-equals ([ffa5171](https://github.com/measuredco/puck/commit/ffa5171c1732875df9a82934a4924b0e86750161))
+
+
+
+
 ## [0.21.0](https://github.com/measuredco/puck/compare/v0.20.2...v0.21.0) (2026-01-14)
 
 

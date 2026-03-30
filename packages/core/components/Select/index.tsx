@@ -48,6 +48,7 @@ export const Select = ({
   const [open, setOpen] = useState(false);
 
   const hasOptions = options.length > 0;
+  const isDisabled = disabled || !hasOptions;
 
   return (
     <div
@@ -56,7 +57,7 @@ export const Select = ({
         hasOptions,
         actionBar: mode === "actionBar",
         standalone: mode === "standalone",
-        disabled,
+        disabled: isDisabled,
       })}
     >
       <Popover open={open} onOpenChange={setOpen}>

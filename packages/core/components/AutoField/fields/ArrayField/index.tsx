@@ -29,7 +29,7 @@ import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
 import { getDeep } from "../../../../lib/data/get-deep";
 import { SubField } from "../../subfield";
-import { setDeep } from "../../../../bundle";
+import { setDeep } from "../../../../lib/data/set-deep";
 
 const getClassName = getClassNameFactory("ArrayField", styles);
 const getClassNameItem = getClassNameFactory("ArrayFieldItem", styles);
@@ -100,15 +100,25 @@ const ArrayFieldItemInternal = ({
     (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
   );
 
+  const hasVisibleFields = useMemo(() => {
+    if (!field.arrayFields) {
+      return false;
+    }
+
+    return Object.values(field.arrayFields).some(
+      (subField) => subField.type !== "slot" && subField.visible !== false
+    );
+  }, [field.arrayFields]);
+
   return (
     <Sortable id={id} index={dragIndex} disabled={readOnly}>
       {({ isDragging, ref, handleRef }) => (
         <div
           ref={ref}
           className={getClassNameItem({
-            isExpanded,
+            isExpanded: isExpanded && hasVisibleFields,
             isDragging,
-            readOnly,
+            noFields: !hasVisibleFields,
           })}
         >
           <div
@@ -118,6 +128,8 @@ const ArrayFieldItemInternal = ({
 
               e.preventDefault();
               e.stopPropagation();
+
+              if (!hasVisibleFields) return;
 
               onToggleExpand(id, isExpanded);
             }}
@@ -139,7 +151,7 @@ const ArrayFieldItemInternal = ({
             </div>
           </div>
           <div className={getClassNameItem("body")}>
-            {isExpanded && (
+            {isExpanded && hasVisibleFields && (
               <fieldset className={getClassNameItem("fieldset")}>
                 {Object.keys(field.arrayFields!).map((subName) => {
                   const subField = field.arrayFields![subName];

@@ -328,26 +328,9 @@ const DragDropContextClient = ({
             if (event.canceled || target?.type === "void") {
               zoneStore.setState({ previewIndex: {} });
 
-              // Finalise the drag
-              if (thisPreview) {
-                zoneStore.setState({ previewIndex: {} });
-
-                if (thisPreview.type === "insert") {
-                  insertComponent(
-                    thisPreview.componentType,
-                    thisPreview.zone,
-                    thisPreview.index,
-                    appStore
-                  );
-                } else if (initialSelector.current) {
-                  moveComponent(
-                    thisPreview.props.id,
-                    initialSelector.current,
-                    thisPreview,
-                    appStore
-                  );
-                }
-              }
+              dragListeners.dragend?.forEach((fn) => {
+                fn(event, manager);
+              });
 
               dispatch({
                 type: "setUi",
@@ -355,10 +338,6 @@ const DragDropContextClient = ({
                   itemSelector: null,
                   isDragging: false,
                 },
-              });
-
-              dragListeners.dragend?.forEach((fn) => {
-                fn(event, manager);
               });
 
               return;
@@ -376,17 +355,12 @@ const DragDropContextClient = ({
                   appStore
                 );
               } else if (initialSelector.current) {
-                const shouldRecordHistory =
-                  initialSelector.current.zone !== thisPreview.zone ||
-                  initialSelector.current.index !== thisPreview.index;
-                dispatch({
-                  type: "move",
-                  sourceIndex: initialSelector.current.index,
-                  sourceZone: initialSelector.current.zone,
-                  destinationIndex: thisPreview.index,
-                  destinationZone: thisPreview.zone,
-                  recordHistory: shouldRecordHistory,
-                });
+                moveComponent(
+                  thisPreview.props.id,
+                  initialSelector.current,
+                  thisPreview,
+                  appStore
+                );
               }
             }
 
