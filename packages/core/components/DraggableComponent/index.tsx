@@ -335,6 +335,7 @@ export const DraggableComponent = ({
     return () => {
       if (syncRafRef.current != null) {
         cancelAnimationFrame(syncRafRef.current);
+        syncRafRef.current = null;
       }
     };
   }, []);
