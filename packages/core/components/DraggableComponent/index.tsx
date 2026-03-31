@@ -546,7 +546,8 @@ export const DraggableComponent = ({
   const onDragFinished = useOnDragFinished((finished) => {
     if (finished) {
       startTransition(() => {
-        scheduleSync();
+        // Sync immediately, to avoid a flash of the overlay in the wrong place.
+        sync();
         setDragFinished(true);
       });
     } else {
