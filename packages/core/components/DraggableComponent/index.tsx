@@ -35,6 +35,7 @@ import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
 import type { NodeHandle } from "../../store/slices/nodes";
+import { assignRefs } from "../../lib/assign-refs";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -100,6 +101,7 @@ export const DraggableComponent = ({
   autoDragAxis,
   userDragAxis,
   inDroppableZone = true,
+  itemRef,
 }: {
   children: (ref: Ref<any>) => ReactNode;
   componentType: string;
@@ -114,6 +116,7 @@ export const DraggableComponent = ({
   autoDragAxis: DragAxis;
   userDragAxis?: DragAxis;
   inDroppableZone: boolean;
+  itemRef?: Ref<HTMLElement>;
 }) => {
   const zoom = useAppStore((s) =>
     s.selectedItem?.props.id === id ? s.zoomConfig.zoom : 1
@@ -244,9 +247,13 @@ export const DraggableComponent = ({
       if (ref.current !== el) {
         ref.current = el;
         setRerender((update) => update + 1);
+
+        if (itemRef) {
+          assignRefs([itemRef], el);
+        }
       }
     },
-    [sortableRef]
+    [itemRef, sortableRef]
   );
 
   const [portalEl, setPortalEl] = useState<HTMLElement>();
@@ -322,7 +329,11 @@ export const DraggableComponent = ({
 
   const sync = useCallback(() => {
     setStyle(getStyle());
-  }, [getStyle]);
+
+    if (itemRef) {
+      assignRefs([itemRef], ref.current);
+    }
+  }, [getStyle, itemRef]);
 
   const scheduleSync = useCallback(() => {
     if (syncRafRef.current != null) return;
@@ -354,7 +365,7 @@ export const DraggableComponent = ({
         observer.disconnect();
       };
     }
-  }, [scheduleSync]);
+  }, [scheduleSync, itemRef]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
   const unregisterNode = useAppStore((s) => s.nodes.unregisterNode);

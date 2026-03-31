@@ -2,7 +2,6 @@ import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Config } from "../../types";
 import { ItemSelector } from "../../lib/data/get-item";
-import { scrollIntoView } from "../../lib/scroll-into-view";
 import { ChevronDown, LayoutGrid, Layers, Type } from "lucide-react";
 import { rootAreaId } from "../../lib/root-droppable-id";
 import {
@@ -13,8 +12,6 @@ import {
   useRef,
 } from "react";
 import { ZoneStoreContext } from "../DropZone/context";
-import { getFrame } from "../../lib/get-frame";
-import { onScrollEnd } from "../../lib/on-scroll-end";
 import { useAppStore } from "../../store";
 import { useContextStore } from "../../lib/use-context-store";
 import { NodeIndex, ZoneIndex } from "../../types/Internal";
@@ -238,28 +235,12 @@ const Layer = forwardRef(function Layer(
               return;
             }
 
-            const frame = getFrame();
-            const el = frame?.querySelector(
-              `[data-puck-component="${node.itemId}"]`
-            );
-
-            if (!el) {
-              setItemSelector({
-                index: node.index,
-                zone: node.zoneCompound,
-              });
-
-              return;
-            }
-
-            scrollIntoView(el as HTMLElement);
-
-            onScrollEnd(frame, () => {
-              setItemSelector({
-                index: node.index,
-                zone: node.zoneCompound,
-              });
+            setItemSelector({
+              index: node.index,
+              zone: node.zoneCompound,
             });
+
+            zoneStore.getState().scrollToComponent(node.itemId);
           }}
           onMouseEnter={(e) => {
             e.stopPropagation();
