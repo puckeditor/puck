@@ -307,7 +307,11 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
           state,
           config,
           (content) => content,
-          (childItem) => {
+          (childItem, path) => {
+            // Skip nested items as these get processed by the parent's resolveComponentData
+            // Perf: wasteful to use walkAppState, which walks the entire tree
+            if (path.length > 1) return childItem;
+
             resolveComponentData(childItem, "load").then((resolved) => {
               const { state } = get();
 
