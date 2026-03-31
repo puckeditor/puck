@@ -173,8 +173,10 @@ exports[`Puck should generate the correct state on mount 1`] = `
   "instanceId": "_r_5_",
   "metadata": undefined,
   "nodes": {
-    "nodes": {},
     "registerNode": [Function],
+    "setOverlayVisible": [Function],
+    "syncNode": [Function],
+    "syncNodes": [Function],
     "unregisterNode": [Function],
   },
   "onAction": undefined,
