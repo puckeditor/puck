@@ -3,6 +3,7 @@
 exports[`Puck should generate the correct state on mount 1`] = `
 {
   "_experimentalFullScreenCanvas": false,
+  "_experimentalVirtualization": false,
   "componentState": {},
   "config": {
     "components": {

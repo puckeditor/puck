@@ -3,13 +3,12 @@ import {
   ReactNode,
   createContext,
   useCallback,
-  useEffect,
   useMemo,
-  useState,
 } from "react";
 import type { Draggable } from "@dnd-kit/dom";
 import { useAppStore } from "../../store";
 import { createStore, StoreApi } from "zustand";
+import { Virtualizer } from "@tanstack/react-virtual";
 
 export type PathData = Record<string, { path: string[]; label: string }>;
 
@@ -36,6 +35,11 @@ export type Preview = {
   element: Element | undefined;
 } | null;
 
+export type RootVirtualizerHandle = {
+  resolveIndex: (targetId: string) => number;
+  virtualizer: Virtualizer<any, any>;
+};
+
 export type ZoneStore = {
   zoneDepthIndex: Record<string, boolean>;
   areaDepthIndex: Record<string, boolean>;
@@ -45,6 +49,12 @@ export type ZoneStore = {
   previewIndex: Record<string, Preview>;
   draggedItem?: Draggable | null;
   hoveringComponent: string | null;
+  registerRootVirtualizer: (
+    zoneCompound: string,
+    handle: RootVirtualizerHandle
+  ) => void;
+  unregisterRootVirtualizer: (zoneCompound: string) => void;
+  scrollToComponent: (id: string) => void;
 };
 
 export const ZoneStoreContext = createContext<StoreApi<ZoneStore>>(
@@ -57,6 +67,9 @@ export const ZoneStoreContext = createContext<StoreApi<ZoneStore>>(
     previewIndex: {},
     enabledIndex: {},
     hoveringComponent: null,
+    registerRootVirtualizer: () => {},
+    unregisterRootVirtualizer: () => {},
+    scrollToComponent: () => false,
   }))
 );
 
