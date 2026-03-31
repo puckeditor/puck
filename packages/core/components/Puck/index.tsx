@@ -336,7 +336,10 @@ function PuckProvider<
   useEffect(() => {
     const { resolveAndCommitData } = appStore.getState();
 
-    resolveAndCommitData();
+    // Don't block render
+    setTimeout(() => {
+      resolveAndCommitData();
+    }, 0);
   }, []);
 
   return (
