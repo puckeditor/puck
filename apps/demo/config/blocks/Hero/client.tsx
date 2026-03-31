@@ -17,7 +17,6 @@ export const Hero: ComponentConfig<{
   };
 }> = {
   fields: {
-    ...heroRenderFields,
     quote: {
       type: "external",
       placeholder: "Select a quote",
