@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -33,6 +34,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
+import type { NodeHandle } from "../../store/slices/nodes";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -355,6 +357,7 @@ export const DraggableComponent = ({
   }, [scheduleSync]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
+  const unregisterNode = useAppStore((s) => s.nodes.unregisterNode);
 
   const hideOverlay = useCallback(() => {
     setIsVisible(false);
@@ -364,23 +367,25 @@ export const DraggableComponent = ({
     setIsVisible(true);
   }, []);
 
+  const nodeHandleRef = useRef<NodeHandle>({
+    sync: () => null,
+    hideOverlay: () => null,
+    showOverlay: () => null,
+  });
+
+  useLayoutEffect(() => {
+    nodeHandleRef.current.sync = sync;
+    nodeHandleRef.current.hideOverlay = hideOverlay;
+    nodeHandleRef.current.showOverlay = showOverlay;
+  }, [hideOverlay, showOverlay, sync]);
+
   useEffect(() => {
-    registerNode(id, {
-      methods: { sync, showOverlay, hideOverlay },
-      element: ref.current ?? null,
-    });
+    registerNode(id, nodeHandleRef.current);
 
     return () => {
-      registerNode(id, {
-        methods: {
-          sync: () => null,
-          hideOverlay: () => null,
-          showOverlay: () => null,
-        },
-        element: null,
-      });
+      unregisterNode(id);
     };
-  }, [id, zoneCompound, index, componentType, sync]);
+  }, [id, registerNode, unregisterNode]);
 
   const CustomActionBar = useMemo(
     () => overrides.actionBar || DefaultActionBar,
