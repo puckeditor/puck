@@ -106,8 +106,7 @@ function resetStores() {
   );
 }
 
-// TODO: Change this when we solve race conditions over caches, it should be 1
-const resolveAndCommitDataCalls = 2;
+const resolveAndCommitDataCalls = 1;
 
 describe("moveComponent", () => {
   beforeEach(async () => {
