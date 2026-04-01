@@ -2,6 +2,38 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.21.2](https://github.com/puckeditor/puck/compare/v0.21.1...v0.21.2) (2026-04-01)
+
+
+### Bug Fixes
+
+* add missing UiState prop to custom field onChange type ([8c1905e](https://github.com/puckeditor/puck/commit/8c1905e607c87434b8adea688ea86007f822f64a))
+* don't de-select on second click unless using _experimentalFullScreenCanvas ([20ba367](https://github.com/puckeditor/puck/commit/20ba367fe7968a759446ea0d120ae62c525ca169))
+* don't duplicate empty array items on click in custom fields ([72cdad9](https://github.com/puckeditor/puck/commit/72cdad9ddbadd9be604c8863394f251ff8e0ae73))
+* don't override ui.viewport.current on editor render ([4cf3027](https://github.com/puckeditor/puck/commit/4cf302730d39afe8b3d68621f3f5aad8ac7271b0))
+* don't trigger load resolvers twice ([328d4b8](https://github.com/puckeditor/puck/commit/328d4b8e4a1d81551172845e15c94eba941571bb))
+* don't trigger undo when entering polish `ż` letter ([6788882](https://github.com/puckeditor/puck/commit/6788882e900b617375006c6fc73f53dae6211e1c)), closes [#1277](https://github.com/puckeditor/puck/issues/1277)
+* keep no-external.css free of external font import ([edc8192](https://github.com/puckeditor/puck/commit/edc819204441dbcdea96295305d0f579bb200bfc))
+* prevent unintended history entries on move and deselect ([39a4e15](https://github.com/puckeditor/puck/commit/39a4e157bb4898e54f1ca3dee11e13ff0160c7ce))
+* provide latest value to AutoField onChange prop ([a5295ab](https://github.com/puckeditor/puck/commit/a5295ab0688f221a367db6c8399a36f10c8d9aab))
+* render richtext output correctly in server components ([433c5e1](https://github.com/puckeditor/puck/commit/433c5e1f3dc158f1fec45bddfc03abe3c3c6d2c4))
+* respect readOnly in root fields ([1463703](https://github.com/puckeditor/puck/commit/1463703137ce6978d547664c880922a88a392c6b))
+* run resolveData when component moves between parents  ([d839a39](https://github.com/puckeditor/puck/commit/d839a39aa9a8d178aca952279e1b9289c3bc4866))
+* stop iframe from hanging if stylesheets change during load ([6429156](https://github.com/puckeditor/puck/commit/64291567af1deb576806890f7e183fafb3b911ca))
+* update overlay position when bounding box changes ([a429a2e](https://github.com/puckeditor/puck/commit/a429a2e8c543ebc60f45879bbec35eb3d7281d18))
+
+
+### Performance Improvements
+
+* add experimental virtualization via _experimentalVirtualization prop ([ec7bb66](https://github.com/puckeditor/puck/commit/ec7bb66bec52b6627d78cd7eb4648000aa6f5c1f))
+* don't block render when resolving on load ([a830187](https://github.com/puckeditor/puck/commit/a830187c2e78b1671c0c22a7abd5c1af97fbe3ce))
+* improve render performance of outline with deep trees ([20f62dd](https://github.com/puckeditor/puck/commit/20f62dd3ec38f5c83f89d0e96e0fecc41fae79b9))
+* improve rendering performance of components ([3a2fc72](https://github.com/puckeditor/puck/commit/3a2fc72c9a092f05c7007837703eec7025038fc8))
+* virtualize outline for improved sibling rendering ([b50325f](https://github.com/puckeditor/puck/commit/b50325f9b0b6348ac149bfcdcc74b222ac4a940e))
+
+
+
+
 ## [0.21.1](https://github.com/measuredco/puck/compare/v0.21.0...v0.21.1) (2026-01-23)
 
 
