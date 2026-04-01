@@ -394,6 +394,13 @@ export const DraggableComponent = ({
 
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
+      // Don't change selection during a drag.
+      // This avoids mouseup clicks selecting the dragged-over component.
+      const userIsDragging = !!zoneStore.getState().draggedItem;
+      if (userIsDragging) {
+        return;
+      }
+
       const el = e.target as Element;
 
       if (!el.closest("[data-puck-overlay-portal]")) {
