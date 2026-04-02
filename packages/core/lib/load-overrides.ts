@@ -1,4 +1,42 @@
+import type { FC } from "react";
 import { Overrides, Plugin } from "../types";
+
+type CacheEntry = {
+  comp: FC<any>;
+  childNode: ((props: any) => any) | undefined;
+};
+
+const wrapperCache = new WeakMap<object, Map<string, CacheEntry>>();
+
+function getOrCreateWrapper(
+  cacheKey: object,
+  name: string,
+  overrideFn: (props: any) => any,
+  childNode: ((props: any) => any) | undefined
+): FC<any> {
+  let typeMap = wrapperCache.get(cacheKey);
+  if (!typeMap) {
+    typeMap = new Map();
+    wrapperCache.set(cacheKey, typeMap);
+  }
+
+  const entry = typeMap.get(name);
+
+  if (entry && entry.childNode === childNode) {
+    return entry.comp;
+  }
+
+  const comp: FC<any> = (props: any) =>
+    overrideFn({
+      ...props,
+      children: childNode ? childNode(props) : props.children,
+    });
+
+  comp.displayName = `PluginOverride(${name})`;
+  typeMap.set(name, { comp, childNode });
+
+  return comp;
+}
 
 export const loadOverrides = ({
   overrides,
@@ -23,28 +61,24 @@ export const loadOverrides = ({
           collected.fieldTypes = collected.fieldTypes || {};
 
           const childNode = collected.fieldTypes[fieldType];
-
-          const Comp = (props: any) =>
-            fieldTypes[fieldType]!({
-              ...props,
-              children: childNode ? childNode(props) : props.children,
-            });
-
-          collected.fieldTypes[fieldType] = Comp;
+          collected.fieldTypes[fieldType] = getOrCreateWrapper(
+            fieldTypes,
+            fieldType,
+            fieldTypes[fieldType]!,
+            childNode
+          );
         });
 
         return;
       }
 
       const childNode = collected[overridesType];
-
-      const Comp = (props: any) =>
-        plugin.overrides![overridesType]!({
-          ...props,
-          children: childNode ? childNode(props) : props.children,
-        });
-
-      collected[overridesType] = Comp;
+      collected[overridesType] = getOrCreateWrapper(
+        plugin.overrides,
+        overridesType,
+        plugin.overrides[overridesType]! as (props: any) => any,
+        childNode
+      );
     });
   });
 
