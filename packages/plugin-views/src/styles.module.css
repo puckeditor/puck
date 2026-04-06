@@ -1,0 +1,99 @@
+.Views-body {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  max-width: 800px;
+  gap: 16px;
+  width: 100%;
+}
+
+.Views-form {
+  min-width: 256px;
+}
+
+.Views-fields {
+  margin-top: 16px;
+}
+
+.Views-preview {
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 8px;
+  max-height: 612px;
+  position: relative;
+  overflow: hidden;
+}
+
+.Views-loader {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  padding: 16px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.Views-noData {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+  padding: 16px;
+}
+
+.ConnectedField-header {
+  align-items: center;
+  color: var(--puck-color-grey-04);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-bottom: 12px;
+  font-size: var(--puck-font-size-xxs);
+  font-weight: 600;
+}
+
+.ConnectedField-connect {
+  margin-left: auto;
+}
+
+.ConnectedField-connectButton {
+  border-radius: 4px;
+  color: var(--puck-color-grey-05);
+  display: flex;
+  font-size: var(--puck-font-size-xxxs);
+  gap: 2px;
+  padding: 2px 4px;
+}
+
+.ConnectedField-connectButton:hover {
+  background-color: var(--puck-color-azure-10);
+  color: var(--puck-color-azure-04);
+  cursor: pointer;
+}
+
+.ConnectedField-option {
+  display: block;
+}
+
+.ConnectedField-input {
+  background: var(--puck-color-white);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--puck-color-grey-09);
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 16px;
+  padding: 12px 15px;
+  transition: border-color 50ms ease-in;
+  width: 100%;
+  max-width: 100%;
+}
+
+.ConnectedField-input:read-only {
+  background: var(--puck-color-grey-11);
+}
