@@ -2,10 +2,14 @@
 
 import { AutoField, Button, FieldLabel, Puck, Render } from "@/core";
 import headingAnalyzer from "@/plugin-heading-analyzer/src/HeadingAnalyzer";
+import { createViewsPlugin } from "@/plugin-views";
 import config from "../../config";
+import { viewsPluginOptions } from "../../config/views";
 import { useDemoData } from "../../lib/use-demo-data";
 import { useEffect, useState } from "react";
 import { Type } from "lucide-react";
+
+const viewsPlugin = createViewsPlugin(viewsPluginOptions);
 
 export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
   const metadata = {
@@ -37,7 +41,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           onPublish={async (data) => {
             localStorage.setItem(key, JSON.stringify(data));
           }}
-          plugins={[headingAnalyzer]}
+          plugins={[headingAnalyzer, viewsPlugin]}
           headerPath={path}
           iframe={{
             enabled: params.get("disableIframe") === "true" ? false : true,

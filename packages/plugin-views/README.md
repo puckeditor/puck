@@ -1,13 +1,8 @@
 # @puckeditor/plugin-views
 
-`@puckeditor/plugin-views` adds data-source driven field connections to Puck components.
+`@puckeditor/plugin-views` adds page-level data views to Puck.
 
-## Experimental
-
-This package is **experimental**.
-
-- APIs may change without notice.
-- Use in production only if you can tolerate breaking changes.
+A view is a named subset of API data. Developers can ship built-in views such as `topProducts`, editors can create their own views in the left sidebar, and fields can consume view data through template strings or direct field bindings.
 
 ## Install
 
@@ -15,114 +10,120 @@ This package is **experimental**.
 pnpm add @puckeditor/plugin-views
 ```
 
-Include styles in your editor route:
+Include the plugin styles in the editor route:
 
 ```ts
 import "@puckeditor/plugin-views/styles.css";
 ```
 
-## Basic usage
+## Define view sources
 
-Define your view sources. You can use the Puck fields API.
+View sources are form-driven. Their `fields` shape becomes the query-builder UI and `fetch` returns the data for a single view.
 
 ```ts
 import type { ViewSources } from "@puckeditor/plugin-views";
 
 export const viewSources: ViewSources = {
-  people: {
+  products: {
     fields: {
-      eyeColor: {
+      category: {
         type: "select",
         options: [
-          { label: "Blue", value: "blue" },
-          { label: "Brown", value: "brown" },
+          { label: "All", value: "all" },
+          { label: "Apparel", value: "apparel" },
         ],
       },
+      limit: {
+        type: "number",
+        min: 1,
+        max: 6,
+      },
     },
-    fetch: async (params) => {
-      // Fetch from DB/service directly
-      return [{ name: "Luke", eye_color: "blue" }];
+    fetch: async (params, { metadata, root, viewId }) => {
+      return [];
     },
   },
 };
 ```
 
-Enable the plugin in the editor
+## Add built-in views
 
 ```ts
-import { createViewsPlugin } from "@puckeditor/plugin-views";
+import type { BuiltInView } from "@puckeditor/plugin-views";
 
-const viewsPlugin = createViewsPlugin({
-  sources: viewSources,
-});
-```
-
-Wrap component configs with `withView`
-
-```ts
-import { withView } from "@puckeditor/plugin-views/configure";
-import type { ComponentConfig } from "@puckeditor/core";
-
-export const hero = withView<ComponentConfig<HeroProps>>(
+export const builtInViews: BuiltInView[] = [
   {
-    fields: {
-      heading: { type: "text" },
-      description: { type: "textarea" },
-    },
-    render: Hero,
-  },
-  viewSources
-);
-```
-
-Under the hood, ` withView`` adds a  `type: "view"` field and configures resolveData.
-
-## Connecting placeholder data
-
-Placeholder data can be used for templating pages. To use placeholder data, add the `reference` field to your view source. This will be populated when Puck is provided with `references` metadata.
-
-```ts
-import type { ViewSources } from "@puckeditor/plugin-views";
-
-export const viewSources: ViewSources = {
-  people: {
-    fields: {
-      id: { type: "reference" },
-    },
-    fetch: async (params) => {
-      if (typeof params.id === "object" && params.id.reference) {
-        return { heading: "placeholder" };
-      }
-
-      if (params.id) {
-        // ... lookup content using params.id, and return
-      }
+    id: "topProducts",
+    label: "Top products",
+    source: "products",
+    params: {
+      category: "all",
+      limit: 3,
     },
   },
-};
+];
 ```
 
-Configure the available references via your plugin
+## Editor plugin
 
 ```ts
 import { createViewsPlugin } from "@puckeditor/plugin-views";
 
-const viewsPlugin = createViewsPlugin({
+export const viewsPlugin = createViewsPlugin({
   sources: viewSources,
-  references: [{ label: "URL ID", value: "url_id" }],
+  builtInViews,
 });
 ```
 
-Resolve the page by providing in `references` metadata into `resolveAllData`.
+Use it in Puck:
 
 ```tsx
+<Puck config={config} data={data} plugins={[viewsPlugin]} />
+```
+
+## Runtime integration
+
+Wrap the full config with `withViews`. This composes with existing `resolveData` and applies view bindings and template strings during editor resolution and `resolveAllData`.
+
+```ts
+import { withViews } from "@puckeditor/plugin-views/configure";
+
+const configWithViews = withViews(config, {
+  sources: viewSources,
+  builtInViews,
+});
+```
+
+Server-side rendering stays the normal Puck flow:
+
+```ts
 import { resolveAllData } from "@puckeditor/core";
 
-export const Page = () => {
-  const resolved = await resolveAllData(data, config, {
-    references: { url_id: "123" },
-  });
-
-  return <Render data={resolved} config={config} />;
-};
+const resolved = await resolveAllData(data, configWithViews, metadata);
 ```
+
+## Templates
+
+V1 supports path-only template strings:
+
+```ts
+"Featured: {{ topProducts[0].name }}"
+```
+
+- Multiple placeholders are supported in one string.
+- Whitespace inside `{{ ... }}` is ignored.
+- Missing paths resolve to an empty string.
+
+## Stored data
+
+- Custom views are stored on `root.props.__puck_views.custom`
+- Field templates and direct bindings are stored on `props.__puck_view_state`
+
+You can override those keys with `storageKey` and `nodeStateKey`.
+
+## Notes
+
+- Built-in views are read-only in the sidebar, but editors can duplicate them into custom views.
+- Direct field bindings are supported for `text`, `textarea`, `number`, `select`, `radio`, and `array`.
+- Template authoring is supported for `text` and `textarea`.
+- The older per-component `withView` API has been removed.

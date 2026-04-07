@@ -1,2 +1,12 @@
 export { createViewsPlugin } from "./src/index";
-export type { ViewSource, ViewSources } from "./src/types";
+export type {
+  BuiltInView,
+  CustomView,
+  NodeViewBinding,
+  NodeViewState,
+  ViewFetchContext,
+  ViewSource,
+  ViewSources,
+  ViewsPluginOptions,
+  ViewsStorage,
+} from "./src/types";

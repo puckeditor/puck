@@ -169,6 +169,61 @@ describe("resolve-data", () => {
     ).toBe(true);
   });
 
+  it("should receive the resolved root in params", async () => {
+    const childResolveData = jest.fn(async ({ props }, { root }) => ({
+      props: {
+        ...props,
+        prop: root?.props.title ?? "Missing root",
+      },
+    }));
+    const rootResolveData = jest.fn(async ({ props }, { root }) => ({
+      props: {
+        ...props,
+        title: `${root?.props.title ?? "Original"} Resolved`,
+      },
+    }));
+
+    const configWithRoot: Config = {
+      root: {
+        fields: {
+          title: { type: "text" },
+        },
+        resolveData: rootResolveData,
+      },
+      components: {
+        ComponentWithResolveProps: {
+          fields: { slot: { type: "slot" } },
+          defaultProps: { prop: "example" },
+          resolveData: childResolveData,
+          render: () => <div />,
+        },
+      },
+    };
+
+    const resolved = await resolveAllData(
+      {
+        root: { props: { title: "Root" } },
+        content: [
+          {
+            type: "ComponentWithResolveProps",
+            props: { id: "child-1", prop: "Original", slot: [] },
+          },
+        ],
+      },
+      configWithRoot
+    );
+
+    expect(rootResolveData.mock.calls[0][1].root).toMatchObject({
+      type: "root",
+      props: { id: "root", title: "Root" },
+    });
+    expect(childResolveData.mock.calls[0][1].root).toMatchObject({
+      type: "root",
+      props: { id: "root", title: "Root Resolved" },
+    });
+    expect(resolved.content[0].props.prop).toBe("Root Resolved");
+  });
+
   it("should receive the parent component in params", async () => {
     const item1_2_1 = {
       type: "ComponentWithResolveProps",

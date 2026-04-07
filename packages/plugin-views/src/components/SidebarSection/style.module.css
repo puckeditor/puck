@@ -1,0 +1,47 @@
+.SidebarSection {
+  background: var(--puck-color-white);
+  color: var(--puck-color-black);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.SidebarSection-title {
+  background: var(--puck-color-white);
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-top: 1px solid var(--puck-color-grey-09);
+  padding: 16px;
+}
+
+.SidebarSection--noBorderTop > .SidebarSection-title {
+  border-top: 0;
+}
+
+.SidebarSection-heading {
+  color: var(--puck-color-black);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.SidebarSection-content {
+  background: var(--puck-color-white);
+  padding-bottom: 4px;
+}
+
+.SidebarSection-loadingOverlay {
+  align-items: center;
+  background: color-mix(in srgb, var(--puck-color-white) 88%, transparent);
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
+  inset: 0;
+  justify-content: center;
+  pointer-events: all;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}

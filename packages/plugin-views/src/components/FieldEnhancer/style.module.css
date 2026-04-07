@@ -1,0 +1,11 @@
+.FieldEnhancer {
+  display: grid;
+  gap: 8px;
+}
+
+.FieldEnhancer-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

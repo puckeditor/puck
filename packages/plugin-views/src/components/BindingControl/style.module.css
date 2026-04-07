@@ -1,0 +1,88 @@
+.BindingControl {
+  background: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 999px;
+  color: var(--puck-color-grey-04);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.BindingControl:hover:not(:disabled) {
+  background: var(--puck-color-azure-12);
+  border-color: var(--puck-color-grey-05);
+}
+
+.BindingControl:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.BindingControl-modal {
+  display: grid;
+  gap: 12px;
+  min-width: min(560px, 90vw);
+  padding: 20px 24px 24px;
+}
+
+.BindingControl-modalHeader {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.BindingControl-modalTitle {
+  color: var(--puck-color-black);
+  font-size: 16px;
+  margin: 0;
+}
+
+.BindingControl-stateBox {
+  align-items: center;
+  color: var(--puck-color-grey-04);
+  display: flex;
+  justify-content: center;
+  min-height: 120px;
+  text-align: center;
+}
+
+.BindingControl-optionList {
+  display: grid;
+  gap: 6px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.BindingControl-optionButton {
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.BindingControl-optionButton:hover {
+  background: var(--puck-color-azure-12);
+}
+
+.BindingControl-optionTitle {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.BindingControl-optionPreview {
+  color: var(--puck-color-grey-04);
+  font-size: 11px;
+  word-break: break-word;
+}
+
+.BindingControl-modalFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
