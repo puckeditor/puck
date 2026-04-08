@@ -7,7 +7,10 @@ export const loadOverrides = ({
   overrides?: Partial<Overrides>;
   plugins?: Plugin[];
 }) => {
-  const collected: Partial<Overrides> = { ...overrides };
+  const collected: Partial<Overrides> = {
+    ...overrides,
+    fieldTypes: overrides?.fieldTypes ? { ...overrides.fieldTypes } : undefined,
+  };
 
   plugins?.forEach((plugin) => {
     if (!plugin.overrides) return;

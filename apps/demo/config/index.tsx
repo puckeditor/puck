@@ -1,3 +1,4 @@
+import { withViews } from "@/plugin-views/configure";
 import { Button } from "./blocks/Button";
 import { Card } from "./blocks/Card";
 import { Grid } from "./blocks/Grid";
@@ -14,9 +15,10 @@ import { RichText } from "./blocks/RichText";
 import Root from "./root";
 import { UserConfig } from "./types";
 import { initialData } from "./initial-data";
+import { viewsPluginOptions } from "./views";
 
 // We avoid the name config as next gets confused
-export const conf: UserConfig = {
+export const baseConfig: UserConfig = {
   root: Root,
   categories: {
     layout: {
@@ -50,8 +52,10 @@ export const conf: UserConfig = {
   },
 };
 
+export const conf: UserConfig = withViews(baseConfig, viewsPluginOptions);
+
 export const componentKey = Buffer.from(
-  `${Object.keys(conf.components).join("-")}-${JSON.stringify({
+  `${Object.keys(baseConfig.components).join("-")}-${JSON.stringify({
     initialData,
   })}`
 ).toString("base64");

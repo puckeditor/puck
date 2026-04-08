@@ -1,0 +1,183 @@
+.ViewsPluginPanel {
+  color: var(--puck-color-black);
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.ViewsPluginPanel-sectionHeader {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.ViewsPluginPanel-sectionTitle {
+  color: var(--puck-color-grey-04);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ViewsPluginPanel-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ViewsPluginPanel-listItem {
+  align-items: center;
+  background: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 12px;
+  color: var(--puck-color-black);
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.ViewsPluginPanel-listItemMeta {
+  display: grid;
+  gap: 2px;
+}
+
+.ViewsPluginPanel-listItemTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ViewsPluginPanel-listItemSubtitle {
+  color: var(--puck-color-grey-04);
+  font-size: 12px;
+}
+
+.ViewsPluginPanel-usagePill {
+  background: var(--puck-color-grey-11);
+  border-radius: 999px;
+  color: var(--puck-color-grey-04);
+  font-size: 11px;
+  margin-left: auto;
+  padding: 2px 8px;
+}
+
+.ViewsPluginPanel-modal {
+  display: grid;
+  gap: 12px;
+  min-width: min(560px, 90vw);
+  padding: 20px 24px 24px;
+}
+
+.ViewsPluginPanel-modalHeader {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.ViewsPluginPanel-modalTitle {
+  color: var(--puck-color-black);
+  font-size: 16px;
+  margin: 0;
+}
+
+.ViewsPluginPanel-modalBody {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+  min-height: 120px;
+  overflow-y: auto;
+}
+
+.ViewsPluginPanel-modalForm {
+  min-width: 0;
+}
+
+.ViewsPluginPanel-detailCard {
+  background: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 16px;
+  color: var(--puck-color-black);
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+}
+
+.ViewsPluginPanel-helperText {
+  color: var(--puck-color-grey-04);
+  font-size: 12px;
+}
+
+.ViewsPluginPanel-modalPreview {
+  min-width: 0;
+}
+
+.ViewsPluginPanel-previewCard {
+  display: grid;
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.ViewsPluginPanel-previewTableWrap {
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 8px;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.ViewsPluginPanel-previewTable {
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 8px;
+  border-collapse: collapse;
+  overflow: hidden;
+  width: 100%;
+}
+
+.ViewsPluginPanel-previewTable th,
+.ViewsPluginPanel-previewTable td {
+  border: 1px solid var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
+  font-size: 12px;
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ViewsPluginPanel-previewTable th {
+  background: var(--puck-color-grey-11);
+  color: var(--puck-color-black);
+}
+
+.ViewsPluginPanel-previewJson {
+  background: var(--puck-color-grey-11);
+  border-radius: 12px;
+  color: var(--puck-color-grey-04);
+  font-size: 12px;
+  margin: 0;
+  overflow-x: auto;
+  padding: 12px;
+}
+
+.ViewsPluginPanel-stateBox {
+  align-items: center;
+  color: var(--puck-color-grey-04);
+  display: flex;
+  justify-content: center;
+  min-height: 120px;
+  text-align: center;
+}
+
+.ViewsPluginPanel-modalFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .ViewsPluginPanel-modalBody {
+    grid-template-columns: 1fr;
+  }
+}

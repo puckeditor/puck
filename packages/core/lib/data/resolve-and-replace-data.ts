@@ -2,6 +2,7 @@ import { useAppStoreApi } from "../../store";
 import { ComponentData, ResolveDataTrigger } from "../../types";
 import { getSelectorForId } from "../get-selector-for-id";
 import { toComponent } from "./to-component";
+import { toRoot } from "./to-root";
 
 export async function resolveAndReplaceData(
   currentData: ComponentData,
@@ -13,6 +14,15 @@ export async function resolveAndReplaceData(
     trigger
   );
   if (!resolvedResult.didChange) return;
+
+  if (resolvedResult.node.props.id === "root") {
+    getState().dispatch({
+      type: "replaceRoot",
+      root: toRoot(resolvedResult.node),
+    });
+
+    return;
+  }
 
   const itemSelector = getSelectorForId(
     getState().state,
