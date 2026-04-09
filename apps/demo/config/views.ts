@@ -8,6 +8,18 @@ const products = [
     rating: 4.9,
   },
   {
+    name: "Puck Shirt",
+    category: "apparel",
+    price: 40,
+    rating: 4.0,
+  },
+  {
+    name: "Puck Hat",
+    category: "apparel",
+    price: 32,
+    rating: 4.9,
+  },
+  {
     name: "Puck Mug",
     category: "home",
     price: 18,
@@ -63,7 +75,6 @@ export const viewSources: ViewSources = {
           : products.filter((product) => product.category === category);
 
       return filtered
-        .slice()
         .sort((left, right) => right[sortBy] - left[sortBy])
         .slice(0, limit);
     },
