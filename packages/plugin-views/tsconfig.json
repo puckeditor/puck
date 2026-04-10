@@ -3,11 +3,6 @@
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "paths": {
-      "@/utils": ["../utils"],
-      "@/utils/*": ["../utils/*"],
-      "@/packages": ["../../packages"],
-      "@/packages/*": ["../../packages/*"]
-    }
+    "types": ["node", "jest", "@testing-library/jest-dom"]
   }
 }
