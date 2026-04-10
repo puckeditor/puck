@@ -6,14 +6,14 @@ import { FieldEnhancer } from "./components/FieldEnhancer";
 import { TemplateField } from "./components/TemplateField";
 import { ViewsPluginPanel } from "./components/ViewsPluginPanel";
 import {
+  RENDER_DATA_BINDING_KEY,
   DEFAULT_NODE_STATE_KEY,
   DEFAULT_STORAGE_KEY,
-  INTERNAL_METADATA_KEY,
 } from "./lib/views";
 import type { ViewsPluginOptions } from "./types";
 
-const shouldBypassFieldType = (field: any) =>
-  Boolean(field?.metadata?.[INTERNAL_METADATA_KEY]);
+const shouldShowDataBindings = (field: any) =>
+  Boolean(field?.metadata?.[RENDER_DATA_BINDING_KEY]);
 
 export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
   const normalizedOptions: ViewsPluginOptions = {
@@ -31,9 +31,7 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
     overrides: {
       fieldTypes: {
         text: ({ children, field, name, readOnly, value }) =>
-          shouldBypassFieldType(field) ? (
-            <>{children}</>
-          ) : (
+          shouldShowDataBindings(field) ? (
             <TemplateField
               field={field as Field}
               name={name}
@@ -41,11 +39,11 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
               readOnly={readOnly}
               value={value}
             />
+          ) : (
+            <>{children}</>
           ),
         textarea: ({ children, field, name, readOnly, value }) =>
-          shouldBypassFieldType(field) ? (
-            <>{children}</>
-          ) : (
+          shouldShowDataBindings(field) ? (
             <TemplateField
               field={field as Field}
               name={name}
@@ -53,11 +51,11 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
               readOnly={readOnly}
               value={value}
             />
+          ) : (
+            <>{children}</>
           ),
         number: ({ children, field, name, readOnly }) =>
-          shouldBypassFieldType(field) ? (
-            <>{children}</>
-          ) : (
+          shouldShowDataBindings(field) ? (
             <FieldEnhancer
               field={field as Field}
               name={name}
@@ -66,11 +64,11 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
             >
               {children}
             </FieldEnhancer>
+          ) : (
+            <>{children}</>
           ),
         select: ({ children, field, name, readOnly }) =>
-          shouldBypassFieldType(field) ? (
-            <>{children}</>
-          ) : (
+          shouldShowDataBindings(field) ? (
             <FieldEnhancer
               field={field as Field}
               name={name}
@@ -79,11 +77,11 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
             >
               {children}
             </FieldEnhancer>
+          ) : (
+            <>{children}</>
           ),
         radio: ({ children, field, name, readOnly }) =>
-          shouldBypassFieldType(field) ? (
-            <>{children}</>
-          ) : (
+          shouldShowDataBindings(field) ? (
             <FieldEnhancer
               field={field as Field}
               name={name}
@@ -92,11 +90,11 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
             >
               {children}
             </FieldEnhancer>
+          ) : (
+            <>{children}</>
           ),
         array: ({ children, field, name, readOnly }) =>
-          shouldBypassFieldType(field) ? (
-            <>{children}</>
-          ) : (
+          shouldShowDataBindings(field) ? (
             <FieldEnhancer
               field={field as Field}
               name={name}
@@ -105,6 +103,8 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
             >
               {children}
             </FieldEnhancer>
+          ) : (
+            <>{children}</>
           ),
       },
     },

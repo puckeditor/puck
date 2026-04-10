@@ -8,7 +8,7 @@ import { BindingControl } from "../BindingControl";
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
 import { useShowBindingControls } from "../../hooks/use-show-binding-controls";
 import {
-  INTERNAL_METADATA_KEY,
+  RENDER_DATA_BINDING_KEY,
   getNodeViewState,
   getResolvedViews,
   getTemplateFragment,
@@ -87,8 +87,9 @@ export function TemplateField({
       ...field,
       label: field.label ?? name,
       metadata: {
-        ...(field.metadata ?? {}),
-        [INTERNAL_METADATA_KEY]: true,
+        ...field.metadata,
+        // Set to false to avoid infinite recursion since we use AutoField which invokes the override
+        [RENDER_DATA_BINDING_KEY]: false,
       },
     }),
     [field, name]

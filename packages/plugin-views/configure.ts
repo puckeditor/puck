@@ -4,7 +4,10 @@ import type {
   RootConfig,
   RootData,
 } from "@puckeditor/core";
-import { toRootComponent } from "./src/lib/views";
+
+import { RENDER_DATA_BINDING_KEY, toRootComponent } from "./src/lib/views";
+import mapObjectValues from "./src/lib/map-object-values";
+import transformFields from "./src/lib/transform-fields";
 import {
   applyNodeViews,
   DEFAULT_NODE_STATE_KEY,
@@ -12,15 +15,41 @@ import {
 } from "./src/lib/views";
 import type { ViewsPluginOptions } from "./src/types";
 
-const wrapResolveData = <T extends ComponentConfig | RootConfig>(
+const wrapComponentConfig = <T extends ComponentConfig | RootConfig>(
   configItem: T,
   options: ViewsPluginOptions,
   isRoot: boolean = false
 ): T => {
+  // Make all component fields render data bindings buttons
+  const newConfigItem = transformFields(configItem, (field) => ({
+    ...field,
+    metadata: {
+      ...field.metadata,
+      [RENDER_DATA_BINDING_KEY]: true,
+    },
+  })) as ComponentConfig;
+
+  const existingResolveFields = configItem.resolveFields;
+
+  // Ensure that resolved fields always have the data bindings button
+  newConfigItem.resolveFields = async (data, params) => {
+    if (!existingResolveFields) return params.fields;
+
+    const resolvedFields = await existingResolveFields(data, params);
+
+    return mapObjectValues(resolvedFields, (field) => {
+      if (!field) return field;
+
+      return {
+        ...field,
+        metadata: { ...field.metadata, [RENDER_DATA_BINDING_KEY]: true },
+      };
+    });
+  };
+
   const existingResolveData = configItem.resolveData;
 
-  const newConfigItem = { ...configItem } as ComponentConfig;
-
+  // Add view data to component data every time resolveData is called
   newConfigItem.resolveData = async (data, params) => {
     const baseData = existingResolveData
       ? await existingResolveData(data, params)
@@ -73,12 +102,22 @@ export const withViews = <UserConfig extends Config>(
   const newConfig: UserConfig = { ...config };
 
   if (config.root) {
-    newConfig.root = wrapResolveData(config.root, normalizedOptions, true);
+    const newRoot = { ...config.root };
+
+    // Root includes a title field by default
+    // Add the default title field if no fields are defined to ensure the data bindings button is rendered in the root
+    if (config.root.fields === undefined) {
+      newRoot.fields = {
+        title: { type: "text" },
+      };
+    }
+
+    newConfig.root = wrapComponentConfig(newRoot, normalizedOptions, true);
   }
 
   Object.entries(config.components).forEach(
     ([componentName, componentConfig]) => {
-      newConfig.components[componentName] = wrapResolveData(
+      newConfig.components[componentName] = wrapComponentConfig(
         componentConfig,
         normalizedOptions
       );

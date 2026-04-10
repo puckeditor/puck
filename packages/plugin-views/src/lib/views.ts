@@ -1,4 +1,11 @@
-import type { ComponentData, Config, Data, Field, Metadata, RootData } from "@puckeditor/core";
+import type {
+  ComponentData,
+  Config,
+  Data,
+  Field,
+  Metadata,
+  RootData,
+} from "@puckeditor/core";
 import { setDeep, walkTree } from "@puckeditor/core";
 import type {
   BuiltInView,
@@ -13,7 +20,7 @@ import type {
 
 export const DEFAULT_STORAGE_KEY = "__puck_views";
 export const DEFAULT_NODE_STATE_KEY = "__puck_view_state";
-export const INTERNAL_METADATA_KEY = "__puckViewsInternal";
+export const RENDER_DATA_BINDING_KEY = "__puck_add_data_binding";
 const TEMPLATE_TOKEN_REGEX = /{{\s*([^{}]+?)\s*}}/g;
 
 const inFlightQueries: Record<string, Promise<any>> = {};
@@ -479,7 +486,10 @@ export const insertTemplateExpression = ({
     };
   }
 
-  const nextValue = `${value.slice(0, fragment.start)}{{ ${expression} }}${value.slice(cursor)}`;
+  const nextValue = `${value.slice(
+    0,
+    fragment.start
+  )}{{ ${expression} }}${value.slice(cursor)}`;
   const nextCursor = fragment.start + expression.length + 6;
 
   return {
@@ -583,7 +593,10 @@ export const applyNodeViews = async ({
     const nextReadOnly = { ...(data.readOnly ?? {}) };
 
     Object.entries(nodeState.bindings).forEach(([fieldPath, binding]) => {
-      const boundValue = getValueAtPath(viewsById[binding.viewId], binding.path);
+      const boundValue = getValueAtPath(
+        viewsById[binding.viewId],
+        binding.path
+      );
 
       if (typeof boundValue !== "undefined") {
         nextProps = setDeep(nextProps, fieldPath, boundValue);

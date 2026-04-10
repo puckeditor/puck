@@ -5,7 +5,6 @@ import type { Field } from "@puckeditor/core";
 import { useEffect, useMemo, useState } from "react";
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 import {
-  INTERNAL_METADATA_KEY,
   getResolvedViews,
   getViewValueOptions,
   isCompatibleFieldBinding,
@@ -170,9 +169,6 @@ export function BindingControl({
               field={{
                 type: "text",
                 placeholder: "Filter view data",
-                metadata: {
-                  [INTERNAL_METADATA_KEY]: true,
-                },
               }}
               id="views-binding-search"
               onChange={(nextValue) => setQuery(nextValue || "")}

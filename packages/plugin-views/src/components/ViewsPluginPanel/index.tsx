@@ -12,7 +12,6 @@ import {
   createViewId,
   getResolvedViews,
   getViewsStorage,
-  INTERNAL_METADATA_KEY,
   queryResolvedView,
   toRootComponent,
   updateStorageInRoot,
@@ -25,36 +24,6 @@ import { SidebarSection } from "../SidebarSection";
 
 const usePuck = createUsePuck();
 const getClassName = getClassNameFactory("ViewsPluginPanel", styles);
-
-const markFieldsAsInternal = (fields: Fields = {}) =>
-  Object.entries(fields).reduce<Fields>((acc, [fieldName, field]) => {
-    if (!field) {
-      return acc;
-    }
-
-    const nextField = {
-      ...field,
-      metadata: {
-        ...(field.metadata ?? {}),
-        [INTERNAL_METADATA_KEY]: true,
-      },
-    } as any;
-
-    if (field.type === "array" && field.arrayFields) {
-      nextField.arrayFields = markFieldsAsInternal(field.arrayFields as Fields);
-    }
-
-    if (field.type === "object" && field.objectFields) {
-      nextField.objectFields = markFieldsAsInternal(
-        field.objectFields as Fields
-      );
-    }
-
-    return {
-      ...acc,
-      [fieldName]: nextField,
-    };
-  }, {});
 
 const normalizeViewId = (value: string) =>
   value
@@ -242,35 +211,28 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
       label: source,
       value: source,
     })),
-    metadata: { [INTERNAL_METADATA_KEY]: true },
   };
 
   const labelField: Field = {
     type: "text",
     label: "Label",
-    metadata: { [INTERNAL_METADATA_KEY]: true },
   };
 
   const idField: Field = {
     type: "text",
     label: "ID",
-    metadata: { [INTERNAL_METADATA_KEY]: true },
   };
 
   const paramsField: Field | null =
     editableView && options.sources[editableView.source]
       ? {
           type: "object",
-          objectFields: markFieldsAsInternal(
-            options.sources[editableView.source].fields
-          ),
+          objectFields: options.sources[editableView.source].fields,
         }
       : selectedView && options.sources[selectedView.source]
       ? {
           type: "object",
-          objectFields: markFieldsAsInternal(
-            options.sources[selectedView.source].fields
-          ),
+          objectFields: options.sources[selectedView.source].fields,
         }
       : null;
 
