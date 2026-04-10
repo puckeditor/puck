@@ -34,7 +34,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@puckeditor/core": "0.21.1",
+    "@puckeditor/core": "0.21.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.8",
