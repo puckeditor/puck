@@ -532,7 +532,7 @@ export const applyNodeViews = async ({
   root,
   options,
 }: {
-  data: { props: Record<string, any>; readOnly?: Record<string, boolean> };
+  data: Omit<ComponentData, "type">;
   metadata?: Metadata;
   root: ComponentData | null;
   options: ViewsPluginOptions;
