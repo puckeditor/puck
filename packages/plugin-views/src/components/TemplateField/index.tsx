@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 import { BindingControl } from "../BindingControl";
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
-import { useShowBindingControls } from "../../hooks/use-show-binding-controls";
 import {
   RENDER_DATA_BINDING_KEY,
   getNodeViewState,
@@ -65,7 +64,6 @@ export function TemplateField({
 }) {
   const { currentId, currentProps, replaceProps, root } =
     useCurrentNodeEditor();
-  const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const nodeState = getNodeViewState({
     props: currentProps,
     nodeStateKey: options.nodeStateKey,
@@ -76,7 +74,6 @@ export function TemplateField({
     (typeof value === "string" && isTemplateString(value) ? value : undefined);
   const [isFocused, setFocused] = useState(false);
   const [suggestions, setSuggestions] = useState<ViewValueOption[]>([]);
-  const showBindingControls = useShowBindingControls(container);
 
   const fieldId = useMemo(
     () => `views-template-${currentId}-${name}`.replace(/[^a-zA-Z0-9_-]/g, "-"),
@@ -204,7 +201,6 @@ export function TemplateField({
       >
         <div
           className={getClassName("field")}
-          ref={setContainer}
           onBlurCapture={(event) => {
             const nextFocused = event.relatedTarget as Node | null;
 
@@ -300,38 +296,37 @@ export function TemplateField({
               </div>
             )}
           </div>
-          {showBindingControls && (
-            <div className={getClassName("toolbar")}>
-              <BindingControl
-                binding={binding}
-                disabled={readOnly && !binding}
-                field={field}
-                onChange={async (nextBinding) => {
-                  await updateNodeState(displayValue, (currentNodeState) => {
-                    const nextNodeState: NodeViewState = {
-                      templates: {
-                        ...currentNodeState.templates,
-                      },
-                      bindings: {
-                        ...currentNodeState.bindings,
-                      },
-                    };
 
-                    delete nextNodeState.templates[name];
+          <div className={getClassName("toolbar")}>
+            <BindingControl
+              binding={binding}
+              disabled={readOnly && !binding}
+              field={field}
+              onChange={async (nextBinding) => {
+                await updateNodeState(displayValue, (currentNodeState) => {
+                  const nextNodeState: NodeViewState = {
+                    templates: {
+                      ...currentNodeState.templates,
+                    },
+                    bindings: {
+                      ...currentNodeState.bindings,
+                    },
+                  };
 
-                    if (nextBinding) {
-                      nextNodeState.bindings[name] = nextBinding;
-                    } else {
-                      delete nextNodeState.bindings[name];
-                    }
+                  delete nextNodeState.templates[name];
 
-                    return nextNodeState;
-                  });
-                }}
-                options={options}
-              />
-            </div>
-          )}
+                  if (nextBinding) {
+                    nextNodeState.bindings[name] = nextBinding;
+                  } else {
+                    delete nextNodeState.bindings[name];
+                  }
+
+                  return nextNodeState;
+                });
+              }}
+              options={options}
+            />
+          </div>
         </div>
       </FieldLabel>
     </div>
