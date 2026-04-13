@@ -420,22 +420,24 @@ export const isCompatibleFieldBinding = ({
 }) => {
   switch (field.type) {
     case "number":
-      return option.valueType === "number";
-    case "select":
-    case "radio":
-      return ["string", "number", "boolean", "null"].includes(option.valueType);
+      return option.valueType === "number" || !isNaN(Number(option.preview));
     case "array":
       return option.valueType === "array";
     case "text":
     case "textarea":
-      return [
-        "string",
-        "number",
-        "boolean",
-        "null",
-        "object",
-        "array",
-      ].includes(option.valueType);
+      return ["string", "number", "boolean", "null"].includes(option.valueType);
+    case "select":
+    case "radio":
+      if (!field.options) return false;
+
+      const typeCompatible = ["string", "number", "boolean", "null"].includes(
+        option.valueType
+      );
+
+      if (!typeCompatible) return false;
+
+      // Options need a matching field option to map to
+      return field.options.some((opt) => opt.value === option.preview);
     default:
       return false;
   }
