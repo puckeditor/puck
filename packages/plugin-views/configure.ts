@@ -83,6 +83,7 @@ const wrapComponentConfig = <T extends ComponentConfig | RootConfig>(
         nodeStateKey: options.nodeStateKey ?? DEFAULT_NODE_STATE_KEY,
         storageKey: options.storageKey ?? DEFAULT_STORAGE_KEY,
       },
+      componentConfig: newConfigItem,
     });
   };
 

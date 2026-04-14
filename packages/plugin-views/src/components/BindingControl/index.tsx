@@ -5,11 +5,9 @@ import type { Field } from "@puckeditor/core";
 import { useEffect, useMemo, useState } from "react";
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 import {
-  getResolvedViews,
+  loadResolvedViewData,
   getViewValueOptions,
   isCompatibleFieldBinding,
-  queryResolvedView,
-  toRootComponent,
 } from "../../lib/views";
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
 import type {
@@ -70,30 +68,17 @@ export function BindingControl({
     setLoading(true);
     setError(null);
 
-    const rootComponent = toRootComponent(root);
-    const views = getResolvedViews({
-      root: rootComponent,
-      builtInViews: options.builtInViews,
-      storageKey: options.storageKey,
-    });
-
-    Promise.all(
-      views.map(async (view) => [
-        view.id,
-        await queryResolvedView({
-          view,
-          sources: options.sources,
-          root: rootComponent,
-        }),
-      ])
-    )
-      .then((entries) => {
+    loadResolvedViewData({
+      root,
+      options,
+    })
+      .then((viewsById) => {
         if (!active) {
           return;
         }
 
         const allOptions = getViewValueOptions({
-          viewsById: Object.fromEntries(entries),
+          viewsById: viewsById ?? {},
         }).filter((option) =>
           isCompatibleFieldBinding({
             field,
@@ -124,7 +109,6 @@ export function BindingControl({
     field,
     isOpen,
     options.builtInViews,
-    options.nodeStateKey,
     options.sources,
     options.storageKey,
     root,

@@ -1,15 +1,16 @@
 "use client";
 
-import { AutoField, Button, FieldLabel, createUsePuck } from "@puckeditor/core";
-import type { Field, Fields } from "@puckeditor/core";
-import { Database } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { Database } from "lucide-react";
+import { AutoField, Button, FieldLabel, createUsePuck } from "@puckeditor/core";
+import type { Field } from "@puckeditor/core";
+
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
+
 import {
   clearQueryCache,
   collectNodeIds,
   collectViewUsageCounts,
-  createViewId,
   getResolvedViews,
   getViewsStorage,
   queryResolvedView,
@@ -17,20 +18,17 @@ import {
   updateStorageInRoot,
 } from "../../lib/views";
 import type { CustomView, ViewsPluginOptions } from "../../types";
-import styles from "./style.module.css";
+import { createViewId } from "../../lib/data/views";
+import { sanitizeId } from "../../lib/sanitize-id";
+
+import { SidebarSection } from "../SidebarSection";
 import { Loader } from "../Loader";
 import { Modal } from "../Modal";
-import { SidebarSection } from "../SidebarSection";
+
+import styles from "./style.module.css";
 
 const usePuck = createUsePuck();
 const getClassName = getClassNameFactory("ViewsPluginPanel", styles);
-
-const normalizeViewId = (value: string) =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 
 const Preview = ({ data }: { data: any }) => {
   if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object") {
@@ -419,7 +417,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                       onChange={(nextId) => {
                         if (!editableView) return;
 
-                        const normalizedId = normalizeViewId(nextId || "");
+                        const normalizedId = sanitizeId(nextId || "");
 
                         setDraft({
                           ...editableView,

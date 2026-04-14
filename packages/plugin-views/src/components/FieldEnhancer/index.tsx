@@ -19,12 +19,14 @@ export function FieldEnhancer({
   field,
   name,
   options,
+  isArray,
   readOnly,
 }: {
   children: ReactNode;
   field: Field;
   name: string;
   options: ViewsPluginOptions;
+  isArray?: boolean;
   readOnly?: boolean;
 }) {
   const { currentProps, replaceProps } = useCurrentNodeEditor();
@@ -32,7 +34,10 @@ export function FieldEnhancer({
     props: currentProps,
     nodeStateKey: options.nodeStateKey,
   });
-  const binding = nodeState.bindings[name];
+
+  const bindingKey = `${name}${isArray ? "[*]" : ""}`;
+
+  const binding = nodeState.bindings[bindingKey];
 
   return (
     <div className={getClassName()}>
@@ -42,7 +47,7 @@ export function FieldEnhancer({
           binding={binding}
           disabled={readOnly && !binding}
           field={field}
-          onChange={async (nextBinding) => {
+          onChange={(nextBinding) => {
             const nextNodeState: NodeViewState = {
               templates: {
                 ...nodeState.templates,
@@ -53,17 +58,18 @@ export function FieldEnhancer({
             };
 
             if (nextBinding) {
-              nextNodeState.bindings[name] = nextBinding;
+              nextNodeState.bindings[bindingKey] = nextBinding;
             } else {
-              delete nextNodeState.bindings[name];
+              delete nextNodeState.bindings[bindingKey];
             }
 
-            await replaceProps(
+            replaceProps(
               setNodeViewState({
                 props: currentProps,
                 nodeState: nextNodeState,
                 nodeStateKey: options.nodeStateKey,
-              })
+              }),
+              { [name]: Boolean(nextBinding) }
             );
           }}
           options={options}

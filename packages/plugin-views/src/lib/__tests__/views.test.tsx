@@ -1,10 +1,12 @@
-import type { Config } from "@puckeditor/core";
+import type { ComponentConfig, Config } from "@puckeditor/core";
 import { withViews } from "../../../configure";
 import {
   applyNodeViews,
   applyTemplateString,
+  clearQueryCache,
   collectViewUsageCounts,
   getResolvedViews,
+  loadResolvedViewData,
 } from "../views";
 import type { ViewsPluginOptions } from "../../types";
 
@@ -32,8 +34,17 @@ const options: ViewsPluginOptions = {
   },
 };
 
+const headingConfig: ComponentConfig = {
+  fields: {
+    title: { type: "text" },
+    price: { type: "number" },
+  },
+  render: () => null as any,
+};
+
 describe("plugin-views runtime", () => {
   beforeEach(() => {
+    clearQueryCache();
     jest.clearAllMocks();
   });
 
@@ -80,6 +91,7 @@ describe("plugin-views runtime", () => {
     const resolved = await applyNodeViews({
       data: {
         props: {
+          id: "Heading-1",
           title: "Original",
           price: 0,
           __puck_view_state: {
@@ -102,6 +114,7 @@ describe("plugin-views runtime", () => {
         },
       },
       options,
+      componentConfig: headingConfig,
     });
 
     expect(resolved.props.title).toBe("Featured: Puck Hoodie");
@@ -123,6 +136,7 @@ describe("plugin-views runtime", () => {
     };
     const data = {
       props: {
+        id: "Heading-1",
         title: "Original",
         __puck_view_state: {
           templates: {
@@ -143,8 +157,80 @@ describe("plugin-views runtime", () => {
           },
         },
         options: failingOptions,
+        componentConfig: headingConfig,
       })
     ).toEqual(data);
+  });
+
+  it("keeps props unchanged when a referenced view is missing", async () => {
+    const data = {
+      props: {
+        id: "Heading-1",
+        title: "Original",
+        __puck_view_state: {
+          templates: {
+            title: "Featured: {{ missingProducts[0].name }}",
+          },
+          bindings: {},
+        },
+      },
+    };
+
+    expect(
+      await applyNodeViews({
+        data,
+        root: {
+          type: "root",
+          props: {
+            id: "root",
+          },
+        },
+        options,
+        componentConfig: headingConfig,
+      })
+    ).toEqual(data);
+
+    expect(options.sources.products.fetch).not.toHaveBeenCalled();
+  });
+
+  it("loads resolved view data for shared editor consumers", async () => {
+    const fetch = jest.fn(
+      async (_params: Record<string, any>, context?: { viewId?: string }) =>
+        context?.viewId
+    );
+    const viewsById = await loadResolvedViewData({
+      root: {
+        type: "root",
+        props: {
+          id: "root",
+          __puck_views: {
+            custom: [
+              {
+                id: "customProducts",
+                label: "Custom products",
+                source: "products",
+                params: { category: "all" },
+              },
+            ],
+          },
+        },
+      },
+      options: {
+        ...options,
+        sources: {
+          products: {
+            fields: {},
+            fetch,
+          },
+        },
+      },
+    });
+
+    expect(viewsById).toEqual({
+      topProducts: "topProducts",
+      customProducts: "customProducts",
+    });
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it("counts template and binding usage", () => {
@@ -152,7 +238,7 @@ describe("plugin-views runtime", () => {
       components: {
         TextBlock: {
           fields: {},
-          render: () => <div />,
+          render: () => null as any,
         },
       },
     };
@@ -161,6 +247,7 @@ describe("plugin-views runtime", () => {
       data: {
         root: {
           props: {
+            id: "root",
             __puck_view_state: {
               templates: {
                 title: "{{ topProducts[0].name }}",
@@ -186,7 +273,7 @@ describe("plugin-views runtime", () => {
             },
           },
         ],
-      },
+      } as any,
       config,
     });
 
@@ -206,7 +293,7 @@ describe("plugin-views runtime", () => {
               eyebrow: "Existing resolver",
             },
           }),
-          render: () => <div />,
+          render: () => null as any,
         },
       },
     };
@@ -225,7 +312,7 @@ describe("plugin-views runtime", () => {
             bindings: {},
           },
         },
-      },
+      } as any,
       {
         changed: {},
         lastData: null,

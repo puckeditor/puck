@@ -100,6 +100,7 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
               name={name}
               options={normalizedOptions}
               readOnly={readOnly}
+              isArray
             >
               {children}
             </FieldEnhancer>

@@ -9,14 +9,12 @@ import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
 import {
   RENDER_DATA_BINDING_KEY,
   getNodeViewState,
-  getResolvedViews,
   getTemplateFragment,
   getViewValueOptions,
   insertTemplateExpression,
   isTemplateString,
-  queryResolvedView,
+  loadResolvedViewData,
   setNodeViewState,
-  toRootComponent,
 } from "../../lib/views";
 import type {
   NodeViewState,
@@ -103,31 +101,18 @@ export function TemplateField({
     }
 
     let active = true;
-    const rootComponent = toRootComponent(root);
-    const views = getResolvedViews({
-      root: rootComponent,
-      builtInViews: options.builtInViews,
-      storageKey: options.storageKey,
-    });
-
-    Promise.all(
-      views.map(async (view) => [
-        view.id,
-        await queryResolvedView({
-          view,
-          sources: options.sources,
-          root: rootComponent,
-        }),
-      ])
-    )
-      .then((entries) => {
+    loadResolvedViewData({
+      root,
+      options,
+    })
+      .then((viewsById) => {
         if (!active) {
           return;
         }
 
         setSuggestions(
           getViewValueOptions({
-            viewsById: Object.fromEntries(entries),
+            viewsById: viewsById ?? {},
           })
         );
       })
@@ -177,9 +162,10 @@ export function TemplateField({
       .slice(0, 8);
   }, [fragment, suggestions]);
 
-  const updateNodeState = async (
+  const updateNodeState = (
     nextValue: string,
-    updateState: (nodeState: NodeViewState) => NodeViewState
+    updateState: (nodeState: NodeViewState) => NodeViewState,
+    readOnly?: Record<string, boolean>
   ) => {
     let nextProps = setDeep({ ...currentProps }, name, nextValue);
 
@@ -189,7 +175,7 @@ export function TemplateField({
       nodeStateKey: options.nodeStateKey,
     });
 
-    await replaceProps(nextProps);
+    replaceProps(nextProps, readOnly);
   };
 
   return (
@@ -219,11 +205,11 @@ export function TemplateField({
             <AutoField
               field={inputField}
               id={fieldId}
-              onChange={async (nextValue) => {
+              onChange={(nextValue) => {
                 const normalizedValue =
                   typeof nextValue === "string" ? nextValue : "";
 
-                await updateNodeState(normalizedValue, (currentNodeState) => {
+                updateNodeState(normalizedValue, (currentNodeState) => {
                   const nextNodeState: NodeViewState = {
                     templates: {
                       ...currentNodeState.templates,
@@ -260,18 +246,15 @@ export function TemplateField({
                         expression: option.expression,
                       });
 
-                      await updateNodeState(
-                        inserted.value,
-                        (currentNodeState) => ({
-                          templates: {
-                            ...currentNodeState.templates,
-                            [name]: inserted.value,
-                          },
-                          bindings: {
-                            ...currentNodeState.bindings,
-                          },
-                        })
-                      );
+                      updateNodeState(inserted.value, (currentNodeState) => ({
+                        templates: {
+                          ...currentNodeState.templates,
+                          [name]: inserted.value,
+                        },
+                        bindings: {
+                          ...currentNodeState.bindings,
+                        },
+                      }));
 
                       window.setTimeout(() => {
                         const inputElement = getInputElement();
@@ -302,27 +285,31 @@ export function TemplateField({
               binding={binding}
               disabled={readOnly && !binding}
               field={field}
-              onChange={async (nextBinding) => {
-                await updateNodeState(displayValue, (currentNodeState) => {
-                  const nextNodeState: NodeViewState = {
-                    templates: {
-                      ...currentNodeState.templates,
-                    },
-                    bindings: {
-                      ...currentNodeState.bindings,
-                    },
-                  };
+              onChange={(nextBinding) => {
+                updateNodeState(
+                  displayValue,
+                  (currentNodeState) => {
+                    const nextNodeState: NodeViewState = {
+                      templates: {
+                        ...currentNodeState.templates,
+                      },
+                      bindings: {
+                        ...currentNodeState.bindings,
+                      },
+                    };
 
-                  delete nextNodeState.templates[name];
+                    delete nextNodeState.templates[name];
 
-                  if (nextBinding) {
-                    nextNodeState.bindings[name] = nextBinding;
-                  } else {
-                    delete nextNodeState.bindings[name];
-                  }
+                    if (nextBinding) {
+                      nextNodeState.bindings[name] = nextBinding;
+                    } else {
+                      delete nextNodeState.bindings[name];
+                    }
 
-                  return nextNodeState;
-                });
+                    return nextNodeState;
+                  },
+                  { [name]: Boolean(nextBinding) }
+                );
               }}
               options={options}
             />

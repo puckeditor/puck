@@ -1,12 +1,15 @@
-import type {
+import {
+  ComponentConfig,
   ComponentData,
   Config,
   Data,
   Field,
+  Fields,
   Metadata,
   RootData,
+  walkTree,
 } from "@puckeditor/core";
-import { setDeep, walkTree } from "@puckeditor/core";
+
 import type {
   BuiltInView,
   NodeViewState,
@@ -18,19 +21,397 @@ import type {
   ViewsStorage,
 } from "../types";
 
+import setDeep from "./set-deep";
+import cloneObject from "./clone-object";
+import { getFieldAtPath } from "./get-field-from-path";
+import { getTemplateExpressions } from "./strings/templates";
+
 export const DEFAULT_STORAGE_KEY = "__puck_views";
 export const DEFAULT_NODE_STATE_KEY = "__puck_view_state";
 export const RENDER_DATA_BINDING_KEY = "__puck_add_data_binding";
+
 const TEMPLATE_TOKEN_REGEX = /{{\s*([^{}]+?)\s*}}/g;
+const TEMPLATE_EXPRESSION_REGEX = /{{\s*([^{}]+?)\s*}}/;
+const inFlightQueries = new Map<string, Promise<any>>();
 
-const inFlightQueries: Record<string, Promise<any>> = {};
+/**
+ * Extracts the leading view ID from a template expression.
+ *
+ * @param expression The template expression to inspect
+ * @returns The referenced view ID, if one exists
+ */
+const getTemplateViewId = (expression: string) => {
+  const match = expression.trim().match(/^[a-zA-Z0-9_-]+/);
 
-export const clearQueryCache = () => {
-  Object.keys(inFlightQueries).forEach((key) => {
-    delete inFlightQueries[key];
+  return match?.[0] || null;
+};
+
+/**
+ * Iterates over every view ID referenced by a node's bindings and templates.
+ *
+ * @param nodeState The node view state to inspect
+ * @param callback The callback to invoke for each referenced view ID
+ * @returns Nothing
+ */
+const forEachReferencedViewId = (
+  nodeState: NodeViewState,
+  callback: (viewId: string) => void
+) => {
+  Object.values(nodeState.bindings).forEach((binding) => {
+    callback(binding.viewId);
+  });
+
+  Object.values(nodeState.templates).forEach((template) => {
+    getTemplateExpressions(template).forEach((expression) => {
+      const viewId = getTemplateViewId(expression);
+
+      if (viewId) {
+        callback(viewId);
+      }
+    });
   });
 };
 
+/**
+ * Collects the unique view IDs referenced by a node's view state.
+ *
+ * @param nodeState The node view state to inspect
+ * @returns The referenced view IDs
+ */
+const getReferencedViewIds = (nodeState: NodeViewState) => {
+  const ids = new Set<string>();
+
+  forEachReferencedViewId(nodeState, (viewId) => {
+    ids.add(viewId);
+  });
+
+  return Array.from(ids);
+};
+
+/**
+ * Determines the serializable value type used by the bindings UI.
+ *
+ * @param value The value to classify
+ * @returns The inferred value type
+ */
+const getValueType = (value: any): ValueType => {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+
+  switch (typeof value) {
+    case "string":
+      return "string";
+    case "number":
+      return "number";
+    case "boolean":
+      return "boolean";
+    case "object":
+      return "object";
+    default:
+      return "unknown";
+  }
+};
+
+/**
+ * Formats a value for display in binding and template suggestions.
+ *
+ * @param value The value to format
+ * @returns A human-readable preview string
+ */
+const formatPreview = (value: any) => {
+  if (typeof value === "string") return value;
+  if (
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    value === null
+  ) {
+    return String(value);
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+};
+
+/**
+ * Formats a view ID and path into the expression shown in the UI.
+ *
+ * @param viewId The base view ID
+ * @param path The nested path inside the view result
+ * @returns The formatted expression
+ */
+const formatViewExpression = (viewId: string, path: string) => {
+  if (!path) {
+    return viewId;
+  }
+
+  return path.startsWith("[") ? `${viewId}${path}` : `${viewId}.${path}`;
+};
+
+/**
+ * Reads a nested value from a view result using dot and array notation.
+ *
+ * @param value The value to read from
+ * @param path The nested path to resolve
+ * @returns The value at the requested path
+ */
+const getValueAtPath = (value: any, path: string) => {
+  if (!path) {
+    return value;
+  }
+
+  // Support array notation by converting it to dot notation (e.g. "items[0].name" -> "items.0.name")
+  const normalizedPath = path.replace(/\[(\d+|\*)\]/g, ".$1");
+
+  // Split the path into parts and filter out empty segments caused by trailing dots or consecutive dots
+  const pathSegments = normalizedPath.split(".").filter(Boolean);
+
+  let curr = value;
+
+  for (const segment of pathSegments) {
+    // Return the array itself when encountering a wildcard segment, allowing bindings to reference entire arrays
+    if (segment === "*") {
+      return Array.isArray(curr) ? curr : undefined;
+    }
+
+    const valueAtSegment = curr?.[segment];
+
+    if (typeof valueAtSegment === "undefined" || valueAtSegment === null) {
+      return undefined;
+    }
+
+    curr = valueAtSegment;
+  }
+
+  return curr;
+};
+
+/**
+ * Recursively adds value options for a view result and all nested values.
+ *
+ * @param options The accumulator that receives each option
+ * @param value The current value being inspected
+ * @param viewId The view ID the value belongs to
+ * @param path The nested path to the current value
+ * @returns Nothing
+ */
+const appendValueOptions = ({
+  options,
+  value,
+  viewId,
+  path = "",
+}: {
+  options: ViewValueOption[];
+  value: any;
+  viewId: string;
+  path?: string;
+}) => {
+  options.push({
+    viewId,
+    path,
+    expression: formatViewExpression(viewId, path),
+    preview: formatPreview(value),
+    valueType: getValueType(value),
+  });
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      appendValueOptions({
+        options,
+        value: item,
+        viewId,
+        path: `${path}[${index}]`,
+      });
+    });
+
+    return;
+  }
+
+  if (value && typeof value === "object") {
+    Object.entries(value).forEach(([key, item]) => {
+      appendValueOptions({
+        options,
+        value: item,
+        viewId,
+        path: path ? `${path}.${key}` : key,
+      });
+    });
+  }
+};
+
+/**
+ * Creates the cache key used to deduplicate in-flight view fetches.
+ *
+ * @param view The resolved view being fetched
+ * @returns The cache key for that view request
+ */
+const getQueryCacheKey = (view: ResolvedView) =>
+  JSON.stringify({
+    viewId: view.id,
+    source: view.source,
+    params: view.params ?? {},
+  });
+
+/**
+ * Selects the views that should be loaded, preserving the requested order.
+ *
+ * @param resolvedViews The available resolved views
+ * @param viewIds Optional IDs to narrow the selection to
+ * @returns The selected views, or null if any requested ID is missing
+ */
+const selectResolvedViews = ({
+  resolvedViews,
+  viewIds,
+}: {
+  resolvedViews: ResolvedView[];
+  viewIds?: string[];
+}) => {
+  if (!viewIds) {
+    return resolvedViews;
+  }
+
+  const selectedViews: ResolvedView[] = [];
+  const resolvedViewsById = new Map(
+    resolvedViews.map((view) => [view.id, view] as const)
+  );
+
+  for (const viewId of Array.from(new Set(viewIds))) {
+    const view = resolvedViewsById.get(viewId);
+
+    if (!view) {
+      return null;
+    }
+
+    selectedViews.push(view);
+  }
+
+  return selectedViews;
+};
+
+/**
+ * Applies direct field bindings from loaded view data onto node props.
+ *
+ * @param props The current node props
+ * @param readOnly The existing read-only map
+ * @param bindings The field bindings to apply
+ * @param viewsById The loaded view data keyed by view ID
+ * @param fields The component fields for the node being updated, used to determine nested field types
+ * @returns The updated props and read-only map
+ */
+const applyViewBindings = ({
+  props,
+  readOnly,
+  bindings,
+  viewsById,
+  componentConfig,
+}: {
+  props: Record<string, any>;
+  readOnly?: Omit<ComponentData, "type">["readOnly"];
+  bindings: NodeViewState["bindings"];
+  viewsById: Record<string, any>;
+  componentConfig: ComponentConfig;
+}) => {
+  let nextProps = cloneObject(props);
+  const nextReadOnly = { ...(readOnly ?? {}) };
+
+  Object.entries(bindings).forEach(([fieldPath, binding]) => {
+    let boundValue = getValueAtPath(viewsById[binding.viewId], binding.path);
+    const currFieldValue = getValueAtPath(props, fieldPath);
+    const fieldDef = getFieldAtPath(fieldPath, componentConfig.fields || {});
+    const defaultItemProps =
+      fieldDef?.type === "array" ? fieldDef.defaultItemProps : undefined;
+
+    if (typeof boundValue === "undefined") return;
+
+    if (fieldPath.endsWith("[*]")) {
+      const newValue = Array.isArray(boundValue)
+        ? Array.from({ length: boundValue.length }, (_, i) => ({
+            ...(currFieldValue?.[i] || defaultItemProps || {}),
+          }))
+        : [...currFieldValue];
+
+      boundValue = newValue;
+    }
+
+    nextProps = setDeep(nextProps, fieldPath, boundValue);
+
+    const fieldPathNoWildcard = fieldPath.replace(/\[\*\]/g, "");
+
+    nextReadOnly[fieldPathNoWildcard] = true;
+  });
+
+  return {
+    props: nextProps,
+    readOnly: nextReadOnly,
+  };
+};
+
+/**
+ * Applies template strings from loaded view data onto node props.
+ *
+ * @param props The current node props
+ * @param templates The template strings to resolve
+ * @param viewsById The loaded view data keyed by view ID
+ * @returns The updated props
+ */
+const applyViewTemplates = ({
+  props,
+  templates,
+  viewsById,
+}: {
+  props: Record<string, any>;
+  templates: NodeViewState["templates"];
+  viewsById: Record<string, any>;
+}) => {
+  let nextProps = cloneObject(props);
+
+  Object.entries(templates).forEach(([fieldPath, template]) => {
+    nextProps = setDeep(
+      nextProps,
+      fieldPath,
+      applyTemplateString({
+        template,
+        viewsById,
+      })
+    );
+  });
+
+  return nextProps;
+};
+
+/**
+ * Increments usage counts for every view referenced by a node.
+ *
+ * @param counts The counts accumulator
+ * @param nodeState The node view state to inspect
+ * @returns Nothing
+ */
+const addReferencedViewCounts = (
+  counts: Record<string, number>,
+  nodeState: NodeViewState
+) => {
+  forEachReferencedViewId(nodeState, (viewId) => {
+    counts[viewId] = (counts[viewId] || 0) + 1;
+  });
+};
+
+/**
+ * Clears the in-memory cache of in-flight view fetches.
+ *
+ * @returns Nothing
+ */
+export const clearQueryCache = () => {
+  inFlightQueries.clear();
+};
+
+/**
+ * Normalizes root data into the shape expected by the runtime helpers.
+ *
+ * @param root The raw root data
+ * @returns A normalized root data object
+ */
 export const normalizeRootData = (root?: RootData | null) => {
   if (!root) {
     return {
@@ -52,10 +433,18 @@ export const normalizeRootData = (root?: RootData | null) => {
   };
 };
 
+/**
+ * Converts root data into a root component shape when needed.
+ *
+ * @param root The raw root data or root component
+ * @returns A root component, or null when no root exists
+ */
 export const toRootComponent = (
   root?: RootData | ComponentData | null
 ): ComponentData | null => {
-  if (!root) return null;
+  if (!root) {
+    return null;
+  }
 
   if ("type" in root) {
     return root;
@@ -73,78 +462,12 @@ export const toRootComponent = (
   };
 };
 
-const getValueType = (value: any): ValueType => {
-  if (value === null) return "null";
-  if (Array.isArray(value)) return "array";
-
-  switch (typeof value) {
-    case "string":
-      return "string";
-    case "number":
-      return "number";
-    case "boolean":
-      return "boolean";
-    case "object":
-      return "object";
-    default:
-      return "unknown";
-  }
-};
-
-const formatExpression = (viewId: string, path: string) => {
-  if (!path) return viewId;
-
-  return path.startsWith("[") ? `${viewId}${path}` : `${viewId}.${path}`;
-};
-
-const formatPreview = (value: any) => {
-  if (typeof value === "string") return value;
-  if (
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    value === null
-  ) {
-    return String(value);
-  }
-
-  try {
-    return JSON.stringify(value);
-  } catch {
-    return String(value);
-  }
-};
-
-const slugify = (value: string) =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "view";
-
-export const createViewId = ({
-  existingIds,
-  label,
-  source,
-}: {
-  existingIds: string[];
-  label?: string;
-  source?: string;
-}) => {
-  const base = slugify(label || source || "view");
-
-  if (!existingIds.includes(base)) {
-    return base;
-  }
-
-  let counter = 2;
-
-  while (existingIds.includes(`${base}-${counter}`)) {
-    counter += 1;
-  }
-
-  return `${base}-${counter}`;
-};
-
+/**
+ * Reads the persisted custom views stored on the root node.
+ *
+ * @param options The root data and optional storage key
+ * @returns The normalized views storage
+ */
 export const getViewsStorage = ({
   root,
   storageKey = DEFAULT_STORAGE_KEY,
@@ -172,6 +495,12 @@ export const getViewsStorage = ({
   };
 };
 
+/**
+ * Reads the template and binding state stored on a node's props.
+ *
+ * @param options The props to inspect and optional node state key
+ * @returns The normalized node view state
+ */
 export const getNodeViewState = ({
   props,
   nodeStateKey = DEFAULT_NODE_STATE_KEY,
@@ -196,6 +525,12 @@ export const getNodeViewState = ({
   };
 };
 
+/**
+ * Stores node view state back onto props, removing the key when empty.
+ *
+ * @param options The props, node state, and optional state key
+ * @returns The updated props object
+ */
 export const setNodeViewState = ({
   props,
   nodeState,
@@ -220,6 +555,38 @@ export const setNodeViewState = ({
   return nextProps;
 };
 
+/**
+ * Writes custom view storage back onto the root node.
+ *
+ * @param options The root data, storage key, and next storage value
+ * @returns The updated root data
+ */
+export const updateStorageInRoot = ({
+  root,
+  storageKey = DEFAULT_STORAGE_KEY,
+  storage,
+}: {
+  root: RootData;
+  storageKey?: string;
+  storage: ViewsStorage;
+}) => {
+  const normalized = normalizeRootData(root);
+
+  return {
+    ...root,
+    props: {
+      ...normalized.props,
+      [storageKey]: storage,
+    },
+  };
+};
+
+/**
+ * Merges built-in and stored custom views into one runtime list.
+ *
+ * @param options The root data, built-in views, and optional storage key
+ * @returns The resolved views
+ */
 export const getResolvedViews = ({
   root,
   builtInViews = [],
@@ -246,96 +613,21 @@ export const getResolvedViews = ({
   ];
 };
 
-export const getResolvedView = ({
-  viewId,
-  root,
-  builtInViews = [],
-  storageKey = DEFAULT_STORAGE_KEY,
-}: {
-  viewId: string;
-  root?: RootData | ComponentData | null;
-  builtInViews?: BuiltInView[];
-  storageKey?: string;
-}) =>
-  getResolvedViews({
-    root,
-    builtInViews,
-    storageKey,
-  }).find((view) => view.id === viewId);
-
+/**
+ * Checks whether a string contains at least one template expression.
+ *
+ * @param value The value to inspect
+ * @returns Whether the value is a template string
+ */
 export const isTemplateString = (value: unknown) =>
-  typeof value === "string" && /{{\s*([^{}]+?)\s*}}/.test(value);
+  typeof value === "string" && TEMPLATE_EXPRESSION_REGEX.test(value);
 
-export const extractTemplateExpressions = (value: string) => {
-  const expressions: string[] = [];
-
-  value.replace(TEMPLATE_TOKEN_REGEX, (_, expression) => {
-    expressions.push(expression.trim());
-
-    return "";
-  });
-
-  return expressions;
-};
-
-const getViewIdFromExpression = (expression: string) => {
-  const trimmed = expression.trim();
-  const match = /^([a-zA-Z0-9_-]+)/.exec(trimmed);
-
-  return match?.[1] || null;
-};
-
-export const extractViewIdsFromNodeState = (nodeState: NodeViewState) => {
-  const ids = new Set<string>();
-
-  Object.values(nodeState.bindings).forEach((binding) => {
-    ids.add(binding.viewId);
-  });
-
-  Object.values(nodeState.templates).forEach((template) => {
-    extractTemplateExpressions(template).forEach((expression) => {
-      const viewId = getViewIdFromExpression(expression);
-
-      if (viewId) {
-        ids.add(viewId);
-      }
-    });
-  });
-
-  return Array.from(ids);
-};
-
-export const getValueAtPath = (value: any, path: string) => {
-  if (!path) return value;
-
-  const normalized = path.replace(/\[(\d+)\]/g, ".$1");
-  const parts = normalized.split(".").filter(Boolean);
-
-  return parts.reduce((acc, part) => {
-    if (typeof acc === "undefined" || acc === null) {
-      return undefined;
-    }
-
-    return acc[part];
-  }, value);
-};
-
-const resolveTemplateValue = ({
-  expression,
-  viewsById,
-}: {
-  expression: string;
-  viewsById: Record<string, any>;
-}) => {
-  const value = getValueAtPath(viewsById, expression);
-
-  if (typeof value === "undefined" || value === null) {
-    return "";
-  }
-
-  return formatPreview(value);
-};
-
+/**
+ * Replaces template expressions with values from loaded view data.
+ *
+ * @param options The template string and resolved view data
+ * @returns The resolved string
+ */
 export const applyTemplateString = ({
   template,
   viewsById,
@@ -343,74 +635,46 @@ export const applyTemplateString = ({
   template: string;
   viewsById: Record<string, any>;
 }) =>
-  template.replace(TEMPLATE_TOKEN_REGEX, (_, expression) =>
-    resolveTemplateValue({
-      expression,
-      viewsById,
-    })
-  );
+  template.replace(TEMPLATE_TOKEN_REGEX, (_, expression) => {
+    const value = getValueAtPath(viewsById, expression.trim());
 
-const collectValueOptions = ({
-  value,
-  viewId,
-  path = "",
-  options = [],
-}: {
-  value: any;
-  viewId: string;
-  path?: string;
-  options?: ViewValueOption[];
-}) => {
-  const valueType = getValueType(value);
-  const option: ViewValueOption = {
-    viewId,
-    path,
-    expression: formatExpression(viewId, path),
-    preview: formatPreview(value),
-    valueType,
-  };
+    if (typeof value === "undefined" || value === null) {
+      return "";
+    }
 
-  options.push(option);
+    return formatPreview(value);
+  });
 
-  if (Array.isArray(value)) {
-    value.forEach((item, index) => {
-      collectValueOptions({
-        value: item,
-        viewId,
-        path: `${path}[${index}]`,
-        options,
-      });
-    });
-
-    return options;
-  }
-
-  if (value && typeof value === "object") {
-    Object.entries(value).forEach(([key, item]) => {
-      collectValueOptions({
-        value: item,
-        viewId,
-        path: path ? `${path}.${key}` : key,
-        options,
-      });
-    });
-  }
-
-  return options;
-};
-
+/**
+ * Enumerates every reachable value inside loaded view data for the UI.
+ *
+ * @param options The loaded view data keyed by view ID
+ * @returns The flattened view value options
+ */
 export const getViewValueOptions = ({
   viewsById,
 }: {
   viewsById: Record<string, any>;
-}) =>
-  Object.entries(viewsById).flatMap(([viewId, value]) =>
-    collectValueOptions({
+}) => {
+  const options: ViewValueOption[] = [];
+
+  Object.entries(viewsById).forEach(([viewId, value]) => {
+    appendValueOptions({
+      options,
       viewId,
       value,
-    })
-  );
+    });
+  });
 
+  return options;
+};
+
+/**
+ * Checks whether a view value option can bind to a given field type.
+ *
+ * @param options The field and candidate option to compare
+ * @returns Whether the binding is compatible
+ */
 export const isCompatibleFieldBinding = ({
   field,
   option,
@@ -443,6 +707,12 @@ export const isCompatibleFieldBinding = ({
   }
 };
 
+/**
+ * Finds the currently open template fragment around the cursor.
+ *
+ * @param options The current input value and cursor position
+ * @returns The active template fragment, or null when none is open
+ */
 export const getTemplateFragment = ({
   value,
   cursor,
@@ -465,11 +735,16 @@ export const getTemplateFragment = ({
 
   return {
     start: openIndex,
-    end: cursor,
     query: beforeCursor.slice(openIndex + 2).trim(),
   };
 };
 
+/**
+ * Replaces the active template fragment with a chosen expression.
+ *
+ * @param options The current input value, cursor, and selected expression
+ * @returns The updated value and next cursor position
+ */
 export const insertTemplateExpression = ({
   value,
   cursor,
@@ -492,14 +767,19 @@ export const insertTemplateExpression = ({
     0,
     fragment.start
   )}{{ ${expression} }}${value.slice(cursor)}`;
-  const nextCursor = fragment.start + expression.length + 6;
 
   return {
     value: nextValue,
-    cursor: nextCursor,
+    cursor: fragment.start + expression.length + 6,
   };
 };
 
+/**
+ * Fetches data for a resolved view, deduplicating concurrent requests.
+ *
+ * @param options The resolved view, sources, metadata, and root context
+ * @returns The fetched view data
+ */
 export const queryResolvedView = async ({
   view,
   sources,
@@ -517,117 +797,173 @@ export const queryResolvedView = async ({
     throw new Error(`View source "${view.source}" does not exist`);
   }
 
-  const key = JSON.stringify({
-    viewId: view.id,
-    source: view.source,
-    params: view.params ?? {},
-  });
+  const key = getQueryCacheKey(view);
 
-  if (!inFlightQueries[key]) {
-    inFlightQueries[key] = Promise.resolve(
+  if (!inFlightQueries.has(key)) {
+    const request = Promise.resolve(
       source.fetch(view.params ?? {}, {
         metadata,
         root,
         viewId: view.id,
       })
     ).finally(() => {
-      delete inFlightQueries[key];
+      inFlightQueries.delete(key);
     });
+
+    inFlightQueries.set(key, request);
   }
 
-  return inFlightQueries[key];
+  return inFlightQueries.get(key)!;
 };
 
+/**
+ * Loads resolved view data for all views or a requested subset.
+ *
+ * @param options The root, metadata, runtime options, and optional view IDs
+ * @returns The loaded view data keyed by view ID, or null if a view is missing
+ */
+export const loadResolvedViewData = async ({
+  root,
+  metadata,
+  options,
+  viewIds,
+}: {
+  root?: RootData | ComponentData | null;
+  metadata?: Metadata;
+  options: Pick<ViewsPluginOptions, "builtInViews" | "sources" | "storageKey">;
+  viewIds?: string[];
+}): Promise<Record<string, any> | null> => {
+  const rootComponent = toRootComponent(root);
+  const resolvedViews = getResolvedViews({
+    root: rootComponent,
+    builtInViews: options.builtInViews,
+    storageKey: options.storageKey,
+  });
+  const selectedViews = selectResolvedViews({
+    resolvedViews,
+    viewIds,
+  });
+
+  if (!selectedViews) {
+    return null;
+  }
+
+  const viewEntries = await Promise.all(
+    selectedViews.map(
+      async (view) =>
+        [
+          view.id,
+          await queryResolvedView({
+            view,
+            sources: options.sources,
+            metadata,
+            root: rootComponent,
+          }),
+        ] as const
+    )
+  );
+
+  return Object.fromEntries(viewEntries);
+};
+
+/**
+ * Applies bindings and template strings to a node using loaded view data.
+ *
+ * @param options The node data, root data, metadata, view options, and config
+ * @returns The updated node data
+ */
 export const applyNodeViews = async ({
   data,
   metadata,
   root,
   options,
+  componentConfig,
 }: {
   data: Omit<ComponentData, "type">;
   metadata?: Metadata;
   root: ComponentData | null;
   options: ViewsPluginOptions;
+  componentConfig: ComponentConfig;
 }) => {
   const nodeState = getNodeViewState({
     props: data.props,
     nodeStateKey: options.nodeStateKey,
   });
-  const referencedViewIds = extractViewIdsFromNodeState(nodeState);
 
-  if (referencedViewIds.length === 0) {
-    return data;
+  // Clear any removed view references from templates and bindings
+  // (e.g. array field items that were deleted)
+  if (nodeState.bindings) {
+    Object.entries(nodeState.bindings).forEach(([key, _binding]) => {
+      const dataForBinding = getValueAtPath(data.props, key);
+
+      if (typeof dataForBinding === "undefined") {
+        delete nodeState.bindings[key];
+      }
+    });
+  }
+  if (nodeState.templates) {
+    Object.entries(nodeState.templates).forEach(([key, _template]) => {
+      const dataForTemplate = getValueAtPath(data.props, key);
+
+      if (typeof dataForTemplate === "undefined") {
+        delete nodeState.templates[key];
+      }
+    });
   }
 
-  const resolvedViews = getResolvedViews({
-    root,
-    builtInViews: options.builtInViews,
-    storageKey: options.storageKey,
-  });
-  const viewLookup = resolvedViews.reduce<Record<string, ResolvedView>>(
-    (acc, view) => ({
-      ...acc,
-      [view.id]: view,
-    }),
-    {}
-  );
+  const referencedViewIds = getReferencedViewIds(nodeState);
 
-  const missingView = referencedViewIds.find((viewId) => !viewLookup[viewId]);
-
-  if (missingView) {
+  if (referencedViewIds.length === 0) {
+    console.log("No referenced views, skipping view application"); // --- IGNORE ---
     return data;
   }
 
   try {
-    const viewEntries = await Promise.all(
-      referencedViewIds.map(async (viewId) => [
-        viewId,
-        await queryResolvedView({
-          view: viewLookup[viewId],
-          sources: options.sources,
-          metadata,
-          root,
-        }),
-      ])
-    );
-    const viewsById = Object.fromEntries(viewEntries);
-    let nextProps = { ...data.props };
-    const nextReadOnly = { ...(data.readOnly ?? {}) };
-
-    Object.entries(nodeState.bindings).forEach(([fieldPath, binding]) => {
-      const boundValue = getValueAtPath(
-        viewsById[binding.viewId],
-        binding.path
-      );
-
-      if (typeof boundValue !== "undefined") {
-        nextProps = setDeep(nextProps, fieldPath, boundValue);
-      }
-
-      nextReadOnly[fieldPath] = true;
+    const viewsById = await loadResolvedViewData({
+      root,
+      metadata,
+      options,
+      viewIds: referencedViewIds,
     });
 
-    Object.entries(nodeState.templates).forEach(([fieldPath, template]) => {
-      nextProps = setDeep(
-        nextProps,
-        fieldPath,
-        applyTemplateString({
-          template,
-          viewsById,
-        })
-      );
+    if (!viewsById) {
+      console.log("Some views are missing, skipping view application"); // --- IGNORE ---
+      return data;
+    }
+
+    const boundData = applyViewBindings({
+      props: data.props,
+      readOnly: data.readOnly,
+      bindings: nodeState.bindings,
+      viewsById,
+      componentConfig,
     });
+
+    const nextProps = applyViewTemplates({
+      props: boundData.props,
+      templates: nodeState.templates,
+      viewsById,
+    });
+
+    console.log({ boundData, nextProps }); // --- IGNORE ---
 
     return {
       ...data,
       props: nextProps,
-      readOnly: nextReadOnly,
+      readOnly: boundData.readOnly,
     };
   } catch {
+    console.log("Error loading view data, skipping view application"); // --- IGNORE ---
     return data;
   }
 };
 
+/**
+ * Counts how many times each view is referenced across the current document.
+ *
+ * @param options The document data, config, and optional node state key
+ * @returns The usage counts keyed by view ID
+ */
 export const collectViewUsageCounts = ({
   data,
   config,
@@ -639,21 +975,7 @@ export const collectViewUsageCounts = ({
 }) => {
   const counts: Record<string, number> = {};
   const countProps = (props?: Record<string, any>) => {
-    const nodeState = getNodeViewState({ props, nodeStateKey });
-
-    Object.values(nodeState.bindings).forEach((binding) => {
-      counts[binding.viewId] = (counts[binding.viewId] || 0) + 1;
-    });
-
-    Object.values(nodeState.templates).forEach((template) => {
-      extractTemplateExpressions(template).forEach((expression) => {
-        const viewId = getViewIdFromExpression(expression);
-
-        if (viewId) {
-          counts[viewId] = (counts[viewId] || 0) + 1;
-        }
-      });
-    });
+    addReferencedViewCounts(counts, getNodeViewState({ props, nodeStateKey }));
   };
 
   countProps(normalizeRootData(data.root).props);
@@ -668,6 +990,12 @@ export const collectViewUsageCounts = ({
   return counts;
 };
 
+/**
+ * Collects the IDs of every content node in the current document.
+ *
+ * @param options The document data and config
+ * @returns The collected node IDs
+ */
 export const collectNodeIds = ({
   data,
   config,
@@ -686,24 +1014,4 @@ export const collectNodeIds = ({
   });
 
   return Array.from(ids);
-};
-
-export const updateStorageInRoot = ({
-  root,
-  storageKey = DEFAULT_STORAGE_KEY,
-  storage,
-}: {
-  root: RootData;
-  storageKey?: string;
-  storage: ViewsStorage;
-}) => {
-  const normalized = normalizeRootData(root);
-
-  return {
-    ...root,
-    props: {
-      ...normalized.props,
-      [storageKey]: storage,
-    },
-  };
 };
