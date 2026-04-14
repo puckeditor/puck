@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Database } from "lucide-react";
 import { AutoField, Button, FieldLabel, createUsePuck } from "@puckeditor/core";
 import type { Field } from "@puckeditor/core";
@@ -30,7 +30,44 @@ import styles from "./style.module.css";
 const usePuck = createUsePuck();
 const getClassName = getClassNameFactory("ViewsPluginPanel", styles);
 
+const getObjectPreviewLabel = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return `Array (${value.length})`;
+  }
+
+  if (value && typeof value === "object") {
+    return `Object (${Object.keys(value).length})`;
+  }
+
+  return "Value";
+};
+
+const PreviewValue = ({ value }: { value: unknown }) => {
+  if (typeof value !== "object" || value === null) {
+    return <>{String(value ?? "")}</>;
+  }
+
+  return (
+    <div className={getClassName("previewValue")}>
+      <pre className={getClassName("previewValueJson")}>
+        {JSON.stringify(value, null, 2)}
+      </pre>
+    </div>
+  );
+};
+
+const isExpandablePreviewValue = (value: unknown) =>
+  typeof value === "object" && value !== null;
+
 const Preview = ({ data }: { data: any }) => {
+  const [expandedCells, setExpandedCells] = useState<Record<string, boolean>>(
+    {}
+  );
+
+  useEffect(() => {
+    setExpandedCells({});
+  }, [data]);
+
   if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object") {
     const keys = Array.from(
       data.reduce<Set<string>>((acc, item) => {
@@ -40,35 +77,96 @@ const Preview = ({ data }: { data: any }) => {
       }, new Set<string>())
     ).slice(0, 6);
 
+    const rows = data.slice(0, 5);
+
     return (
-      <div className={getClassName("previewTableWrap")}>
-        <table className={getClassName("previewTable")}>
-          <thead>
-            <tr>
-              {keys.map((key) => (
-                <th key={key}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.slice(0, 5).map((item, index) => (
-              <tr key={index}>
-                {keys.map((key) => (
-                  <td key={key}>{String(item?.[key] ?? "")}</td>
-                ))}
-              </tr>
+      <table className={getClassName("previewTable")}>
+        <thead>
+          <tr>
+            {keys.map((key) => (
+              <th key={key}>{key}</th>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((item, index) => {
+            const expandedKeys = keys.filter(
+              (key) => expandedCells[`${index}:${key}`]
+            );
+
+            return (
+              <Fragment key={index}>
+                <tr>
+                  {keys.map((key) => {
+                    const value = item?.[key];
+                    const cellId = `${index}:${key}`;
+
+                    return (
+                      <td key={key}>
+                        {isExpandablePreviewValue(value) ? (
+                          <button
+                            className={[
+                              getClassName("previewToggle"),
+                              expandedCells[cellId]
+                                ? getClassName("previewToggleExpanded")
+                                : "",
+                            ].join(" ")}
+                            onClick={() =>
+                              setExpandedCells((current) => ({
+                                ...current,
+                                [cellId]: !current[cellId],
+                              }))
+                            }
+                            type="button"
+                          >
+                            {expandedCells[cellId] ? "Hide" : "Show"}{" "}
+                            {getObjectPreviewLabel(value)}
+                          </button>
+                        ) : (
+                          String(value ?? "")
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+                {expandedKeys.length > 0 && (
+                  <tr
+                    className={getClassName("previewExpandedRow")}
+                    key={`expanded:${index}`}
+                  >
+                    <td
+                      className={getClassName("previewExpandedCell")}
+                      colSpan={keys.length}
+                    >
+                      <div className={getClassName("previewExpandedSections")}>
+                        {expandedKeys.map((key) => (
+                          <section
+                            className={getClassName("previewExpandedSection")}
+                            key={key}
+                          >
+                            <div
+                              className={getClassName("previewExpandedLabel")}
+                            >
+                              {key}
+                            </div>
+                            <pre className={getClassName("previewValueJson")}>
+                              {JSON.stringify(item?.[key], null, 2)}
+                            </pre>
+                          </section>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
     );
   }
 
-  return (
-    <pre className={getClassName("previewJson")}>
-      {JSON.stringify(data, null, 2)}
-    </pre>
-  );
+  return <PreviewValue value={data} />;
 };
 
 export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
