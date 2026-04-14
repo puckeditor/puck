@@ -54,6 +54,20 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
           ) : (
             <>{children}</>
           ),
+        richtext: ({ children, field, name, readOnly }) =>
+          // TODO: Add template support for richtext fields, currently we just allow data bindings without template expressions
+          shouldShowDataBindings(field) ? (
+            <FieldEnhancer
+              field={field as Field}
+              name={name}
+              options={normalizedOptions}
+              readOnly={readOnly}
+            >
+              {children}
+            </FieldEnhancer>
+          ) : (
+            <>{children}</>
+          ),
         number: ({ children, field, name, readOnly }) =>
           shouldShowDataBindings(field) ? (
             <FieldEnhancer

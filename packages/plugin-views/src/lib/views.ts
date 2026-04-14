@@ -690,6 +690,8 @@ export const isCompatibleFieldBinding = ({
     case "text":
     case "textarea":
       return ["string", "number", "boolean", "null"].includes(option.valueType);
+    case "richtext":
+      return option.valueType === "string";
     case "select":
     case "radio":
       if (!field.options) return false;
