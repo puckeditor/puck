@@ -1,7 +1,8 @@
 "use client";
 
-import type { Field, Plugin } from "@puckeditor/core";
+import { type Field, type Plugin } from "@puckeditor/core";
 import { Database } from "lucide-react";
+
 import { FieldEnhancer } from "./components/FieldEnhancer";
 import { TemplateField } from "./components/TemplateField";
 import { ViewsPluginPanel } from "./components/ViewsPluginPanel";
@@ -10,6 +11,7 @@ import {
   DEFAULT_NODE_STATE_KEY,
   DEFAULT_STORAGE_KEY,
 } from "./lib/views";
+
 import type { ViewsPluginOptions } from "./types";
 
 const shouldShowDataBindings = (field: any) =>
@@ -30,8 +32,8 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
     render: () => <ViewsPluginPanel options={normalizedOptions} />,
     overrides: {
       fieldTypes: {
-        text: ({ children, field, name, readOnly, value }) =>
-          shouldShowDataBindings(field) ? (
+        text: ({ children, field, name, readOnly, value }) => {
+          return shouldShowDataBindings(field) ? (
             <TemplateField
               field={field as Field}
               name={name}
@@ -41,7 +43,8 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
             />
           ) : (
             <>{children}</>
-          ),
+          );
+        },
         textarea: ({ children, field, name, readOnly, value }) =>
           shouldShowDataBindings(field) ? (
             <TemplateField
@@ -107,20 +110,20 @@ export function createViewsPlugin(options: ViewsPluginOptions): Plugin {
           ) : (
             <>{children}</>
           ),
-        array: ({ children, field, name, readOnly }) =>
-          shouldShowDataBindings(field) ? (
+        array: ({ children, field, name, readOnly }) => {
+          return shouldShowDataBindings(field) ? (
             <FieldEnhancer
               field={field as Field}
               name={name}
               options={normalizedOptions}
               readOnly={readOnly}
-              isArray
             >
               {children}
             </FieldEnhancer>
           ) : (
             <>{children}</>
-          ),
+          );
+        },
       },
     },
   };

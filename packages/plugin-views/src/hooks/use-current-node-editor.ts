@@ -1,11 +1,15 @@
 "use client";
 
-import { createUsePuck } from "@puckeditor/core";
 import { useMemo } from "react";
+import usePuck from "./use-puck";
+
 import { normalizeRootData } from "../lib/views";
 
-const usePuck = createUsePuck();
-
+/**
+ * A hook for accessing the currently selected Puck component editor's props and a function to replace them.
+ *
+ * @returns An object containing the current component's ID, props, a function to replace its props, and the root data.
+ */
 export const useCurrentNodeEditor = () => {
   const puckRoot = usePuck((s) => s.appState.data.root);
   const dispatch = usePuck((s) => s.dispatch);

@@ -14,19 +14,20 @@ import styles from "./style.module.css";
 
 const getClassName = getClassNameFactory("FieldEnhancer", styles);
 
+/**
+ * Wraps a Puck field and provides a toolbar for binding it to a view.
+ */
 export function FieldEnhancer({
   children,
   field,
   name,
   options,
-  isArray,
   readOnly,
 }: {
   children: ReactNode;
   field: Field;
   name: string;
   options: ViewsPluginOptions;
-  isArray?: boolean;
   readOnly?: boolean;
 }) {
   const { currentProps, replaceProps } = useCurrentNodeEditor();
@@ -35,41 +36,31 @@ export function FieldEnhancer({
     nodeStateKey: options.nodeStateKey,
   });
 
-  const bindingKey = `${name}${isArray ? "[*]" : ""}`;
-
-  const binding = nodeState.bindings[bindingKey];
+  const bindingKey = `${name}${field.type === "array" ? "[*]" : ""}`;
 
   return (
     <div className={getClassName()}>
       {children}
       <div className={getClassName("toolbar")}>
         <BindingControl
-          binding={binding}
-          disabled={readOnly && !binding}
+          path={bindingKey}
+          bindings={nodeState.bindings}
+          disabled={readOnly}
           field={field}
-          onChange={(nextBinding) => {
+          onChange={(nextBindings) => {
             const nextNodeState: NodeViewState = {
               templates: {
                 ...nodeState.templates,
               },
-              bindings: {
-                ...nodeState.bindings,
-              },
+              bindings: nextBindings,
             };
-
-            if (nextBinding) {
-              nextNodeState.bindings[bindingKey] = nextBinding;
-            } else {
-              delete nextNodeState.bindings[bindingKey];
-            }
 
             replaceProps(
               setNodeViewState({
                 props: currentProps,
                 nodeState: nextNodeState,
                 nodeStateKey: options.nodeStateKey,
-              }),
-              { [name]: Boolean(nextBinding) }
+              })
             );
           }}
           options={options}

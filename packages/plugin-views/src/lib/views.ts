@@ -4,9 +4,9 @@ import {
   Config,
   Data,
   Field,
-  Fields,
   Metadata,
   RootData,
+  SelectField,
   walkTree,
 } from "@puckeditor/core";
 
@@ -25,6 +25,7 @@ import setDeep from "./set-deep";
 import cloneObject from "./clone-object";
 import { getFieldAtPath } from "./get-field-from-path";
 import { getTemplateExpressions } from "./strings/templates";
+import assignPathBinding from "./assign-path-binding";
 
 export const DEFAULT_STORAGE_KEY = "__puck_views";
 export const DEFAULT_NODE_STATE_KEY = "__puck_view_state";
@@ -136,21 +137,6 @@ const formatPreview = (value: any) => {
 };
 
 /**
- * Formats a view ID and path into the expression shown in the UI.
- *
- * @param viewId The base view ID
- * @param path The nested path inside the view result
- * @returns The formatted expression
- */
-const formatViewExpression = (viewId: string, path: string) => {
-  if (!path) {
-    return viewId;
-  }
-
-  return path.startsWith("[") ? `${viewId}${path}` : `${viewId}.${path}`;
-};
-
-/**
  * Reads a nested value from a view result using dot and array notation.
  *
  * @param value The value to read from
@@ -210,8 +196,8 @@ const appendValueOptions = ({
 }) => {
   options.push({
     viewId,
-    path,
-    expression: formatViewExpression(viewId, path),
+    path: Array.isArray(value) ? `${path}[*]` : path,
+    expression: Array.isArray(value) ? `${path}[*]` : path,
     preview: formatPreview(value),
     valueType: getValueType(value),
   });
@@ -306,40 +292,69 @@ const applyViewBindings = ({
   bindings,
   viewsById,
   componentConfig,
+  previousBindings,
 }: {
   props: Record<string, any>;
   readOnly?: Omit<ComponentData, "type">["readOnly"];
   bindings: NodeViewState["bindings"];
-  viewsById: Record<string, any>;
+  previousBindings: NodeViewState["bindings"];
+  viewsById?: Record<string, any>;
   componentConfig: ComponentConfig;
 }) => {
   let nextProps = cloneObject(props);
   const nextReadOnly = { ...(readOnly ?? {}) };
 
   Object.entries(bindings).forEach(([fieldPath, binding]) => {
-    let boundValue = getValueAtPath(viewsById[binding.viewId], binding.path);
-    const currFieldValue = getValueAtPath(props, fieldPath);
-    const fieldDef = getFieldAtPath(fieldPath, componentConfig.fields || {});
-    const defaultItemProps =
-      fieldDef?.type === "array" ? fieldDef.defaultItemProps : undefined;
-
-    if (typeof boundValue === "undefined") return;
-
-    if (fieldPath.endsWith("[*]")) {
-      const newValue = Array.isArray(boundValue)
-        ? Array.from({ length: boundValue.length }, (_, i) => ({
-            ...(currFieldValue?.[i] || defaultItemProps || {}),
-          }))
-        : [...currFieldValue];
-
-      boundValue = newValue;
+    if (!viewsById || !viewsById[binding.viewId]) {
+      console.debug("Some views are missing, reusing existing bindings");
+      return;
     }
 
-    nextProps = setDeep(nextProps, fieldPath, boundValue);
+    const fieldPathSegments = fieldPath
+      .replace(/(\[(?:\d+|\*)\])/g, ".$1")
+      .split(".")
+      .filter(Boolean);
+    const bindingPath = binding.path
+      .replace(/(\[(?:\d+|\*)\])/g, ".$1")
+      .split(".")
+      .filter(Boolean);
 
-    const fieldPathNoWildcard = fieldPath.replace(/\[\*\]/g, "");
+    assignPathBinding(
+      { pathSegments: fieldPathSegments, value: nextProps },
+      {
+        pathSegments: bindingPath,
+        value: { [binding.viewId]: viewsById[binding.viewId] },
+      },
+      (boundee) => {
+        const fieldPath = boundee.pathSegments.join(".").replace(/\.\[/g, "[");
+
+        const fieldDef = getFieldAtPath(
+          fieldPath,
+          componentConfig.fields || {}
+        );
+        const defaultItemProps =
+          fieldDef?.type === "array" ? fieldDef.defaultItemProps : {};
+
+        return boundee.value ? { ...boundee.value } : { ...defaultItemProps };
+      }
+    );
+
+    const fieldPathNoWildcard = fieldPath.endsWith("[*]")
+      ? fieldPath.slice(0, -3)
+      : fieldPath;
 
     nextReadOnly[fieldPathNoWildcard] = true;
+  });
+
+  // Set previously bound fields to read-only false when their bindings are removed, allowing the UI to edit them again
+  Object.keys(previousBindings).forEach((fieldPath) => {
+    if (bindings[fieldPath]) return;
+
+    const fieldPathNoWildcard = fieldPath.endsWith("[*]")
+      ? fieldPath.slice(0, -3)
+      : fieldPath;
+
+    nextReadOnly[fieldPathNoWildcard] = false;
   });
 
   return {
@@ -363,8 +378,10 @@ const applyViewTemplates = ({
 }: {
   props: Record<string, any>;
   templates: NodeViewState["templates"];
-  viewsById: Record<string, any>;
+  viewsById?: Record<string, any>;
 }) => {
+  if (!viewsById) return props;
+
   let nextProps = cloneObject(props);
 
   Object.entries(templates).forEach(([fieldPath, template]) => {
@@ -663,6 +680,7 @@ export const getViewValueOptions = ({
       options,
       viewId,
       value,
+      path: viewId,
     });
   });
 
@@ -679,7 +697,7 @@ export const isCompatibleFieldBinding = ({
   field,
   option,
 }: {
-  field: Field;
+  field: Pick<Field, "type"> & Pick<Partial<SelectField>, "options">;
   option: ViewValueOption;
 }) => {
   switch (field.type) {
@@ -876,12 +894,14 @@ export const loadResolvedViewData = async ({
  */
 export const applyNodeViews = async ({
   data,
+  previousData,
   metadata,
   root,
   options,
   componentConfig,
 }: {
   data: Omit<ComponentData, "type">;
+  previousData?: Omit<ComponentData, "type"> | null;
   metadata?: Metadata;
   root: ComponentData | null;
   options: ViewsPluginOptions;
@@ -891,6 +911,12 @@ export const applyNodeViews = async ({
     props: data.props,
     nodeStateKey: options.nodeStateKey,
   });
+  const previousNodeState = previousData
+    ? getNodeViewState({
+        props: previousData.props,
+        nodeStateKey: options.nodeStateKey,
+      })
+    : { templates: {}, bindings: {} };
 
   // Clear any removed view references from templates and bindings
   // (e.g. array field items that were deleted)
@@ -915,11 +941,6 @@ export const applyNodeViews = async ({
 
   const referencedViewIds = getReferencedViewIds(nodeState);
 
-  if (referencedViewIds.length === 0) {
-    console.log("No referenced views, skipping view application"); // --- IGNORE ---
-    return data;
-  }
-
   try {
     const viewsById = await loadResolvedViewData({
       root,
@@ -928,26 +949,20 @@ export const applyNodeViews = async ({
       viewIds: referencedViewIds,
     });
 
-    if (!viewsById) {
-      console.log("Some views are missing, skipping view application"); // --- IGNORE ---
-      return data;
-    }
-
     const boundData = applyViewBindings({
       props: data.props,
       readOnly: data.readOnly,
       bindings: nodeState.bindings,
-      viewsById,
+      viewsById: viewsById || undefined,
       componentConfig,
+      previousBindings: previousNodeState.bindings,
     });
 
     const nextProps = applyViewTemplates({
       props: boundData.props,
       templates: nodeState.templates,
-      viewsById,
+      viewsById: viewsById || undefined,
     });
-
-    console.log({ boundData, nextProps }); // --- IGNORE ---
 
     return {
       ...data,
@@ -955,7 +970,7 @@ export const applyNodeViews = async ({
       readOnly: boundData.readOnly,
     };
   } catch {
-    console.log("Error loading view data, skipping view application"); // --- IGNORE ---
+    console.warn("Error loading view data, skipping view application"); // --- IGNORE ---
     return data;
   }
 };

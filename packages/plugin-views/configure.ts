@@ -77,6 +77,7 @@ const wrapComponentConfig = <T extends ComponentConfig | RootConfig>(
     return applyNodeViews({
       data: mergedData,
       metadata: params.metadata,
+      previousData: params.lastData,
       root,
       options: {
         ...options,

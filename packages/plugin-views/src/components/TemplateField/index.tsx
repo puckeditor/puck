@@ -47,6 +47,9 @@ const getDisplayValue = ({
   return String(value);
 };
 
+/**
+ * Wraps a Puck text field and provides a toolbar and template editing capabilities for binding it to a view.
+ */
 export function TemplateField({
   field,
   name,
@@ -110,11 +113,11 @@ export function TemplateField({
           return;
         }
 
-        setSuggestions(
-          getViewValueOptions({
-            viewsById: viewsById ?? {},
-          })
-        );
+        const suggestion = getViewValueOptions({
+          viewsById: viewsById ?? {},
+        });
+
+        setSuggestions(suggestion);
       })
       .catch(() => {
         if (active) {
@@ -164,8 +167,7 @@ export function TemplateField({
 
   const updateNodeState = (
     nextValue: string,
-    updateState: (nodeState: NodeViewState) => NodeViewState,
-    readOnly?: Record<string, boolean>
+    updateState: (nodeState: NodeViewState) => NodeViewState
   ) => {
     let nextProps = setDeep({ ...currentProps }, name, nextValue);
 
@@ -175,7 +177,7 @@ export function TemplateField({
       nodeStateKey: options.nodeStateKey,
     });
 
-    replaceProps(nextProps, readOnly);
+    replaceProps(nextProps);
   };
 
   return (
@@ -282,34 +284,23 @@ export function TemplateField({
 
           <div className={getClassName("toolbar")}>
             <BindingControl
-              binding={binding}
+              bindings={nodeState.bindings}
+              path={name}
               disabled={readOnly && !binding}
               field={field}
               onChange={(nextBinding) => {
-                updateNodeState(
-                  displayValue,
-                  (currentNodeState) => {
-                    const nextNodeState: NodeViewState = {
-                      templates: {
-                        ...currentNodeState.templates,
-                      },
-                      bindings: {
-                        ...currentNodeState.bindings,
-                      },
-                    };
+                updateNodeState(displayValue, (currentNodeState) => {
+                  const nextNodeState: NodeViewState = {
+                    templates: {
+                      ...currentNodeState.templates,
+                    },
+                    bindings: nextBinding,
+                  };
 
-                    delete nextNodeState.templates[name];
+                  delete nextNodeState.templates[name];
 
-                    if (nextBinding) {
-                      nextNodeState.bindings[name] = nextBinding;
-                    } else {
-                      delete nextNodeState.bindings[name];
-                    }
-
-                    return nextNodeState;
-                  },
-                  { [name]: Boolean(nextBinding) }
-                );
+                  return nextNodeState;
+                });
               }}
               options={options}
             />
