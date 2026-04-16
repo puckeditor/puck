@@ -3,6 +3,10 @@
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "types": ["node", "jest", "@testing-library/jest-dom"]
+    "types": ["node", "jest", "@testing-library/jest-dom"],
+    "paths": {
+      "@/core": ["../core"],
+      "@/core/*": ["../core/*"]
+    }
   }
 }

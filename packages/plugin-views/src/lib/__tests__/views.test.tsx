@@ -101,7 +101,7 @@ describe("plugin-views runtime", () => {
             bindings: {
               price: {
                 viewId: "topProducts",
-                path: "[0].price",
+                path: "topProducts[0].price",
               },
             },
           },
@@ -174,6 +174,7 @@ describe("plugin-views runtime", () => {
           bindings: {},
         },
       },
+      readOnly: {},
     };
 
     expect(
@@ -266,7 +267,7 @@ describe("plugin-views runtime", () => {
                 bindings: {
                   text: {
                     viewId: "topProducts",
-                    path: "[0].name",
+                    path: "topProducts[0].name",
                   },
                 },
               },
