@@ -21,7 +21,6 @@
 .BindingControl-modal {
   display: grid;
   gap: 12px;
-  min-width: min(560px, 90vw);
   padding: 20px 24px 24px;
 }
 
@@ -37,20 +36,20 @@
   margin: 0;
 }
 
+.BindingControl-modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: min(400px, 60vh);
+  overflow: auto;
+}
+
 .BindingControl-stateBox {
   align-items: center;
   color: var(--puck-color-grey-04);
   display: flex;
   justify-content: center;
-  min-height: 120px;
   text-align: center;
-}
-
-.BindingControl-optionList {
-  display: grid;
-  gap: 6px;
-  max-height: 360px;
-  overflow-y: auto;
 }
 
 .BindingControl-optionButton {
