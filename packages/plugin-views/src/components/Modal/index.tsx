@@ -45,7 +45,16 @@ export function Modal({
   }
 
   return createPortal(
-    <div className={getClassName()} onClick={onClose}>
+    <div
+      className={getClassName()}
+      onPointerDown={(event) => {
+        const shouldClose = event.target === event.currentTarget;
+
+        if (shouldClose) {
+          onClose();
+        }
+      }}
+    >
       <div
         className={getClassName("frame")}
         onClick={(event) => event.stopPropagation()}
