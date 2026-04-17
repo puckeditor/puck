@@ -233,7 +233,9 @@ const appendValueOptions = ({
  * @param view The resolved view being fetched
  * @returns The cache key for that view request
  */
-const getQueryCacheKey = (view: ResolvedView) =>
+const getQueryCacheKey = (
+  view: Pick<ResolvedView, "id" | "source" | "params">
+) =>
   JSON.stringify({
     viewId: view.id,
     source: view.source,
@@ -806,7 +808,7 @@ export const queryResolvedView = async ({
   metadata,
   root,
 }: {
-  view: ResolvedView;
+  view: Pick<ResolvedView, "id" | "source" | "params">;
   sources: ViewSources;
   metadata?: Metadata;
   root: ComponentData | null;

@@ -1,0 +1,11 @@
+.ObjectField {
+  background-color: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 4px;
+  flex-direction: column;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 16px 15px;
+}

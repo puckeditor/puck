@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, memo, ReactNode, useEffect, useMemo, useState } from "react";
 import { Database } from "lucide-react";
 import { AutoField, Button, FieldLabel, createUsePuck } from "@puckeditor/core";
 import type { Field } from "@puckeditor/core";
@@ -20,189 +20,52 @@ import {
 import type { CustomView, ViewsPluginOptions } from "../../types";
 import { createViewId } from "../../lib/data/views";
 import { sanitizeId } from "../../lib/sanitize-id";
+import usePuck from "../../hooks/use-puck";
 
 import { SidebarSection } from "../SidebarSection";
 import { Loader } from "../Loader";
 import { Modal } from "../Modal";
+import DataTable from "../DataTable";
+import ObjectField from "../ObjectField";
 
 import styles from "./style.module.css";
 
-const usePuck = createUsePuck();
 const getClassName = getClassNameFactory("ViewsPluginPanel", styles);
 
-const getObjectPreviewLabel = (value: unknown) => {
-  if (Array.isArray(value)) {
-    return `Array (${value.length})`;
-  }
-
-  if (value && typeof value === "object") {
-    return `Object (${Object.keys(value).length})`;
-  }
-
-  return "Value";
-};
-
-const PreviewValue = ({ value }: { value: unknown }) => {
-  if (typeof value !== "object" || value === null) {
-    return <>{String(value ?? "")}</>;
-  }
-
-  return (
-    <div className={getClassName("previewValue")}>
-      <pre className={getClassName("previewValueJson")}>
-        {JSON.stringify(value, null, 2)}
-      </pre>
-    </div>
-  );
-};
-
-const isExpandablePreviewValue = (value: unknown) =>
-  typeof value === "object" && value !== null;
-
-const Preview = ({ data }: { data: any }) => {
-  const [expandedCells, setExpandedCells] = useState<Record<string, boolean>>(
-    {}
-  );
-
-  useEffect(() => {
-    setExpandedCells({});
-  }, [data]);
-
-  if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object") {
-    const keys = Array.from(
-      data.reduce<Set<string>>((acc, item) => {
-        Object.keys(item || {}).forEach((key) => acc.add(key));
-
-        return acc;
-      }, new Set<string>())
-    ).slice(0, 6);
-
-    const rows = data.slice(0, 5);
-
-    return (
-      <table className={getClassName("previewTable")}>
-        <thead>
-          <tr>
-            {keys.map((key) => (
-              <th key={key}>{key}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((item, index) => {
-            const expandedKeys = keys.filter(
-              (key) => expandedCells[`${index}:${key}`]
-            );
-
-            return (
-              <Fragment key={index}>
-                <tr>
-                  {keys.map((key) => {
-                    const value = item?.[key];
-                    const cellId = `${index}:${key}`;
-
-                    return (
-                      <td key={key}>
-                        {isExpandablePreviewValue(value) ? (
-                          <button
-                            className={[
-                              getClassName("previewToggle"),
-                              expandedCells[cellId]
-                                ? getClassName("previewToggleExpanded")
-                                : "",
-                            ].join(" ")}
-                            onClick={() =>
-                              setExpandedCells((current) => ({
-                                ...current,
-                                [cellId]: !current[cellId],
-                              }))
-                            }
-                            type="button"
-                          >
-                            {expandedCells[cellId] ? "Hide" : "Show"}{" "}
-                            {getObjectPreviewLabel(value)}
-                          </button>
-                        ) : (
-                          String(value ?? "")
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-                {expandedKeys.length > 0 && (
-                  <tr
-                    className={getClassName("previewExpandedRow")}
-                    key={`expanded:${index}`}
-                  >
-                    <td
-                      className={getClassName("previewExpandedCell")}
-                      colSpan={keys.length}
-                    >
-                      <div className={getClassName("previewExpandedSections")}>
-                        {expandedKeys.map((key) => (
-                          <section
-                            className={getClassName("previewExpandedSection")}
-                            key={key}
-                          >
-                            <div
-                              className={getClassName("previewExpandedLabel")}
-                            >
-                              {key}
-                            </div>
-                            <pre className={getClassName("previewValueJson")}>
-                              {JSON.stringify(item?.[key], null, 2)}
-                            </pre>
-                          </section>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  }
-
-  return <PreviewValue value={data} />;
-};
-
 export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
-  const appState = usePuck((s) => s.appState);
+  const puckData = usePuck((s) => s.appState.data);
   const config = usePuck((s) => s.config);
   const dispatch = usePuck((s) => s.dispatch);
   const resolveDataById = usePuck((s) => s.resolveDataById);
   const rootComponent = useMemo(
-    () => toRootComponent(appState.data.root),
-    [appState.data.root]
+    () => toRootComponent(puckData.root),
+    [puckData.root]
   );
   const storage = useMemo(
     () =>
       getViewsStorage({
-        root: appState.data.root,
+        root: puckData.root,
         storageKey: options.storageKey,
       }),
-    [appState.data.root, options.storageKey]
+    [puckData.root, options.storageKey]
   );
   const views = useMemo(
     () =>
       getResolvedViews({
-        root: appState.data.root,
+        root: puckData.root,
         builtInViews: options.builtInViews,
         storageKey: options.storageKey,
       }),
-    [appState.data.root, options.builtInViews, options.storageKey]
+    [puckData.root, options.builtInViews, options.storageKey]
   );
   const usageCounts = useMemo(
     () =>
       collectViewUsageCounts({
-        data: appState.data as any,
+        data: puckData,
         config,
         nodeStateKey: options.nodeStateKey,
       }),
-    [appState.data, config, options.nodeStateKey]
+    [puckData, config, options.nodeStateKey]
   );
   const [selectedId, setSelectedId] = useState<string | null>(
     views[0]?.id ?? null
@@ -274,7 +137,11 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
     setPreviewError(null);
 
     queryResolvedView({
-      view: previewView,
+      view: {
+        id: previewView.id,
+        source: previewView.source,
+        params: previewView.params,
+      },
       root: rootComponent,
       sources: options.sources,
     })
@@ -298,7 +165,14 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
     return () => {
       active = false;
     };
-  }, [isEditorOpen, options.sources, previewView, rootComponent]);
+  }, [
+    isEditorOpen,
+    options.sources,
+    previewView?.id,
+    previewView?.source,
+    previewView?.params,
+    rootComponent,
+  ]);
 
   const sourceField: Field = {
     type: "select",
@@ -319,18 +193,19 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
     label: "ID",
   };
 
-  const paramsField: Field | null =
-    editableView && options.sources[editableView.source]
-      ? {
-          type: "object",
-          objectFields: options.sources[editableView.source].fields,
-        }
-      : selectedView && options.sources[selectedView.source]
-      ? {
-          type: "object",
-          objectFields: options.sources[selectedView.source].fields,
-        }
-      : null;
+  let paramsField: Field | null = null;
+
+  if (editableView && options.sources[editableView.source]) {
+    paramsField = {
+      type: "object",
+      objectFields: options.sources[editableView.source].fields,
+    };
+  } else if (selectedView && options.sources[selectedView.source]) {
+    paramsField = {
+      type: "object",
+      objectFields: options.sources[selectedView.source].fields,
+    };
+  }
 
   const selectedUsageCount = selectedView
     ? usageCounts[selectedView.id] || 0
@@ -343,7 +218,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
 
     await Promise.all(
       collectNodeIds({
-        data: appState.data as any,
+        data: puckData,
         config,
       }).map((id) => Promise.resolve(resolveDataById(id, "force")))
     );
@@ -351,15 +226,13 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
 
   const saveCustomViews = async (nextCustomViews: CustomView[]) => {
     dispatch({
-      type: "setData",
-      data: (currentData: any) => ({
-        root: updateStorageInRoot({
-          root: currentData.root,
-          storageKey: options.storageKey,
-          storage: {
-            custom: nextCustomViews,
-          },
-        }),
+      type: "replaceRoot",
+      root: updateStorageInRoot({
+        root: puckData.root,
+        storageKey: options.storageKey,
+        storage: {
+          custom: nextCustomViews,
+        },
       }),
       recordHistory: true,
     });
@@ -546,7 +419,8 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                   </FieldLabel>
 
                   {paramsField && (
-                    <AutoField
+                    <ObjectField
+                      name="Filters"
                       field={paramsField}
                       onChange={(nextParams) => {
                         if (!editableView) return;
@@ -584,7 +458,10 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                     </div>
                   )}
                   {!previewLoading && !previewError && previewData !== null && (
-                    <Preview data={previewData} />
+                    <DataTable
+                      data={previewData}
+                      className={getClassName("previewTable")}
+                    />
                   )}
                 </div>
               </div>
@@ -656,6 +533,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                         if (!selectedView || selectedView.builtIn) return;
                         if (selectedUsageCount > 0) return;
 
+                        setEditorOpen(false);
                         await saveCustomViews(
                           storage.custom.filter(
                             (view) => view.id !== selectedView.id
@@ -666,7 +544,6 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                           views.filter((view) => view.id !== selectedView.id)[0]
                             ?.id ?? null
                         );
-                        setEditorOpen(false);
                       }}
                       type="button"
                       variant="secondary"

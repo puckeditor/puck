@@ -191,10 +191,7 @@ export function BindingControl({
     : null;
 
   const matchingOptions = useMemo(() => {
-    if (!closestArrayBinding)
-      return filteredOptions.map((option) => ({
-        ...option,
-      }));
+    if (!closestArrayBinding) return filteredOptions;
 
     const normalizedOptions = filteredOptions
       .map((option) => {
@@ -221,6 +218,7 @@ export function BindingControl({
 
         const formattedResult = {
           ...option,
+          preview: "Connect every item to this data",
           path: wildcardPath,
           expression: wildcardPath,
         };
@@ -272,52 +270,51 @@ export function BindingControl({
               value={query}
             />
           </div>
-          <div>
-            {loading && (
-              <div className={getClassName("stateBox")}>
-                <Loader size={18} />
-              </div>
-            )}
-            {!loading && error && (
-              <div className={getClassName("stateBox")}>{error}</div>
-            )}
-            {!loading && !error && matchingOptions.length === 0 && (
-              <div className={getClassName("stateBox")}>
-                No compatible view data.
-              </div>
-            )}
-            {!loading && !error && matchingOptions.length > 0 && (
-              <div className={getClassName("optionList")}>
-                {matchingOptions
-                  .sort((a, b) => a.expression.localeCompare(b.expression))
-                  .map((option) => (
-                    <button
-                      className={getClassName("optionButton")}
-                      key={`${option.viewId}:${option.path}`}
-                      onClick={() => {
-                        const newBindings = { ...bindings };
+          <div
+            className={[
+              getClassName("modalContent"),
+              !(!loading && !error && matchingOptions.length > 0)
+                ? getClassName("stateBox")
+                : "",
+            ].join(" ")}
+          >
+            {loading && <Loader size={18} />}
+            {!loading && error && error}
+            {!loading &&
+              !error &&
+              matchingOptions.length === 0 &&
+              "No compatible view data."}
+            {!loading &&
+              !error &&
+              matchingOptions.length > 0 &&
+              matchingOptions
+                .sort((a, b) => a.expression.localeCompare(b.expression))
+                .map((option) => (
+                  <button
+                    className={getClassName("optionButton")}
+                    key={`${option.viewId}:${option.path}`}
+                    onClick={() => {
+                      const newBindings = { ...bindings };
 
-                        newBindings[resolvedBindingKey] = {
-                          viewId: option.viewId,
-                          path: option.path,
-                        };
+                      newBindings[resolvedBindingKey] = {
+                        viewId: option.viewId,
+                        path: option.path,
+                      };
 
-                        onChange(newBindings, newBindings[resolvedBindingKey]);
-                        setOpen(false);
-                        setQuery("");
-                      }}
-                      type="button"
-                    >
-                      <div className={getClassName("optionTitle")}>
-                        {option.expression}
-                      </div>
-                      <div className={getClassName("optionPreview")}>
-                        {option.preview}
-                      </div>
-                    </button>
-                  ))}
-              </div>
-            )}
+                      onChange(newBindings, newBindings[resolvedBindingKey]);
+                      setOpen(false);
+                      setQuery("");
+                    }}
+                    type="button"
+                  >
+                    <div className={getClassName("optionTitle")}>
+                      {option.expression}
+                    </div>
+                    <div className={getClassName("optionPreview")}>
+                      {option.preview}
+                    </div>
+                  </button>
+                ))}
           </div>
           <div className={getClassName("modalFooter")}>
             {fieldBinding && (
