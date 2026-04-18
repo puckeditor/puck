@@ -14,6 +14,7 @@ import {
   RadioField,
   SelectField,
   ExternalField,
+  ImageField,
   ArrayField,
   DefaultField,
   TextareaField,
@@ -51,6 +52,7 @@ export { FieldLabel } from "./FieldLabel";
 const defaultFields = {
   array: ArrayField,
   external: ExternalField,
+  image: ImageField,
   object: ObjectField,
   select: SelectField,
   textarea: TextareaField,
@@ -88,6 +90,7 @@ function AutoFieldInternal<
       custom: overrides.fieldTypes?.custom,
       array: overrides.fieldTypes?.array || defaultFields.array,
       external: overrides.fieldTypes?.external || defaultFields.external,
+      image: overrides.fieldTypes?.image || defaultFields.image,
       object: overrides.fieldTypes?.object || defaultFields.object,
       select: overrides.fieldTypes?.select || defaultFields.select,
       textarea: overrides.fieldTypes?.textarea || defaultFields.textarea,

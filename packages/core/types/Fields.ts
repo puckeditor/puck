@@ -167,6 +167,13 @@ export interface CustomField<Value extends any> extends BaseField {
   key?: string;
 }
 
+export interface ImageField extends BaseField {
+  type: "image";
+  onUpload: (file: File) => Promise<string>;
+  validate?: (file: File) => string | null;
+  placeholder?: string;
+}
+
 export interface SlotField extends BaseField {
   type: "slot";
   allow?: string[];
@@ -188,6 +195,7 @@ export type Field<ValueType = any, UserField extends {} = {}> =
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>
   | CustomField<ValueType>
+  | ImageField
   | SlotField;
 
 export type Fields<

@@ -1,0 +1,132 @@
+/**
+ * ImageField
+ */
+
+.ImageField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ImageField-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border: 2px dashed var(--puck-color-grey-09);
+  border-radius: 4px;
+  background: var(--puck-color-azure-11);
+  cursor: pointer;
+  color: var(--puck-color-grey-05);
+  font-size: 14px;
+  transition: border-color 50ms ease-in, background-color 50ms ease-in;
+}
+
+.ImageField-dropzone:hover {
+  border-color: var(--puck-color-azure-05);
+  background: var(--puck-color-azure-10);
+}
+
+.ImageField-dropzone--isDragOver {
+  border-color: var(--puck-color-azure-05);
+  background: var(--puck-color-azure-10);
+}
+
+.ImageField-dropzone--isReadOnly {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.ImageField-dropzone--isReadOnly:hover {
+  border-color: var(--puck-color-grey-09);
+  background: var(--puck-color-azure-11);
+}
+
+.ImageField-dropzone--isLoading {
+  cursor: wait;
+}
+
+.ImageField-fileInput {
+  display: none;
+}
+
+.ImageField-urlInput {
+  background: var(--puck-color-white);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--puck-color-grey-09);
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 16px;
+  padding: 12px 15px;
+  transition: border-color 50ms ease-in;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 458px) {
+  .ImageField-urlInput {
+    font-size: 14px;
+  }
+}
+
+.ImageField-urlInput:focus {
+  border-color: var(--puck-color-grey-05);
+  outline: 2px solid var(--puck-color-azure-05);
+  transition: none;
+}
+
+.ImageField-urlInput[readonly] {
+  background-color: var(--puck-color-grey-11);
+  border-color: var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
+  cursor: default;
+  opacity: 1;
+  outline: 0;
+  transition: none;
+}
+
+.ImageField-preview {
+  position: relative;
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ImageField-previewImage {
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  background: var(--puck-color-azure-11);
+}
+
+.ImageField-removeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: var(--puck-color-grey-01);
+  color: var(--puck-color-white);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 50ms ease-in;
+}
+
+.ImageField-removeButton:hover {
+  opacity: 1;
+}
+
+.ImageField-error {
+  color: var(--puck-color-red-03);
+  font-size: 12px;
+}
