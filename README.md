@@ -97,6 +97,7 @@ Available recipes include:
 - [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
 - [**remix**](https://github.com/puckeditor/puck/tree/main/recipes/remix): Remix Run v2 example, using dynamic routes at root-level
 - [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
+- [**tanstack**](https://github.com/puckeditor/puck/tree/main/recipes/tanstack): TanStack example, using dynamic routes to create pages at any level
 
 ## Community
 
