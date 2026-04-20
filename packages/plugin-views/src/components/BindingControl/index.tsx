@@ -104,6 +104,23 @@ export function BindingControl({
       path: newOption.path,
     };
 
+    // delete any static bindings that would be overridden by this new wildcard binding
+    // to avoid leaving orphaned bindings
+    Object.keys(newBindings).forEach((bindingKey) => {
+      const matchResolvedBindingKey = new RegExp(
+        `^${resolvedBindingKey
+          .replace(/\./g, "\\.")
+          .replace(/\[\*\]/g, "\\[(\\d+)\\]")}`
+      );
+
+      if (
+        bindingKey !== resolvedBindingKey &&
+        matchResolvedBindingKey.test(bindingKey)
+      ) {
+        delete newBindings[bindingKey];
+      }
+    });
+
     onChange(newBindings, newBindings[resolvedBindingKey]);
     setOpen(false);
     setQuery("");
@@ -223,6 +240,7 @@ export function BindingControl({
 
       const matchClosestArrayPath = new RegExp(
         `^${closestArrayPath
+          .replace(/\./g, "\\.")
           .replace(/\[\*\]/g, "\\[\\d+\\]")
           .replace(/\[(\d+)\]/g, "\\[$1\\]")}`
       );
