@@ -57,12 +57,23 @@ export type ValueType =
   | "null"
   | "unknown";
 
-export type ViewValueOption = {
+/**
+ * Represents a single value within a view that can be bound to a field.
+ * This is used for displaying view options in the UI and creating bindings from them.
+ */
+export type ViewValueOption<Type = any> = {
+  /** The ID of the view this option belongs to. Used for binding creation. */
   viewId: string;
+  /** The path to the value within the view result. Used for binding creation. */
   path: string;
+  /** The path expression. */
   expression: string;
+  /** The value preview as a string. */
   preview: string;
+  /** The value type. */
   valueType: ValueType;
+  /** The option value. */
+  value: Type;
 };
 
 export type ViewsPluginOptions = {

@@ -24,8 +24,9 @@ import type {
 import setDeep from "./set-deep";
 import cloneObject from "./clone-object";
 import { getFieldAtPath } from "./get-field-from-path";
-import { getTemplateExpressions } from "./strings/templates";
 import assignPathBinding from "./assign-path-binding";
+import { getTemplateExpressions } from "./strings/templates";
+import { isPlainObject } from "./utils/is-plain-object";
 
 export const DEFAULT_STORAGE_KEY = "__puck_views";
 export const DEFAULT_NODE_STATE_KEY = "__puck_view_state";
@@ -200,6 +201,7 @@ const appendValueOptions = ({
     expression: Array.isArray(value) ? `${path}[*]` : path,
     preview: formatPreview(value),
     valueType: getValueType(value),
+    value,
   });
 
   if (Array.isArray(value)) {
@@ -704,9 +706,9 @@ export const isCompatibleFieldBinding = ({
 }) => {
   switch (field.type) {
     case "number":
-      return option.valueType === "number" || !isNaN(Number(option.preview));
+      return option.valueType === "number" || !isNaN(Number(option.value));
     case "array":
-      return option.valueType === "array";
+      return option.valueType === "array" && isPlainObject(option.value[0]);
     case "text":
     case "textarea":
       return ["string", "number", "boolean", "null"].includes(option.valueType);
@@ -723,7 +725,7 @@ export const isCompatibleFieldBinding = ({
       if (!typeCompatible) return false;
 
       // Options need a matching field option to map to
-      return field.options.some((opt) => opt.value === option.preview);
+      return field.options.some((opt) => opt.value === option.value);
     default:
       return false;
   }

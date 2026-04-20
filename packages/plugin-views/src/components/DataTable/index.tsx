@@ -55,6 +55,7 @@ const Table = <Value,>({
     return (
       <Fragment key={index}>
         <tr>
+          <td>{index}</td>
           {keys.map((key) => {
             const value = item?.[key];
             const cellId = `${index}:${key}`;
@@ -89,7 +90,10 @@ const Table = <Value,>({
         </tr>
         {expandedCellsForRow.length > 0 && (
           <tr className={getClassName("expandedRow")} key={`expanded:${index}`}>
-            <td className={getClassName("expandedCell")} colSpan={keys.length}>
+            <td
+              className={getClassName("expandedCell")}
+              colSpan={keys.length + 1}
+            >
               <div className={getClassName("expandedSections")}>
                 {expandedCellsForRow.map((key) => (
                   <section
@@ -114,6 +118,7 @@ const Table = <Value,>({
     <table className={[getClassName(), className].join(" ")}>
       <thead>
         <tr>
+          <th>#</th>
           {keys.map((key) => (
             <th key={key}>{key}</th>
           ))}
@@ -136,10 +141,6 @@ const DataTable = <Value,>({
 }) => {
   if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object") {
     return <Table data={data} className={className} />;
-  }
-
-  if (typeof data !== "object" || data === null) {
-    return <>{String(data ?? "")}</>;
   }
 
   return (

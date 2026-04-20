@@ -21,6 +21,11 @@
   box-shadow: 1rem -2.1rem 0 0.6rem var(--puck-color-white);
 }
 
+.DataTable tr td:first-child,
+.DataTable tr th:first-child {
+  width: 1%;
+}
+
 .DataTable tr:last-child td:first-child {
   border-bottom-left-radius: 8px;
 }

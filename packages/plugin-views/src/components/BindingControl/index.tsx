@@ -22,25 +22,10 @@ import type {
 import { Loader } from "../Loader";
 import { Modal } from "../Modal";
 
+import ViewOption, { ViewOptionProps } from "./components/view-option";
 import styles from "./style.module.css";
 
 const getClassName = getClassNameFactory("BindingControl", styles);
-
-const getBindingLabel = (
-  binding: NodeViewBinding | null | undefined,
-  options: ViewValueOption[]
-) => {
-  if (!binding) {
-    return "Connect";
-  }
-
-  return (
-    options.find(
-      (option) =>
-        option.viewId === binding.viewId && option.path === (binding.path || "")
-    )?.expression ?? `${binding.path || "Unknown binding"}`
-  );
-};
 
 export type BindingControlProps = {
   /** Static path to the field (e.g. "items[0].subItems[1].name") defined by Puck `name` */
@@ -62,8 +47,6 @@ export type BindingControlProps = {
 
 /**
  * Renders the control to manage connection of a field to view data.
- *
- * The control will look for compatible view data based on the field type and allow the user to connect or disconnect the field to a specific piece of view data.
  */
 export function BindingControl({
   path,
@@ -79,6 +62,13 @@ export function BindingControl({
   const [valueOptions, setValueOptions] = useState<ViewValueOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // AutoField recreates the field object on every render, so we need to memoize the relevant properties to avoid refetching data on every render
+  const fieldType = field.type;
+  const fieldOptions =
+    field.type === "select" || field.type === "radio"
+      ? field.options
+      : undefined;
 
   // The field path includes static indexes (e.g. "items[0].subItems[1].name") but the binding might be on a wildcard ancestor
   // (e.g. "items[*].subItems[1].name"), so we need to convert it to wildcard format before looking for the binding and storing it
@@ -106,12 +96,34 @@ export function BindingControl({
   const fieldBinding: NodeViewBinding | undefined =
     bindings[resolvedBindingKey];
 
-  // AutoField recreates the field object on every render, so we need to memoize the relevant properties to avoid refetching data on every render
-  const fieldType = field.type;
-  const fieldOptions =
-    field.type === "select" || field.type === "radio"
-      ? field.options
-      : undefined;
+  const createNewBinding: ViewOptionProps["onConnect"] = (newOption) => {
+    const newBindings = { ...bindings };
+
+    newBindings[resolvedBindingKey] = {
+      viewId: newOption.viewId,
+      path: newOption.path,
+    };
+
+    onChange(newBindings, newBindings[resolvedBindingKey]);
+    setOpen(false);
+    setQuery("");
+  };
+
+  const deleteBinding = () => {
+    const newBindings = { ...bindings };
+
+    // delete the current binding and any wildcard bindings that would also match this path,
+    // to avoid leaving orphaned wildcard bindings that might still match the field after the specific binding is deleted
+    Object.keys(newBindings).forEach((bindingKey) => {
+      if (bindingKey.startsWith(resolvedBindingKey)) {
+        delete newBindings[bindingKey];
+      }
+    });
+
+    onChange(newBindings, null);
+    setOpen(false);
+    setQuery("");
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -120,14 +132,16 @@ export function BindingControl({
 
     let active = true;
 
-    setLoading(true);
-    setError(null);
+    const loadOptions = async () => {
+      setLoading(true);
+      setError(null);
 
-    loadResolvedViewData({
-      root,
-      options,
-    })
-      .then((viewsById) => {
+      try {
+        const viewsById = await loadResolvedViewData({
+          root,
+          options,
+        });
+
         if (!active) {
           return;
         }
@@ -145,20 +159,21 @@ export function BindingControl({
         );
 
         setValueOptions(allOptions);
-      })
-      .catch(() => {
+      } catch {
         if (!active) {
           return;
         }
 
         setError("Could not load view data.");
         setValueOptions([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) {
           setLoading(false);
         }
-      });
+      }
+    };
+
+    void loadOptions();
 
     return () => {
       active = false;
@@ -173,6 +188,7 @@ export function BindingControl({
     root,
   ]);
 
+  // Query view options by path or value
   const filteredOptions = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
@@ -180,12 +196,14 @@ export function BindingControl({
       return valueOptions;
     }
 
-    return valueOptions.filter((option) =>
-      option.expression.toLowerCase().includes(normalizedQuery)
+    return valueOptions.filter(
+      (option) =>
+        option.path.toLowerCase().includes(normalizedQuery) ||
+        option.preview.toLowerCase().includes(normalizedQuery)
     );
   }, [query, valueOptions]);
 
-  // Filter the options to only those that are nested under the closest array binding
+  // Filter view options to only those that are nested under the closest array binding
   const closestArrayBinding = closestArrayBindingKey
     ? bindings[closestArrayBindingKey]
     : null;
@@ -193,54 +211,103 @@ export function BindingControl({
   const matchingOptions = useMemo(() => {
     if (!closestArrayBinding) return filteredOptions;
 
-    const normalizedOptions = filteredOptions
-      .map((option) => {
-        const wildcardBindingPath = closestArrayBinding.path;
+    // Convert static paths to wildcard paths based on the closest array binding
+    const normalizedOptions: ViewValueOption[] = [];
 
-        const matchWildcardReg = new RegExp(
-          `^${wildcardBindingPath
-            .replace(/\[\*\]/g, "\\[\\d+\\]")
-            .replace(/\[(\d+)\]/g, "\\[$1\\]")}`
-        );
+    filteredOptions.forEach((option) => {
+      const closestArrayPath = closestArrayBinding.path;
 
-        const isMatch = matchWildcardReg.test(option.path);
+      if (closestArrayBinding.viewId !== option.viewId) {
+        return;
+      }
 
-        if (!isMatch) return null;
+      const matchClosestArrayPath = new RegExp(
+        `^${closestArrayPath
+          .replace(/\[\*\]/g, "\\[\\d+\\]")
+          .replace(/\[(\d+)\]/g, "\\[$1\\]")}`
+      );
 
-        if (option.expression === wildcardBindingPath) return null; // We don't want to show the exact same binding as an option
+      const isMatch = matchClosestArrayPath.test(option.path);
 
-        const wildcardPath = option.path.replace(
-          matchWildcardReg,
-          wildcardBindingPath
-        );
+      if (!isMatch) return;
 
-        if (wildcardPath.startsWith(fieldBinding?.path)) return null; // We don't want to show options that would create a circular binding
+      // Don't show the exact same binding as an option
+      if (option.path === closestArrayPath) return;
 
-        const formattedResult = {
-          ...option,
-          preview: "Connect every item to this data",
-          path: wildcardPath,
-          expression: wildcardPath,
-        };
+      const pathWithArrayBinding = option.path.replace(
+        matchClosestArrayPath,
+        closestArrayPath
+      );
 
-        return formattedResult;
-      })
-      .filter((option) => option !== null);
+      const formattedOption = {
+        ...option,
+        path: pathWithArrayBinding,
+        expression: pathWithArrayBinding,
+      };
 
-    const uniqueOptions = new Map<string, ViewValueOption>();
+      // Don't show options that would create a circular binding
+      if (pathWithArrayBinding.startsWith(fieldBinding?.path)) return;
+
+      normalizedOptions.push(formattedOption);
+    });
+
+    // Group any array binding view options that resolve to same path (i.g. "items[*].name")
+    const groupedOptions = new Map<string, ViewValueOption[]>();
+
     normalizedOptions.forEach((option) => {
-      if (!uniqueOptions.has(option.expression)) {
-        uniqueOptions.set(option.expression, option);
+      if (!groupedOptions.has(option.path)) {
+        groupedOptions.set(option.path, [option]);
+      } else {
+        groupedOptions.get(option.path)?.push(option);
       }
     });
 
-    return Array.from(uniqueOptions.values());
+    // Merge array binding view options that share the same path into a single option
+    // with multiple possible values to preview in the UI
+    let uniqueOptions: ViewValueOption[] = [];
+
+    groupedOptions.forEach((value) => {
+      const firstValue = value[0];
+
+      if (!firstValue) return;
+
+      uniqueOptions.push({
+        ...firstValue,
+        value: value.map((value) => ({
+          value: value.value,
+        })),
+      });
+    });
+
+    return uniqueOptions.sort((a, b) => a.path.localeCompare(b.path));
   }, [filteredOptions]);
+
+  const loader = loading && <Loader size={18} />;
+
+  const errorMessage = !loading && error;
+
+  const noViewOptions =
+    !loading &&
+    !error &&
+    matchingOptions.length === 0 &&
+    "No compatible view data.";
+
+  const viewOptionList =
+    !loading &&
+    !error &&
+    matchingOptions.length > 0 &&
+    matchingOptions.map((option) => (
+      <ViewOption
+        key={`${option.viewId}:${option.path}`}
+        option={option}
+        onConnect={createNewBinding}
+      />
+    ));
 
   return (
     <>
       <button
-        className={getClassName()}
+        className={getClassName({ connected: !!fieldBinding })}
         disabled={disabled && !fieldBinding}
         onClick={(event) => {
           event.preventDefault();
@@ -248,7 +315,7 @@ export function BindingControl({
         }}
         type="button"
       >
-        {getBindingLabel(fieldBinding, valueOptions)}
+        {fieldBinding ? "Connected" : "Connect"}
       </button>
       <Modal
         isOpen={isOpen}
@@ -278,65 +345,14 @@ export function BindingControl({
                 : "",
             ].join(" ")}
           >
-            {loading && <Loader size={18} />}
-            {!loading && error && error}
-            {!loading &&
-              !error &&
-              matchingOptions.length === 0 &&
-              "No compatible view data."}
-            {!loading &&
-              !error &&
-              matchingOptions.length > 0 &&
-              matchingOptions
-                .sort((a, b) => a.expression.localeCompare(b.expression))
-                .map((option) => (
-                  <button
-                    className={getClassName("optionButton")}
-                    key={`${option.viewId}:${option.path}`}
-                    onClick={() => {
-                      const newBindings = { ...bindings };
-
-                      newBindings[resolvedBindingKey] = {
-                        viewId: option.viewId,
-                        path: option.path,
-                      };
-
-                      onChange(newBindings, newBindings[resolvedBindingKey]);
-                      setOpen(false);
-                      setQuery("");
-                    }}
-                    type="button"
-                  >
-                    <div className={getClassName("optionTitle")}>
-                      {option.expression}
-                    </div>
-                    <div className={getClassName("optionPreview")}>
-                      {option.preview}
-                    </div>
-                  </button>
-                ))}
+            {loader}
+            {errorMessage}
+            {noViewOptions}
+            {viewOptionList}
           </div>
           <div className={getClassName("modalFooter")}>
             {fieldBinding && (
-              <Button
-                onClick={() => {
-                  const newBindings = { ...bindings };
-
-                  // delete the current binding and any wildcard bindings that would also match this path,
-                  // to avoid leaving orphaned wildcard bindings that might still match the field after the specific binding is deleted
-                  Object.keys(newBindings).forEach((bindingKey) => {
-                    if (bindingKey.startsWith(resolvedBindingKey)) {
-                      delete newBindings[bindingKey];
-                    }
-                  });
-
-                  onChange(newBindings, null);
-                  setOpen(false);
-                  setQuery("");
-                }}
-                type="button"
-                variant="secondary"
-              >
+              <Button onClick={deleteBinding} type="button" variant="secondary">
                 Disconnect
               </Button>
             )}

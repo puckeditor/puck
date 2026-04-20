@@ -8,6 +8,10 @@
   padding: 4px 10px;
 }
 
+.BindingControl--connected {
+  color: var(--puck-color-azure-04);
+}
+
 .BindingControl:hover:not(:disabled) {
   background: var(--puck-color-azure-12);
   border-color: var(--puck-color-grey-05);
