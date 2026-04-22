@@ -44,24 +44,17 @@ export function FieldEnhancer({
       <div className={getClassName("toolbar")}>
         <BindingControl
           path={bindingKey}
-          bindings={nodeState.bindings}
+          nodeViewState={nodeState}
           disabled={readOnly}
           field={field}
-          onChange={(nextBindings) => {
-            const nextNodeState: NodeViewState = {
-              templates: {
-                ...nodeState.templates,
-              },
-              bindings: nextBindings,
-            };
+          onChange={(nextNodeState) => {
+            const newProps = setNodeViewState({
+              props: currentProps,
+              nodeState: nextNodeState,
+              nodeStateKey: options.nodeStateKey,
+            });
 
-            replaceProps(
-              setNodeViewState({
-                props: currentProps,
-                nodeState: nextNodeState,
-                nodeStateKey: options.nodeStateKey,
-              })
-            );
+            replaceProps(newProps);
           }}
           options={options}
         />

@@ -21,19 +21,31 @@ import type {
   ViewsStorage,
 } from "../types";
 
-import setDeep from "./set-deep";
+import {
+  getTemplateExpressions,
+  getWildcardTemplateExpressions,
+  isTemplateString,
+  replaceTemplateExpressionValue,
+} from "./strings/templates";
+import {
+  getPathSegments,
+  getPathString,
+  getValueAtPath,
+  getWildcardCount,
+  getWildcardPathRegExp,
+  isValidPathExpression,
+  getPathToClosestWildcard,
+} from "./strings/paths";
+import { isPlainObject } from "./utils/is-plain-object";
+import getValueType from "./utils/get-value-type";
 import cloneObject from "./clone-object";
 import { getFieldAtPath } from "./get-field-from-path";
 import assignPathBinding from "./assign-path-binding";
-import { getTemplateExpressions } from "./strings/templates";
-import { isPlainObject } from "./utils/is-plain-object";
 
 export const DEFAULT_STORAGE_KEY = "__puck_views";
 export const DEFAULT_NODE_STATE_KEY = "__puck_view_state";
 export const RENDER_DATA_BINDING_KEY = "__puck_add_data_binding";
 
-const TEMPLATE_TOKEN_REGEX = /{{\s*([^{}]+?)\s*}}/g;
-const TEMPLATE_EXPRESSION_REGEX = /{{\s*([^{}]+?)\s*}}/;
 const inFlightQueries = new Map<string, Promise<any>>();
 
 /**
@@ -46,6 +58,37 @@ const getTemplateViewId = (expression: string) => {
   const match = expression.trim().match(/^[a-zA-Z0-9_-]+/);
 
   return match?.[0] || null;
+};
+
+/**
+ * Normalizes a static field path to its wildcard form using the closest matching array binding.
+ *
+ * @example
+ * // closest array binding "items[*].nested[1].names[*]"
+ * getWildcardFieldPath({
+ *   fieldPath: "items[0].nested[1].names[2].title",
+ *   bindings: { "items[*].nested[1].names[*]": ... },
+ * });
+ * // → "items[*].nested[1].names[*].title"
+ *
+ * @param fieldPath - The static field path to normalize.
+ * @param bindings - The node's current view-state bindings, used to locate the closest wildcard ancestor (array binding).
+ * @returns The normalized path with the closest wildcard positions replaced, or the original `fieldPath` if no matching binding is found.
+ */
+export const getWildcardFieldPath = ({
+  fieldPath,
+  bindings,
+}: {
+  fieldPath: string;
+  bindings: NodeViewState["bindings"];
+}) => {
+  const bindingKey = getPathToClosestWildcard(fieldPath, Object.keys(bindings));
+
+  if (!bindingKey) {
+    return fieldPath;
+  }
+
+  return fieldPath.replace(getWildcardPathRegExp(bindingKey), bindingKey);
 };
 
 /**
@@ -91,30 +134,6 @@ const getReferencedViewIds = (nodeState: NodeViewState) => {
 };
 
 /**
- * Determines the serializable value type used by the bindings UI.
- *
- * @param value The value to classify
- * @returns The inferred value type
- */
-const getValueType = (value: any): ValueType => {
-  if (value === null) return "null";
-  if (Array.isArray(value)) return "array";
-
-  switch (typeof value) {
-    case "string":
-      return "string";
-    case "number":
-      return "number";
-    case "boolean":
-      return "boolean";
-    case "object":
-      return "object";
-    default:
-      return "unknown";
-  }
-};
-
-/**
  * Formats a value for display in binding and template suggestions.
  *
  * @param value The value to format
@@ -135,44 +154,6 @@ const formatPreview = (value: any) => {
   } catch {
     return String(value);
   }
-};
-
-/**
- * Reads a nested value from a view result using dot and array notation.
- *
- * @param value The value to read from
- * @param path The nested path to resolve
- * @returns The value at the requested path
- */
-const getValueAtPath = (value: any, path: string) => {
-  if (!path) {
-    return value;
-  }
-
-  // Support array notation by converting it to dot notation (e.g. "items[0].name" -> "items.0.name")
-  const normalizedPath = path.replace(/\[(\d+|\*)\]/g, ".$1");
-
-  // Split the path into parts and filter out empty segments caused by trailing dots or consecutive dots
-  const pathSegments = normalizedPath.split(".").filter(Boolean);
-
-  let curr = value;
-
-  for (const segment of pathSegments) {
-    // Return the array itself when encountering a wildcard segment, allowing bindings to reference entire arrays
-    if (segment === "*") {
-      return Array.isArray(curr) ? curr : undefined;
-    }
-
-    const valueAtSegment = curr?.[segment];
-
-    if (typeof valueAtSegment === "undefined" || valueAtSegment === null) {
-      return undefined;
-    }
-
-    curr = valueAtSegment;
-  }
-
-  return curr;
 };
 
 /**
@@ -314,14 +295,8 @@ const applyViewBindings = ({
       return;
     }
 
-    const fieldPathSegments = fieldPath
-      .replace(/(\[(?:\d+|\*)\])/g, ".$1")
-      .split(".")
-      .filter(Boolean);
-    const bindingPath = binding.path
-      .replace(/(\[(?:\d+|\*)\])/g, ".$1")
-      .split(".")
-      .filter(Boolean);
+    const fieldPathSegments = getPathSegments(fieldPath);
+    const bindingPath = getPathSegments(binding.path);
 
     assignPathBinding(
       { pathSegments: fieldPathSegments, value: nextProps },
@@ -330,14 +305,12 @@ const applyViewBindings = ({
         value: { [binding.viewId]: viewsById[binding.viewId] },
       },
       (boundee) => {
-        const fieldPath = boundee.pathSegments.join(".").replace(/\.\[/g, "[");
-
         const fieldDef = getFieldAtPath(
           fieldPath,
           componentConfig.fields || {}
         );
         const defaultItemProps =
-          fieldDef?.type === "array" ? fieldDef.defaultItemProps : {};
+          fieldDef?.type === "array" ? fieldDef.defaultItemProps ?? {} : {};
 
         return boundee.value ? { ...boundee.value } : { ...defaultItemProps };
       }
@@ -378,10 +351,12 @@ const applyViewBindings = ({
 const applyViewTemplates = ({
   props,
   templates,
+  bindings,
   viewsById,
 }: {
   props: Record<string, any>;
   templates: NodeViewState["templates"];
+  bindings: NodeViewState["bindings"];
   viewsById?: Record<string, any>;
 }) => {
   if (!viewsById) return props;
@@ -389,14 +364,61 @@ const applyViewTemplates = ({
   let nextProps = cloneObject(props);
 
   Object.entries(templates).forEach(([fieldPath, template]) => {
-    nextProps = setDeep(
-      nextProps,
+    const expressionsToAssign = getTemplateExpressions(template);
+    const templateFieldPath = getTemplateStorageKey({
       fieldPath,
-      applyTemplateString({
+      template,
+      bindings,
+    });
+
+    if (
+      !isValidTemplateForFieldPath({
+        fieldPath: templateFieldPath,
         template,
-        viewsById,
+        bindings,
       })
-    );
+    ) {
+      console.debug(`Invalid template for field path: ${templateFieldPath}`);
+      return;
+    }
+
+    try {
+      expressionsToAssign.forEach((expression) => {
+        if (!isValidPathExpression(expression)) {
+          console.debug(`Invalid path expression: ${expression}`);
+          return;
+        }
+
+        assignPathBinding(
+          {
+            pathSegments: getPathSegments(templateFieldPath),
+            value: nextProps,
+          },
+          { pathSegments: getPathSegments(expression), value: viewsById },
+          (boundee) => boundee.value,
+          (boundee, boundValue) => {
+            const currentTemplate =
+              typeof boundee.value === "string" &&
+              isTemplateString(boundee.value)
+                ? boundee.value
+                : template;
+
+            const nextTemplate = replaceTemplateExpressionValue({
+              template: currentTemplate,
+              expression: getPathString(boundValue.pathSegments),
+              value: boundValue.value,
+            });
+
+            return nextTemplate;
+          }
+        );
+      });
+    } catch (e) {
+      console.warn(
+        `Failed to apply template for field path: ${templateFieldPath}`,
+        e
+      );
+    }
   });
 
   return nextProps;
@@ -635,36 +657,94 @@ export const getResolvedViews = ({
 };
 
 /**
- * Checks whether a string contains at least one template expression.
+ * Returns the key under which a template should be stored in the templates object.
  *
- * @param value The value to inspect
- * @returns Whether the value is a template string
+ * @param fieldPath The static field path the template is attached to
+ * @param template The template string
+ * @param bindings The node's current view-state bindings
+ * @returns The storage key for the template
  */
-export const isTemplateString = (value: unknown) =>
-  typeof value === "string" && TEMPLATE_EXPRESSION_REGEX.test(value);
+export const getTemplateStorageKey = ({
+  fieldPath,
+  template,
+  bindings,
+}: {
+  fieldPath: string;
+  template: string;
+  bindings: NodeViewState["bindings"];
+}) =>
+  getWildcardTemplateExpressions(template).length > 0
+    ? getWildcardFieldPath({ fieldPath, bindings })
+    : fieldPath;
 
 /**
- * Replaces template expressions with values from loaded view data.
+ * Resolves the array-binding context for a given field path.
  *
- * @param options The template string and resolved view data
- * @returns The resolved string
+ * @param fieldPath The field path to look up
+ * @param bindings The node's current view-state bindings
+ * @returns The binding context, or null if no wildcard ancestor binding exists
  */
-export const applyTemplateString = ({
-  template,
-  viewsById,
+const getTemplateBindingContext = ({
+  fieldPath,
+  bindings,
 }: {
+  fieldPath: string;
+  bindings: NodeViewState["bindings"];
+}) => {
+  const bindingKey = getPathToClosestWildcard(fieldPath, Object.keys(bindings));
+
+  if (!bindingKey || !bindings[bindingKey]) {
+    return null;
+  }
+
+  return {
+    bindingKey,
+    binding: bindings[bindingKey],
+    wildcardCount: getWildcardCount(bindings[bindingKey].path),
+    matchRegExp: getWildcardPathRegExp(bindings[bindingKey].path),
+  };
+};
+
+/**
+ * Checks whether all wildcard expressions in a template are valid for the closest array binding of the given field path.
+ *
+ * A template is valid if it has no wildcard expressions, or if every wildcard expression matches the closest array binding.
+ *
+ * @param fieldPath The field path the template is attached to
+ * @param template The template string to validate
+ * @param bindings The node's current view-state bindings
+ * @returns Whether the template is valid for the field path
+ */
+export const isValidTemplateForFieldPath = ({
+  fieldPath,
+  template,
+  bindings,
+}: {
+  fieldPath: string;
   template: string;
-  viewsById: Record<string, any>;
-}) =>
-  template.replace(TEMPLATE_TOKEN_REGEX, (_, expression) => {
-    const value = getValueAtPath(viewsById, expression.trim());
+  bindings: NodeViewState["bindings"];
+}) => {
+  const wildcardExpressions = getWildcardTemplateExpressions(template);
 
-    if (typeof value === "undefined" || value === null) {
-      return "";
-    }
+  if (wildcardExpressions.length === 0) {
+    return true;
+  }
 
-    return formatPreview(value);
+  const context = getTemplateBindingContext({
+    fieldPath,
+    bindings,
   });
+
+  if (!context) {
+    return false;
+  }
+
+  return wildcardExpressions.every(
+    (expression) =>
+      getWildcardCount(expression) === context.wildcardCount &&
+      context.matchRegExp.test(expression)
+  );
+};
 
 /**
  * Enumerates every reachable value inside loaded view data for the UI.
@@ -732,7 +812,7 @@ export const isCompatibleFieldBinding = ({
 };
 
 /**
- * Finds the currently open template fragment around the cursor.
+ * Finds the currently open template fragment up to the cursor position
  *
  * @param options The current input value and cursor position
  * @returns The active template fragment, or null when none is open
@@ -742,9 +822,9 @@ export const getTemplateFragment = ({
   cursor,
 }: {
   value: string;
-  cursor: number;
+  cursor?: number;
 }) => {
-  const beforeCursor = value.slice(0, cursor);
+  const beforeCursor = value.slice(0, cursor ?? value.length);
   const openIndex = beforeCursor.lastIndexOf("{{");
 
   if (openIndex === -1) {
@@ -764,7 +844,7 @@ export const getTemplateFragment = ({
 };
 
 /**
- * Replaces the active template fragment with a chosen expression.
+ * Completes and closes the open template fragment with an expression, and moves the cursor to the end of the inserted expression.
  *
  * @param options The current input value, cursor, and selected expression
  * @returns The updated value and next cursor position
@@ -775,7 +855,7 @@ export const insertTemplateExpression = ({
   expression,
 }: {
   value: string;
-  cursor: number;
+  cursor?: number;
   expression: string;
 }) => {
   const fragment = getTemplateFragment({ value, cursor });
@@ -787,10 +867,9 @@ export const insertTemplateExpression = ({
     };
   }
 
-  const nextValue = `${value.slice(
-    0,
-    fragment.start
-  )}{{ ${expression} }}${value.slice(cursor)}`;
+  const nextValue = `${value.slice(0, fragment.start)}{{ ${expression} }}${
+    cursor ? value.slice(cursor) : ""
+  }`;
 
   return {
     value: nextValue,
@@ -965,6 +1044,7 @@ export const applyNodeViews = async ({
     const nextProps = applyViewTemplates({
       props: boundData.props,
       templates: nodeState.templates,
+      bindings: nodeState.bindings,
       viewsById: viewsById || undefined,
     });
 
@@ -973,8 +1053,8 @@ export const applyNodeViews = async ({
       props: nextProps,
       readOnly: boundData.readOnly,
     };
-  } catch {
-    console.warn("Error loading view data, skipping view application"); // --- IGNORE ---
+  } catch (e) {
+    console.warn("Error loading view data, skipping view application", e);
     return data;
   }
 };

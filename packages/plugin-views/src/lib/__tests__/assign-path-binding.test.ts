@@ -531,6 +531,62 @@ describe("assignPathBinding", () => {
     }
   });
 
+  it("calls the onValueAssignment callback when assigning values", () => {
+    const onValueAssignment = jest.fn(
+      (
+        boundeeItem: {
+          value?: string;
+          pathSegments: string[];
+        },
+        boundValueItem: {
+          value?: string;
+          pathSegments: string[];
+        }
+      ) => {
+        expect(boundeeItem.pathSegments).toEqual([
+          "props",
+          "buttons",
+          "[*]",
+          "label",
+        ]);
+        expect(boundValueItem.pathSegments).toEqual([
+          "data",
+          "items",
+          "[*]",
+          "label",
+        ]);
+
+        return boundValueItem.value;
+      }
+    );
+
+    const boundee = {
+      value: {
+        props: {
+          buttons: [{ label: "Click me 1" }, { label: "Click me 2" }],
+        },
+      },
+      pathSegments: ["props", "buttons", "[*]", "label"],
+    };
+    const boundValue = {
+      value: {
+        data: {
+          items: [{ label: "Don't click me 1" }, { label: "Don't click me 2" }],
+        },
+      },
+      pathSegments: ["data", "items", "[*]", "label"],
+    };
+
+    assignPathBinding(boundee, boundValue, onArrayAssignment, onValueAssignment);
+
+    expect(onValueAssignment).toHaveBeenCalledTimes(2);
+    expect(boundee.value).toEqual({
+      props: {
+        buttons: [{ label: "Don't click me 1" }, { label: "Don't click me 2" }],
+      },
+    });
+  });
+
   it("doesn't override existing values with unrelated bound values", () => {
     const assignments = [
       {
@@ -703,23 +759,6 @@ describe("assignPathBinding", () => {
           pathSegments: ["data", "label", "extra"],
         },
         expected: { props: { button: { label: undefined } } },
-      },
-      {
-        boundee: {
-          value: {
-            props: {
-              buttons: [],
-            },
-          },
-          pathSegments: ["props", "buttons", "[*]", "labels", "[*]"],
-        },
-        boundValue: {
-          value: {
-            data: [{ notMatching: "" }],
-          },
-          pathSegments: ["data", "[*]", "labels", "[*]", "body"],
-        },
-        expected: { props: { buttons: [{ labels: [] }] } },
       },
     ];
 

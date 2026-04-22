@@ -1,5 +1,6 @@
 import { isPlainObject } from "./utils/is-plain-object";
-import getIndexesFromPath from "./utils/string-paths/get-indexes-from-path";
+
+import { getIndexesFromPath } from "./strings/paths";
 
 /**
  * Gets the index from a path segment if it includes array indexing (e.g., "[0]" or "[*]"), otherwise returns null.
@@ -61,12 +62,17 @@ const getNextLevel = (
   }
 };
 
+const defaultOnValueAssignment: OnValueAssignment<any, any, any> = (
+  _boundeeItem,
+  boundValueItem
+) => boundValueItem.value;
+
 const recursivePathAssignment = <
   Boundee extends object | any[],
   BoundValue extends object | any[],
   BoundeeItem = any,
   BoundValueItem = any,
-  ReturnType = void
+  AssignedItem = BoundValueItem
 >(
   boundeeValue: Boundee,
   boundeePathSegments: string[],
@@ -74,7 +80,16 @@ const recursivePathAssignment = <
   boundValue: BoundValue,
   boundValuePathSegments: string[],
   boundValueCurrentIndex: number,
-  onArrayAssignment: OnArrayAssignment<BoundeeItem, BoundValueItem, ReturnType>
+  onArrayAssignment: OnValueAssignment<
+    BoundeeItem,
+    BoundValueItem,
+    AssignedItem
+  >,
+  onValueAssignment: OnValueAssignment<
+    BoundeeItem,
+    BoundValueItem,
+    AssignedItem
+  >
 ): void => {
   if (boundValueCurrentIndex >= boundValuePathSegments.length) {
     throw new Error("Overflowed the bound value path");
@@ -162,7 +177,16 @@ const recursivePathAssignment = <
       const boundeeArray = boundeeValue as any[];
       const boundValueArray = boundValue as any[];
 
-      boundeeArray[boundeeIndexNumber] = boundValueArray[boundValueIndexNumber];
+      boundeeArray[boundeeIndexNumber] = onValueAssignment(
+        {
+          value: boundeeArray[boundeeIndexNumber],
+          pathSegments: boundeePathSegments,
+        },
+        {
+          value: boundValueArray[boundValueIndexNumber],
+          pathSegments: boundValuePathSegments,
+        }
+      );
 
       return;
     }
@@ -172,7 +196,16 @@ const recursivePathAssignment = <
       const boundeeArray = boundeeValue as any[];
       const boundValueObject = boundValue as Record<string, any>;
 
-      boundeeArray[boundeeIndexNumber] = boundValueObject[boundValueSegment];
+      boundeeArray[boundeeIndexNumber] = onValueAssignment(
+        {
+          value: boundeeArray[boundeeIndexNumber],
+          pathSegments: boundeePathSegments,
+        },
+        {
+          value: boundValueObject[boundValueSegment],
+          pathSegments: boundValuePathSegments,
+        }
+      );
 
       return;
     }
@@ -182,7 +215,16 @@ const recursivePathAssignment = <
       const boundeeObject = boundeeValue as Record<string, any>;
       const boundValueArray = boundValue as any[];
 
-      boundeeObject[boundeeSegment] = boundValueArray[boundValueIndexNumber];
+      boundeeObject[boundeeSegment] = onValueAssignment(
+        {
+          value: boundeeObject[boundeeSegment],
+          pathSegments: boundeePathSegments,
+        },
+        {
+          value: boundValueArray[boundValueIndexNumber],
+          pathSegments: boundValuePathSegments,
+        }
+      );
 
       return;
     }
@@ -190,7 +232,16 @@ const recursivePathAssignment = <
     const boundeeObject = boundeeValue as Record<string, any>;
     const boundValueObject = boundValue as Record<string, any>;
     // Neither side has an index, assign the value from the bound value to the boundee using the segment as the key
-    boundeeObject[boundeeSegment] = boundValueObject[boundValueSegment];
+    boundeeObject[boundeeSegment] = onValueAssignment(
+      {
+        value: boundeeObject[boundeeSegment],
+        pathSegments: boundeePathSegments,
+      },
+      {
+        value: boundValueObject[boundValueSegment],
+        pathSegments: boundValuePathSegments,
+      }
+    );
 
     return;
   }
@@ -226,7 +277,8 @@ const recursivePathAssignment = <
       boundValue,
       boundValuePathSegments,
       boundValueCurrentIndex,
-      onArrayAssignment
+      onArrayAssignment,
+      onValueAssignment
     );
     return;
   } else if (!isBoundValueWildcard && isBoundeeWildcard) {
@@ -252,7 +304,8 @@ const recursivePathAssignment = <
       nextLevelBoundValue,
       boundValuePathSegments,
       nextBoundValueSegmentIndex,
-      onArrayAssignment
+      onArrayAssignment,
+      onValueAssignment
     );
     return;
   } else if (isBoundValueWildcard && isBoundeeWildcard) {
@@ -263,6 +316,13 @@ const recursivePathAssignment = <
     if (!Array.isArray(boundeeValue) || !Array.isArray(boundValue)) {
       throw new Error(
         "Both boundee and bound value need to be arrays when using wildcard indexing."
+      );
+    }
+
+    // Invalid assignment (i.g. field[*] = data[*][*], field[*].label = data[*])
+    if (isLastBoundValueSegment || isLastBoundeeSegment) {
+      throw new Error(
+        "Cannot assign value: one path has a wildcard at the last segment but the other doesn't."
       );
     }
 
@@ -288,7 +348,8 @@ const recursivePathAssignment = <
         nextLevelBoundValue,
         boundValuePathSegments,
         nextBoundValueSegmentIndex,
-        onArrayAssignment
+        onArrayAssignment,
+        onValueAssignment
       );
     });
 
@@ -304,11 +365,13 @@ const recursivePathAssignment = <
           boundeePathSegments[boundeeCurrentIndex + 1]
         );
 
-    if (boundeeIndexNumber !== null) {
-      (boundeeValue as any[])[boundeeIndexNumber] = nextLevelBoundeeValue;
-    } else {
-      (boundeeValue as Record<string, any>)[boundeeSegment] =
-        nextLevelBoundeeValue;
+    if (!isLastBoundeeSegment) {
+      if (boundeeIndexNumber !== null) {
+        (boundeeValue as any[])[boundeeIndexNumber] = nextLevelBoundeeValue;
+      } else {
+        (boundeeValue as Record<string, any>)[boundeeSegment] =
+          nextLevelBoundeeValue;
+      }
     }
 
     const nextLevelBoundValue = isLastBoundValueSegment
@@ -329,7 +392,8 @@ const recursivePathAssignment = <
       isLastBoundValueSegment
         ? boundValueCurrentIndex
         : boundValueCurrentIndex + 1,
-      onArrayAssignment
+      onArrayAssignment,
+      onValueAssignment
     );
     return;
   }
@@ -342,7 +406,7 @@ type PathValuePair<Value> = {
   pathSegments: string[];
 };
 
-type OnArrayAssignment<
+type OnValueAssignment<
   BoundeeItem = any,
   BoundValueItem = any,
   AssignedItem = BoundeeItem
@@ -373,11 +437,16 @@ const assignPathBinding = <
 >(
   boundee: PathValuePair<Boundee>,
   boundValue: PathValuePair<BoundValue>,
-  onArrayAssignment: OnArrayAssignment<
+  onArrayAssignment: OnValueAssignment<
     BoundeeItem,
     BoundValueItem,
     AssignedItem
-  >
+  > = defaultOnValueAssignment,
+  onValueAssignment: OnValueAssignment<
+    BoundeeItem,
+    BoundValueItem,
+    AssignedItem
+  > = defaultOnValueAssignment
 ) => {
   recursivePathAssignment(
     boundee.value,
@@ -386,7 +455,8 @@ const assignPathBinding = <
     boundValue.value,
     boundValue.pathSegments,
     0,
-    onArrayAssignment
+    onArrayAssignment,
+    onValueAssignment
   );
 };
 

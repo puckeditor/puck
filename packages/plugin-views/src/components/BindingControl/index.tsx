@@ -11,10 +11,14 @@ import {
   getViewValueOptions,
   isCompatibleFieldBinding,
 } from "../../lib/views";
-import { getPathToClosestWildcard } from "../../lib/get-path-to-closest-wildcard";
+import {
+  getWildcardPathRegExp,
+  getPathToClosestWildcard,
+} from "../../lib/strings/paths";
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
 import type {
   NodeViewBinding,
+  NodeViewState,
   ViewValueOption,
   ViewsPluginOptions,
 } from "../../types";
@@ -27,16 +31,32 @@ import styles from "./style.module.css";
 
 const getClassName = getClassNameFactory("BindingControl", styles);
 
+const getBindingLabel = (
+  binding: NodeViewBinding | null | undefined,
+  options: ViewValueOption[]
+) => {
+  if (!binding) {
+    return "Connect";
+  }
+
+  return (
+    options.find(
+      (option) =>
+        option.viewId === binding.viewId && option.path === (binding.path || "")
+    )?.expression ?? `${binding.path || "Unknown binding"}`
+  );
+};
+
 export type BindingControlProps = {
   /** Static path to the field (e.g. "items[0].subItems[1].name") defined by Puck `name` */
   path: string;
   /** Puck field definition for the field */
   field: Field;
-  /** The current bindings for the component where the field is defined */
-  bindings: Record<string, NodeViewBinding>;
+  /** The current bindings and templates for the component where the field is defined */
+  nodeViewState: NodeViewState;
   /** Callback function to handle changes to the bindings */
   onChange: (
-    newComponentBindings: Record<string, NodeViewBinding>,
+    newComponentBindState: NodeViewState,
     newFieldBinding: NodeViewBinding | null
   ) => void;
   /** Options provided for the plugin when creating it */
@@ -51,7 +71,7 @@ export type BindingControlProps = {
 export function BindingControl({
   path,
   field,
-  bindings,
+  nodeViewState,
   onChange,
   options,
   disabled,
@@ -63,7 +83,9 @@ export function BindingControl({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // AutoField recreates the field object on every render, so we need to memoize the relevant properties to avoid refetching data on every render
+  const { bindings, templates } = nodeViewState;
+
+  // AutoField recreates field objects on every render, so we need to memoize the relevant properties to avoid refetching data on every render
   const fieldType = field.type;
   const fieldOptions =
     field.type === "select" || field.type === "radio"
@@ -78,12 +100,7 @@ export function BindingControl({
   );
 
   const matchWildcardReg = closestArrayBindingKey
-    ? new RegExp(
-        `^${closestArrayBindingKey
-          .replace(/\./g, "\\.")
-          .replace(/\[\*\]/g, "\\[(\\d+|\\*)\\]")
-          .replace(/\[(\d+)\]/g, "\\[$1\\]")}`
-      )
+    ? getWildcardPathRegExp(closestArrayBindingKey)
     : null;
 
   // If this field lives under an array binding, replace the static part of the path with the closest wildcard ancestor
@@ -99,18 +116,17 @@ export function BindingControl({
   const createNewBinding: ViewOptionProps["onConnect"] = (newOption) => {
     const newBindings = { ...bindings };
 
-    newBindings[resolvedBindingKey] = {
-      viewId: newOption.viewId,
-      path: newOption.path,
-    };
+    const baseBindingKey = resolvedBindingKey.endsWith("[*]")
+      ? resolvedBindingKey.replace(/\[\*\]$/, "")
+      : resolvedBindingKey;
 
-    // delete any static bindings that would be overridden by this new wildcard binding
+    // delete any bindings that would be overridden by this new wildcard binding
     // to avoid leaving orphaned bindings
     Object.keys(newBindings).forEach((bindingKey) => {
-      const matchResolvedBindingKey = new RegExp(
-        `^${resolvedBindingKey
-          .replace(/\./g, "\\.")
-          .replace(/\[\*\]/g, "\\[(\\d+)\\]")}`
+      // Static bindings that would be overridden by a new wildcard binding
+      const matchResolvedBindingKey = getWildcardPathRegExp(
+        resolvedBindingKey,
+        "\\d+"
       );
 
       if (
@@ -119,25 +135,72 @@ export function BindingControl({
       ) {
         delete newBindings[bindingKey];
       }
+
+      // Wildcard bindings that reference the current static index
+      Object.keys(newBindings).forEach((bindingKey) => {
+        if (bindingKey.startsWith(baseBindingKey)) {
+          delete newBindings[bindingKey];
+        }
+      });
     });
 
-    onChange(newBindings, newBindings[resolvedBindingKey]);
+    const baseBindingKeyWithWildcard =
+      resolvedBindingKey.endsWith("[*]") && resolvedBindingKey.includes(".")
+        ? resolvedBindingKey.replace(/\[\*\]$/, "")
+        : resolvedBindingKey;
+
+    // Delete wildcard templates that would be overriden by this new binding
+    const newTemplates = { ...templates };
+    Object.keys(newTemplates).forEach((templateKey) => {
+      if (templateKey.startsWith(baseBindingKeyWithWildcard)) {
+        delete newTemplates[templateKey];
+      }
+    });
+
+    newBindings[resolvedBindingKey] = {
+      viewId: newOption.viewId,
+      path: newOption.path,
+    };
+
+    onChange(
+      {
+        bindings: newBindings,
+        templates: newTemplates,
+      },
+      newBindings[resolvedBindingKey]
+    );
     setOpen(false);
     setQuery("");
   };
 
   const deleteBinding = () => {
+    // delete the current binding and any wildcard bindings that would also match this path,
+    // to avoid leaving orphaned wildcard bindings
     const newBindings = { ...bindings };
 
-    // delete the current binding and any wildcard bindings that would also match this path,
-    // to avoid leaving orphaned wildcard bindings that might still match the field after the specific binding is deleted
     Object.keys(newBindings).forEach((bindingKey) => {
       if (bindingKey.startsWith(resolvedBindingKey)) {
         delete newBindings[bindingKey];
       }
     });
 
-    onChange(newBindings, null);
+    // delete any wildcard template bindings that would also match this path,
+    // to avoid leaving orphaned template bindings
+    const newTemplates = { ...templates };
+
+    Object.keys(newTemplates).forEach((templateKey) => {
+      if (templateKey.startsWith(resolvedBindingKey)) {
+        delete newTemplates[templateKey];
+      }
+    });
+
+    onChange(
+      {
+        bindings: newBindings,
+        templates: newTemplates,
+      },
+      null
+    );
     setOpen(false);
     setQuery("");
   };
@@ -238,11 +301,9 @@ export function BindingControl({
         return;
       }
 
-      const matchClosestArrayPath = new RegExp(
-        `^${closestArrayPath
-          .replace(/\./g, "\\.")
-          .replace(/\[\*\]/g, "\\[\\d+\\]")
-          .replace(/\[(\d+)\]/g, "\\[$1\\]")}`
+      const matchClosestArrayPath = getWildcardPathRegExp(
+        closestArrayPath,
+        "\\d+"
       );
 
       const isMatch = matchClosestArrayPath.test(option.path);
@@ -333,7 +394,7 @@ export function BindingControl({
         }}
         type="button"
       >
-        {fieldBinding ? "Connected" : "Connect"}
+        {getBindingLabel(fieldBinding, matchingOptions)}
       </button>
       <Modal
         isOpen={isOpen}
