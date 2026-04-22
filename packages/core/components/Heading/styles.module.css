@@ -1,18 +1,18 @@
 .Heading {
   display: block;
-  color: var(--puck-color-black);
-  font-weight: 700;
+  color: var(--puck-color-text);
+  font-weight: var(--puck-font-weight-bold);
   margin: 0;
 }
 
 .Heading b {
-  font-weight: 700;
+  font-weight: var(--puck-font-weight-bold);
 }
 
 .Heading--xxxxl {
   font-size: var(--puck-font-size-xxxxl);
-  letter-spacing: 0.08ch;
-  font-weight: 800;
+  letter-spacing: var(--puck-letter-spacing-heading);
+  font-weight: var(--puck-font-weight-heavy);
 }
 
 .Heading--xxxl {

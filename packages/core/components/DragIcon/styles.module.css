@@ -1,8 +1,8 @@
 .DragIcon {
-  color: var(--puck-color-grey-05);
+  color: var(--puck-color-text-muted);
   cursor: grab;
-  padding: 4px;
-  border-radius: 4px;
+  padding: var(--puck-space-1);
+  border-radius: var(--puck-radius-m);
 }
 
 .DragIcon--disabled {
@@ -11,7 +11,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .DragIcon:not(.DragIcon--disabled):hover {
-    color: var(--puck-color-azure-05);
-    background-color: var(--puck-color-azure-12);
+    color: var(--puck-color-focus-ring);
+    background-color: var(--puck-color-interactive-subtle-hover);
   }
 }

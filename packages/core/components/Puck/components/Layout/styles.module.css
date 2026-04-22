@@ -17,7 +17,7 @@
  */
 
 .Puck {
-  --puck-space-px: 16px;
+  --puck-space-px: var(--puck-space-4);
   font-family: var(--puck-font-family);
   overflow-x: hidden;
   visibility: visible !important;
@@ -50,14 +50,15 @@
     --puck-user-right-side-bar-width,
     var(--puck-side-bar-width)
   );
-  background-color: var(--puck-color-grey-12);
+  background-color: var(--puck-color-surface-muted);
   display: grid;
   grid-template-areas: "header" "editor" "left" "right" "sidenav";
   grid-template-columns: var(--puck-frame-width);
   grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
   height: 100%;
   position: relative;
-  transition: grid-template-rows 150ms ease-in;
+  transition: grid-template-rows var(--puck-duration-medium)
+    var(--puck-ease-standard);
   z-index: 0;
   overflow: hidden;
 }
@@ -191,8 +192,8 @@
 }
 
 .PuckLayout-nav {
-  border-top: 1px solid var(--puck-color-grey-09);
-  background-color: var(--puck-color-grey-12);
+  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+  background-color: var(--puck-color-surface-muted);
   grid-area: sidenav;
   overflow: hidden;
   width: 100%;
@@ -201,7 +202,7 @@
 @media (min-width: 638px) {
   .PuckLayout-nav {
     border-top: 0;
-    border-right: 1px solid var(--puck-color-grey-09);
+    border-right: var(--puck-border-width-regular) solid var(--puck-color-border);
     box-sizing: border-box;
   }
 }

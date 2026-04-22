@@ -6,8 +6,8 @@
   border-radius: 32px;
   display: flex;
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  bottom: var(--puck-space-3);
+  right: var(--puck-space-3);
   overflow: hidden;
 }
 
@@ -18,8 +18,8 @@
 .ViewportControls--fullScreen .ViewportControls-toggleButton {
   align-items: center;
   background-color: var(--puck-color-grey-02);
-  border: 1px solid var(--puck-color-grey-04);
-  border-radius: 30px;
+  border: var(--puck-border-width-regular) solid var(--puck-color-grey-04);
+  border-radius: var(--puck-radius-pill);
   cursor: pointer;
   color: var(--puck-color-grey-11);
   display: flex;
@@ -31,7 +31,7 @@
 
 .ViewportControls--fullScreen .ViewportControls-toggleButton:hover {
   background-color: var(--puck-color-grey-02);
-  border: 1px solid var(--puck-color-azure-04);
+  border: var(--puck-border-width-regular) solid var(--puck-color-interactive);
   color: var(--puck-color-azure-07);
 }
 
@@ -54,9 +54,9 @@
 }
 
 .ViewportControls--fullScreen .ViewportControls-actionsInner {
-  background: var(--puck-color-grey-11);
-  border: 1px solid var(--puck-color-grey-09);
-  border-radius: 30px;
+  background: var(--puck-color-surface-subtle);
+  border: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-radius: var(--puck-radius-pill);
   margin-left: none;
   margin-right: none;
   padding-right: 42px;
@@ -64,7 +64,7 @@
 
 .ViewportControls--fullScreen .ViewportControls-actionsInner {
   transform: translateX(100%);
-  transition: transform 150ms ease-in-out;
+  transition: transform var(--puck-duration-medium) var(--puck-ease-emphasized);
 }
 
 .ViewportControls--fullScreen.ViewportControls--isExpanded
@@ -73,9 +73,10 @@
 }
 
 .ViewportControls-divider {
-  border-inline-end: 1px solid var(--puck-color-grey-09);
-  margin-bottom: 8px;
-  margin-top: 8px;
+  border-inline-end: var(--puck-border-width-regular) solid
+    var(--puck-color-border);
+  margin-bottom: var(--puck-space-2);
+  margin-top: var(--puck-space-2);
 }
 
 .ViewportControls-zoomSelect {
@@ -88,7 +89,7 @@
   border: 0;
   font-size: var(--puck-font-size-xxxs);
   padding: 0;
-  padding-left: 8px;
+  padding-left: var(--puck-space-2);
   width: 96px;
 }
 
@@ -117,5 +118,5 @@
 }
 
 .ViewportButton--isActive .ViewportButton-inner {
-  color: var(--puck-color-azure-04);
+  color: var(--puck-color-interactive);
 }
