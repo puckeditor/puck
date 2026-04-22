@@ -6,11 +6,9 @@ import type { Field } from "@puckeditor/core";
 
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 
-import {
-  loadResolvedViewData,
-  getViewValueOptions,
-  isCompatibleFieldBinding,
-} from "../../lib/views";
+import { getViewValueOptions } from "../../lib/views";
+import { isCompatibleFieldBinding } from "../../lib/bindings";
+import { getViewDataByIds } from "../../lib/services/views";
 import {
   getWildcardPathRegExp,
   getPathToClosestWildcard,
@@ -217,7 +215,7 @@ export function BindingControl({
       setError(null);
 
       try {
-        const viewsById = await loadResolvedViewData({
+        const viewsById = await getViewDataByIds({
           root,
           options,
         });

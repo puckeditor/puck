@@ -5,14 +5,16 @@ import type {
   RootData,
 } from "@puckeditor/core";
 
-import { RENDER_DATA_BINDING_KEY, toRootComponent } from "./src/lib/views";
-import mapObjectValues from "./src/lib/map-object-values";
-import transformFields from "./src/lib/transform-fields";
+import mapObjectValues from "./src/lib/utils/map-object-values";
+import transformFields from "./src/lib/puck/transform-fields";
+import { toRootComponent } from "./src/lib/puck/to-root-component";
+import { applyNodeViews } from "./src/lib/resolvers";
+
 import {
-  applyNodeViews,
   DEFAULT_NODE_STATE_KEY,
   DEFAULT_STORAGE_KEY,
-} from "./src/lib/views";
+  RENDER_DATA_BINDING_KEY,
+} from "./src/lib/constants";
 import type { ViewsPluginOptions } from "./src/types";
 
 const wrapComponentConfig = <T extends ComponentConfig | RootConfig>(

@@ -3,22 +3,25 @@
 import { AutoField, FieldLabel, setDeep } from "@puckeditor/core";
 import type { Field } from "@puckeditor/core";
 import { useEffect, useMemo, useState } from "react";
+
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
-import { BindingControl } from "../BindingControl";
+
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
 import {
-  RENDER_DATA_BINDING_KEY,
   getTemplateStorageKey,
-  getNodeViewState,
   getTemplateFragment,
   getViewValueOptions,
   insertTemplateExpression,
   isValidTemplateForFieldPath,
-  loadResolvedViewData,
-  setNodeViewState,
-  isCompatibleFieldBinding,
   getWildcardFieldPath,
 } from "../../lib/views";
+import { RENDER_DATA_BINDING_KEY } from "../../lib/constants";
+import {
+  setNodeViewState,
+  getNodeViewState,
+  isCompatibleFieldBinding,
+} from "../../lib/bindings";
+import { getViewDataByIds } from "../../lib/services/views";
 import {
   getWildcardPathRegExp,
   getPathToClosestWildcard,
@@ -29,6 +32,9 @@ import type {
   ViewValueOption,
   ViewsPluginOptions,
 } from "../../types";
+
+import { BindingControl } from "../BindingControl";
+
 import styles from "./style.module.css";
 
 const getClassName = getClassNameFactory("TemplateField", styles);
@@ -124,7 +130,7 @@ export function TemplateField({
 
     async function loadViewData() {
       try {
-        const viewsById = await loadResolvedViewData({
+        const viewsById = await getViewDataByIds({
           root,
           options,
         });

@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment, useMemo, memo } from "react";
-import { getClassNameFactory } from "@/core/lib";
+import getClassNameFactory from "@/core/lib/get-class-name-factory";
 
 import styles from "./style.module.css";
 

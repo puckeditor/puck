@@ -10,7 +10,7 @@ import {
   RENDER_DATA_BINDING_KEY,
   DEFAULT_NODE_STATE_KEY,
   DEFAULT_STORAGE_KEY,
-} from "./lib/views";
+} from "./lib/constants";
 
 import type { ViewsPluginOptions } from "./types";
 

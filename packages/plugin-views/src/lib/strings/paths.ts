@@ -210,3 +210,17 @@ export const getPathToClosestWildcard = (
 
   return deepestMatch.length > 0 ? deepestMatch.join(".") : null;
 };
+
+/**
+ * Extracts the leading segment name from a path.
+ *
+ * Note: Assumes the path name can only contain alphanumeric characters, underscores, or dashes.
+ *
+ * @param path The path to inspect
+ * @returns The first segment name, if one exists
+ */
+export const getFirstSegmentName = (path: string) => {
+  const match = path.trim().match(/^[a-zA-Z0-9_-]+/);
+
+  return match?.[0] || null;
+};

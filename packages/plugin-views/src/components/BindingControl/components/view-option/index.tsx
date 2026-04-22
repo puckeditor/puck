@@ -1,6 +1,6 @@
 import { Fragment, memo, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Button } from "@/core";
+import { Button } from "@puckeditor/core";
 import getClassNameFactory from "@/core/lib/get-class-name-factory";
 
 import { ViewValueOption } from "../../../../types";

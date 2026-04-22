@@ -1,6 +1,6 @@
 import { ComponentConfig, Field } from "@puckeditor/core";
 
-import mapObjectValues from "./map-object-values";
+import mapObjectValues from "../utils/map-object-values";
 
 type TransformField = (field: Field) => Field;
 

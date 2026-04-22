@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import usePuck from "./use-puck";
 
-import { normalizeRootData } from "../lib/views";
+import { normalizeRootData } from "../lib/puck/normalize-root-data";
 
 /**
  * A hook for accessing the currently selected Puck component editor's props and a function to replace them.

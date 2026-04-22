@@ -1,26 +1,26 @@
 "use client";
 
-import { Fragment, memo, ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Database } from "lucide-react";
-import { AutoField, Button, FieldLabel, createUsePuck } from "@puckeditor/core";
+import { AutoField, Button, FieldLabel } from "@puckeditor/core";
 import type { Field } from "@puckeditor/core";
 
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 
-import {
-  clearQueryCache,
-  collectNodeIds,
-  collectViewUsageCounts,
-  getResolvedViews,
-  getViewsStorage,
-  queryResolvedView,
-  toRootComponent,
-  updateStorageInRoot,
-} from "../../lib/views";
 import type { CustomView, ViewsPluginOptions } from "../../types";
-import { createViewId } from "../../lib/data/views";
-import { sanitizeId } from "../../lib/sanitize-id";
+import {
+  getCustomViews,
+  getViewData,
+  getViews,
+  clearQueryCache,
+  setViews,
+  createViewId,
+} from "../../lib/services/views";
+import { countViewUsage } from "../../lib/bindings";
+import { toRootComponent } from "../../lib/puck/to-root-component";
+import { sanitizeId } from "../../lib/utils/sanitize-id";
 import usePuck from "../../hooks/use-puck";
+import getAllComponentIds from "../../lib/puck/get-all-component-ids";
 
 import { SidebarSection } from "../SidebarSection";
 import { Loader } from "../Loader";
@@ -43,7 +43,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
   );
   const storage = useMemo(
     () =>
-      getViewsStorage({
+      getCustomViews({
         root: puckData.root,
         storageKey: options.storageKey,
       }),
@@ -51,7 +51,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
   );
   const views = useMemo(
     () =>
-      getResolvedViews({
+      getViews({
         root: puckData.root,
         builtInViews: options.builtInViews,
         storageKey: options.storageKey,
@@ -60,7 +60,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
   );
   const usageCounts = useMemo(
     () =>
-      collectViewUsageCounts({
+      countViewUsage({
         data: puckData,
         config,
         nodeStateKey: options.nodeStateKey,
@@ -136,7 +136,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
     setPreviewLoading(true);
     setPreviewError(null);
 
-    queryResolvedView({
+    getViewData({
       view: {
         id: previewView.id,
         source: previewView.source,
@@ -216,8 +216,9 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
 
     await Promise.resolve(resolveDataById("root", "force"));
 
+    // TODO: This is not a good a approach we should use resolveAllData instead if possible
     await Promise.all(
-      collectNodeIds({
+      getAllComponentIds({
         data: puckData,
         config,
       }).map((id) => Promise.resolve(resolveDataById(id, "force")))
@@ -227,7 +228,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
   const saveCustomViews = async (nextCustomViews: CustomView[]) => {
     dispatch({
       type: "replaceRoot",
-      root: updateStorageInRoot({
+      root: setViews({
         root: puckData.root,
         storageKey: options.storageKey,
         storage: {
@@ -529,6 +530,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                   </Button>
                   {isPersistedCustomView && (
                     <Button
+                      disabled={selectedUsageCount > 0}
                       onClick={async () => {
                         if (!selectedView || selectedView.builtIn) return;
                         if (selectedUsageCount > 0) return;

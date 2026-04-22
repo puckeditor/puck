@@ -1,4 +1,4 @@
-import { Field, Fields } from "@/core";
+import { Field, Fields } from "@puckeditor/core";
 
 /**
  * Gets a field definition from a field path, supporting nested fields in object and array types.
