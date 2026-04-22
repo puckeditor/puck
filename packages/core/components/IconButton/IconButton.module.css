@@ -2,35 +2,37 @@
   align-items: center;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--puck-radius-m);
   color: currentColor;
   display: flex;
   font-family: var(--puck-font-family);
   justify-content: center;
-  padding: 4px;
-  transition: background-color 50ms ease-in, color 50ms ease-in;
+  padding: var(--puck-space-1);
+  transition:
+    background-color var(--puck-duration-fast) var(--puck-ease-standard),
+    color var(--puck-duration-fast) var(--puck-ease-standard);
 }
 
 .IconButton--active {
-  color: var(--puck-color-azure-04);
+  color: var(--puck-color-interactive);
 }
 
 .IconButton:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: -2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
-    background: var(--puck-color-grey-10);
-    color: var(--puck-color-azure-04);
+    background: var(--puck-color-border-muted);
+    color: var(--puck-color-interactive);
     cursor: pointer;
     transition: none;
   }
 }
 
 .IconButton:active {
-  background: var(--puck-color-azure-11);
+  background: var(--puck-color-interactive-subtle);
   transition: none;
 }
 
@@ -45,5 +47,5 @@
 }
 
 .IconButton--disabled {
-  color: var(--puck-color-grey-07);
+  color: var(--puck-color-text-subtle);
 }

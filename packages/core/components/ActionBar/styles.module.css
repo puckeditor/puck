@@ -3,14 +3,14 @@
   cursor: default;
   display: flex;
   width: auto;
-  padding: 4px;
+  padding: var(--puck-space-1);
   padding-inline-start: 0;
   padding-inline-end: 0;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  border-radius: 8px;
+  border-top-left-radius: var(--puck-radius-l);
+  border-top-right-radius: var(--puck-radius-l);
+  border-radius: var(--puck-radius-l);
   background: var(--puck-color-grey-01);
-  color: var(--puck-color-white);
+  color: var(--puck-color-text-inverse);
   font-family: var(--puck-font-family);
   min-height: 26px;
 }
@@ -18,11 +18,11 @@
 .ActionBar-label {
   color: var(--puck-color-grey-08);
   font-size: var(--puck-font-size-xxxs);
-  font-weight: 500;
-  padding-inline-start: 8px;
-  padding-inline-end: 8px;
-  margin-inline-start: 4px;
-  margin-inline-end: 4px;
+  font-weight: var(--puck-font-weight-medium);
+  padding-inline-start: var(--puck-space-2);
+  padding-inline-end: var(--puck-space-2);
+  margin-inline-start: var(--puck-space-1);
+  margin-inline-end: var(--puck-space-1);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -32,16 +32,17 @@
 }
 
 .ActionBar-label + .ActionBarAction {
-  margin-inline-start: -4px;
+  margin-inline-start: calc(var(--puck-space-1) * -1);
 }
 
 .ActionBar-group {
   align-items: center;
-  border-inline-start: 0.5px solid var(--puck-color-grey-05); /* Fractional value required due to scaling */
+  border-inline-start: var(--puck-border-width-hairline) solid
+    var(--puck-color-grey-05); /* Fractional value required due to scaling */
   display: flex;
   height: 100%;
-  padding-inline-start: 4px;
-  padding-inline-end: 4px;
+  padding-inline-start: var(--puck-space-1);
+  padding-inline-end: var(--puck-space-1);
 }
 
 .ActionBar-group:first-of-type {
@@ -58,14 +59,14 @@
   color: var(--puck-color-grey-08);
   cursor: pointer;
   padding: 6px;
-  margin-inline-start: 4px;
-  margin-inline-end: 4px;
-  border-radius: 4px;
+  margin-inline-start: var(--puck-space-1);
+  margin-inline-end: var(--puck-space-1);
+  border-radius: var(--puck-radius-m);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 50ms ease-in;
+  transition: color var(--puck-duration-fast) var(--puck-ease-standard);
 }
 
 .ActionBarAction--disabled {
@@ -78,8 +79,8 @@
 }
 
 .ActionBarAction:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: -2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -101,7 +102,7 @@
 
 .ActionBar-separator {
   background: var(--puck-color-grey-05);
-  margin-inline: 4px;
-  width: 0.5px; /* Fractional value required due to scaling */
+  margin-inline: var(--puck-space-1);
+  width: var(--puck-border-width-hairline); /* Fractional value required due to scaling */
   height: 100%;
 }

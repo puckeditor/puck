@@ -1,21 +1,23 @@
 .Button {
   appearance: none;
   background: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  color: var(--puck-color-white);
+  border: var(--puck-border-width-regular) solid transparent;
+  border-radius: var(--puck-radius-m);
+  color: var(--puck-color-text-inverse);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  letter-spacing: 0.05ch;
+  gap: var(--puck-space-2);
+  letter-spacing: var(--puck-letter-spacing-ui);
   font-family: var(--puck-font-family);
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--puck-font-size-xxs);
+  font-weight: var(--puck-font-weight-regular);
   box-sizing: border-box;
   line-height: 1;
   text-align: center;
   text-decoration: none;
-  transition: background-color 50ms ease-in;
+  transition:
+    background-color var(--puck-duration-fast) var(--puck-ease-standard),
+    color var(--puck-duration-fast) var(--puck-ease-standard);
   cursor: pointer;
   white-space: nowrap;
   margin: 0;
@@ -46,49 +48,49 @@
 }
 
 .Button--primary {
-  background: var(--puck-color-azure-04);
+  background: var(--puck-color-interactive);
 }
 
 .Button:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Button--primary:hover {
-    background-color: var(--puck-color-azure-03);
+    background-color: var(--puck-color-interactive-hover);
   }
 }
 
 .Button--primary:active {
-  background-color: var(--puck-color-azure-02);
+  background-color: var(--puck-color-interactive-active);
 }
 
 .Button--secondary {
-  border: 1px solid currentColor;
+  border: var(--puck-border-width-regular) solid currentColor;
   color: currentColor;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Button--secondary:hover {
-    background-color: var(--puck-color-azure-12);
-    color: var(--puck-color-black);
+    background-color: var(--puck-color-interactive-subtle);
+    color: var(--puck-color-text);
   }
 }
 
 .Button--secondary:active {
-  background-color: var(--puck-color-azure-11);
-  color: var(--puck-color-black);
+  background-color: var(--puck-color-interactive-subtle);
+  color: var(--puck-color-text);
 }
 
 .Button--flush {
-  border-radius: 0;
+  border-radius: var(--puck-radius-none);
 }
 
 .Button--disabled,
 .Button--disabled:hover {
-  background-color: var(--puck-color-grey-07);
-  color: var(--puck-color-grey-03);
+  background-color: var(--puck-color-disabled-bg);
+  color: var(--puck-color-disabled-text);
   cursor: not-allowed;
 }
 
@@ -98,5 +100,5 @@
 }
 
 .Button-spinner {
-  padding-inline-start: 8px;
+  padding-inline-start: var(--puck-space-2);
 }

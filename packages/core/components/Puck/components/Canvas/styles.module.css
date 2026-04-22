@@ -1,5 +1,5 @@
 .PuckCanvas {
-  background: var(--puck-color-grey-11);
+  background: var(--puck-color-surface-subtle);
   display: flex;
   grid-area: editor;
   flex-direction: column;
@@ -40,8 +40,8 @@
 }
 
 .PuckCanvas-root {
-  background: white;
-  outline: 1px solid var(--puck-color-grey-09);
+  background: var(--puck-color-surface);
+  outline: var(--puck-border-width-regular) solid var(--puck-color-border);
   box-sizing: content-box;
   min-width: 321px;
   position: absolute;
@@ -75,7 +75,7 @@
   display: flex;
   height: 100%;
   justify-content: center;
-  transition: opacity 250ms ease-out;
+  transition: opacity var(--puck-duration-slow) var(--puck-ease-exit);
   opacity: 0;
 }
 

@@ -1,6 +1,8 @@
 @import url("https://rsms.me/inter/inter.css");
 
 body {
+  background-color: var(--puck-color-surface);
+  color: var(--puck-color-text);
   font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI,
     Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
     Segoe UI Symbol;
@@ -12,5 +14,31 @@ body {
     font-family: InterVariable, -apple-system, BlinkMacSystemFont, Segoe UI,
       Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
       Segoe UI Symbol;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --puck-color-text: var(--puck-color-grey-09);
+    --puck-color-text-strong: var(--puck-color-grey-08);
+    --puck-color-text-inverse: var(--puck-color-grey-01);
+    --puck-color-interactive: var(--puck-color-azure-05);
+    --puck-color-interactive-hover: var(--puck-color-azure-07);
+    /* This is used in unexpected ways, such as for outline and nav hover */
+    --puck-color-interactive-soft: var(--puck-color-grey-03);
+    --puck-color-interactive-subtle: var(--puck-color-grey-03);
+    --puck-color-interactive-subtle-hover: var(--puck-color-grey-03);
+    --puck-color-surface: var(--puck-color-grey-01);
+    --puck-color-surface-muted: var(--puck-color-grey-01);
+    --puck-color-surface-subtle: var(--puck-color-grey-02);
+    --puck-color-border: var(--puck-color-grey-02);
+
+    --puck-color-selection-bg: color-mix(
+      in srgb,
+      var(--puck-color-azure-05) 30%,
+      transparent
+    );
+    --puck-color-selection-border: var(--puck-color-azure-06);
+    --puck-color-focus-ring: var(--puck-color-azure-07);
   }
 }

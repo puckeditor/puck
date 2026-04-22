@@ -1,0 +1,109 @@
+:root {
+  /*
+   * Semantic colors
+   */
+
+  --puck-color-surface: var(--puck-color-white);
+  --puck-color-surface-muted: var(--puck-color-grey-12);
+  --puck-color-surface-subtle: var(--puck-color-grey-11);
+  --puck-color-border: var(--puck-color-grey-09);
+  --puck-color-border-muted: var(--puck-color-grey-10);
+  --puck-color-text: var(--puck-color-black);
+  --puck-color-text-strong: var(--puck-color-grey-04);
+  --puck-color-text-muted: var(--puck-color-grey-05);
+  --puck-color-text-subtle: var(--puck-color-grey-07);
+  --puck-color-text-inverse: var(--puck-color-white);
+  --puck-color-interactive: var(--puck-color-azure-04);
+  --puck-color-interactive-hover: var(--puck-color-azure-03);
+  --puck-color-interactive-active: var(--puck-color-azure-02);
+  --puck-color-interactive-soft: var(--puck-color-azure-10);
+  --puck-color-interactive-subtle: var(--puck-color-azure-11);
+  --puck-color-interactive-subtle-hover: var(--puck-color-azure-12);
+  --puck-color-focus-ring: var(--puck-color-azure-05);
+  --puck-color-selection-bg: color-mix(
+    in srgb,
+    var(--puck-color-azure-09) 30%,
+    transparent
+  );
+  --puck-color-selection-border: var(--puck-color-azure-08);
+  --puck-color-disabled-bg: var(--puck-color-grey-07);
+  --puck-color-disabled-text: var(--puck-color-grey-03);
+  --puck-color-overlay-backdrop: color-mix(
+    in srgb,
+    var(--puck-color-black) 75%,
+    transparent
+  );
+  --puck-color-danger: var(--puck-color-red-04);
+
+  /*
+   * Spacing
+   */
+
+  --puck-space-1: 4px;
+  --puck-space-2: 8px;
+  --puck-space-3: 12px;
+  --puck-space-4: 16px;
+  --puck-space-5: 24px;
+  --puck-space-px: var(--puck-space-4);
+
+  /*
+   * Radius
+   */
+
+  --puck-radius-none: 0;
+  --puck-radius-xs: 2px;
+  --puck-radius-s: 3px;
+  --puck-radius-m: 4px;
+  --puck-radius-l: 8px;
+  --puck-radius-pill: 30px;
+  --puck-radius-round: 100%;
+
+  /*
+   * Border widths
+   */
+
+  --puck-border-width-hairline: 0.5px;
+  --puck-border-width-regular: 1px;
+  --puck-border-width-focus: 2px;
+  --puck-border-width-strong: 4px;
+
+  /*
+   * Motion
+   */
+
+  --puck-duration-fast: 50ms;
+  --puck-duration-medium: 150ms;
+  --puck-duration-slow: 250ms;
+  --puck-ease-standard: ease-in;
+  --puck-ease-emphasized: ease-in-out;
+  --puck-ease-exit: ease-out;
+
+  /*
+   * Typography
+   */
+
+  --puck-font-weight-regular: 400;
+  --puck-font-weight-medium: 500;
+  --puck-font-weight-semibold: 600;
+  --puck-font-weight-bold: 700;
+  --puck-font-weight-heavy: 800;
+  --puck-letter-spacing-ui: 0.05ch;
+  --puck-letter-spacing-heading: 0.08ch;
+
+  /*
+   * Icon sizing
+   */
+
+  --puck-icon-size-s: 16px;
+  --puck-icon-size-m: 18px;
+  --puck-icon-size-l: 24px;
+
+  /*
+   * Functional variables
+   */
+
+  --space-m-unitless: 24;
+  --puck-user-left-side-bar-width: var(--puck-side-bar-width);
+  --puck-user-right-side-bar-width: var(--puck-side-bar-width);
+  --min-empty-height: 128px;
+}

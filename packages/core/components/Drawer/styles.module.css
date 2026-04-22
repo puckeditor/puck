@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   font-family: var(--puck-font-family);
-  gap: 12px;
+  gap: var(--puck-space-3);
 }
 
 .Drawer-draggable {
@@ -20,21 +20,24 @@
 }
 
 .DrawerItem-draggable {
-  background: var(--puck-color-white);
+  background: var(--puck-color-surface);
+  color: var(--puck-color-text);
   cursor: grab;
-  padding: 12px;
+  padding: var(--puck-space-3);
   display: flex;
-  border: 1px var(--puck-color-grey-09) solid;
-  border-radius: 4px;
+  border: var(--puck-border-width-regular) var(--puck-color-border) solid;
+  border-radius: var(--puck-radius-m);
   font-size: var(--puck-font-size-xxs);
   justify-content: space-between;
   align-items: center;
-  transition: background-color 50ms ease-in, color 50ms ease-in;
+  transition: background-color var(--puck-duration-fast)
+      var(--puck-ease-standard),
+    color var(--puck-duration-fast) var(--puck-ease-standard);
 }
 
 .DrawerItem--disabled .DrawerItem-draggable {
-  background: var(--puck-color-grey-11);
-  color: var(--puck-color-grey-05);
+  background: var(--puck-color-surface-subtle);
+  color: var(--puck-color-text-muted);
   cursor: not-allowed; /** Move this out of inline styles */
 }
 
@@ -45,17 +48,17 @@
 .Drawer:not(.Drawer--isDraggingFrom)
   .DrawerItem:focus-visible
   .DrawerItem-draggable {
-  border-radius: 4px;
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  border-radius: var(--puck-radius-m);
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Drawer:not(.Drawer--isDraggingFrom)
     .DrawerItem:not(.DrawerItem--disabled)
     .DrawerItem-draggable:hover {
-    background-color: var(--puck-color-azure-12);
-    color: var(--puck-color-azure-04);
+    background-color: var(--puck-color-interactive-subtle-hover);
+    color: var(--puck-color-interactive);
     transition: none;
   }
 }

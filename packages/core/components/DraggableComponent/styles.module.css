@@ -2,11 +2,7 @@
   position: absolute;
   pointer-events: none;
 
-  --overlay-background: color-mix(
-    in srgb,
-    var(--puck-color-azure-08) 30%,
-    transparent
-  );
+  --overlay-background: var(--puck-color-selection-bg);
 }
 
 .DraggableComponent-overlayWrapper {
@@ -22,23 +18,23 @@
 .DraggableComponent-overlay {
   cursor: pointer;
   height: 100%;
-  outline: 2px var(--puck-color-azure-09) solid;
-  outline-offset: -2px;
+  outline: var(--puck-border-width-focus) var(--puck-color-selection-border) solid;
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
   width: 100%;
 }
 
 .DraggableComponent:focus-visible > .DraggableComponent-overlayWrapper {
-  outline: 1px solid var(--puck-color-azure-05);
+  outline: var(--puck-border-width-regular) solid var(--puck-color-focus-ring);
 }
 
 .DraggableComponent-loadingOverlay {
-  background: var(--puck-color-white);
-  color: var(--puck-color-grey-03);
-  border-radius: 4px;
+  background: var(--puck-color-surface);
+  color: var(--puck-color-text);
+  border-radius: var(--puck-radius-m);
   display: flex;
-  padding: 8px;
-  top: 8px;
-  right: 8px;
+  padding: var(--puck-space-2);
+  top: var(--puck-space-2);
+  right: var(--puck-space-2);
   position: absolute;
   z-index: 1;
   pointer-events: all;
@@ -51,7 +47,7 @@
   > .DraggableComponent-overlayWrapper
   > .DraggableComponent-overlay {
   background: var(--overlay-background);
-  outline: 2px var(--puck-color-azure-09) solid;
+  outline: var(--puck-border-width-focus) var(--puck-color-selection-border) solid;
 }
 
 .DraggableComponent--isSelected

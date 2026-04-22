@@ -1,10 +1,8 @@
 .DropZone {
-  --resize-animation-ms: 150ms;
-
   position: relative;
   height: 100%;
   min-height: var(--min-empty-height);
-  outline-offset: -2px;
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
   width: 100%;
 }
 
@@ -18,30 +16,26 @@
 
 /* We use global data-puck-dragging to avoid re-rendering DropZone */
 [data-puck-entry]:not([data-puck-dragging]) .DropZone {
-  transition: min-height var(--resize-animation-ms) ease-in;
+  transition: min-height var(--puck-duration-medium) var(--puck-ease-standard);
 }
 
 .DropZone--isAreaSelected,
 .DropZone--hoveringOverArea:not(.DropZone--isRootZone) {
-  background: color-mix(in srgb, var(--puck-color-azure-09) 30%, transparent);
-  outline: 2px dashed var(--puck-color-azure-08);
+  background: var(--puck-color-selection-bg);
+  outline: var(--puck-border-width-focus) dashed var(--puck-color-selection-border);
 }
 
 .DropZone:empty {
-  background: color-mix(in srgb, var(--puck-color-azure-09) 30%, transparent);
-  outline: 2px dashed var(--puck-color-azure-08);
+  background: var(--puck-color-selection-bg);
+  outline: var(--puck-border-width-focus) dashed var(--puck-color-selection-border);
 }
 
 .DropZone--isDestination {
-  outline: 2px dashed var(--puck-color-azure-04) !important;
+  outline: var(--puck-border-width-focus) dashed var(--puck-color-interactive) !important;
 }
 
 .DropZone--isDestination:not(.DropZone--isRootZone) {
-  background: color-mix(
-    in srgb,
-    var(--puck-color-azure-09) 30%,
-    transparent
-  ) !important;
+  background: var(--puck-color-selection-bg) !important;
 }
 
 .DropZone-item {
@@ -50,14 +44,14 @@
 
 .DropZone-hitbox {
   position: absolute;
-  bottom: -12px;
-  height: 24px;
+  bottom: calc(var(--puck-space-3) * -1);
+  height: var(--puck-space-5);
   width: 100%;
   z-index: 1;
 }
 
 [data-puck-dragging] .DropZone--isEnabled {
-  outline: 2px dashed var(--puck-color-azure-06);
+  outline: var(--puck-border-width-focus) dashed var(--puck-color-azure-06);
 }
 
 .DropZone > *:not([data-puck-component]) {

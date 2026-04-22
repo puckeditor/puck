@@ -1,7 +1,7 @@
 .PuckHeader {
-  background: var(--puck-color-white);
-  border-bottom: 1px solid var(--puck-color-grey-09);
-  color: var(--puck-color-black);
+  background: var(--puck-color-surface);
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  color: var(--puck-color-text);
   grid-area: header;
   position: relative;
   max-width: 100vw;
@@ -29,7 +29,7 @@
 
 @media (min-width: 638px) {
   .PuckHeader-inner {
-    border-left: 1px solid var(--puck-color-grey-09);
+    border-left: var(--puck-border-width-regular) solid var(--puck-color-border);
   }
 
   .PuckHeader--hidePlugins .PuckHeader-inner {
@@ -38,15 +38,15 @@
 }
 
 .PuckHeader-toggle {
-  color: var(--puck-color-grey-05);
+  color: var(--puck-color-text-muted);
   display: flex;
-  margin-inline-start: -4px;
+  margin-inline-start: calc(var(--puck-space-1) * -1);
   padding-top: 2px;
 }
 
 .PuckHeader--rightSideBarVisible .PuckHeader-rightSideBarToggle,
 .PuckHeader--leftSideBarVisible .PuckHeader-leftSideBarToggle {
-  color: var(--puck-color-black);
+  color: var(--puck-color-text);
 }
 
 .PuckHeader-rightSideBarToggle,
@@ -74,17 +74,17 @@
 
 .PuckHeader-tools {
   display: flex;
-  gap: 16px;
+  gap: var(--puck-space-4);
   justify-content: flex-end;
 }
 
 .PuckHeader-menuButton {
-  color: var(--puck-color-grey-05);
-  margin-inline-start: -4px;
+  color: var(--puck-color-text-muted);
+  margin-inline-start: calc(var(--puck-space-1) * -1);
 }
 
 .PuckHeader--menuOpen .PuckHeader-menuButton {
-  color: var(--puck-color-black);
+  color: var(--puck-color-text);
 }
 
 @media (min-width: 638px) {

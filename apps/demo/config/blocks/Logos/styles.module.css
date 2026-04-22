@@ -7,7 +7,7 @@
   justify-content: space-between;
   padding-bottom: 64px;
   padding-top: 64px;
-  gap: 24px;
+  gap: var(--puck-space-5);
   filter: grayscale(1) brightness(100);
   opacity: 0.8;
 }

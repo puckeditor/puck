@@ -4,54 +4,57 @@
 
 .ExternalInput-button {
   display: flex;
-  gap: 8px;
+  gap: var(--puck-space-2);
   align-items: center;
   justify-content: center;
-  background-color: var(--puck-color-white);
-  border: 1px solid var(--puck-color-grey-09);
-  border-radius: 4px;
-  color: var(--puck-color-azure-04);
-  padding: 12px 16px;
-  font-weight: 500;
+  background-color: var(--puck-color-surface);
+  border: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-radius: var(--puck-radius-m);
+  color: var(--puck-color-interactive);
+  padding: var(--puck-space-3) var(--puck-space-4);
+  font-weight: var(--puck-font-weight-medium);
   white-space: nowrap;
   text-overflow: ellipsis;
-  transition: background-color 50ms ease-in;
+  transition: background-color var(--puck-duration-fast)
+    var(--puck-ease-standard);
   position: relative;
   overflow: hidden;
   flex-grow: 1;
 }
 
 .ExternalInput--dataSelected .ExternalInput-button {
-  color: var(--puck-color-grey-03);
+  color: var(--puck-color-disabled-text);
   display: block;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
 
 .ExternalInput--readOnly .ExternalInput-button {
-  background-color: var(--puck-color-grey-11);
+  background-color: var(--puck-color-surface-subtle);
 }
 
 .ExternalInput-detachButton {
-  border: 1px solid var(--puck-color-grey-09);
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-  background-color: var(--puck-color-grey-12);
-  color: var(--puck-color-grey-05);
+  border: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-top-right-radius: var(--puck-radius-m);
+  border-bottom-right-radius: var(--puck-radius-m);
+  background-color: var(--puck-color-surface-muted);
+  color: var(--puck-color-text-muted);
   display: flex;
-  gap: 8px;
+  gap: var(--puck-space-2);
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: var(--puck-space-2) var(--puck-space-3);
   position: relative;
-  transition: background-color 50ms ease-in, color 50ms ease-in;
+  transition:
+    background-color var(--puck-duration-fast) var(--puck-ease-standard),
+    color var(--puck-duration-fast) var(--puck-ease-standard);
   margin-inline-start: -1px;
 }
 
 .ExternalInput-button:focus-visible,
 .ExternalInput-detachButton:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
   z-index: 1;
 }
 
@@ -59,25 +62,25 @@
   .ExternalInput:not(.ExternalInput--readOnly) .ExternalInput-button:hover,
   .ExternalInput:not(.ExternalInput--readOnly)
     .ExternalInput-detachButton:hover {
-    background: var(--puck-color-azure-12);
+    background: var(--puck-color-interactive-subtle-hover);
     transition: none;
   }
 
   .ExternalInput:not(.ExternalInput--readOnly)
     .ExternalInput-detachButton:hover {
-    color: var(--puck-color-azure-04);
+    color: var(--puck-color-interactive);
   }
 }
 
 .ExternalInput:not(.ExternalInput--readOnly) .ExternalInput-button:active,
 .ExternalInput:not(.ExternalInput--readOnly)
   .ExternalInput-detachButton:active {
-  background: var(--puck-color-azure-11);
+  background: var(--puck-color-interactive-subtle);
   transition: none;
 }
 
 .ExternalInputModal {
-  color: var(--puck-color-black);
+  color: var(--puck-color-text);
   display: grid;
   grid-template-rows: min-content minmax(128px, 100%) min-content;
   grid-template-columns: 100%;
@@ -103,7 +106,7 @@
 }
 
 .ExternalInputModal-filters {
-  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
 }
 
 .ExternalInputModal--filtersToggled .ExternalInputModal-filters {
@@ -112,7 +115,8 @@
 
 @media (min-width: 458px) {
   .ExternalInputModal-filters {
-    border-inline-end: 1px solid var(--puck-color-grey-09);
+    border-inline-end: var(--puck-border-width-regular) solid
+      var(--puck-color-border);
     display: none;
   }
 
@@ -122,12 +126,12 @@
 }
 
 .ExternalInputModal-masthead {
-  background-color: var(--puck-color-grey-12);
-  border-bottom: 1px solid var(--puck-color-grey-09);
+  background-color: var(--puck-color-surface-muted);
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
-  padding: 24px;
+  gap: var(--puck-space-5);
+  padding: var(--puck-space-5);
 }
 
 .ExternalInputModal-tableWrapper {
@@ -147,35 +151,36 @@
 }
 
 .ExternalInputModal-thead {
-  background-color: var(--puck-color-white);
+  background-color: var(--puck-color-surface);
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
 .ExternalInputModal-th {
-  border-bottom: 1px solid var(--puck-color-grey-09);
-  color: var(--puck-color-grey-04);
-  font-weight: 500;
-  font-size: 14px;
-  padding: 16px 24px;
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  color: var(--puck-color-text-strong);
+  font-weight: var(--puck-font-weight-medium);
+  font-size: var(--puck-font-size-xxs);
+  padding: var(--puck-space-4) var(--puck-space-5);
 }
 
 .ExternalInputModal-td {
-  border-bottom: 1px solid var(--puck-color-grey-10);
-  padding: 16px 24px;
+  border-bottom: var(--puck-border-width-regular) solid
+    var(--puck-color-border-muted);
+  padding: var(--puck-space-4) var(--puck-space-5);
 }
 
 .ExternalInputModal-tr .ExternalInputModal-td:first-of-type {
-  font-weight: 500;
+  font-weight: var(--puck-font-weight-medium);
   width: 1%; /* Prevent growing */
   white-space: nowrap; /* Prevent growing */
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ExternalInputModal-tbody .ExternalInputModal-tr:hover {
-    background: var(--puck-color-azure-12);
-    color: var(--puck-color-azure-04);
+    background: var(--puck-color-interactive-subtle-hover);
+    color: var(--puck-color-interactive);
     cursor: pointer;
     position: relative;
     margin-inline-start: -5px;
@@ -184,7 +189,8 @@
   .ExternalInputModal-tbody
     .ExternalInputModal-tr:hover
     .ExternalInputModal-td:first-of-type {
-    border-inline-start: 4px solid var(--puck-color-azure-04);
+    border-inline-start: var(--puck-border-width-strong) solid
+      var(--puck-color-interactive);
     padding-inline-start: 20px;
   }
 }
@@ -207,7 +213,7 @@
   display: none;
   background-color: color-mix(
     in srgb,
-    var(--puck-color-white) 90%,
+    var(--puck-color-surface) 90%,
     transparent
   );
   padding: 64px;
@@ -227,7 +233,7 @@
 .ExternalInputModal-searchForm {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--puck-space-3);
   flex-grow: 1;
 }
 
@@ -239,49 +245,50 @@
 
 .ExternalInputModal-search {
   display: flex;
-  background: var(--puck-color-white);
-  border-width: 1px;
+  background: var(--puck-color-surface);
+  border-width: var(--puck-border-width-regular);
   border-style: solid;
-  border-color: var(--puck-color-grey-09);
-  border-radius: 4px;
+  border-color: var(--puck-color-border);
+  border-radius: var(--puck-radius-m);
   flex-grow: 1;
-  transition: border-color 50ms ease-in;
+  transition: border-color var(--puck-duration-fast) var(--puck-ease-standard);
 }
 
 .ExternalInputModal-search:focus-within {
-  border-color: var(--puck-color-grey-05);
-  outline: 2px solid var(--puck-color-azure-05);
+  border-color: var(--puck-color-text-muted);
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
   transition: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ExternalInputModal-search:hover {
-    border-color: var(--puck-color-grey-05);
+    border-color: var(--puck-color-text-muted);
     transition: none;
   }
 }
 
 .ExternalInputModal-searchIcon {
   align-items: center;
-  background: var(--puck-color-grey-12);
-  border-bottom-left-radius: 4px;
-  border-top-left-radius: 4px;
-  border-inline-end: 1px solid var(--puck-color-grey-09);
-  color: var(--puck-color-grey-07);
+  background: var(--puck-color-surface-muted);
+  border-bottom-left-radius: var(--puck-radius-m);
+  border-top-left-radius: var(--puck-radius-m);
+  border-inline-end: var(--puck-border-width-regular) solid
+    var(--puck-color-border);
+  color: var(--puck-color-text-subtle);
   display: flex;
   justify-content: center;
-  padding: 12px 15px;
-  transition: color 50ms ease-in;
+  padding: var(--puck-space-3) 15px;
+  transition: color var(--puck-duration-fast) var(--puck-ease-standard);
 }
 
 .ExternalInputModal-search:focus-within .ExternalInputModal-searchIcon {
-  color: var(--puck-color-grey-04);
+  color: var(--puck-color-text-strong);
   transition: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ExternalInputModal-search:hover .ExternalInputModal-searchIcon {
-    color: var(--puck-color-grey-04);
+    color: var(--puck-color-text-strong);
     transition: none;
   }
 }
@@ -298,11 +305,11 @@
 
 .ExternalInputModal-searchInput {
   border: none;
-  border-radius: 4px;
-  background: var(--puck-color-white);
+  border-radius: var(--puck-radius-m);
+  background: var(--puck-color-surface);
   font-family: inherit;
-  font-size: 14px;
-  padding: 12px 15px;
+  font-size: var(--puck-font-size-xxs);
+  padding: var(--puck-space-3) 15px;
   width: 100%;
 }
 
@@ -312,7 +319,7 @@
 
 .ExternalInputModal-searchActions {
   display: flex;
-  gap: 8px;
+  gap: var(--puck-space-2);
   height: 44px;
   width: 100%;
 }
@@ -328,21 +335,21 @@
 }
 
 .ExternalInputModal-footerContainer {
-  background-color: var(--puck-color-grey-12);
-  border-top: 1px solid var(--puck-color-grey-09);
-  color: var(--puck-color-grey-04);
-  padding: 16px;
+  background-color: var(--puck-color-surface-muted);
+  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+  color: var(--puck-color-text-strong);
+  padding: var(--puck-space-4);
 }
 
 .ExternalInputModal-footer {
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: var(--puck-font-weight-medium);
+  font-size: var(--puck-font-size-xxs);
   text-align: right;
 }
 
 .ExternalInputModal-field {
-  color: var(--puck-color-grey-04);
-  margin: 16px;
-  margin-bottom: 12px;
+  color: var(--puck-color-text-strong);
+  margin: var(--puck-space-4);
+  margin-bottom: var(--puck-space-3);
   display: block;
 }
