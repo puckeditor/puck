@@ -107,7 +107,7 @@ const resolved = await resolveAllData(data, configWithViews, metadata);
 V1 supports path-only template strings:
 
 ```ts
-"Featured: {{ topProducts[0].name }}"
+"Featured: {{ topProducts[0].name }}";
 ```
 
 - Multiple placeholders are supported in one string.

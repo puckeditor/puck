@@ -105,14 +105,14 @@ export const resolveComponentData = async <
                 await resolveComponentData(
                   childItem as T,
                   config,
-                metadata,
-                onResolveStart,
-                onResolveEnd,
-                trigger,
-                itemAsComponentData,
-                rootForChildren
-              )
-            ).node
+                  metadata,
+                  onResolveStart,
+                  onResolveEnd,
+                  trigger,
+                  itemAsComponentData,
+                  rootForChildren
+                )
+              ).node
           )
         );
       },

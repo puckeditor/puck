@@ -577,7 +577,12 @@ describe("assignPathBinding", () => {
       pathSegments: ["data", "items", "[*]", "label"],
     };
 
-    assignPathBinding(boundee, boundValue, onArrayAssignment, onValueAssignment);
+    assignPathBinding(
+      boundee,
+      boundValue,
+      onArrayAssignment,
+      onValueAssignment
+    );
 
     expect(onValueAssignment).toHaveBeenCalledTimes(2);
     expect(boundee.value).toEqual({
