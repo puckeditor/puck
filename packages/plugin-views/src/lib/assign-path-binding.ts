@@ -89,7 +89,8 @@ const recursivePathAssignment = <
     BoundeeItem,
     BoundValueItem,
     AssignedItem
-  >
+  >,
+  isBoundValueStatic: boolean
 ): void => {
   if (boundValueCurrentIndex >= boundValuePathSegments.length) {
     throw new Error("Overflowed the bound value path");
@@ -278,10 +279,50 @@ const recursivePathAssignment = <
       boundValuePathSegments,
       boundValueCurrentIndex,
       onArrayAssignment,
-      onValueAssignment
+      onValueAssignment,
+      isBoundValueStatic
     );
     return;
   } else if (!isBoundValueWildcard && isBoundeeWildcard) {
+    if (isBoundValueStatic) {
+      const nextBoundeeSegmentIndex = boundeeCurrentIndex + 1;
+      const nextBoundValueSegmentIndex = isLastBoundValueSegment
+        ? boundValueCurrentIndex
+        : boundValueCurrentIndex + 1;
+
+      const nextLevelBoundValue = isLastBoundValueSegment
+        ? boundValue
+        : getNextLevel(
+            boundValueIndexNumber !== null
+              ? (boundValue as any[])[boundValueIndexNumber]
+              : (boundValue as Record<string, any>)[boundValueSegment],
+            boundValuePathSegments[nextBoundValueSegmentIndex]
+          );
+
+      (boundeeValue as any[]).forEach((_, index) => {
+        const nextLevelBoundeeValue = getNextLevel(
+          (boundeeValue as any[])[index],
+          boundeePathSegments[nextBoundeeSegmentIndex]
+        );
+
+        (boundeeValue as any[])[index] = nextLevelBoundeeValue;
+
+        recursivePathAssignment(
+          nextLevelBoundeeValue,
+          boundeePathSegments,
+          nextBoundeeSegmentIndex,
+          nextLevelBoundValue,
+          boundValuePathSegments,
+          nextBoundValueSegmentIndex,
+          onArrayAssignment,
+          onValueAssignment,
+          isBoundValueStatic
+        );
+      });
+
+      return;
+    }
+
     const nextBoundValueSegmentIndex = boundValueCurrentIndex + 1;
 
     if (nextBoundValueSegmentIndex >= boundValuePathSegments.length) {
@@ -305,7 +346,8 @@ const recursivePathAssignment = <
       boundValuePathSegments,
       nextBoundValueSegmentIndex,
       onArrayAssignment,
-      onValueAssignment
+      onValueAssignment,
+      isBoundValueStatic
     );
     return;
   } else if (isBoundValueWildcard && isBoundeeWildcard) {
@@ -349,7 +391,8 @@ const recursivePathAssignment = <
         boundValuePathSegments,
         nextBoundValueSegmentIndex,
         onArrayAssignment,
-        onValueAssignment
+        onValueAssignment,
+        isBoundValueStatic
       );
     });
 
@@ -393,7 +436,8 @@ const recursivePathAssignment = <
         ? boundValueCurrentIndex
         : boundValueCurrentIndex + 1,
       onArrayAssignment,
-      onValueAssignment
+      onValueAssignment,
+      isBoundValueStatic
     );
     return;
   }
@@ -420,7 +464,7 @@ type OnValueAssignment<
  * The function resolves the paths of both the boundee and the bound value, and then assigns the value from the boundValue to the corresponding location in the boundee.
  *
  * It can handle static indexing (e.g., "field[0]") as well as dynamic wildcard indexing (e.g., "field[*]") in the paths.
- * If using wildcard indexing, the boundValue also needs to have as many wildcards in its path as the boundee for the function to correctly resolve the paths and perform the assignment.
+ * If using wildcard indexing in the boundValue, it needs to have as many wildcards in its path as the boundee for the function to correctly resolve the paths and perform the assignment.
  *
  * This happens in place and mutates the boundee object/array. The function handles both object and array structures, and it will create intermediate objects/arrays if they do not exist along the path.
  *
@@ -448,6 +492,10 @@ const assignPathBinding = <
     AssignedItem
   > = defaultOnValueAssignment
 ) => {
+  const isBoundValueStatic = !boundValue.pathSegments.some(
+    (seg) => getIndex(seg) === "*"
+  );
+
   recursivePathAssignment(
     boundee.value,
     boundee.pathSegments,
@@ -456,7 +504,8 @@ const assignPathBinding = <
     boundValue.pathSegments,
     0,
     onArrayAssignment,
-    onValueAssignment
+    onValueAssignment,
+    isBoundValueStatic
   );
 };
 

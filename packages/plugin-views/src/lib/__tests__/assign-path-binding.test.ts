@@ -461,6 +461,103 @@ describe("assignPathBinding", () => {
     }
   });
 
+  it("assigns the same value to all when using boundee wildcards with static bound values", () => {
+    const assignments = [
+      {
+        boundee: {
+          value: {
+            props: {
+              buttons: [
+                {
+                  label: "Click me",
+                },
+              ],
+            },
+          },
+          pathSegments: ["props", "buttons", "[*]", "label"],
+        },
+        boundValue: {
+          value: {
+            data: {
+              button: {
+                label: "Don't click me",
+              },
+            },
+          },
+          pathSegments: ["data", "button", "label"],
+        },
+        expected: {
+          props: {
+            buttons: [
+              {
+                label: "Don't click me",
+              },
+            ],
+          },
+        },
+      },
+      {
+        boundee: {
+          value: {
+            props: {
+              tags: [
+                {
+                  langs: [
+                    {
+                      label: "Click me",
+                    },
+                    {
+                      label: "Click me too",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          pathSegments: ["props", "tags", "[*]", "langs", "[*]", "label"],
+        },
+        boundValue: {
+          value: {
+            data: {
+              langs: [
+                {
+                  label: "Don't click me",
+                },
+              ],
+            },
+          },
+          pathSegments: ["data", "langs", "[0]", "label"],
+        },
+        expected: {
+          props: {
+              tags: [
+                {
+                  langs: [
+                    {
+                      label: "Don't click me",
+                    },
+                    {
+                      label: "Don't click me",
+                    },
+                  ],
+                },
+              ],
+            },
+        },
+      },
+    ];
+
+    for (const { boundee, boundValue, expected } of assignments) {
+      assignPathBinding<typeof boundee.value, typeof boundValue.value>(
+        boundee,
+        boundValue,
+        onArrayAssignment
+      );
+      expect(boundee.value).toEqual(expected);
+      expect(onArrayAssignment).not.toHaveBeenCalled();
+    }
+  });
+
   it("calls the onArrayAssignment callback when assigning array items with wildcards", () => {
     const assignments = [
       // Calls the onArrayAssignment callback when assigning array values
@@ -797,30 +894,6 @@ describe("assignPathBinding", () => {
             },
           },
           pathSegments: ["data", "[*]", "label"],
-        },
-      },
-      {
-        boundee: {
-          value: {
-            props: {
-              buttons: [
-                {
-                  label: "Click me",
-                },
-              ],
-            },
-          },
-          pathSegments: ["props", "buttons", "[*]", "label"],
-        },
-        boundValue: {
-          value: {
-            data: {
-              button: {
-                label: "Don't click me",
-              },
-            },
-          },
-          pathSegments: ["data", "button", "label"],
         },
       },
       {
