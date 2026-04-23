@@ -7,25 +7,26 @@ import { useEffect, useMemo, useState } from "react";
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
-import {
-  getTemplateFragment,
-  getViewValueOptions,
-  insertTemplateExpression,
-  getWildcardFieldPath,
-} from "../../lib/views";
 import { RENDER_DATA_BINDING_KEY } from "../../lib/constants";
 import {
   setNodeViewState,
   getNodeViewState,
   isCompatibleFieldBinding,
 } from "../../lib/bindings";
-import { getViewDataByIds } from "../../lib/services/views";
+import {
+  getTemplateFragment,
+  insertTemplateExpression,
+} from "../../lib/bindings/templates";
+import { getViewDataByIds, getViewValueOptions } from "../../lib/views";
 import { getSyncFieldPath, setSyncedFieldValue } from "../../lib/bindings/sync";
 import {
   getWildcardPathRegExp,
   getPathToClosestWildcard,
 } from "../../lib/strings/paths";
-import { isTemplateString } from "../../lib/strings/templates";
+import {
+  isTemplateString,
+  getWildcardFieldPath,
+} from "../../lib/strings/templates";
 import type {
   NodeViewState,
   ViewValueOption,
@@ -313,6 +314,7 @@ export function TemplateField({
         icon={field.labelIcon}
         label={field.label ?? name}
         readOnly={readOnly || !!binding}
+        el="div"
       >
         <div
           className={getClassName("field")}

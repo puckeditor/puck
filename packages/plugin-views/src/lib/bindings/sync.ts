@@ -6,8 +6,8 @@ import {
   getPathString,
   getPathToClosestWildcard,
 } from "../strings/paths";
+import { getWildcardFieldPath } from "../strings/templates";
 import cloneObject from "../utils/clone-object";
-import { getWildcardFieldPath } from "../views";
 
 /**
  * Creates sync state for values that are manually kept in sync by the "synced" resolver (don't contain templates or bindings).

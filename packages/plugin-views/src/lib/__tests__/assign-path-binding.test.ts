@@ -530,19 +530,19 @@ describe("assignPathBinding", () => {
         },
         expected: {
           props: {
-              tags: [
-                {
-                  langs: [
-                    {
-                      label: "Don't click me",
-                    },
-                    {
-                      label: "Don't click me",
-                    },
-                  ],
-                },
-              ],
-            },
+            tags: [
+              {
+                langs: [
+                  {
+                    label: "Don't click me",
+                  },
+                  {
+                    label: "Don't click me",
+                  },
+                ],
+              },
+            ],
+          },
         },
       },
     ];

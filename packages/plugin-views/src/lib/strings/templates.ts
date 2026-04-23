@@ -1,3 +1,6 @@
+import type { NodeViewState } from "../../types";
+
+import { getPathToClosestWildcard, getWildcardPathRegExp } from "./paths";
 import { escapeRegExp } from "./regex";
 
 const TEMPLATE_TOKEN_REGEX = /{{\s*([^{}]+?)\s*}}/g;
@@ -66,3 +69,34 @@ export const getWildcardTemplateExpressions = (template: string) =>
  */
 export const isTemplateString = (value: unknown) =>
   typeof value === "string" && TEMPLATE_EXPRESSION_REGEX.test(value);
+
+/**
+ * Normalizes a static field path to its wildcard form using the closest matching array binding.
+ *
+ * @example
+ * // closest array binding "items[*].nested[1].names[*]"
+ * getWildcardFieldPath({
+ *   fieldPath: "items[0].nested[1].names[2].title",
+ *   bindings: { "items[*].nested[1].names[*]": ... },
+ * });
+ * // → "items[*].nested[1].names[*].title"
+ *
+ * @param fieldPath - The static field path to normalize.
+ * @param bindings - The node's current view-state bindings, used to locate the closest wildcard ancestor (array binding).
+ * @returns The normalized path with the closest wildcard positions replaced, or the original `fieldPath` if no matching binding is found.
+ */
+export const getWildcardFieldPath = ({
+  fieldPath,
+  bindings,
+}: {
+  fieldPath: string;
+  bindings: NodeViewState["bindings"];
+}) => {
+  const bindingKey = getPathToClosestWildcard(fieldPath, Object.keys(bindings));
+
+  if (!bindingKey) {
+    return fieldPath;
+  }
+
+  return fieldPath.replace(getWildcardPathRegExp(bindingKey), bindingKey);
+};

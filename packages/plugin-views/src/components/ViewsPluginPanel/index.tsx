@@ -15,7 +15,7 @@ import {
   clearQueryCache,
   setViews,
   createViewId,
-} from "../../lib/services/views";
+} from "../../lib/views";
 import { countViewUsage } from "../../lib/bindings";
 import { toRootComponent } from "../../lib/puck/to-root-component";
 import { sanitizeId } from "../../lib/utils/sanitize-id";

@@ -6,10 +6,12 @@ import type { Field } from "@puckeditor/core";
 
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 
-import { getViewValueOptions } from "../../lib/views";
 import { isCompatibleFieldBinding } from "../../lib/bindings";
-import { createDerivedSyncState, getSyncFieldPath } from "../../lib/bindings/sync";
-import { getViewDataByIds } from "../../lib/services/views";
+import {
+  createDerivedSyncState,
+  getSyncFieldPath,
+} from "../../lib/bindings/sync";
+import { getViewDataByIds, getViewValueOptions } from "../../lib/views";
 import {
   getWildcardPathRegExp,
   getPathToClosestWildcard,

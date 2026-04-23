@@ -4,12 +4,14 @@ import {
   getSyncFieldPath,
   isFieldSynced,
 } from "../../lib/bindings/sync";
-import { isTemplateString } from "../../lib/strings/templates";
 import {
   getTemplateStorageKey,
-  getWildcardFieldPath,
   isValidTemplateForFieldPath,
-} from "../../lib/views";
+} from "../../lib/bindings/templates";
+import {
+  isTemplateString,
+  getWildcardFieldPath,
+} from "../../lib/strings/templates";
 import type { NodeViewState } from "../../types";
 
 /**
@@ -87,7 +89,7 @@ export const getNextTemplateState = ({
   }
 
   // If the field was previously a template and it was synced but the new value is not a valid template,
-  // switch to manual sync to keep the existing shared value alive and prevent it from getting out of sync across array items. 
+  // switch to manual sync to keep the existing shared value alive and prevent it from getting out of sync across array items.
   // This allows users to start with a template, then switch to a concrete value without losing the shared state.
   if (
     syncFieldPath &&

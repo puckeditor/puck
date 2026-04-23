@@ -2,7 +2,7 @@ import { ComponentData, Metadata, ComponentConfig } from "@puckeditor/core";
 
 import type { NodeViewState, ViewsPluginOptions } from "../../types";
 
-import { getViewDataByIds } from "../services/views";
+import { getViewDataByIds } from "../views";
 import {
   getPathSegments,
   getPathString,
@@ -30,7 +30,10 @@ import {
   isValidSyncFieldPath,
   setSyncedFieldValue,
 } from "../bindings/sync";
-import { getTemplateStorageKey, isValidTemplateForFieldPath } from "../views";
+import {
+  getTemplateStorageKey,
+  isValidTemplateForFieldPath,
+} from "../bindings/templates";
 import { getFieldAtPath } from "../puck/get-field-from-path";
 
 /**

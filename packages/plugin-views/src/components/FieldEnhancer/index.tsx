@@ -5,10 +5,7 @@ import type { Field } from "@puckeditor/core";
 
 import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
-import {
-  getNodeViewState,
-  setNodeViewState,
-} from "../../lib/bindings";
+import { getNodeViewState, setNodeViewState } from "../../lib/bindings";
 import type { ViewsPluginOptions } from "../../types";
 
 import { BindingControl } from "../BindingControl";

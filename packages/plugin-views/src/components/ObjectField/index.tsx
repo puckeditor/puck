@@ -1,5 +1,9 @@
 import { memo, ReactNode, useMemo } from "react";
-import { AutoField, FieldLabel, ObjectField as PuckObjectField } from "@puckeditor/core";
+import {
+  AutoField,
+  FieldLabel,
+  ObjectField as PuckObjectField,
+} from "@puckeditor/core";
 import getClassNameFactory from "@/core/lib/get-class-name-factory";
 
 import styles from "./style.module.css";

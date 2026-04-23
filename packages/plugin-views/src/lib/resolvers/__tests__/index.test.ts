@@ -441,7 +441,10 @@ describe("plugin-views resolvers", () => {
         sources: {
           products: {
             fields: {},
-            fetch: jest.fn(async () => [{ name: "Text 1" }, { name: "Text 2" }]),
+            fetch: jest.fn(async () => [
+              { name: "Text 1" },
+              { name: "Text 2" },
+            ]),
           },
         },
       };

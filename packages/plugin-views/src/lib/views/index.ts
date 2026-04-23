@@ -6,13 +6,15 @@ import {
   ViewSources,
   ViewsPluginOptions,
   ViewsStorage,
-} from "../../../types";
+  ViewValueOption,
+} from "../../types";
 
-import { DEFAULT_STORAGE_KEY } from "../../constants";
-import { toRootComponent } from "../../puck/to-root-component";
-import { normalizeRootData } from "../../puck/normalize-root-data";
+import { DEFAULT_STORAGE_KEY } from "../constants";
+import { toRootComponent } from "../puck/to-root-component";
+import { normalizeRootData } from "../puck/normalize-root-data";
 
-import { sanitizeId } from "../../utils/sanitize-id";
+import { sanitizeId } from "../utils/sanitize-id";
+import getValueType from "../utils/get-value-type";
 
 const inFlightQueries = new Map<string, Promise<any>>();
 
@@ -292,4 +294,108 @@ export const createViewId = ({
   }
 
   return `${base}-${counter}`;
+};
+
+// Below could be in a hook since it's used from components: --------------------------------------------------------------------------------------
+
+/**
+ * Formats a value for display in binding and template suggestions.
+ *
+ * @param value The value to format
+ * @returns A human-readable preview string
+ */
+const formatPreview = (value: any) => {
+  if (typeof value === "string") return value;
+  if (
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    value === null
+  ) {
+    return String(value);
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+};
+
+/**
+ * Recursively adds value options for a view result and all nested values.
+ *
+ * @param options The accumulator that receives each option
+ * @param value The current value being inspected
+ * @param viewId The view ID the value belongs to
+ * @param path The nested path to the current value
+ * @returns Nothing
+ */
+const appendValueOptions = ({
+  options,
+  value,
+  viewId,
+  path = "",
+}: {
+  options: ViewValueOption[];
+  value: any;
+  viewId: string;
+  path?: string;
+}) => {
+  options.push({
+    viewId,
+    path: Array.isArray(value) ? `${path}[*]` : path,
+    expression: Array.isArray(value) ? `${path}[*]` : path,
+    preview: formatPreview(value),
+    valueType: getValueType(value),
+    value,
+  });
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      appendValueOptions({
+        options,
+        value: item,
+        viewId,
+        path: `${path}[${index}]`,
+      });
+    });
+
+    return;
+  }
+
+  if (value && typeof value === "object") {
+    Object.entries(value).forEach(([key, item]) => {
+      appendValueOptions({
+        options,
+        value: item,
+        viewId,
+        path: path ? `${path}.${key}` : key,
+      });
+    });
+  }
+};
+
+/**
+ * Enumerates every reachable value inside loaded view data for the UI.
+ *
+ * @param options The loaded view data keyed by view ID
+ * @returns The flattened view value options
+ */
+export const getViewValueOptions = ({
+  viewsById,
+}: {
+  viewsById: Record<string, any>;
+}) => {
+  const options: ViewValueOption[] = [];
+
+  Object.entries(viewsById).forEach(([viewId, value]) => {
+    appendValueOptions({
+      options,
+      viewId,
+      value,
+      path: viewId,
+    });
+  });
+
+  return options;
 };
