@@ -325,6 +325,262 @@ describe("plugin-views resolvers", () => {
       ]);
     });
 
+    it("syncs manually edited values across a 2-item bound array field using the stored sync baseline", async () => {
+      const wildcardOptions: ViewsPluginOptions = {
+        ...options,
+        sources: {
+          products: {
+            fields: {},
+            fetch: jest.fn(async () => [{ name: "One" }, { name: "Two" }]),
+          },
+        },
+      };
+
+      const resolved = await applyNodeViews({
+        data: {
+          props: {
+            id: "Heading-1",
+            arrayField: [{ title: "Original" }, { title: "Changed" }],
+            __puck_view_state: {
+              templates: {},
+              bindings: {
+                "arrayField[*]": {
+                  viewId: "topProducts",
+                  path: "topProducts[*]",
+                },
+              },
+              synced: {
+                "arrayField[*].title": {
+                  type: "manual",
+                  value: "Original",
+                },
+              },
+            },
+          },
+        },
+        root: {
+          type: "root",
+          props: {
+            id: "root",
+          },
+        },
+        options: wildcardOptions,
+        componentConfig: arrayHeadingConfig,
+      });
+
+      expect(resolved.props.arrayField).toEqual([
+        { title: "Changed" },
+        { title: "Changed" },
+      ]);
+      expect(resolved.props.__puck_view_state.synced).toEqual({
+        "arrayField[*].title": {
+          type: "manual",
+          value: "Changed",
+        },
+      });
+    });
+
+    it("refreshes stale sync baselines when all matched values are already equal", async () => {
+      const wildcardOptions: ViewsPluginOptions = {
+        ...options,
+        sources: {
+          products: {
+            fields: {},
+            fetch: jest.fn(async () => [{ name: "One" }, { name: "Two" }]),
+          },
+        },
+      };
+
+      const resolved = await applyNodeViews({
+        data: {
+          props: {
+            id: "Heading-1",
+            arrayField: [{ title: "Shared" }, { title: "Shared" }],
+            __puck_view_state: {
+              templates: {},
+              bindings: {
+                "arrayField[*]": {
+                  viewId: "topProducts",
+                  path: "topProducts[*]",
+                },
+              },
+              synced: {
+                "arrayField[*].title": {
+                  type: "manual",
+                  value: "Stale",
+                },
+              },
+            },
+          },
+        },
+        root: {
+          type: "root",
+          props: {
+            id: "root",
+          },
+        },
+        options: wildcardOptions,
+        componentConfig: arrayHeadingConfig,
+      });
+
+      expect(resolved.props.arrayField).toEqual([
+        { title: "Shared" },
+        { title: "Shared" },
+      ]);
+      expect(resolved.props.__puck_view_state.synced).toEqual({
+        "arrayField[*].title": {
+          type: "manual",
+          value: "Shared",
+        },
+      });
+    });
+
+    it("applies synced templates stored on wildcard keys without wildcard expressions", async () => {
+      const wildcardOptions: ViewsPluginOptions = {
+        ...options,
+        sources: {
+          products: {
+            fields: {},
+            fetch: jest.fn(async () => [{ name: "Text 1" }, { name: "Text 2" }]),
+          },
+        },
+      };
+
+      const resolved = await applyNodeViews({
+        data: {
+          props: {
+            id: "Heading-1",
+            arrayField: [{ title: "" }, { title: "" }],
+            __puck_view_state: {
+              templates: {
+                "arrayField[*].title":
+                  "Some template {{ topProducts[0].name }}",
+              },
+              bindings: {
+                "arrayField[*]": {
+                  viewId: "topProducts",
+                  path: "topProducts[*]",
+                },
+              },
+              synced: {
+                "arrayField[*].title": {
+                  // User explicitly synced the template
+                  type: "derived",
+                },
+              },
+            },
+          },
+        },
+        root: {
+          type: "root",
+          props: {
+            id: "root",
+          },
+        },
+        options: wildcardOptions,
+        componentConfig: arrayHeadingConfig,
+      });
+
+      expect(resolved.props.arrayField).toEqual([
+        { title: "Some template Text 1" },
+        { title: "Some template Text 1" },
+      ]);
+    });
+
+    it("prunes synced fields when their bound ancestor no longer exists", async () => {
+      const resolved = await applyNodeViews({
+        data: {
+          props: {
+            id: "Heading-1",
+            arrayField: [{ title: "Original" }],
+            __puck_view_state: {
+              templates: {},
+              bindings: {},
+              synced: {
+                "arrayField[*].title": {
+                  type: "derived",
+                },
+              },
+            },
+          },
+        },
+        root: {
+          type: "root",
+          props: {
+            id: "root",
+          },
+        },
+        options,
+        componentConfig: arrayHeadingConfig,
+      });
+
+      expect(resolved.props.__puck_view_state).toBeUndefined();
+    });
+
+    it("prunes synced fields when a deeper array binding becomes the active context", async () => {
+      const nestedOptions: ViewsPluginOptions = {
+        ...options,
+        builtInViews: [
+          {
+            id: "groupsView",
+            label: "Groups",
+            source: "products",
+          },
+        ],
+        sources: {
+          products: {
+            fields: {},
+            fetch: jest.fn(async () => [
+              {
+                cards: [{ title: "One" }, { title: "Two" }],
+              },
+            ]),
+          },
+        },
+      };
+
+      const resolved = await applyNodeViews({
+        data: {
+          props: {
+            id: "Heading-1",
+            groups: [
+              {
+                cards: [{ title: "One" }, { title: "Two" }],
+              },
+            ],
+            __puck_view_state: {
+              templates: {},
+              bindings: {
+                "groups[*]": {
+                  viewId: "groupsView",
+                  path: "groupsView[*]",
+                },
+                "groups[*].cards[*]": {
+                  viewId: "groupsView",
+                  path: "groupsView[*].cards[*]",
+                },
+              },
+              synced: {
+                "groups[*].cards[0].title": {
+                  type: "derived",
+                },
+              },
+            },
+          },
+        },
+        root: {
+          type: "root",
+          props: {
+            id: "root",
+          },
+        },
+        options: nestedOptions,
+        componentConfig: nestedArrayConfig,
+      });
+
+      expect(resolved.props.__puck_view_state.synced).toBeUndefined();
+    });
+
     it("keeps props unchanged when fetching view data fails", async () => {
       const failingOptions: ViewsPluginOptions = {
         ...options,

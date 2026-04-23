@@ -9,7 +9,7 @@ import { normalizeRootData } from "../puck/normalize-root-data";
 import { isPlainObject } from "../utils/is-plain-object";
 
 /**
- * Sets the component templates and bindings state in the props.
+ * Sets the component templates, bindings, and sync state in the props.
  *
  * @param options The props, node state, and the key where the node state is stored on the props
  * @returns The updated props object
@@ -26,20 +26,25 @@ export const setNodeViewState = ({
   const nextProps = { ...props };
   const hasTemplates = Object.keys(nodeState.templates).length > 0;
   const hasBindings = Object.keys(nodeState.bindings).length > 0;
+  const hasSynced = Object.keys(nodeState.synced).length > 0;
 
-  if (!hasTemplates && !hasBindings) {
+  if (!hasTemplates && !hasBindings && !hasSynced) {
     delete nextProps[nodeStateKey];
 
     return nextProps;
   }
 
-  nextProps[nodeStateKey] = nodeState;
+  nextProps[nodeStateKey] = {
+    templates: nodeState.templates,
+    bindings: nodeState.bindings,
+    ...(hasSynced ? { synced: nodeState.synced } : {}),
+  };
 
   return nextProps;
 };
 
 /**
- * Reads the template and binding state stored on a component's props.
+ * Reads the template, binding, and sync state stored on a component's props.
  *
  * @param options The components props and the key where the node state is stored on the props
  * @returns The component templates and bindings state
@@ -57,6 +62,7 @@ export const getNodeViewState = ({
     return {
       templates: {},
       bindings: {},
+      synced: {},
     };
   }
 
@@ -65,6 +71,7 @@ export const getNodeViewState = ({
       raw.templates && typeof raw.templates === "object" ? raw.templates : {},
     bindings:
       raw.bindings && typeof raw.bindings === "object" ? raw.bindings : {},
+    synced: raw.synced && typeof raw.synced === "object" ? raw.synced : {},
   };
 };
 

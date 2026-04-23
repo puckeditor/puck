@@ -8,11 +8,9 @@ import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 
 import { useCurrentNodeEditor } from "../../hooks/use-current-node-editor";
 import {
-  getTemplateStorageKey,
   getTemplateFragment,
   getViewValueOptions,
   insertTemplateExpression,
-  isValidTemplateForFieldPath,
   getWildcardFieldPath,
 } from "../../lib/views";
 import { RENDER_DATA_BINDING_KEY } from "../../lib/constants";
@@ -22,6 +20,7 @@ import {
   isCompatibleFieldBinding,
 } from "../../lib/bindings";
 import { getViewDataByIds } from "../../lib/services/views";
+import { getSyncFieldPath, setSyncedFieldValue } from "../../lib/bindings/sync";
 import {
   getWildcardPathRegExp,
   getPathToClosestWildcard,
@@ -34,6 +33,8 @@ import type {
 } from "../../types";
 
 import { BindingControl } from "../BindingControl";
+import { SyncControl } from "../SyncControl";
+import { getNextTemplateState } from "./template-state";
 
 import styles from "./style.module.css";
 
@@ -277,54 +278,33 @@ export function TemplateField({
     updateState: (nodeState: NodeViewState) => NodeViewState
   ) => {
     let nextProps = setDeep({ ...currentProps }, name, nextValue);
+    const nextNodeState = updateState(nodeState);
+    const syncFieldPath = getSyncFieldPath({
+      fieldPath: name,
+      bindings: nodeState.bindings,
+    });
+
+    // When a shared template falls back to manual sync, fan the authored value
+    // out immediately so the edited item stays the source of truth.
+    if (
+      syncFieldPath &&
+      nodeState.synced[syncFieldPath]?.type === "derived" &&
+      nextNodeState.synced[syncFieldPath]?.type === "manual"
+    ) {
+      nextProps = setSyncedFieldValue({
+        props: nextProps,
+        fieldPath: syncFieldPath,
+        value: nextValue,
+      });
+    }
 
     nextProps = setNodeViewState({
       props: nextProps,
-      nodeState: updateState(nodeState),
+      nodeState: nextNodeState,
       nodeStateKey: options.nodeStateKey,
     });
 
     replaceProps(nextProps);
-  };
-
-  const getNextTemplateState = (
-    currentNodeState: NodeViewState,
-    nextValue: string
-  ) => {
-    const nextNodeState: NodeViewState = {
-      templates: {
-        ...currentNodeState.templates,
-      },
-      bindings: {
-        ...currentNodeState.bindings,
-      },
-    };
-    const currentWildcardFieldPath = getWildcardFieldPath({
-      fieldPath: name,
-      bindings: currentNodeState.bindings,
-    });
-
-    delete nextNodeState.templates[name];
-    delete nextNodeState.templates[currentWildcardFieldPath];
-
-    if (
-      isTemplateString(nextValue) &&
-      isValidTemplateForFieldPath({
-        fieldPath: name,
-        template: nextValue,
-        bindings: currentNodeState.bindings,
-      })
-    ) {
-      nextNodeState.templates[
-        getTemplateStorageKey({
-          fieldPath: name,
-          template: nextValue,
-          bindings: currentNodeState.bindings,
-        })
-      ] = nextValue;
-    }
-
-    return nextNodeState;
   };
 
   return (
@@ -358,7 +338,11 @@ export function TemplateField({
                   typeof nextValue === "string" ? nextValue : "";
 
                 updateNodeState(normalizedValue, (currentNodeState) =>
-                  getNextTemplateState(currentNodeState, normalizedValue)
+                  getNextTemplateState({
+                    fieldPath: name,
+                    currentNodeState,
+                    nextValue: normalizedValue,
+                  })
                 );
               }}
               readOnly={readOnly || !!binding}
@@ -379,7 +363,11 @@ export function TemplateField({
                       });
 
                       updateNodeState(inserted.value, (currentNodeState) =>
-                        getNextTemplateState(currentNodeState, inserted.value)
+                        getNextTemplateState({
+                          fieldPath: name,
+                          currentNodeState,
+                          nextValue: inserted.value,
+                        })
                       );
                     }}
                     type="button"
@@ -412,6 +400,13 @@ export function TemplateField({
                 );
               }}
               options={options}
+            />
+            <SyncControl
+              path={name}
+              field={field}
+              nodeViewState={nodeState}
+              options={options}
+              disabled={readOnly}
             />
           </div>
         </div>

@@ -12,6 +12,7 @@ import {
 import type { ViewsPluginOptions } from "../../types";
 
 import { BindingControl } from "../BindingControl";
+import { SyncControl } from "../SyncControl";
 
 import styles from "./style.module.css";
 
@@ -60,6 +61,13 @@ export function FieldEnhancer({
             replaceProps(newProps);
           }}
           options={options}
+        />
+        <SyncControl
+          path={name}
+          field={field}
+          nodeViewState={nodeState}
+          options={options}
+          disabled={readOnly}
         />
       </div>
     </div>

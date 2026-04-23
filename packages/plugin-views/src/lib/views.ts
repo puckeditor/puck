@@ -147,18 +147,21 @@ export const getViewValueOptions = ({
  * @param fieldPath The static field path the template is attached to
  * @param template The template string
  * @param bindings The node's current view-state bindings
+ * @param isSynced Whether the field is explicitly synced across a bound array and should therefore use the wildcard storage key even without wildcard expressions
  * @returns The storage key for the template
  */
 export const getTemplateStorageKey = ({
   fieldPath,
   template,
   bindings,
+  isSynced = false,
 }: {
   fieldPath: string;
   template: string;
   bindings: NodeViewState["bindings"];
+  isSynced?: boolean;
 }) =>
-  getWildcardTemplateExpressions(template).length > 0
+  getWildcardTemplateExpressions(template).length > 0 || isSynced
     ? getWildcardFieldPath({ fieldPath, bindings })
     : fieldPath;
 

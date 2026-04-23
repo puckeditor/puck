@@ -8,6 +8,7 @@ import getClassNameFactory from "../../../../core/lib/get-class-name-factory";
 
 import { getViewValueOptions } from "../../lib/views";
 import { isCompatibleFieldBinding } from "../../lib/bindings";
+import { createDerivedSyncState, getSyncFieldPath } from "../../lib/bindings/sync";
 import { getViewDataByIds } from "../../lib/services/views";
 import {
   getWildcardPathRegExp,
@@ -81,7 +82,7 @@ export function BindingControl({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { bindings, templates } = nodeViewState;
+  const { bindings, templates, synced } = nodeViewState;
 
   // AutoField recreates field objects on every render, so we need to memoize the relevant properties to avoid refetching data on every render
   const fieldType = field.type;
@@ -111,8 +112,14 @@ export function BindingControl({
   const fieldBinding: NodeViewBinding | undefined =
     bindings[resolvedBindingKey];
 
+  const syncFieldPath = getSyncFieldPath({
+    fieldPath: path,
+    bindings,
+  });
+
   const createNewBinding: ViewOptionProps["onConnect"] = (newOption) => {
     const newBindings = { ...bindings };
+    const newSynced = { ...synced };
 
     const baseBindingKey = resolvedBindingKey.endsWith("[*]")
       ? resolvedBindingKey.replace(/\[\*\]$/, "")
@@ -147,11 +154,18 @@ export function BindingControl({
         ? resolvedBindingKey.replace(/\[\*\]$/, "")
         : resolvedBindingKey;
 
-    // Delete wildcard templates that would be overriden by this new binding
+    // Delete wildcard templates that would be overridden by this new binding
     const newTemplates = { ...templates };
     Object.keys(newTemplates).forEach((templateKey) => {
       if (templateKey.startsWith(baseBindingKeyWithWildcard)) {
         delete newTemplates[templateKey];
+      }
+    });
+
+    // Delete wildcard synced fields that would be overridden by this new binding
+    Object.keys(newSynced).forEach((syncedKey) => {
+      if (syncedKey.startsWith(baseBindingKeyWithWildcard)) {
+        delete newSynced[syncedKey];
       }
     });
 
@@ -160,10 +174,15 @@ export function BindingControl({
       path: newOption.path,
     };
 
+    if (syncFieldPath) {
+      newSynced[syncFieldPath] = createDerivedSyncState();
+    }
+
     onChange(
       {
         bindings: newBindings,
         templates: newTemplates,
+        synced: newSynced,
       },
       newBindings[resolvedBindingKey]
     );
@@ -185,6 +204,7 @@ export function BindingControl({
     // delete any wildcard template bindings that would also match this path,
     // to avoid leaving orphaned template bindings
     const newTemplates = { ...templates };
+    const newSynced = { ...synced };
 
     Object.keys(newTemplates).forEach((templateKey) => {
       if (templateKey.startsWith(resolvedBindingKey)) {
@@ -192,10 +212,19 @@ export function BindingControl({
       }
     });
 
+    // delete any wildcard synced bindings that would also match this path,
+    // to avoid leaving orphaned synced bindings
+    Object.keys(newSynced).forEach((syncedKey) => {
+      if (syncedKey.startsWith(resolvedBindingKey)) {
+        delete newSynced[syncedKey];
+      }
+    });
+
     onChange(
       {
         bindings: newBindings,
         templates: newTemplates,
+        synced: newSynced,
       },
       null
     );

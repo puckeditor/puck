@@ -43,9 +43,23 @@ export type NodeViewBinding = {
   path: string;
 };
 
+/**
+ * Represents how a synced field gets its shared value.
+ *
+ * Manual sync stores the last shared value so the resolver can keep array items aligned (Puck's lastData isn't reliable for this).
+ * Derived sync means a binding or wildcard template already owns the synced value.
+ */
+export type NodeViewSync =
+  | { type: "derived" }
+  | { type: "manual"; value: unknown };
+
 export type NodeViewState = {
+  /** Static or wildcard field paths that are using templates. The value is the template text as shown in the fields. */
   templates: Record<string, string>;
+  /** Static or wildcard field paths that are currently bound to a view value. The value is the binding information. */
   bindings: Record<string, NodeViewBinding>;
+  /** Wildcard field paths that should share one value across all matched array items. The value is the sync information. */
+  synced: Record<string, NodeViewSync>;
 };
 
 export type ValueType =

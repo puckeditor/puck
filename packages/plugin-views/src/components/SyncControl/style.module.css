@@ -1,0 +1,23 @@
+.SyncControl {
+  background: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 999px;
+  color: var(--puck-color-grey-04);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.SyncControl--synced {
+  color: var(--puck-color-azure-04);
+}
+
+.SyncControl:hover:not(:disabled) {
+  background: var(--puck-color-azure-12);
+  border-color: var(--puck-color-grey-05);
+}
+
+.SyncControl:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

@@ -3,6 +3,7 @@ export type {
   BuiltInView,
   CustomView,
   NodeViewBinding,
+  NodeViewSync,
   NodeViewState,
   ViewFetchContext,
   ViewSource,

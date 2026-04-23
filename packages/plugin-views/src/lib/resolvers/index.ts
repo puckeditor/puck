@@ -17,7 +17,19 @@ import {
 import cloneObject from "../utils/clone-object";
 
 import assignPathBinding from "../assign-path-binding";
-import { getNodeViewState, getReferencedViewIds } from "../bindings";
+import {
+  getNodeViewState,
+  getReferencedViewIds,
+  setNodeViewState,
+} from "../bindings";
+import {
+  areConcreteSyncFieldEntriesEqual,
+  createManualSyncState,
+  getConcreteSyncFieldEntries,
+  isManualSyncState,
+  isValidSyncFieldPath,
+  setSyncedFieldValue,
+} from "../bindings/sync";
 import { getTemplateStorageKey, isValidTemplateForFieldPath } from "../views";
 import { getFieldAtPath } from "../puck/get-field-from-path";
 
@@ -185,7 +197,75 @@ const applyViewTemplates = ({
 };
 
 /**
- * Applies the latest view data to the bindings and templates assigned to the component data.
+ * Applies explicitly synced field values after bindings and templates resolve.
+ *
+ * Bindings and wildcard templates already handle their own value sharing,
+ * so this pass only handles the remaining manually synced fields.
+ */
+const applySyncedFields = ({
+  props,
+  synced,
+  bindings,
+  templates,
+}: {
+  props: Record<string, any>;
+  synced: NodeViewState["synced"];
+  bindings: NodeViewState["bindings"];
+  templates: NodeViewState["templates"];
+}) => {
+  let nextProps = props;
+  let nextSynced = { ...synced };
+
+  Object.entries(synced).forEach(([fieldPath, syncState]) => {
+    if (
+      bindings[fieldPath] ||
+      templates[fieldPath] ||
+      !isManualSyncState(syncState)
+    ) {
+      return;
+    }
+
+    const currentEntries = getConcreteSyncFieldEntries({
+      fieldPath,
+      props: nextProps,
+    });
+
+    if (currentEntries.length === 0) {
+      return;
+    }
+
+    if (areConcreteSyncFieldEntriesEqual(currentEntries)) {
+      const sharedValue = currentEntries[0]?.value;
+
+      if (!Object.is(syncState.value, sharedValue)) {
+        nextSynced[fieldPath] = createManualSyncState(sharedValue);
+      }
+
+      return;
+    }
+
+    const sourceEntry =
+      currentEntries.find(({ value }) => !Object.is(value, syncState.value)) ??
+      currentEntries.find(({ value }) => typeof value !== "undefined") ??
+      currentEntries[0];
+
+    nextProps = setSyncedFieldValue({
+      props: nextProps,
+      fieldPath,
+      value: sourceEntry.value,
+    });
+
+    nextSynced[fieldPath] = createManualSyncState(sourceEntry.value);
+  });
+
+  return {
+    props: nextProps,
+    synced: nextSynced,
+  };
+};
+
+/**
+ * Applies the latest view data to the bindings, templates, and synced fields assigned to the component data.
  *
  * @param options The component data, root data, puck metadata, plugin options, and component config that was used for the provided data
  * @returns The updated component data
@@ -214,7 +294,7 @@ export const applyNodeViews = async ({
         props: previousData.props,
         nodeStateKey: options.nodeStateKey,
       })
-    : { templates: {}, bindings: {} };
+    : { templates: {}, bindings: {}, synced: {} };
 
   // Clear any removed view references from templates and bindings
   // (e.g. array field items that were deleted)
@@ -233,6 +313,21 @@ export const applyNodeViews = async ({
 
       if (typeof dataForTemplate === "undefined") {
         delete nodeState.templates[key];
+      }
+    });
+  }
+  if (nodeState.synced) {
+    Object.keys(nodeState.synced).forEach((key) => {
+      const dataForSync = getValueAtPath(data.props, key);
+
+      if (
+        typeof dataForSync === "undefined" ||
+        !isValidSyncFieldPath({
+          fieldPath: key,
+          bindings: nodeState.bindings,
+        })
+      ) {
+        delete nodeState.synced[key];
       }
     });
   }
@@ -263,9 +358,25 @@ export const applyNodeViews = async ({
       viewsById: viewsById || undefined,
     });
 
+    const syncedResult = applySyncedFields({
+      props: nextProps,
+      synced: nodeState.synced,
+      bindings: nodeState.bindings,
+      templates: nodeState.templates,
+    });
+
+    const propsWithNodeState = setNodeViewState({
+      props: syncedResult.props,
+      nodeState: {
+        ...nodeState,
+        synced: syncedResult.synced,
+      },
+      nodeStateKey: options.nodeStateKey,
+    });
+
     return {
       ...data,
-      props: nextProps,
+      props: propsWithNodeState,
       readOnly: boundData.readOnly,
     };
   } catch (e) {
