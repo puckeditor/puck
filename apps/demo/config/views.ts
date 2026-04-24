@@ -1,4 +1,8 @@
-import type { BuiltInView, ViewSources, ViewsPluginOptions } from "@/plugin-views";
+import type {
+  BuiltInView,
+  ViewSources,
+  ViewsPluginOptions,
+} from "@/plugin-views";
 
 const products = [
   {
