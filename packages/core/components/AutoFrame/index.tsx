@@ -1,4 +1,5 @@
 import {
+  useCallback,
   createContext,
   ReactNode,
   RefObject,
@@ -8,63 +9,78 @@ import {
 } from "react";
 import hash from "object-hash";
 import { createPortal } from "react-dom";
+import {
+  isPuckStyleElement,
+  useInjectIframeCss,
+} from "../../lib/use-inject-css";
 
 const styleSelector = 'style, link[rel="stylesheet"]';
+const mirroredStyleAttribute = "data-puck-style-mirror";
 
-const collectStyles = (doc: Document) => {
-  const collected: HTMLElement[] = [];
-
-  doc.querySelectorAll(styleSelector).forEach((style) => {
-    if (style.tagName === "STYLE") {
-      const hasContent = !!style.innerHTML.trim();
-
-      if (hasContent) {
-        collected.push(style as HTMLElement);
-      }
-    } else {
-      collected.push(style as HTMLElement);
-    }
-  });
-
-  return collected;
-};
-
-const getStyleSheet = (el: HTMLElement) => {
-  return Array.from(document.styleSheets).find((ss) => {
-    const ownerNode = ss.ownerNode as HTMLLinkElement;
-
-    return ownerNode.href === (el as HTMLLinkElement).href;
-  });
-};
-
-const getStyles = (styleSheet?: CSSStyleSheet) => {
-  if (styleSheet) {
-    try {
-      return Array.from(styleSheet.cssRules)
-        .map((rule) => rule.cssText)
-        .join("");
-    } catch (e) {
-      console.warn(
-        "Access to stylesheet %s is denied. Ignoring…",
-        styleSheet.href
-      );
-    }
+export const shouldMirrorStyleElement = (style: HTMLElement) => {
+  if (!style.matches(styleSelector) || isPuckStyleElement(style)) {
+    return false;
   }
 
-  return "";
+  if (style.tagName === "STYLE") {
+    return !!style.innerHTML.trim();
+  }
+
+  return true;
+};
+
+const collectStyles = (doc: Document) =>
+  Array.from(doc.querySelectorAll(styleSelector)).filter((style) =>
+    shouldMirrorStyleElement(style as HTMLElement)
+  ) as HTMLElement[];
+
+const captureAttributes = (element: Element) =>
+  new Map(
+    Array.from(element.attributes).map((attribute) => [
+      attribute.name,
+      attribute.value,
+    ])
+  );
+
+const restoreAttributes = (element: Element, snapshot: Map<string, string>) => {
+  Array.from(element.attributes).forEach((attribute) => {
+    if (!snapshot.has(attribute.name)) {
+      element.removeAttribute(attribute.name);
+    }
+  });
+
+  snapshot.forEach((value, name) => {
+    element.setAttribute(name, value);
+  });
 };
 
 // Sync attributes from parent window to iFrame
-const syncAttributes = (sourceElement: Element, targetElement: Element) => {
-  const attributes = sourceElement.attributes;
-  if (attributes?.length > 0) {
-    Array.from(attributes).forEach((attribute: Attr) => {
-      targetElement.setAttribute(attribute.name, attribute.value);
-    });
-  }
+export const syncAttributes = (
+  sourceElement: Element,
+  targetElement: Element
+) => {
+  const previousAttributes = captureAttributes(targetElement);
+
+  Array.from(targetElement.attributes).forEach((attribute) => {
+    targetElement.removeAttribute(attribute.name);
+  });
+
+  Array.from(sourceElement.attributes).forEach((attribute: Attr) => {
+    targetElement.setAttribute(attribute.name, attribute.value);
+  });
+
+  return () => {
+    restoreAttributes(targetElement, previousAttributes);
+  };
 };
 
 const defer = (fn: () => void) => setTimeout(fn, 0);
+
+type MirroredElement = {
+  original: HTMLElement;
+  mirror: HTMLElement;
+  hash: string;
+};
 
 const CopyHostStyles = ({
   children,
@@ -77,115 +93,117 @@ const CopyHostStyles = ({
 }) => {
   const { document: doc, window: win } = useFrame();
 
+  useInjectIframeCss(doc);
+
   useEffect(() => {
     if (!win || !doc) {
       return () => {};
     }
 
-    let elements: { original: HTMLElement; mirror: HTMLElement }[] = [];
+    let elements: MirroredElement[] = [];
+    let disposed = false;
     const hashes: Record<string, boolean> = {};
+
+    const removeAllMirrors = () => {
+      elements.forEach(({ mirror }) => {
+        mirror.remove();
+      });
+
+      elements = [];
+
+      Array.from(
+        doc.head.querySelectorAll(`[${mirroredStyleAttribute}="true"]`)
+      ).forEach((mirror) => {
+        mirror.remove();
+      });
+
+      Object.keys(hashes).forEach((key) => {
+        delete hashes[key];
+      });
+    };
 
     const lookupEl = (el: HTMLElement) =>
       elements.findIndex((elementMap) => elementMap.original === el);
 
-    const mirrorEl = async (el: HTMLElement, inlineStyles = false) => {
-      let mirror: HTMLStyleElement;
+    const mirrorEl = (el: HTMLElement) => {
+      const mirror = el.cloneNode(true) as HTMLElement;
 
-      if (el.nodeName === "LINK" && inlineStyles) {
-        mirror = document.createElement("style") as HTMLStyleElement;
-        mirror.type = "text/css";
-
-        let styleSheet = getStyleSheet(el);
-
-        if (!styleSheet) {
-          await new Promise<void>((resolve) => {
-            const fn = () => {
-              resolve();
-              el.removeEventListener("load", fn);
-            };
-
-            el.addEventListener("load", fn);
-          });
-          styleSheet = getStyleSheet(el);
-        }
-
-        const styles = getStyles(styleSheet);
-
-        if (!styles) {
-          if (debug) {
-            console.warn(
-              `Tried to load styles for link element, but couldn't find them. Skipping...`
-            );
-          }
-
-          return;
-        }
-
-        mirror.innerHTML = styles;
-
-        mirror.setAttribute("data-href", el.getAttribute("href")!);
-      } else {
-        mirror = el.cloneNode(true) as HTMLStyleElement;
-      }
+      mirror.setAttribute(mirroredStyleAttribute, "true");
 
       return mirror;
     };
 
     const addEl = async (el: HTMLElement) => {
+      if (!shouldMirrorStyleElement(el)) {
+        return;
+      }
+
       const index = lookupEl(el);
+
       if (index > -1) {
-        if (debug)
+        if (debug) {
           console.log(
-            `Tried to add an element that was already mirrored. Updating instead...`
+            "Tried to add an element that was already mirrored. Updating instead..."
           );
+        }
 
-        elements[index].mirror.innerText = el.innerText;
+        delete hashes[elements[index].hash];
 
-        return;
-      }
-
-      const mirror = await mirrorEl(el);
-
-      if (!mirror) {
-        return;
-      }
-
-      const elHash = hash(mirror.outerHTML);
-
-      if (hashes[elHash]) {
-        if (debug)
-          console.log(
-            `iframe already contains element that is being mirrored. Skipping...`
-          );
-
-        return;
-      }
-
-      hashes[elHash] = true;
-
-      doc.head.append(mirror as HTMLElement);
-      elements.push({ original: el, mirror: mirror });
-
-      if (debug) console.log(`Added style node ${el.outerHTML}`);
-    };
-
-    const removeEl = (el: HTMLElement) => {
-      const index = lookupEl(el);
-      if (index === -1) {
-        if (debug)
-          console.log(
-            `Tried to remove an element that did not exist. Skipping...`
-          );
+        elements[index].mirror.textContent = el.textContent;
+        elements[index].hash = hash(el.outerHTML);
+        hashes[elements[index].hash] = true;
 
         return;
       }
 
       const elHash = hash(el.outerHTML);
 
-      elements[index]?.mirror?.remove();
-      delete hashes[elHash];
+      if (hashes[elHash]) {
+        if (debug) {
+          console.log(
+            "iframe already contains element that is being mirrored. Skipping..."
+          );
+        }
 
-      if (debug) console.log(`Removed style node ${el.outerHTML}`);
+        return;
+      }
+
+      const mirror = mirrorEl(el);
+
+      if (disposed) {
+        return;
+      }
+
+      hashes[elHash] = true;
+
+      doc.head.append(mirror);
+      elements.push({ original: el, mirror, hash: elHash });
+
+      if (debug) {
+        console.log(`Added style node ${el.outerHTML}`);
+      }
+    };
+
+    const removeEl = (el: HTMLElement) => {
+      const index = lookupEl(el);
+
+      if (index === -1) {
+        if (debug) {
+          console.log(
+            "Tried to remove an element that did not exist. Skipping..."
+          );
+        }
+
+        return;
+      }
+
+      delete hashes[elements[index].hash];
+      elements[index].mirror.remove();
+      elements.splice(index, 1);
+
+      if (debug) {
+        console.log(`Removed style node ${el.outerHTML}`);
+      }
     };
 
     const observer = new MutationObserver((mutations) => {
@@ -201,7 +219,7 @@ const CopyHostStyles = ({
                   ? node.parentElement
                   : (node as HTMLElement);
 
-              if (el && el.matches(styleSelector)) {
+              if (el && shouldMirrorStyleElement(el)) {
                 defer(() => addEl(el));
               }
             }
@@ -217,7 +235,7 @@ const CopyHostStyles = ({
                   ? node.parentElement
                   : (node as HTMLElement);
 
-              if (el && el.matches(styleSelector)) {
+              if (el && el.matches(styleSelector) && !isPuckStyleElement(el)) {
                 defer(() => removeEl(el));
               }
             }
@@ -226,22 +244,21 @@ const CopyHostStyles = ({
       });
     });
 
-    const parentDocument = win!.parent.document;
+    removeAllMirrors();
 
+    const parentDocument = win.parent.document;
     const collectedStyles = collectStyles(parentDocument);
     const hrefs: string[] = [];
     let stylesLoaded = 0;
 
-    // Sync attributes for the HTML tag
-    const parentHtml = parentDocument.getElementsByTagName("html")[0];
-    syncAttributes(parentHtml, doc.documentElement);
-
-    // Sync attributes for the Body tag
-    const parentBody = parentDocument.getElementsByTagName("body")[0];
-    syncAttributes(parentBody, doc.body);
+    const restoreHtmlAttributes = syncAttributes(
+      parentDocument.documentElement,
+      doc.documentElement
+    );
+    const restoreBodyAttributes = syncAttributes(parentDocument.body, doc.body);
 
     Promise.all(
-      collectedStyles.map(async (styleNode, i) => {
+      collectedStyles.map(async (styleNode) => {
         if (styleNode.nodeName === "LINK") {
           const linkHref = (styleNode as HTMLLinkElement).href;
 
@@ -253,28 +270,37 @@ const CopyHostStyles = ({
           hrefs.push(linkHref);
         }
 
-        const mirror = await mirrorEl(styleNode);
+        const mirror = mirrorEl(styleNode);
 
-        if (!mirror) return;
-
-        elements.push({ original: styleNode, mirror });
+        elements.push({
+          original: styleNode,
+          mirror,
+          hash: hash(styleNode.outerHTML),
+        });
 
         return mirror;
       })
     ).then((mirrorStyles) => {
+      if (disposed) {
+        return;
+      }
+
       const filtered = mirrorStyles.filter(
         (el) => typeof el !== "undefined"
-      ) as HTMLStyleElement[];
+      ) as HTMLElement[];
 
       filtered.forEach((mirror) => {
-        mirror.onload = () => {
+        const mirrorElement = mirror as HTMLLinkElement | HTMLStyleElement;
+
+        mirrorElement.onload = () => {
           stylesLoaded = stylesLoaded + 1;
 
           if (stylesLoaded >= filtered.length) {
             onStylesLoaded();
           }
         };
-        mirror.onerror = () => {
+
+        mirrorElement.onerror = () => {
           console.warn(`AutoFrame couldn't load a stylesheet`);
           stylesLoaded = stylesLoaded + 1;
 
@@ -284,14 +310,17 @@ const CopyHostStyles = ({
         };
       });
 
-      // Reset HTML (inside the promise) so in case running twice (i.e. for React Strict mode)
-      doc.head.innerHTML = "";
-
-      // Inject initial values in bulk
       doc.head.append(...filtered);
 
-      // Count <style> elements as immediately loaded (they don't fire onload)
       filtered.forEach((mirror) => {
+        const original = elements.find(
+          ({ mirror: current }) => current === mirror
+        );
+
+        if (original) {
+          hashes[original.hash] = true;
+        }
+
         if (mirror.nodeName === "STYLE") {
           stylesLoaded = stylesLoaded + 1;
         }
@@ -302,18 +331,16 @@ const CopyHostStyles = ({
       }
 
       observer.observe(parentDocument.head, { childList: true, subtree: true });
-
-      filtered.forEach((el) => {
-        const elHash = hash(el.outerHTML);
-
-        hashes[elHash] = true;
-      });
     });
 
     return () => {
+      disposed = true;
       observer.disconnect();
+      restoreHtmlAttributes();
+      restoreBodyAttributes();
+      removeAllMirrors();
     };
-  }, []);
+  }, [debug, doc, onStylesLoaded, win]);
 
   return <>{children}</>;
 };
@@ -349,8 +376,17 @@ function AutoFrame({
 }: AutoFrameProps) {
   const [loaded, setLoaded] = useState(false);
   const [ctx, setCtx] = useState<AutoFrameContext>({});
-  const [mountTarget, setMountTarget] = useState<HTMLElement | null>();
+  const [mountTarget, setMountTarget] = useState<HTMLElement | null>(null);
   const [stylesLoaded, setStylesLoaded] = useState(false);
+  const handleStylesLoaded = useCallback(() => {
+    setStylesLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) {
+      setStylesLoaded(false);
+    }
+  }, [loaded]);
 
   useEffect(() => {
     if (frameRef.current) {
@@ -363,7 +399,7 @@ function AutoFrame({
       });
 
       setMountTarget(
-        frameRef.current.contentDocument?.getElementById("frame-root")
+        frameRef.current.contentDocument?.getElementById("frame-root") || null
       );
 
       if (doc && win && stylesLoaded) {
@@ -372,7 +408,7 @@ function AutoFrame({
         onNotReady();
       }
     }
-  }, [frameRef, loaded, stylesLoaded]);
+  }, [frameRef, loaded, onNotReady, onReady, stylesLoaded]);
 
   return (
     <iframe
@@ -389,7 +425,7 @@ function AutoFrame({
         {loaded && mountTarget && (
           <CopyHostStyles
             debug={debug}
-            onStylesLoaded={() => setStylesLoaded(true)}
+            onStylesLoaded={handleStylesLoaded}
           >
             {createPortal(children, mountTarget)}
           </CopyHostStyles>

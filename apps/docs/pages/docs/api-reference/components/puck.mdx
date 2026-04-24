@@ -45,6 +45,7 @@ export function Editor() {
 | [`permissions`](#permissions)                                     | `permissions: {}`                                  | [Permissions\[\]](/docs/api-reference/permissions#supported-permissions) | -            |
 | [`plugins`](#plugins)                                             | `plugins: [myPlugin]`                              | [Plugin\[\]](/docs/api-reference/plugin)                                 | Experimental |
 | [`ui`](#ui)                                                       | `ui: {leftSideBarVisible: false}`                  | [AppState.ui](/docs/api-reference/data-model/app-state#ui)               | -            |
+| [`uiStyles`](#uistyles)                                           | `uiStyles: false`                                  | `false \| { bundle?: "default" \| "no-external" }`                       | -            |
 | [`viewports`](#viewports)                                         | `viewports: [{ width: 1440 }]`                     | [Viewport\[\]](#viewport-params)                                         | -            |
 | [`_experimentalFullScreenCanvas`](#_experimentalfullscreencanvas) | `_experimentalFullScreenCanvas: true`              | Boolean                                                                  | Experimental |
 
@@ -210,10 +211,11 @@ export function Editor() {
 
 #### iframe params
 
-| Param                           | Example                | Type    | Status |
-| ------------------------------- | ---------------------- | ------- | ------ |
-| [`enabled`](#enabled)           | `enabled: false`       | boolean | -      |
-| [`waitForStyles`](#deferrender) | `waitForStyles: false` | boolean | -      |
+| Param                             | Example                | Type    | Status |
+| --------------------------------- | ---------------------- | ------- | ------ |
+| [`enabled`](#enabled)             | `enabled: false`       | boolean | -      |
+| [`waitForStyles`](#waitforstyles) | `waitForStyles: false` | boolean | -      |
+| [`syncStyles`](#syncstyles)       | `syncStyles: false`    | boolean | -      |
 
 ##### `enabled`
 
@@ -224,6 +226,42 @@ Disabling iframes will also disable [viewports](#viewports).
 ##### `waitForStyles`
 
 Defer rendering of the Puck preview until the iframe styles have loaded, showing a spinner. Defaults to `true`.
+
+##### `syncStyles`
+
+Mirror host `style` and stylesheet tags into the preview iframe. Defaults to `true`.
+
+Set `syncStyles: false` to fully isolate the iframe from host styles and host `html` / `body` attributes while still keeping Puck's iframe interaction styles active.
+
+### `uiStyles`
+
+Configure runtime loading of the Puck editor UI styles.
+
+```tsx {4} copy
+export function Editor() {
+  return (
+    <Puck
+      uiStyles={{ bundle: "no-external" }}
+      // ...
+    />
+  );
+}
+```
+
+#### uiStyles params
+
+| Param               | Example                 | Type                         | Status |
+| ------------------- | ----------------------- | ---------------------------- | ------ |
+| [`bundle`](#bundle) | `bundle: "no-external"` | `"default" \| "no-external"` | -      |
+
+Pass `false` to disable runtime style injection entirely and load the CSS yourself.
+
+##### `bundle`
+
+Choose which built-in editor UI bundle to inject. Defaults to `"default"`.
+
+- `"default"` loads the standard editor bundle, including the Inter font import.
+- `"no-external"` omits the external font import so you can supply your own font.
 
 ### `initialHistory`
 

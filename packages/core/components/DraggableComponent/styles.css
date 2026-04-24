@@ -22,7 +22,7 @@
 
 /* Placeholder */
 [data-dnd-placeholder] {
-  background: var(--puck-color-azure-06) !important;
+  background: var(--puck-color-azure-06, #6499cf) !important;
   border: none !important;
   color: #00000000 !important;
   opacity: 0.3 !important;
@@ -38,6 +38,19 @@
 
 [data-dnd-dragging][data-puck-component] {
   pointer-events: none !important;
-  outline: 2px var(--puck-color-azure-09) solid !important;
+  outline: 2px var(--puck-color-azure-09, #cfdff0) solid !important;
   outline-offset: -2px !important;
+}
+
+/*
+ * Drag clones become position: fixed, which stops first/last child margins
+ * from collapsing with the wrapper. Reset those outer margins so the clone
+ * matches the in-flow item.
+ */
+[data-dnd-dragging][data-puck-component] > :first-child {
+  margin-top: 0 !important;
+}
+
+[data-dnd-dragging][data-puck-component] > :last-child {
+  margin-bottom: 0 !important;
 }

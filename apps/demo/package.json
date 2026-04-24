@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "prebuild": "yarn workspace @puckeditor/core build",
+    "predev": "yarn workspace @puckeditor/core build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -20,10 +20,11 @@ CSS properties for theming the default Puck user interface.
 
 The font family used for the Puck interface. Must be used with the `no-external` bundle that stops Puck from loading the default font.
 
-```css
-/* Load bundle without existing font */
-@import "@puckeditor/core/no-external.css";
+```tsx
+<Puck uiStyles={{ bundle: "no-external" }} /* ... */ />
+```
 
+```css
 :root {
   --puck-font-family: Arial;
 }
@@ -33,10 +34,11 @@ The font family used for the Puck interface. Must be used with the `no-external`
 
 The font family used for monospaced elements of the Puck interface.
 
-```css
-/* Monospaced fonts don't use external files, so the default bundle is safe */
-@import "@puckeditor/core/puck.css";
+```tsx
+<Puck /* ... */ />
+```
 
+```css
 :root {
   --puck-font-family-monospaced: Menlo;
 }

@@ -1,9 +1,16 @@
-import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { getClassNameFactory } from "../../../../lib";
 import { IframeConfig, UiState } from "../../../../types";
 import { usePropsContext } from "../..";
 import styles from "./styles.module.css";
-import { useInjectGlobalCss } from "../../../../lib/use-inject-css";
+import { useInjectUiCss } from "../../../../lib/use-inject-css";
 import { useAppStore, useAppStoreApi } from "../../../../store";
 import { DefaultOverride } from "../../../DefaultOverride";
 import { monitorHotkeys, useMonitorHotkeys } from "../../../../lib/use-hotkey";
@@ -25,10 +32,13 @@ import { PluginInternal } from "../../../../types/Internal";
 import { blocksPlugin } from "../../../../plugins/blocks";
 import { outlinePlugin } from "../../../../plugins/outline";
 import { fieldsPlugin } from "../../../../plugins/fields";
+import { normalizeIframeConfig } from "../../../../lib/style-config";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
 const getPluginTabClassName = getClassNameFactory("PuckPluginTab", styles);
+const useBrowserLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 const FieldSideBar = () => {
   const title = useAppStore((s) =>
@@ -71,15 +81,11 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
-    () => ({
-      enabled: true,
-      waitForStyles: true,
-      ..._iframe,
-    }),
+    () => normalizeIframeConfig(_iframe),
     [_iframe]
   );
 
-  useInjectGlobalCss(iframe.enabled);
+  useInjectUiCss();
 
   const dispatch = useAppStore((s) => s.dispatch);
   const leftSideBarVisible = useAppStore((s) => s.state.ui.leftSideBarVisible);
@@ -142,7 +148,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useBrowserLayoutEffect(() => {
     setMounted(true);
   }, []);
 
@@ -266,7 +272,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
         hidePlugins: hasLegacySideBarPlugin,
       })}`}
       id={instanceId}
-      style={{ height }}
+      style={{ height, visibility: "hidden" }}
     >
       <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
         <CustomPuck>
