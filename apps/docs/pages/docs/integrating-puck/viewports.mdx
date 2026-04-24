@@ -54,6 +54,27 @@ export function Editor() {
 
 This will disable all viewport functionality.
 
+## Opting out of host style sync
+
+By default, Puck mirrors host styles into the preview iframe so your components render with the same app CSS.
+
+Disable that sync with `iframe.syncHostStyles` when you need the preview iframe to be fully isolated:
+
+```tsx
+export function Editor() {
+  return (
+    <Puck
+      iframe={{
+        syncHostStyles: false,
+      }}
+      // ...
+    />
+  );
+}
+```
+
+This keeps Puck's iframe interaction styles active, but it stops mirroring host stylesheets and host `html` / `body` attributes.
+
 ## Controlling viewports with compositional interfaces
 
 When implementing a [compositional interface](/docs/extending-puck/composition), the `viewports` API will have no effect. Instead, the viewport size can be controlled by the dimensions of the wrapping element that contains [`<Puck.Preview />`](/docs/api-reference/components/puck-preview).

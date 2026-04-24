@@ -18,7 +18,6 @@ npx create-puck-app my-app
 
 ```jsx copy filename="Editor.jsx"
 import { Puck } from "@puckeditor/core";
-import "@puckeditor/core/puck.css";
 
 // Create Puck component config
 const config = {
@@ -47,6 +46,8 @@ export function Editor() {
   return <Puck config={config} data={initialData} onPublish={save} />;
 }
 ```
+
+Puck injects the editor UI styles at runtime by default. Set `uiStyles={false}` if you prefer to load them manually.
 
 ## Render the page
 
