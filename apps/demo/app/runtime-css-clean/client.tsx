@@ -66,7 +66,7 @@ const data = {
       type: "ParagraphBlock",
       props: {
         id: "paragraph-block",
-        body: "Use ?syncStyles=false to disable host style mirroring and ?uiStyles=false to disable runtime editor style injection. This route is intended to validate the packaged runtime behavior, not source-mode development imports.",
+        body: "Use ?syncHostStyles=false to disable host style mirroring and ?uiStyles=false to disable runtime editor style injection. This route is intended to validate the packaged runtime behavior, not source-mode development imports.",
       },
     },
   ],
@@ -78,7 +78,7 @@ export default function Client() {
       ? new URLSearchParams()
       : new URL(window.location.href).searchParams;
 
-  const syncStyles = params.get("syncStyles") !== "false";
+  const syncHostStyles = params.get("syncHostStyles") !== "false";
   const uiStyles = params.get("uiStyles") === "false" ? false : undefined;
 
   return (
@@ -90,7 +90,7 @@ export default function Client() {
       height="100vh"
       iframe={{
         enabled: true,
-        syncStyles,
+        syncHostStyles,
       }}
       uiStyles={uiStyles}
     />

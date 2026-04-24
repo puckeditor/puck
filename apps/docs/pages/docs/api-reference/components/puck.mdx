@@ -215,7 +215,7 @@ export function Editor() {
 | --------------------------------- | ---------------------- | ------- | ------ |
 | [`enabled`](#enabled)             | `enabled: false`       | boolean | -      |
 | [`waitForStyles`](#waitforstyles) | `waitForStyles: false` | boolean | -      |
-| [`syncStyles`](#syncstyles)       | `syncStyles: false`    | boolean | -      |
+| [`syncHostStyles`](#syncstyles)       | `syncHostStyles: false`    | boolean | -      |
 
 ##### `enabled`
 
@@ -227,11 +227,11 @@ Disabling iframes will also disable [viewports](#viewports).
 
 Defer rendering of the Puck preview until the iframe styles have loaded, showing a spinner. Defaults to `true`.
 
-##### `syncStyles`
+##### `syncHostStyles`
 
 Mirror host `style` and stylesheet tags into the preview iframe. Defaults to `true`.
 
-Set `syncStyles: false` to fully isolate the iframe from host styles and host `html` / `body` attributes while still keeping Puck's iframe interaction styles active.
+Set `syncHostStyles: false` to fully isolate the iframe from host styles and host `html` / `body` attributes while still keeping Puck's iframe interaction styles active.
 
 ### `uiStyles`
 

@@ -158,6 +158,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
           id="preview-frame"
           className={getClassName("frame")}
           data-rfd-iframe
+          syncHostStyles={iframe.syncHostStyles}
           onReady={() => {
             setStatus("READY");
           }}

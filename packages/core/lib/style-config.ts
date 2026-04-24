@@ -7,5 +7,6 @@ export const normalizeIframeConfig = (
 ): NormalizedIframeConfig => ({
   enabled: true,
   waitForStyles: true,
+  syncHostStyles: true,
   ...iframe,
 });
