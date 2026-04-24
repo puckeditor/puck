@@ -1,7 +1,7 @@
 {
   "name": "@puckeditor/plugin-views",
   "description": "Bind Puck fields to dynamic data sources",
-  "version": "0.21.2",
+  "version": "0.21.3-canary.c19d6b57",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
   "bugs": "https://github.com/puckeditor/puck/issues",
