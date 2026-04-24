@@ -117,13 +117,13 @@ V1 supports path-only template strings:
 ## Stored data
 
 - Custom views are stored on `root.props.__puck_views.custom`
-- Field templates and direct bindings are stored on `props.__puck_view_state`
+- Field templates, direct bindings, and sync state are stored on `props.__puck_view_state`
 
 You can override those keys with `storageKey` and `nodeStateKey`.
 
 ## Notes
 
 - Built-in views are read-only in the sidebar, but editors can duplicate them into custom views.
-- Direct field bindings are supported for `text`, `textarea`, `number`, `select`, `radio`, and `array`.
+- Direct field bindings are supported for `text`, `textarea`, `richtext`, `number`, `select`, `radio`, and `array`.
 - Template authoring is supported for `text` and `textarea`.
 - The older per-component `withView` API has been removed.
