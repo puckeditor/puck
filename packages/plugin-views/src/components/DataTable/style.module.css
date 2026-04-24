@@ -1,0 +1,109 @@
+.DataTable {
+  border-collapse: unset;
+  border-spacing: 0px;
+  color: var(--puck-color-grey-02);
+  position: relative;
+  z-index: 0;
+  min-width: 100%;
+}
+
+.DataTable thead {
+  background-color: var(--puck-color-white);
+  position: sticky;
+  top: 0;
+  text-align: left;
+  z-index: 1;
+}
+
+.DataTable th {
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 16px 24px;
+}
+
+.DataTable td {
+  border-bottom: 1px solid var(--puck-color-grey-10);
+  padding: 16px 24px;
+  white-space: nowrap;
+}
+
+.DataTable tr td:first-of-type {
+  font-weight: 500;
+  width: 1%; /* Prevent growing */
+  white-space: nowrap; /* Prevent growing */
+}
+
+.DataTable-expandedRow td {
+  background: var(--puck-color-white);
+  padding: 0;
+}
+
+.DataTable-expandedCell {
+  padding: 0;
+}
+
+.DataTable-expandedSections {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.DataTable-expandedSection {
+  display: grid;
+  gap: 8px;
+}
+
+.DataTable-expandedLabel {
+  color: var(--puck-color-black);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.DataTable-value {
+  display: grid;
+  gap: 8px;
+}
+
+.DataTable-expandToggle {
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  align-self: start;
+  background: var(--puck-color-grey-11);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 4px;
+  color: var(--puck-color-grey-04);
+  cursor: pointer;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: inherit;
+}
+
+.DataTable-expandToggle:hover {
+  background: var(--puck-color-grey-10);
+}
+
+.DataTable-expandToggle:active {
+  background: var(--puck-color-grey-09);
+}
+
+.DataTable-expandToggleExpanded {
+  border-color: var(--puck-color-azure-01);
+}
+
+.DataTable-valueJson {
+  background: var(--puck-color-grey-11);
+  border-radius: 8px;
+  color: var(--puck-color-grey-04);
+  font-size: 12px;
+  margin: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 16px;
+}

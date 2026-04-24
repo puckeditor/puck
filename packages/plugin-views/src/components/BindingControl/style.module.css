@@ -1,0 +1,117 @@
+.BindingControl {
+  background: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 999px;
+  color: var(--puck-color-grey-05);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1.2;
+  padding: 6px;
+}
+
+.BindingControl--connected {
+  color: var(--puck-color-azure-04);
+}
+
+.BindingControl:hover:not(:disabled) {
+  background: var(--puck-color-azure-12);
+  border-color: var(--puck-color-grey-05);
+}
+
+.BindingControl:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.BindingControl-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow-y: hidden;
+}
+
+.BindingControl-modalHeader {
+  align-items: center;
+  background-color: var(--puck-color-grey-12);
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 24px;
+}
+
+.BindingControl-modalTitle {
+  color: var(--puck-color-black);
+  font-size: 16px;
+  margin: 0;
+}
+
+.BindingControl-modalSearch {
+  padding: 16px;
+  padding-bottom: 0;
+  min-width: 0;
+}
+
+.BindingControl-modalBody {
+  display: flex;
+  min-height: 300px;
+  max-height: 65vh;
+  overflow: hidden;
+}
+
+.BindingControl-modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  width: 100%;
+}
+
+.BindingControl-optionSection {
+  display: grid;
+  gap: 8px;
+}
+
+.BindingControl-optionSectionLabel {
+  color: var(--puck-color-grey-04);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.BindingControl-stateBox {
+  align-items: center;
+  color: var(--puck-color-grey-04);
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+}
+
+.BindingControl-modalFooter {
+  background-color: var(--puck-color-grey-12);
+  border-top: 1px solid var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+}
+
+.BindingControl-modalActions {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.BindingControl-modalFooterLabel {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}

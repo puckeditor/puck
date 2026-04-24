@@ -1,0 +1,23 @@
+.Modal {
+  align-items: center;
+  background: color-mix(in srgb, var(--puck-color-black) 30%, transparent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 40px;
+  position: fixed;
+  z-index: 20;
+}
+
+.Modal-frame {
+  background: var(--puck-color-white);
+  border-radius: 8px;
+  box-shadow: 0 24px 48px
+    color-mix(in srgb, var(--puck-color-black) 18%, transparent);
+  display: flex;
+  flex-direction: column;
+  max-height: 90dvh;
+  max-width: 1024px;
+  overflow: hidden;
+  width: 100%;
+}

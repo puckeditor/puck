@@ -1,0 +1,55 @@
+{
+  "name": "@puckeditor/plugin-views",
+  "description": "Bind Puck fields to dynamic data sources",
+  "version": "0.21.3-canary.c19d6b57",
+  "author": "Chris Villa <chris@puckeditor.com>",
+  "repository": "puckeditor/puck",
+  "bugs": "https://github.com/puckeditor/puck/issues",
+  "homepage": "https://puckeditor.com",
+  "keywords": [
+    "puck-ecosystem",
+    "puck-plugin"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./configure": {
+      "types": "./dist/configure.d.ts",
+      "import": "./dist/configure.mjs",
+      "require": "./dist/configure.js"
+    },
+    "./styles.css": "./dist/index.css"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "rm -rf dist && tsup index.ts configure.ts",
+    "dev": "tsup index.ts configure.ts --watch src",
+    "test": "jest"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@puckeditor/core": "0.21.2",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^7.32.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "lucide-react": "^0.452.0",
+    "ts-jest": "^29.3.4",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "@puckeditor/core": "^0.21.0 || 0.21.0-canary.de0baf39",
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}

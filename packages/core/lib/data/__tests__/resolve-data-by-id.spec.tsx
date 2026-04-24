@@ -7,6 +7,16 @@ import { walkAppState } from "../walk-app-state";
 
 const appStore = createAppStore();
 
+const rootResolveData = jest.fn(async (data, params) => {
+  return {
+    ...data,
+    props: {
+      ...data.props,
+      title: params.trigger,
+    },
+  };
+});
+
 const childResolveData = jest.fn(async (data, params) => {
   return {
     ...data,
@@ -17,6 +27,12 @@ const childResolveData = jest.fn(async (data, params) => {
 });
 
 const config: Config = {
+  root: {
+    fields: {
+      title: { type: "text" },
+    },
+    resolveData: rootResolveData,
+  },
   components: {
     Parent: {
       fields: { items: { type: "slot" } },
@@ -99,6 +115,13 @@ describe("resolveDataById", () => {
     expect(childResolveData).toHaveBeenCalledTimes(1);
     const mockedReturn = await childResolveData.mock.results[0].value;
     expect(mockedReturn.props.resolvedProp).toBeDefined();
+  });
+
+  it("resolves the root item with replaceRoot semantics", async () => {
+    await act(() => resolveDataById("root", appStore.getState));
+
+    expect(rootResolveData).toHaveBeenCalledTimes(1);
+    expect(appStore.getState().state.data.root.props?.title).toBe("force");
   });
 
   it("shows a warning and doesn't resolve if the id doesn't exist", async () => {
