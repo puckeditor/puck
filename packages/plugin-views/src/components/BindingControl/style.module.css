@@ -23,15 +23,20 @@
 }
 
 .BindingControl-modal {
-  display: grid;
-  gap: 12px;
-  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow-y: hidden;
 }
 
 .BindingControl-modalHeader {
-  display: grid;
-  gap: 8px;
-  text-align: center;
+  align-items: center;
+  background-color: var(--puck-color-grey-12);
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 24px;
 }
 
 .BindingControl-modalTitle {
@@ -40,52 +45,44 @@
   margin: 0;
 }
 
+.BindingControl-modalSearch {
+  padding: 16px;
+  padding-bottom: 0;
+  min-width: 0;
+}
+
+.BindingControl-modalBody {
+  display: flex;
+  min-height: 300px;
+  max-height: 65vh;
+  overflow: hidden;
+}
+
 .BindingControl-modalContent {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  height: min(400px, 60vh);
+  min-height: 0;
   overflow: auto;
+  padding: 16px;
+  width: 100%;
 }
 
 .BindingControl-stateBox {
   align-items: center;
   color: var(--puck-color-grey-04);
   display: flex;
+  flex: 1;
   justify-content: center;
   text-align: center;
 }
 
-.BindingControl-optionButton {
-  background: transparent;
-  border: 0;
-  border-radius: 10px;
-  color: inherit;
-  cursor: pointer;
-  display: grid;
-  gap: 2px;
-  padding: 8px 10px;
-  text-align: left;
-}
-
-.BindingControl-optionButton:hover {
-  background: var(--puck-color-azure-12);
-}
-
-.BindingControl-optionTitle {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.BindingControl-optionPreview {
-  color: var(--puck-color-grey-04);
-  font-size: 11px;
-  word-break: break-word;
-}
-
 .BindingControl-modalFooter {
+  background-color: var(--puck-color-grey-12);
+  border-top: 1px solid var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
   justify-content: flex-end;
+  padding: 16px;
 }

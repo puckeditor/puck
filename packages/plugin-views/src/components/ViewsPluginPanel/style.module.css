@@ -65,17 +65,19 @@
 }
 
 .ViewsPluginPanel-modal {
-  display: grid;
-  gap: 12px;
-  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
   max-height: 100%;
-  overflow: auto;
+  overflow-y: hidden;
 }
 
 .ViewsPluginPanel-modalHeader {
-  display: grid;
-  gap: 8px;
-  text-align: center;
+  background-color: var(--puck-color-grey-12);
+  border-bottom: 1px solid var(--puck-color-grey-09);
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 24px;
+  display: flex;
 }
 
 .ViewsPluginPanel-modalTitle {
@@ -86,27 +88,21 @@
 
 .ViewsPluginPanel-modalBody {
   display: grid;
-  gap: 16px;
   grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
   min-height: 300px;
   max-height: 65vh;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .ViewsPluginPanel-modalForm {
+  border-right: 1px solid var(--puck-color-grey-09);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   min-width: 0;
   max-height: 100%;
   overflow: auto;
-}
-
-.ViewsPluginPanel-detailCard {
-  background: var(--puck-color-white);
-  border: 1px solid var(--puck-color-grey-09);
-  border-radius: 8px;
-  color: var(--puck-color-black);
-  display: grid;
-  gap: 12px;
-  padding: 12px;
+  padding: 16px;
 }
 
 .ViewsPluginPanel-helperText {
@@ -138,10 +134,13 @@
 }
 
 .ViewsPluginPanel-modalFooter {
+  background-color: var(--puck-color-grey-12);
+  border-top: 1px solid var(--puck-color-grey-09);
+  color: var(--puck-color-grey-04);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
   justify-content: flex-end;
+  padding: 16px;
 }
 
 @media (max-width: 720px) {

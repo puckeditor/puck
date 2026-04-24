@@ -435,6 +435,8 @@ export function BindingControl({
         <div className={getClassName("modal")}>
           <div className={getClassName("modalHeader")}>
             <h3 className={getClassName("modalTitle")}>Connect field</h3>
+          </div>
+          <div className={getClassName("modalSearch")}>
             <AutoField
               field={{
                 type: "text",
@@ -445,18 +447,20 @@ export function BindingControl({
               value={query}
             />
           </div>
-          <div
-            className={[
-              getClassName("modalContent"),
-              !(!loading && !error && matchingOptions.length > 0)
-                ? getClassName("stateBox")
-                : "",
-            ].join(" ")}
-          >
-            {loader}
-            {errorMessage}
-            {noViewOptions}
-            {viewOptionList}
+          <div className={getClassName("modalBody")}>
+            <div
+              className={[
+                getClassName("modalContent"),
+                !(!loading && !error && matchingOptions.length > 0)
+                  ? getClassName("stateBox")
+                  : "",
+              ].join(" ")}
+            >
+              {loader}
+              {errorMessage}
+              {noViewOptions}
+              {viewOptionList}
+            </div>
           </div>
           <div className={getClassName("modalFooter")}>
             {fieldBinding && (

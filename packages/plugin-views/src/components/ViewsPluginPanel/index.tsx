@@ -366,84 +366,81 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
             </div>
             <div className={getClassName("modalBody")}>
               <div className={getClassName("modalForm")}>
-                <div className={getClassName("detailCard")}>
-                  <FieldLabel label="Label">
-                    <AutoField
-                      field={labelField}
-                      onChange={(nextLabel) => {
-                        if (!editableView) return;
+                <FieldLabel label="Label">
+                  <AutoField
+                    field={labelField}
+                    onChange={(nextLabel) => {
+                      if (!editableView) return;
 
-                        setDraft({
-                          ...editableView,
-                          label: nextLabel,
-                        });
-                      }}
-                      readOnly={selectedView.builtIn}
-                      value={editableView?.label ?? selectedView.label}
-                    />
-                  </FieldLabel>
+                      setDraft({
+                        ...editableView,
+                        label: nextLabel,
+                      });
+                    }}
+                    readOnly={selectedView.builtIn}
+                    value={editableView?.label ?? selectedView.label}
+                  />
+                </FieldLabel>
 
-                  <FieldLabel label="ID">
-                    <AutoField
-                      field={idField}
-                      onChange={(nextId) => {
-                        if (!editableView) return;
+                <FieldLabel label="ID">
+                  <AutoField
+                    field={idField}
+                    onChange={(nextId) => {
+                      if (!editableView) return;
 
-                        const normalizedId = sanitizeId(nextId || "");
+                      const normalizedId = sanitizeId(nextId || "");
 
-                        setDraft({
-                          ...editableView,
-                          id: normalizedId,
-                        });
-                        setSelectedId(normalizedId);
-                      }}
-                      readOnly={selectedView.builtIn || isPersistedCustomView}
-                      value={editableView?.id ?? selectedView.id}
-                    />
-                  </FieldLabel>
+                      setDraft({
+                        ...editableView,
+                        id: normalizedId,
+                      });
+                      setSelectedId(normalizedId);
+                    }}
+                    readOnly={selectedView.builtIn || isPersistedCustomView}
+                    value={editableView?.id ?? selectedView.id}
+                  />
+                </FieldLabel>
 
-                  <FieldLabel label="Source">
-                    <AutoField
-                      field={sourceField}
-                      onChange={(nextSource) => {
-                        if (!editableView) return;
+                <FieldLabel label="Source">
+                  <AutoField
+                    field={sourceField}
+                    onChange={(nextSource) => {
+                      if (!editableView) return;
 
-                        setDraft({
-                          ...editableView,
-                          source: nextSource,
-                          params: {},
-                        });
-                      }}
-                      readOnly={selectedView.builtIn}
-                      value={editableView?.source ?? selectedView.source}
-                    />
-                  </FieldLabel>
+                      setDraft({
+                        ...editableView,
+                        source: nextSource,
+                        params: {},
+                      });
+                    }}
+                    readOnly={selectedView.builtIn}
+                    value={editableView?.source ?? selectedView.source}
+                  />
+                </FieldLabel>
 
-                  {paramsField && (
-                    <ObjectField
-                      name="Filters"
-                      field={paramsField}
-                      onChange={(nextParams) => {
-                        if (!editableView) return;
+                {paramsField && (
+                  <ObjectField
+                    name="Filters"
+                    field={paramsField}
+                    onChange={(nextParams) => {
+                      if (!editableView) return;
 
-                        setDraft({
-                          ...editableView,
-                          params: nextParams ?? {},
-                        });
-                      }}
-                      readOnly={selectedView.builtIn}
-                      value={editableView?.params ?? selectedView.params ?? {}}
-                    />
-                  )}
+                      setDraft({
+                        ...editableView,
+                        params: nextParams ?? {},
+                      });
+                    }}
+                    readOnly={selectedView.builtIn}
+                    value={editableView?.params ?? selectedView.params ?? {}}
+                  />
+                )}
 
-                  {!selectedView.builtIn && selectedUsageCount > 0 && (
-                    <div className={getClassName("helperText")}>
-                      This view is referenced {selectedUsageCount} time
-                      {selectedUsageCount === 1 ? "" : "s"} and cannot be
-                      deleted.
-                    </div>
-                  )}
-                </div>
+                {!selectedView.builtIn && selectedUsageCount > 0 && (
+                  <div className={getClassName("helperText")}>
+                    This view is referenced {selectedUsageCount} time
+                    {selectedUsageCount === 1 ? "" : "s"} and cannot be deleted.
+                  </div>
+                )}
               </div>
 
               <div className={getClassName("modalPreview")}>
@@ -459,10 +456,7 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                     </div>
                   )}
                   {!previewLoading && !previewError && previewData !== null && (
-                    <DataTable
-                      data={previewData}
-                      className={getClassName("previewTable")}
-                    />
+                    <DataTable data={previewData} />
                   )}
                 </div>
               </div>
