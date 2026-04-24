@@ -1,3 +1,5 @@
+import "@/core/styles.css";
+
 import resolvePuckPath from "../../lib/resolve-puck-path";
 import { Metadata } from "next";
 import Client from "./client";
