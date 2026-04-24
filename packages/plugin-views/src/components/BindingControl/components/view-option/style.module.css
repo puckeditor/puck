@@ -6,6 +6,10 @@
   overflow: hidden;
 }
 
+.ViewOption--selected {
+  border-color: var(--puck-color-azure-04);
+}
+
 .ViewOption-summary {
   position: relative;
   display: flex;
@@ -87,7 +91,6 @@
 .ViewOption-expandedContent {
   display: grid;
   gap: 10px;
-  padding: 14px;
 }
 
 .ViewOption-expandedContentBody {

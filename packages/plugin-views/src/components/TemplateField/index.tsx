@@ -378,7 +378,7 @@ export function TemplateField({
                       {option.expression}
                     </div>
                     <div className={getClassName("suggestionPreview")}>
-                      {option.path}
+                      {option.value}
                     </div>
                   </button>
                 ))}

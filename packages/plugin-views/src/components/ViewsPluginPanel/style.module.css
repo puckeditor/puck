@@ -134,13 +134,19 @@
 }
 
 .ViewsPluginPanel-modalFooter {
+  align-items: center;
   background-color: var(--puck-color-grey-12);
   border-top: 1px solid var(--puck-color-grey-09);
   color: var(--puck-color-grey-04);
   display: flex;
   gap: 16px;
-  justify-content: flex-end;
   padding: 16px;
+}
+
+.ViewsPluginPanel-modalActions {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
 }
 
 @media (max-width: 720px) {

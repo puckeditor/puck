@@ -21,6 +21,7 @@ import {
 import type { NodeViewState, ViewsPluginOptions } from "../../types";
 
 import styles from "./style.module.css";
+import { ArrowUpDown } from "lucide-react";
 
 const getClassName = getClassNameFactory("SyncControl", styles);
 
@@ -192,8 +193,9 @@ export function SyncControl({
         );
       }}
       type="button"
+      title={synced ? "Unsync items" : "Sync items"}
     >
-      {synced ? "Unsync" : "Sync"}
+      <ArrowUpDown size="14" />
     </button>
   );
 }

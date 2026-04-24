@@ -60,6 +60,9 @@
 .TemplateField-toolbar {
   align-items: center;
   display: flex;
+  position: absolute;
+  top: -32px;
+  right: 0;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }

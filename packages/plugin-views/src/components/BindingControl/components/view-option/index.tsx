@@ -15,36 +15,53 @@ export type ViewOptionProps = {
   option: ViewValueOption;
   /** Callback function that gets called when the option is connected */
   onConnect: (option: ViewValueOption) => void;
+  /** Whether the option is already the current selection */
+  selected?: boolean;
 };
 
-/** Renders a single view option for connecting a field to view data */
-const ViewOption = ({ option, onConnect }: ViewOptionProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const expression = String(option.path);
+export const useLabelNodes = (expression: string) => {
   const labelSegments = useMemo(
     () => expression.split(".").filter(Boolean),
     [expression]
   );
 
-  const labelNodes = labelSegments.map((segment, index) => {
-    const key = `${expression}-${index}`;
+  const labelNodes = useMemo(
+    () =>
+      labelSegments.map((segment, index) => {
+        const key = `${expression}-${index}`;
 
-    return (
-      <Fragment key={key}>
-        {index > 0 && (
-          <ChevronRight
-            className={getClassName("pathSeparator")}
-            size={14}
-            strokeWidth={1.75}
-          />
-        )}
-        <code className={getClassName("segment")}>{segment}</code>
-      </Fragment>
-    );
-  });
+        return (
+          <Fragment key={key}>
+            {index > 0 && (
+              <ChevronRight
+                className={getClassName("pathSeparator")}
+                size={14}
+                strokeWidth={1.75}
+              />
+            )}
+            <code className={getClassName("segment")}>{segment}</code>
+          </Fragment>
+        );
+      }),
+    [labelSegments]
+  );
+
+  return labelNodes;
+};
+
+/** Renders a single view option for connecting a field to view data */
+const ViewOption = ({
+  option,
+  onConnect,
+  selected = false,
+}: ViewOptionProps) => {
+  const [expanded, setExpanded] = useState(false);
+  const expression = String(option.path);
+
+  const labelNodes = useLabelNodes(expression);
 
   return (
-    <div className={getClassName()}>
+    <div className={getClassName({ selected })}>
       <div
         className={[
           getClassName("summary"),
@@ -80,13 +97,19 @@ const ViewOption = ({ option, onConnect }: ViewOptionProps) => {
         </div>
         <div className={getClassName("actions")}>
           <Button
-            variant="primary"
+            disabled={selected}
+            variant={selected ? "secondary" : "primary"}
             onClick={(event) => {
               event.stopPropagation();
+
+              if (selected) {
+                return;
+              }
+
               onConnect(option);
             }}
           >
-            Connect
+            {selected ? "Connected" : "Connect"}
           </Button>
         </div>
       </div>

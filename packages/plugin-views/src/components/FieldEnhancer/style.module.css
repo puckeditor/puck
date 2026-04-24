@@ -1,11 +1,13 @@
 .FieldEnhancer {
-  display: grid;
-  gap: 8px;
+  position: relative;
 }
 
 .FieldEnhancer-toolbar {
   align-items: center;
   display: flex;
+  position: absolute;
+  top: -4px;
+  right: 0;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }

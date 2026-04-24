@@ -13,6 +13,7 @@ import {
 } from "../../lib/bindings/sync";
 import { getViewDataByIds, getViewValueOptions } from "../../lib/views";
 import {
+  getPathSegments,
   getWildcardPathRegExp,
   getPathToClosestWildcard,
 } from "../../lib/strings/paths";
@@ -27,25 +28,149 @@ import type {
 import { Loader } from "../Loader";
 import { Modal } from "../Modal";
 
-import ViewOption, { ViewOptionProps } from "./components/view-option";
+import ViewOption, {
+  useLabelNodes,
+  ViewOptionProps,
+} from "./components/view-option";
+import { getBindingOptionSections } from "./option-sections";
 import styles from "./style.module.css";
+import { Database } from "lucide-react";
 
 const getClassName = getClassNameFactory("BindingControl", styles);
+const MAX_BINDING_LABEL_LENGTH = 20;
+const INDEX_PATH_SEGMENT_REGEX = /^\[(?:\d+|\*)\]$/;
+
+const getBindingPathLabel = (path: string) => {
+  if (path.length <= MAX_BINDING_LABEL_LENGTH) {
+    return path;
+  }
+
+  const pathSegments = getPathSegments(path);
+  const finalSegment = pathSegments[pathSegments.length - 1];
+  const indexSegment = [...pathSegments]
+    .reverse()
+    .find((segment) => INDEX_PATH_SEGMENT_REGEX.test(segment));
+
+  if (!finalSegment) {
+    return path;
+  }
+
+  if (!indexSegment || indexSegment === finalSegment) {
+    return finalSegment;
+  }
+
+  return `${indexSegment}.${finalSegment}`;
+};
 
 const getBindingLabel = (
   binding: NodeViewBinding | null | undefined,
   options: ViewValueOption[]
 ) => {
   if (!binding) {
-    return "Connect";
+    return <Database size="14" />;
   }
 
-  return (
+  const path =
     options.find(
       (option) =>
         option.viewId === binding.viewId && option.path === (binding.path || "")
-    )?.expression ?? `${binding.path || "Unknown binding"}`
+    )?.expression ?? `${binding.path || "Unknown binding"}`;
+  const label = getBindingPathLabel(path);
+
+  return (
+    <div
+      style={{ display: "flex", gap: 4 }}
+      title={label !== path ? path : undefined}
+    >
+      <Database size="14" />
+      {label}
+    </div>
   );
+};
+
+const getMatchingBindingOptions = ({
+  options,
+  closestArrayBinding,
+  fieldBinding,
+}: {
+  options: ViewValueOption[];
+  closestArrayBinding?: NodeViewBinding | null;
+  fieldBinding?: NodeViewBinding;
+}) => {
+  if (!closestArrayBinding) {
+    return options;
+  }
+
+  const normalizedOptions: ViewValueOption[] = [];
+  const closestArrayPath = closestArrayBinding.path;
+  const matchClosestArrayPath = getWildcardPathRegExp(closestArrayPath, "\\d+");
+
+  options.forEach((option) => {
+    if (closestArrayBinding.viewId !== option.viewId) {
+      return;
+    }
+
+    const isMatch = matchClosestArrayPath.test(option.path);
+
+    if (
+      !isMatch ||
+      (option.path === closestArrayPath && option.path !== fieldBinding?.path)
+    ) {
+      return;
+    }
+
+    const pathWithArrayBinding = option.path.replace(
+      matchClosestArrayPath,
+      closestArrayPath
+    );
+
+    const formattedOption = {
+      ...option,
+      path: pathWithArrayBinding,
+      expression: pathWithArrayBinding,
+    };
+
+    // Don't show options that would create a circular binding, but keep the
+    // currently selected binding visible in the modal.
+    if (
+      fieldBinding?.path &&
+      pathWithArrayBinding !== fieldBinding.path &&
+      pathWithArrayBinding.startsWith(fieldBinding.path)
+    ) {
+      return;
+    }
+
+    normalizedOptions.push(formattedOption);
+  });
+
+  const groupedOptions = new Map<string, ViewValueOption[]>();
+
+  normalizedOptions.forEach((option) => {
+    if (!groupedOptions.has(option.path)) {
+      groupedOptions.set(option.path, [option]);
+    } else {
+      groupedOptions.get(option.path)?.push(option);
+    }
+  });
+
+  const uniqueOptions: ViewValueOption[] = [];
+
+  groupedOptions.forEach((value) => {
+    const firstValue = value[0];
+
+    if (!firstValue) {
+      return;
+    }
+
+    uniqueOptions.push({
+      ...firstValue,
+      value: value.map((entry) => ({
+        value: entry.value,
+      })),
+    });
+  });
+
+  return uniqueOptions.sort((a, b) => a.path.localeCompare(b.path));
 };
 
 export type BindingControlProps = {
@@ -317,100 +442,63 @@ export function BindingControl({
     ? bindings[closestArrayBindingKey]
     : null;
 
-  const matchingOptions = useMemo(() => {
-    if (!closestArrayBinding) return filteredOptions;
+  const matchingAllOptions = useMemo(
+    () =>
+      getMatchingBindingOptions({
+        options: valueOptions,
+        closestArrayBinding,
+        fieldBinding,
+      }),
+    [closestArrayBinding, fieldBinding, valueOptions]
+  );
 
-    // Convert static paths to wildcard paths based on the closest array binding
-    const normalizedOptions: ViewValueOption[] = [];
+  const matchingOptions = useMemo(
+    () =>
+      getMatchingBindingOptions({
+        options: filteredOptions,
+        closestArrayBinding,
+        fieldBinding,
+      }),
+    [closestArrayBinding, fieldBinding, filteredOptions]
+  );
 
-    filteredOptions.forEach((option) => {
-      const closestArrayPath = closestArrayBinding.path;
-
-      if (closestArrayBinding.viewId !== option.viewId) {
-        return;
-      }
-
-      const matchClosestArrayPath = getWildcardPathRegExp(
-        closestArrayPath,
-        "\\d+"
-      );
-
-      const isMatch = matchClosestArrayPath.test(option.path);
-
-      if (!isMatch) return;
-
-      // Don't show the exact same binding as an option
-      if (option.path === closestArrayPath) return;
-
-      const pathWithArrayBinding = option.path.replace(
-        matchClosestArrayPath,
-        closestArrayPath
-      );
-
-      const formattedOption = {
-        ...option,
-        path: pathWithArrayBinding,
-        expression: pathWithArrayBinding,
-      };
-
-      // Don't show options that would create a circular binding
-      if (pathWithArrayBinding.startsWith(fieldBinding?.path)) return;
-
-      normalizedOptions.push(formattedOption);
-    });
-
-    // Group any array binding view options that resolve to same path (i.g. "items[*].name")
-    const groupedOptions = new Map<string, ViewValueOption[]>();
-
-    normalizedOptions.forEach((option) => {
-      if (!groupedOptions.has(option.path)) {
-        groupedOptions.set(option.path, [option]);
-      } else {
-        groupedOptions.get(option.path)?.push(option);
-      }
-    });
-
-    // Merge array binding view options that share the same path into a single option
-    // with multiple possible values to preview in the UI
-    let uniqueOptions: ViewValueOption[] = [];
-
-    groupedOptions.forEach((value) => {
-      const firstValue = value[0];
-
-      if (!firstValue) return;
-
-      uniqueOptions.push({
-        ...firstValue,
-        value: value.map((value) => ({
-          value: value.value,
-        })),
-      });
-    });
-
-    return uniqueOptions.sort((a, b) => a.path.localeCompare(b.path));
-  }, [filteredOptions]);
+  const { selectedOption, remainingOptions } = useMemo(
+    () =>
+      getBindingOptionSections({
+        binding: fieldBinding,
+        allOptions: matchingAllOptions,
+        visibleOptions: matchingOptions,
+      }),
+    [fieldBinding, matchingAllOptions, matchingOptions]
+  );
 
   const loader = loading && <Loader size={18} />;
 
   const errorMessage = !loading && error;
 
-  const noViewOptions =
-    !loading &&
-    !error &&
-    matchingOptions.length === 0 &&
-    "No compatible view data.";
+  const hasViewOptions = !!selectedOption || remainingOptions.length > 0;
 
-  const viewOptionList =
-    !loading &&
-    !error &&
-    matchingOptions.length > 0 &&
-    matchingOptions.map((option) => (
-      <ViewOption
-        key={`${option.viewId}:${option.path}`}
-        option={option}
-        onConnect={createNewBinding}
-      />
-    ));
+  const noViewOptions =
+    !loading && !error && !hasViewOptions && "No compatible view data.";
+
+  const viewOptionList = !loading && !error && hasViewOptions && (
+    <>
+      {matchingOptions.length > 0 && (
+        <div className={getClassName("optionSection")}>
+          {matchingOptions.map((option) => (
+            <ViewOption
+              key={`${option.viewId}:${option.path}`}
+              option={option}
+              onConnect={createNewBinding}
+              selected={option.expression === selectedOption?.expression}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+
+  const selectedLabelNodes = useLabelNodes(selectedOption?.expression ?? "");
 
   return (
     <>
@@ -423,7 +511,7 @@ export function BindingControl({
         }}
         type="button"
       >
-        {getBindingLabel(fieldBinding, matchingOptions)}
+        {getBindingLabel(fieldBinding, matchingAllOptions)}
       </button>
       <Modal
         isOpen={isOpen}
@@ -451,7 +539,7 @@ export function BindingControl({
             <div
               className={[
                 getClassName("modalContent"),
-                !(!loading && !error && matchingOptions.length > 0)
+                !(!loading && !error && hasViewOptions)
                   ? getClassName("stateBox")
                   : "",
               ].join(" ")}
@@ -463,21 +551,32 @@ export function BindingControl({
             </div>
           </div>
           <div className={getClassName("modalFooter")}>
-            {fieldBinding && (
-              <Button onClick={deleteBinding} type="button" variant="secondary">
-                Disconnect
-              </Button>
+            {selectedOption && (
+              <div className={getClassName("modalFooterLabel")}>
+                Connected to {selectedLabelNodes}
+              </div>
             )}
-            <Button
-              onClick={() => {
-                setOpen(false);
-                setQuery("");
-              }}
-              type="button"
-              variant="secondary"
-            >
-              Close
-            </Button>
+            <div className={getClassName("modalActions")}>
+              {fieldBinding && (
+                <Button
+                  onClick={deleteBinding}
+                  type="button"
+                  variant="secondary"
+                >
+                  Disconnect
+                </Button>
+              )}
+              <Button
+                onClick={() => {
+                  setOpen(false);
+                  setQuery("");
+                }}
+                type="button"
+                variant="secondary"
+              >
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       </Modal>

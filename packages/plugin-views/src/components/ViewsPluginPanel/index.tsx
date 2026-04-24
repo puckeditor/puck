@@ -434,13 +434,6 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                     value={editableView?.params ?? selectedView.params ?? {}}
                   />
                 )}
-
-                {!selectedView.builtIn && selectedUsageCount > 0 && (
-                  <div className={getClassName("helperText")}>
-                    This view is referenced {selectedUsageCount} time
-                    {selectedUsageCount === 1 ? "" : "s"} and cannot be deleted.
-                  </div>
-                )}
               </div>
 
               <div className={getClassName("modalPreview")}>
@@ -456,106 +449,118 @@ export function ViewsPluginPanel({ options }: { options: ViewsPluginOptions }) {
                     </div>
                   )}
                   {!previewLoading && !previewError && previewData !== null && (
-                    <DataTable data={previewData} />
+                    <DataTable
+                      data={previewData}
+                      className={getClassName("previewTable")}
+                    />
                   )}
                 </div>
               </div>
             </div>
             <div className={getClassName("modalFooter")}>
-              {selectedView.builtIn ? (
-                <>
-                  <Button
-                    onClick={() => {
-                      const existingIds = views.map((view) => view.id);
-                      const duplicated: CustomView = {
-                        id: createViewId({
-                          existingIds,
-                          label: selectedView.label,
-                          source: selectedView.source,
-                        }),
-                        label: `${selectedView.label} Copy`,
-                        source: selectedView.source,
-                        params: selectedView.params ?? {},
-                      };
-
-                      setDraft(duplicated);
-                      setSelectedId(duplicated.id);
-                    }}
-                    type="button"
-                  >
-                    Duplicate
-                  </Button>
-                  <Button
-                    onClick={closeEditor}
-                    type="button"
-                    variant="secondary"
-                  >
-                    Close
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    onClick={async () => {
-                      if (!editableView) return;
-
-                      const existing = storage.custom.filter(
-                        (view) => view.id !== editableView.id
-                      );
-                      const nextView = {
-                        ...editableView,
-                        id: createViewId({
-                          existingIds: views
-                            .filter((view) => view.id !== editableView.id)
-                            .map((view) => view.id),
-                          label: editableView.id || editableView.label,
-                          source: editableView.source,
-                        }),
-                      };
-
-                      await saveCustomViews([...existing, nextView]);
-                      setDraft(null);
-                      setSelectedId(nextView.id);
-                      setEditorOpen(false);
-                    }}
-                    type="button"
-                  >
-                    Save
-                  </Button>
-                  {isPersistedCustomView && (
+              {!selectedView.builtIn && selectedUsageCount > 0 && (
+                <div className={getClassName("helperText")}>
+                  This view is referenced {selectedUsageCount} time
+                  {selectedUsageCount === 1 ? "" : "s"} and cannot be deleted.
+                </div>
+              )}
+              <div className={getClassName("modalActions")}>
+                {selectedView.builtIn ? (
+                  <>
                     <Button
-                      disabled={selectedUsageCount > 0}
-                      onClick={async () => {
-                        if (!selectedView || selectedView.builtIn) return;
-                        if (selectedUsageCount > 0) return;
+                      onClick={() => {
+                        const existingIds = views.map((view) => view.id);
+                        const duplicated: CustomView = {
+                          id: createViewId({
+                            existingIds,
+                            label: selectedView.label,
+                            source: selectedView.source,
+                          }),
+                          label: `${selectedView.label} Copy`,
+                          source: selectedView.source,
+                          params: selectedView.params ?? {},
+                        };
 
-                        setEditorOpen(false);
-                        await saveCustomViews(
-                          storage.custom.filter(
-                            (view) => view.id !== selectedView.id
-                          )
-                        );
-                        setDraft(null);
-                        setSelectedId(
-                          views.filter((view) => view.id !== selectedView.id)[0]
-                            ?.id ?? null
-                        );
+                        setDraft(duplicated);
+                        setSelectedId(duplicated.id);
                       }}
+                      type="button"
+                    >
+                      Duplicate
+                    </Button>
+                    <Button
+                      onClick={closeEditor}
                       type="button"
                       variant="secondary"
                     >
-                      Delete
+                      Close
                     </Button>
-                  )}
-                  <Button
-                    onClick={closeEditor}
-                    type="button"
-                    variant="secondary"
-                  >
-                    Cancel
-                  </Button>
-                </>
-              )}
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={async () => {
+                        if (!editableView) return;
+
+                        const existing = storage.custom.filter(
+                          (view) => view.id !== editableView.id
+                        );
+                        const nextView = {
+                          ...editableView,
+                          id: createViewId({
+                            existingIds: views
+                              .filter((view) => view.id !== editableView.id)
+                              .map((view) => view.id),
+                            label: editableView.id || editableView.label,
+                            source: editableView.source,
+                          }),
+                        };
+
+                        await saveCustomViews([...existing, nextView]);
+                        setDraft(null);
+                        setSelectedId(nextView.id);
+                        setEditorOpen(false);
+                      }}
+                      type="button"
+                    >
+                      Save
+                    </Button>
+                    {isPersistedCustomView && (
+                      <Button
+                        disabled={selectedUsageCount > 0}
+                        onClick={async () => {
+                          if (!selectedView || selectedView.builtIn) return;
+                          if (selectedUsageCount > 0) return;
+
+                          setEditorOpen(false);
+                          await saveCustomViews(
+                            storage.custom.filter(
+                              (view) => view.id !== selectedView.id
+                            )
+                          );
+                          setDraft(null);
+                          setSelectedId(
+                            views.filter(
+                              (view) => view.id !== selectedView.id
+                            )[0]?.id ?? null
+                          );
+                        }}
+                        type="button"
+                        variant="secondary"
+                      >
+                        Delete
+                      </Button>
+                    )}
+                    <Button
+                      onClick={closeEditor}
+                      type="button"
+                      variant="secondary"
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ) : null}

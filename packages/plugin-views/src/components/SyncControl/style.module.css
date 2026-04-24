@@ -2,10 +2,13 @@
   background: var(--puck-color-white);
   border: 1px solid var(--puck-color-grey-09);
   border-radius: 999px;
-  color: var(--puck-color-grey-04);
+  color: var(--puck-color-grey-05);
   cursor: pointer;
+  display: flex;
+  justify-content: center;
   font-size: 12px;
-  padding: 4px 10px;
+  line-height: 1.2;
+  padding: 6px;
 }
 
 .SyncControl--synced {

@@ -2,10 +2,13 @@
   background: var(--puck-color-white);
   border: 1px solid var(--puck-color-grey-09);
   border-radius: 999px;
-  color: var(--puck-color-grey-04);
+  color: var(--puck-color-grey-05);
   cursor: pointer;
+  display: flex;
+  justify-content: center;
   font-size: 12px;
-  padding: 4px 10px;
+  line-height: 1.2;
+  padding: 6px;
 }
 
 .BindingControl--connected {
@@ -68,6 +71,19 @@
   width: 100%;
 }
 
+.BindingControl-optionSection {
+  display: grid;
+  gap: 8px;
+}
+
+.BindingControl-optionSectionLabel {
+  color: var(--puck-color-grey-04);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .BindingControl-stateBox {
   align-items: center;
   color: var(--puck-color-grey-04);
@@ -83,6 +99,19 @@
   color: var(--puck-color-grey-04);
   display: flex;
   gap: 16px;
-  justify-content: flex-end;
   padding: 16px;
+}
+
+.BindingControl-modalActions {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.BindingControl-modalFooterLabel {
+  align-items: center;
+  display: flex;
+  gap: 4px;
 }
