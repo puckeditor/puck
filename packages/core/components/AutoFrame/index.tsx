@@ -81,10 +81,12 @@ const CopyHostStyles = ({
   children,
   debug = false,
   onStylesLoaded = () => null,
+  syncHostStyles = true,
 }: {
   children: ReactNode;
   debug?: boolean;
   onStylesLoaded?: () => void;
+  syncHostStyles?: boolean;
 }) => {
   const { document: doc, window: win } = useFrame();
 
@@ -259,9 +261,16 @@ const CopyHostStyles = ({
       });
     });
 
-    removeAllMirrors();
+    if (!syncHostStyles) {
+      onStylesLoaded();
 
-    const parentDocument = win.parent.document;
+      return () => {
+        observer.disconnect();
+        removeAllMirrors();
+      };
+    }
+
+    const parentDocument = win!.parent.document;
 
     const collectedStyles = collectStyles(parentDocument);
     const hrefs: string[] = [];
@@ -353,7 +362,7 @@ const CopyHostStyles = ({
       observer.disconnect();
       removeAllMirrors();
     };
-  }, [debug, doc, win]);
+  }, [syncHostStyles]);
 
   return <>{children}</>;
 };
@@ -366,6 +375,7 @@ export type AutoFrameProps = {
   onReady?: () => void;
   onNotReady?: () => void;
   frameRef: RefObject<HTMLIFrameElement | null>;
+  syncHostStyles?: boolean;
 };
 
 type AutoFrameContext = {
@@ -385,6 +395,7 @@ function AutoFrame({
   onReady = () => {},
   onNotReady = () => {},
   frameRef,
+  syncHostStyles = true,
   ...props
 }: AutoFrameProps) {
   const [loaded, setLoaded] = useState(false);
@@ -394,9 +405,9 @@ function AutoFrame({
 
   useEffect(() => {
     if (loaded) {
-      setStylesLoaded(false);
+      setStylesLoaded(!syncHostStyles);
     }
-  }, [loaded]);
+  }, [loaded, syncHostStyles]);
 
   useEffect(() => {
     if (frameRef.current) {
@@ -436,6 +447,7 @@ function AutoFrame({
           <CopyHostStyles
             debug={debug}
             onStylesLoaded={() => setStylesLoaded(true)}
+            syncHostStyles={syncHostStyles}
           >
             {createPortal(children, mountTarget)}
           </CopyHostStyles>
