@@ -77,6 +77,17 @@
   justify-content: center;
   transition: opacity 250ms ease-out;
   opacity: 0;
+  /*
+   * The loader covers the whole canvas area (height: 100%) and remains in
+   * the DOM even after ready, since `height: 0` is only applied when both
+   * `--showLoader` and `--ready` are set. If `--showLoader` is never added
+   * (e.g. when initial loading completes synchronously), the loader stays
+   * at `height: 100%` with `opacity: 0` — invisible but still receiving
+   * pointer events, blocking hover/click on UI overlaid on the canvas
+   * (e.g. custom componentOverlay buttons). The loader is a presentation
+   * indicator and should never receive pointer events.
+   */
+  pointer-events: none;
 }
 
 .PuckCanvas--showLoader .PuckCanvas-loader {
