@@ -129,7 +129,7 @@
     "object-hash": "^3.0.0",
     "react-hotkeys-hook": "^4.6.1",
     "use-debounce": "^9.0.4",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "zustand": "^5.0.3"
   },
   "peerDependencies": {
