@@ -27,6 +27,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
+    "prepare": "yarn build",
     "build": "rm -rf dist && tsup index.ts configure.ts",
     "dev": "tsup index.ts configure.ts --watch src",
     "test": "jest"
