@@ -246,6 +246,9 @@ const CopyHostStyles = ({
       elements[index]?.mirror?.remove();
       delete hashes[elHash];
 
+      // Must splice so lookupEl doesn't return stale entries for nodes that
+      // were removed and later re-added (e.g. on remount), and to avoid
+      // unbounded growth of the array over the lifetime of the observer.
       elements.splice(index, 1);
 
       if (debug) console.log(`Removed style node ${el.outerHTML}`);
