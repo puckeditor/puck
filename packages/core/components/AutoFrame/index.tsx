@@ -31,7 +31,7 @@ export const shouldMirrorStyleElement = (style: HTMLElement) => {
  * Fast, non-cryptographic djb2 hash over a string.
  * Replaces `object-hash` which serialises the full outerHTML via JSON
  * and is O(n) on the CSS string length — catastrophically slow when
- * PandaCSS / federated modules inject hundreds of KB of atomic CSS.
+ * many large style nodes are present.
  */
 const fastHash = (str: string): string => {
   let h = 5381;
@@ -254,9 +254,9 @@ const CopyHostStyles = ({
       if (debug) console.log(`Removed style node ${el.outerHTML}`);
     };
 
-    // Batch pending mutations so that a burst of style injections from a
-    // federated module only triggers a single round of addEl/removeEl work
-    // instead of one synchronous call per node.
+    // Batch pending mutations so that a burst of style injections only
+    // triggers a single round of addEl/removeEl work instead of one
+    // synchronous call per node.
     let pendingAdded: HTMLElement[] = [];
     let pendingRemoved: HTMLElement[] = [];
     let flushTimer: ReturnType<typeof setTimeout> | null = null;
@@ -357,8 +357,7 @@ const CopyHostStyles = ({
         }
 
         // Deduplicate style nodes before mirroring: if two <style> tags have
-        // identical content (common with PandaCSS atomic classes duplicated
-        // across federated modules) only mirror the first occurrence.
+        // identical content, only mirror the first occurrence.
         const elHash = styleElHash(styleNode);
         if (hashes[elHash]) {
           if (debug)
