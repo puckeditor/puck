@@ -93,7 +93,9 @@ const defer = (fn: () => void) => setTimeout(fn, 0);
 /**
  * Compute a cheap hash key for a style element.
  * - For <link> elements we key on the href (a short string).
- * - For <style> elements we key on the CSS text content.
+ * - For <style> elements we key on the CSS text content plus any attributes
+ *   (e.g. nonce, data-*) so that two tags with identical CSS but different
+ *   attributes are not incorrectly treated as duplicates.
  * We deliberately avoid hashing outerHTML because it includes the full
  * serialised CSS blob and was the primary source of the 30-45 s freeze.
  */
@@ -101,7 +103,10 @@ const styleElHash = (el: HTMLElement): string => {
   if (el.nodeName === "LINK") {
     return `link:${(el as HTMLLinkElement).href}`;
   }
-  return `style:${fastHash(el.innerHTML)}`;
+  const attrs = Array.from(el.attributes)
+    .map((a) => `${a.name}=${a.value}`)
+    .join(",");
+  return `style:${fastHash(el.innerHTML)}:${attrs}`;
 };
 
 const CopyHostStyles = ({
