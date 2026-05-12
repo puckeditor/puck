@@ -171,7 +171,7 @@ export type RootConfig<
         UserFields[keyof UserFields] & BaseField
       >
     >
-  : Partial<RootConfigInternal<WithChildren<RootPropsOrParams>, string, {}>>;
+  : Partial<RootConfigInternal<WithChildren<RootPropsOrParams>>>;
 
 type Category<ComponentName> = {
   components?: ComponentName[];
