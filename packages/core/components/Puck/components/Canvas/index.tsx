@@ -28,11 +28,8 @@ export const Canvas = () => {
   const { frameRef } = useCanvasFrame();
   const resetAutoZoom = useResetAutoZoom(frameRef);
 
-  const {
-    _experimentalFullScreenCanvas,
-    viewports: viewportOptions = defaultViewports,
-    ui: uiProp,
-  } = usePropsContext();
+  const { viewports: viewportOptions = defaultViewports, ui: uiProp } =
+    usePropsContext();
 
   const {
     dispatch,
@@ -42,6 +39,7 @@ export const Canvas = () => {
     setZoomConfig,
     status,
     iframe,
+    _experimentalFullScreenCanvas,
   } = useAppStore(
     useShallow((s) => ({
       dispatch: s.dispatch,
@@ -51,6 +49,7 @@ export const Canvas = () => {
       setZoomConfig: s.setZoomConfig,
       status: s.status,
       iframe: s.iframe,
+      _experimentalFullScreenCanvas: s._experimentalFullScreenCanvas,
     }))
   );
   const {
@@ -253,7 +252,7 @@ export const Canvas = () => {
           dispatch({
             type: "setUi",
             ui: { itemSelector: null },
-            recordHistory: true,
+            recordHistory: false,
           });
         }
       }}

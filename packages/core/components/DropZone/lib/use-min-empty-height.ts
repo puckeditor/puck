@@ -46,20 +46,17 @@ export const useMinEmptyHeight = ({
         const zones = appStore.getState().state.indexes.zones;
         const nodes = appStore.getState().nodes;
 
-        nodes.nodes[selectedItem?.props.id]?.methods.hideOverlay();
+        nodes.setOverlayVisible(selectedItem?.props.id, false);
 
         setTimeout(() => {
           const contentIds = zones[zoneCompound]?.contentIds || [];
 
-          contentIds.forEach((contentId) => {
-            const node = nodes.nodes[contentId];
-            node?.methods.sync();
-          });
+          nodes.syncNodes(contentIds);
 
           if (selectedItem) {
             setTimeout(() => {
-              nodes.nodes[selectedItem.props.id]?.methods.sync();
-              nodes.nodes[selectedItem.props.id]?.methods.showOverlay();
+              nodes.syncNode(selectedItem.props.id);
+              nodes.setOverlayVisible(selectedItem.props.id, true);
             }, 200);
           }
 

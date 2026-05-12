@@ -34,6 +34,7 @@ const keys = [
   "z",
   "delete",
   "backspace",
+  "altRight",
 ] as const;
 
 type KeyStrict = (typeof keys)[number];
@@ -76,6 +77,7 @@ const keyCodeMap: KeyCodeMap = {
   KeyZ: "z",
   Delete: "delete",
   Backspace: "backspace",
+  AltRight: "altRight",
 };
 
 const useHotkeyStore = create<{
@@ -98,6 +100,12 @@ const useHotkeyStore = create<{
 
 export const monitorHotkeys = (doc: Document) => {
   const onKeyDown = (e: KeyboardEvent) => {
+    // If altGraphKey (Alt Right) is pressed, register altRight instead of mapping ControlRight to ctrl
+    if (e.getModifierState("AltGraph")) {
+      useHotkeyStore.getState().hold("altRight");
+      return;
+    }
+
     const key = keyCodeMap[e.code];
 
     if (key) {
@@ -131,6 +139,12 @@ export const monitorHotkeys = (doc: Document) => {
   };
 
   const onKeyUp = (e: KeyboardEvent) => {
+    // Check if Alt Right (AltGraph) was released
+    if (!e.getModifierState("AltGraph") && e.code === "ControlRight") {
+      useHotkeyStore.getState().release("altRight");
+      return;
+    }
+
     const key = keyCodeMap[e.code];
 
     if (key) {

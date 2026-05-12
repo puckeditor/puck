@@ -7,6 +7,7 @@ import { generateId } from "@/core/lib/generate-id";
 import { componentKey } from "../../index";
 import { type Components } from "../../types";
 import TemplateComponent, { TemplateProps } from "./Template";
+import { templateRenderFields } from "./render-fields";
 
 const usePuck = createUsePuck();
 
@@ -115,9 +116,7 @@ export const TemplateInternal: ComponentConfig<{
         );
       },
     },
-    children: {
-      type: "slot",
-    },
+    ...templateRenderFields,
   },
   defaultProps: {
     template: "example_1",

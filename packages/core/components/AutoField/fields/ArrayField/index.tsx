@@ -29,7 +29,7 @@ import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
 import { getDeep } from "../../../../lib/data/get-deep";
 import { SubField } from "../../subfield";
-import { setDeep } from "../../../../bundle";
+import { setDeep } from "../../../../lib/data/set-deep";
 
 const getClassName = getClassNameFactory("ArrayField", styles);
 const getClassNameItem = getClassNameFactory("ArrayFieldItem", styles);

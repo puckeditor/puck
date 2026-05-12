@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import config, { componentKey } from "../config";
-import { initialData } from "../config/initial-data";
+import { getInitialData, initialData } from "../config/initial-data";
 import { Metadata, resolveAllData } from "@/core";
 import { Components, UserData } from "../config/types";
 import { RootProps } from "../config/root";
@@ -17,7 +17,6 @@ export const useDemoData = ({
   metadata?: Metadata;
 }) => {
   // unique b64 key that updates each time we add / remove components
-
   const key = `puck-demo:${componentKey}:${path}`;
 
   const [data] = useState<Partial<UserData>>(() => {
@@ -28,7 +27,7 @@ export const useDemoData = ({
         return JSON.parse(dataStr);
       }
 
-      return initialData[path] || {};
+      return getInitialData(path);
     }
   });
 

@@ -89,6 +89,7 @@ type PuckProps<
   metadata?: Metadata;
   height?: CSSProperties["height"];
   _experimentalFullScreenCanvas?: boolean;
+  _experimentalVirtualization?: boolean;
 };
 
 const propsContext = createContext<Partial<PuckProps>>({});
@@ -124,6 +125,8 @@ function PuckProvider<
     metadata,
     onAction,
     fieldTransforms,
+    _experimentalFullScreenCanvas,
+    _experimentalVirtualization,
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
@@ -262,6 +265,8 @@ function PuckProvider<
         overrides: loadedOverrides,
         viewports,
         iframe,
+        _experimentalFullScreenCanvas: !!_experimentalFullScreenCanvas,
+        _experimentalVirtualization: !!_experimentalVirtualization,
         onAction,
         metadata,
         fieldTransforms: loadedFieldTransforms,
@@ -275,6 +280,8 @@ function PuckProvider<
       loadedOverrides,
       viewports,
       iframe,
+      _experimentalFullScreenCanvas,
+      _experimentalVirtualization,
       onAction,
       metadata,
       loadedFieldTransforms,
@@ -297,7 +304,7 @@ function PuckProvider<
     appStore.setState({
       ...generateAppStore(state),
     });
-  }, [config, plugins, loadedOverrides, viewports, iframe, onAction, metadata]);
+  }, [generateAppStore]);
 
   useRegisterHistorySlice(appStore, {
     histories: blendedHistories,
@@ -329,7 +336,10 @@ function PuckProvider<
   useEffect(() => {
     const { resolveAndCommitData } = appStore.getState();
 
-    resolveAndCommitData();
+    // Don't block render
+    setTimeout(() => {
+      resolveAndCommitData();
+    }, 0);
   }, []);
 
   return (

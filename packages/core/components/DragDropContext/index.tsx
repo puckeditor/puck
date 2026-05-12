@@ -20,6 +20,7 @@ import { getItem } from "../../lib/data/get-item";
 import {
   DropZoneContext,
   Preview,
+  RootVirtualizerHandle,
   ZoneStore,
   ZoneStoreProvider,
 } from "../DropZone/context";
@@ -37,6 +38,7 @@ import { useSensors } from "../../lib/dnd/use-sensors";
 import { useSafeId } from "../../lib/use-safe-id";
 import { getFrame } from "../../lib/get-frame";
 import { effect } from "@dnd-kit/state";
+import { scrollIntoView } from "../../lib/scroll-into-view";
 
 const DEBUG = false;
 
@@ -119,8 +121,10 @@ const DragDropContextClient = ({
 
   const tempDisableFallback = useTempDisableFallback(100);
 
-  const [zoneStore] = useState(() =>
-    createStore<ZoneStore>(() => ({
+  const [zoneStore] = useState(() => {
+    const rootVirtualizers = new Map<string, RootVirtualizerHandle>();
+
+    return createStore<ZoneStore>(() => ({
       zoneDepthIndex: {},
       nextZoneDepthIndex: {},
       areaDepthIndex: {},
@@ -129,8 +133,36 @@ const DragDropContextClient = ({
       previewIndex: {},
       enabledIndex: {},
       hoveringComponent: null,
-    }))
-  );
+      registerRootVirtualizer: (zoneCompound, handle) => {
+        rootVirtualizers.set(zoneCompound, handle);
+      },
+      unregisterRootVirtualizer: (zoneCompound) => {
+        rootVirtualizers.delete(zoneCompound);
+      },
+      scrollToComponent: (id) => {
+        const virtualizers = Array.from(rootVirtualizers.values());
+
+        if (virtualizers.length > 0) {
+          for (const handle of virtualizers) {
+            const index = handle.resolveIndex(id);
+
+            if (index < 0) {
+              continue;
+            }
+
+            handle.virtualizer.scrollToIndex(index, {
+              behavior: "auto", // We avoid smooth scroll as this triggers virtualizer renders
+              align: "auto",
+            });
+          }
+        } else {
+          const frame = getFrame();
+          const el = frame?.querySelector(`[data-puck-component="${id}"]`);
+          el?.scrollIntoView({ behavior: "smooth" });
+        }
+      },
+    }));
+  });
 
   const getChanged = useCallback(
     (params: DeepestParams) => {
@@ -328,26 +360,9 @@ const DragDropContextClient = ({
             if (event.canceled || target?.type === "void") {
               zoneStore.setState({ previewIndex: {} });
 
-              // Finalise the drag
-              if (thisPreview) {
-                zoneStore.setState({ previewIndex: {} });
-
-                if (thisPreview.type === "insert") {
-                  insertComponent(
-                    thisPreview.componentType,
-                    thisPreview.zone,
-                    thisPreview.index,
-                    appStore
-                  );
-                } else if (initialSelector.current) {
-                  moveComponent(
-                    thisPreview.props.id,
-                    initialSelector.current,
-                    thisPreview,
-                    appStore
-                  );
-                }
-              }
+              dragListeners.dragend?.forEach((fn) => {
+                fn(event, manager);
+              });
 
               dispatch({
                 type: "setUi",
@@ -355,10 +370,6 @@ const DragDropContextClient = ({
                   itemSelector: null,
                   isDragging: false,
                 },
-              });
-
-              dragListeners.dragend?.forEach((fn) => {
-                fn(event, manager);
               });
 
               return;
@@ -376,16 +387,18 @@ const DragDropContextClient = ({
                   appStore
                 );
               } else if (initialSelector.current) {
-                dispatch({
-                  type: "move",
-                  sourceIndex: initialSelector.current.index,
-                  sourceZone: initialSelector.current.zone,
-                  destinationIndex: thisPreview.index,
-                  destinationZone: thisPreview.zone,
-                  recordHistory: false,
-                });
+                moveComponent(
+                  thisPreview.props.id,
+                  initialSelector.current,
+                  thisPreview,
+                  appStore
+                );
               }
             }
+
+            const movedToNewPosition =
+              initialSelector.current?.zone !== thisPreview?.zone ||
+              initialSelector.current?.index !== thisPreview?.index;
 
             dispatch({
               type: "setUi",
@@ -393,7 +406,7 @@ const DragDropContextClient = ({
                 itemSelector: { index, zone },
                 isDragging: false,
               },
-              recordHistory: true,
+              recordHistory: movedToNewPosition,
             });
 
             dragListeners.dragend?.forEach((fn) => {
