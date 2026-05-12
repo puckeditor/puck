@@ -93,19 +93,6 @@ type ComponentConfigInternal<
   metadata?: ComponentMetadata;
 } & ComponentConfigExtensions;
 
-type DefaultComponentConfig = {
-  props: DefaultComponentProps;
-  availableComponents?: string;
-};
-
-type ComponentPropsConfigParams<
-  Props extends DefaultComponentProps = DefaultComponentProps,
-  Components = string
-> = {
-  props: Props;
-  availableComponents?: Components;
-};
-
 // DEPRECATED - remove old generics in favour of Params
 export type ComponentConfig<
   RenderPropsOrParams extends LeftOrExactRight<
@@ -121,11 +108,12 @@ export type ComponentConfig<
   DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
 > = RenderPropsOrParams extends ComponentConfigParams<
   infer ParamsRenderProps,
+  infer Components,
   never
 >
   ? ComponentConfigInternal<
       ParamsRenderProps,
-      RenderPropsOrParams["availableComponents"],
+      Components,
       FieldProps,
       DataShape,
       {}
@@ -164,12 +152,16 @@ export type RootConfig<
     RootPropsOrParams,
     DefaultComponentProps,
     ComponentConfigParams
-  > = DefaultComponentProps,
-  Components = string
-> = RootPropsOrParams extends ComponentConfigParams<infer Props, never>
+  > = DefaultComponentProps
+> = RootPropsOrParams extends ComponentConfigParams<
+  infer Props,
+  infer Components,
+  never
+>
   ? Partial<RootConfigInternal<WithChildren<Props>, Components, {}>>
   : RootPropsOrParams extends ComponentConfigParams<
       infer Props,
+      infer Components,
       infer UserFields
     >
   ? Partial<
@@ -179,9 +171,7 @@ export type RootConfig<
         UserFields[keyof UserFields] & BaseField
       >
     >
-  : Partial<
-      RootConfigInternal<WithChildren<RootPropsOrParams>, Components, {}>
-    >;
+  : Partial<RootConfigInternal<WithChildren<RootPropsOrParams>, string, {}>>;
 
 type Category<ComponentName> = {
   components?: ComponentName[];
@@ -283,7 +273,7 @@ export type ConfigParams<
 
 export type ComponentConfigParams<
   Props extends DefaultComponentProps = DefaultComponentProps,
-  Components = string,
+  Components extends string = string,
   UserFields extends FieldsExtension = never
 > = {
   props: Props;
