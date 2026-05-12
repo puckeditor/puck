@@ -16,7 +16,10 @@ export type FlexProps = WithLayout<{
   items: Slot;
 }>;
 
-const FlexInternal: ComponentConfig<FlexProps, keyof Components> = {
+const FlexInternal: ComponentConfig<{
+  props: FlexProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     direction: {
       label: "Direction",

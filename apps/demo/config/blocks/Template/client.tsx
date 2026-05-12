@@ -27,10 +27,10 @@ async function createComponent<T extends keyof Components>(
 
 type TemplateData = Record<string, { label: string; data: Slot }>;
 
-export const TemplateInternal: ComponentConfig<
-  TemplateProps,
-  keyof Components
-> = {
+export const TemplateInternal: ComponentConfig<{
+  props: TemplateProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     template: {
       type: "custom",

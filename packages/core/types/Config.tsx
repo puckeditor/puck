@@ -93,6 +93,19 @@ type ComponentConfigInternal<
   metadata?: ComponentMetadata;
 } & ComponentConfigExtensions;
 
+type DefaultComponentConfig = {
+  props: DefaultComponentProps;
+  availableComponents?: string;
+};
+
+type ComponentPropsConfigParams<
+  Props extends DefaultComponentProps = DefaultComponentProps,
+  Components = string
+> = {
+  props: Props;
+  availableComponents?: Components;
+};
+
 // DEPRECATED - remove old generics in favour of Params
 export type ComponentConfig<
   RenderPropsOrParams extends LeftOrExactRight<
@@ -100,7 +113,6 @@ export type ComponentConfig<
     DefaultComponentProps,
     ComponentConfigParams
   > = DefaultComponentProps,
-  Components = string,
   FieldProps extends DefaultComponentProps = RenderPropsOrParams extends {
     props: any;
   }
@@ -113,13 +125,14 @@ export type ComponentConfig<
 >
   ? ComponentConfigInternal<
       ParamsRenderProps,
-      Components,
+      RenderPropsOrParams["availableComponents"],
       FieldProps,
       DataShape,
       {}
     >
   : RenderPropsOrParams extends ComponentConfigParams<
       infer ParamsRenderProps,
+      infer Components,
       infer ParamsFields
     >
   ? ComponentConfigInternal<
@@ -129,12 +142,7 @@ export type ComponentConfig<
       DataShape,
       ParamsFields[keyof ParamsFields] & BaseField
     >
-  : ComponentConfigInternal<
-      RenderPropsOrParams,
-      Components,
-      FieldProps,
-      DataShape
-    >;
+  : ComponentConfigInternal<RenderPropsOrParams, string, FieldProps, DataShape>;
 
 type RootConfigInternal<
   RootProps extends DefaultComponentProps = DefaultComponentProps,
@@ -275,8 +283,10 @@ export type ConfigParams<
 
 export type ComponentConfigParams<
   Props extends DefaultComponentProps = DefaultComponentProps,
+  Components = string,
   UserFields extends FieldsExtension = never
 > = {
   props: Props;
+  availableComponents?: Components;
   fields?: AssertHasValue<UserFields>;
 };

@@ -3,6 +3,9 @@ import { ComponentConfig } from "@/core/types";
 import HeroComponent, { HeroProps } from "./Hero";
 import { Components } from "../../types";
 
-export const Hero: ComponentConfig<HeroProps, keyof Components> = {
+export const Hero: ComponentConfig<{
+  props: HeroProps;
+  availableComponents: keyof Components;
+}> = {
   render: HeroComponent,
 };

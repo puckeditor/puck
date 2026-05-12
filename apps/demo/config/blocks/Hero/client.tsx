@@ -7,18 +7,16 @@ import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { Components } from "../../types";
 
-export const Hero: ComponentConfig<
-  {
-    props: HeroProps;
-    fields: {
-      userField: {
-        type: "userField";
-        option: boolean;
-      };
+export const Hero: ComponentConfig<{
+  props: HeroProps;
+  availableComponents: keyof Components;
+  fields: {
+    userField: {
+      type: "userField";
+      option: boolean;
     };
-  },
-  keyof Components
-> = {
+  };
+}> = {
   fields: {
     quote: {
       type: "external",

@@ -18,7 +18,10 @@ const CustomSlot = (props: any) => {
   return <span {...props} />;
 };
 
-export const GridInternal: ComponentConfig<GridProps, keyof Components> = {
+export const GridInternal: ComponentConfig<{
+  props: GridProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     numColumns: {
       type: "number",
