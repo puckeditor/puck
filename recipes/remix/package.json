@@ -1,0 +1,35 @@
+{
+  "name": "remix-recipe",
+  "version": "1.0.0",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build": "remix build",
+    "dev": "remix dev --manual",
+    "start": "remix-serve ./build/index.js",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@puckeditor/core": "*",
+    "@remix-run/css-bundle": "^2.17.4",
+    "@remix-run/node": "^2.17.4",
+    "@remix-run/react": "^2.17.4",
+    "@remix-run/serve": "^2.17.4",
+    "isbot": "^3.6.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tiny-invariant": "^1.3.3"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.17.4",
+    "@remix-run/eslint-config": "^2.17.4",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "eslint": "^8.38.0",
+    "typescript": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
