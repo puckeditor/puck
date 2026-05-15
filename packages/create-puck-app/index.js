@@ -95,10 +95,6 @@ program
             name: "React Router",
             value: "react-router",
           },
-          {
-            name: "Remix",
-            value: "remix",
-          },
         ],
       },
       {
