@@ -75,6 +75,7 @@
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/deep-diff": "^1.0.3",
