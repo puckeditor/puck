@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "asciichart": "^1.5.25",
-    "conventional-changelog-angular": "^4.0.0",
-    "conventional-recommended-bump": "^6.0.5",
+    "conventional-changelog-angular": "^8.3.1",
+    "conventional-recommended-bump": "^11.2.0",
     "eslint": "^9.0.0",
     "eslint-config-custom": "*",
     "lerna": "^9.0.7",
