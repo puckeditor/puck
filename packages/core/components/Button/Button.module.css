@@ -87,8 +87,9 @@
 
 .Button--disabled,
 .Button--disabled:hover {
-  background-color: var(--puck-color-grey-07);
-  color: var(--puck-color-grey-03);
+  background-color: var(--puck-color-grey-11);
+  border-color: var(--puck-color-grey-09);
+  color: var(--puck-color-grey-06);
   cursor: not-allowed;
 }
 

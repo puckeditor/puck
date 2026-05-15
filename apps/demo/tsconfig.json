@@ -7,6 +7,8 @@
       "@/core": ["../../packages/core"],
       "@/core/*": ["../../packages/core/*"],
       "@puckeditor/core": ["../../packages/core"],
+      "@/plugin-views": ["../../packages/plugin-views"],
+      "@/plugin-views/*": ["../../packages/plugin-views/*"],
       "@/plugin-heading-analyzer": ["../../packages/plugin-heading-analyzer"],
       "@/plugin-heading-analyzer/*": [
         "../../packages/plugin-heading-analyzer/*"

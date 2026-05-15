@@ -32,6 +32,7 @@ import {
 import { createFieldsSlice, type FieldsSlice } from "./slices/fields";
 import { resolveComponentData } from "../lib/resolve-component-data";
 import { walkAppState } from "../lib/data/walk-app-state";
+import { toComponent } from "../lib/data/to-component";
 import { toRoot } from "../lib/data/to-root";
 import { generateId } from "../lib/generate-id";
 import { defaultAppState } from "./default-app-state";
@@ -274,6 +275,10 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
         const parentId = state.indexes.nodes[componentId]?.parentId;
         const parentNode = parentId ? state.indexes.nodes[parentId] : null;
         const parentData = parentNode?.data ?? null;
+        const rootData =
+          componentId === "root"
+            ? toComponent(componentData)
+            : toComponent(state.data.root);
 
         const timeouts: Record<string, () => void> = {};
 
@@ -297,7 +302,8 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
             timeouts[id]();
           },
           trigger,
-          parentData
+          parentData,
+          rootData
         );
       },
       resolveAndCommitData: async () => {

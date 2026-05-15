@@ -64,4 +64,28 @@ describe("load-overrides", () => {
 
     expect(overrides).toEqual({});
   });
+
+  it("should avoid mutating nested fieldTypes on the provided overrides", () => {
+    const overrides = {
+      fieldTypes: {
+        text: ({ children }: { children: string }) => `${children} | 1` as any,
+      },
+    };
+
+    loadOverrides({
+      overrides,
+      plugins: [
+        {
+          overrides: {
+            fieldTypes: {
+              text: ({ children }: { children: string }) =>
+                `${children} | 2` as any,
+            },
+          },
+        },
+      ],
+    });
+
+    expect(overrides.fieldTypes.text!({ children: "0" } as any)).toBe("0 | 1");
+  });
 });

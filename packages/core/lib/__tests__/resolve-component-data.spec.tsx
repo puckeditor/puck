@@ -133,6 +133,27 @@ describe("resolveComponentData", () => {
     expect(didChange).toBe(true);
   });
 
+  it("should provide the root item to root and child resolvers", async () => {
+    await resolveComponentData(
+      toComponent(appStore.getState().state.data.root),
+      appStore.getState().config
+    );
+
+    expect(rootResolveData.mock.calls[0][1].root).toMatchObject({
+      type: "root",
+      props: { id: "root" },
+    });
+    expect(componentResolveData).toHaveBeenCalled();
+    expect(
+      componentResolveData.mock.calls.every(
+        ([_, params]) =>
+          params.root?.type === "root" &&
+          params.root?.props.id === "root" &&
+          params.root?.props.title === "Resolved title"
+      )
+    ).toBe(true);
+  });
+
   it("should run child resolvers even if parent doesn't have one", async () => {
     const { node: newRoot, didChange } = await resolveComponentData(
       toComponent({

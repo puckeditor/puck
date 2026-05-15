@@ -1,0 +1,131 @@
+.ViewOption {
+  background: var(--puck-color-white);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 12px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ViewOption--selected {
+  border-color: var(--puck-color-azure-04);
+}
+
+.ViewOption-summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  outline: none;
+  z-index: 2;
+}
+
+.ViewOption-summaryActive {
+  border-bottom: 1px solid var(--puck-color-grey-10);
+}
+
+.ViewOption-summary:hover,
+.ViewOption-summary:focus-visible {
+  background: var(--puck-color-azure-12);
+}
+
+.ViewOption-summaryMain {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ViewOption-summaryHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ViewOption-summaryToggle {
+  align-items: center;
+  color: var(--puck-color-grey-04);
+  display: inline-flex;
+  justify-content: center;
+}
+
+.ViewOption-valueType {
+  color: var(--puck-color-grey-04);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.ViewOption-summaryNodes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ViewOption-segment {
+  background: var(--puck-color-grey-12);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 6px;
+  color: var(--puck-color-black);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 7px;
+}
+
+.ViewOption-pathSeparator {
+  color: var(--puck-color-grey-06);
+  flex-shrink: 0;
+}
+
+.ViewOption-actions {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.ViewOption-expandedContent {
+  display: grid;
+  gap: 10px;
+}
+
+.ViewOption-expandedContentBody {
+  width: 100%;
+}
+
+.ViewOption-expandedHeader {
+  position: relative;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ViewOption-expandedLabel {
+  color: var(--puck-color-grey-04);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ViewOption-expandedPath {
+  background: var(--puck-color-grey-12);
+  border: 1px solid var(--puck-color-grey-09);
+  border-radius: 6px;
+  color: var(--puck-color-black);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  overflow: hidden;
+  padding: 4px 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ViewOption-expandedContentPreview {
+  width: 100%;
+}

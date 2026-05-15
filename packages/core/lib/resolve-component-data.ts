@@ -24,7 +24,8 @@ export const resolveComponentData = async <
   onResolveStart?: (item: T) => void,
   onResolveEnd?: (item: T) => void,
   trigger: ResolveDataTrigger = "replace",
-  parent: ComponentData | null = null
+  parent: ComponentData | null = null,
+  root: ComponentData | null = null
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -38,6 +39,8 @@ export const resolveComponentData = async <
   const shouldRunResolver = configForItem?.resolveData && item.props;
 
   const id = "id" in item.props ? item.props.id : "root";
+  const rootForItem =
+    root ?? ("type" in item && item.type === "root" ? toComponent(item) : null);
 
   if (shouldRunResolver) {
     const {
@@ -72,6 +75,7 @@ export const resolveComponentData = async <
         metadata: { ...metadata, ...configForItem.metadata },
         trigger,
         parent,
+        root: rootForItem,
       });
 
     resolvedItem.props = {
@@ -85,6 +89,8 @@ export const resolveComponentData = async <
   }
 
   const itemAsComponentData: ComponentData = toComponent(resolvedItem);
+  const rootForChildren =
+    itemAsComponentData.type === "root" ? itemAsComponentData : rootForItem;
 
   let itemWithResolvedChildren = await mapFields(
     resolvedItem,
@@ -103,7 +109,8 @@ export const resolveComponentData = async <
                   onResolveStart,
                   onResolveEnd,
                   trigger,
-                  itemAsComponentData
+                  itemAsComponentData,
+                  rootForChildren
                 )
               ).node
           )
