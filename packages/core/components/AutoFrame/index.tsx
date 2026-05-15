@@ -6,10 +6,23 @@ import {
   useEffect,
   useState,
 } from "react";
-import hash from "object-hash";
 import { createPortal } from "react-dom";
 
 const styleSelector = 'style, link[rel="stylesheet"]';
+
+/**
+ * Fast, non-cryptographic djb2 hash over a string.
+ * Replaces `object-hash` which serialises the full outerHTML via JSON
+ * and is O(n) on the CSS string length — catastrophically slow when
+ * many large style nodes are present.
+ */
+const fastHash = (str: string): string => {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;
+  }
+  return h.toString(36);
+};
 
 const collectStyles = (doc: Document) => {
   const collected: HTMLElement[] = [];
@@ -65,6 +78,25 @@ const syncAttributes = (sourceElement: Element, targetElement: Element) => {
 };
 
 const defer = (fn: () => void) => setTimeout(fn, 0);
+
+/**
+ * Compute a cheap hash key for a style element.
+ * - For <link> elements we key on the href (a short string).
+ * - For <style> elements we key on the CSS text content plus any attributes
+ *   (e.g. nonce, data-*) so that two tags with identical CSS but different
+ *   attributes are not incorrectly treated as duplicates.
+ * We deliberately avoid hashing outerHTML because it includes the full
+ * serialised CSS blob and was the primary source of the 30-45 s freeze.
+ */
+const styleElHash = (el: HTMLElement): string => {
+  if (el.nodeName === "LINK") {
+    return `link:${(el as HTMLLinkElement).href}`;
+  }
+  const attrs = Array.from(el.attributes)
+    .map((a) => `${a.name}=${a.value}`)
+    .join(",");
+  return `style:${fastHash(el.innerHTML)}:${attrs}`;
+};
 
 const CopyHostStyles = ({
   children,
@@ -144,13 +176,7 @@ const CopyHostStyles = ({
         return;
       }
 
-      const mirror = await mirrorEl(el);
-
-      if (!mirror) {
-        return;
-      }
-
-      const elHash = hash(mirror.outerHTML);
+      const elHash = styleElHash(el);
 
       if (hashes[elHash]) {
         if (debug)
@@ -158,6 +184,11 @@ const CopyHostStyles = ({
             `iframe already contains element that is being mirrored. Skipping...`
           );
 
+        return;
+      }
+
+      const mirror = await mirrorEl(el);
+      if (!mirror) {
         return;
       }
 
@@ -180,12 +211,43 @@ const CopyHostStyles = ({
         return;
       }
 
-      const elHash = hash(el.outerHTML);
+      const elHash = styleElHash(el);
 
       elements[index]?.mirror?.remove();
       delete hashes[elHash];
 
+      // Must splice so lookupEl doesn't return stale entries for nodes that
+      // were removed and later re-added (e.g. on remount), and to avoid
+      // unbounded growth of the array over the lifetime of the observer.
+      elements.splice(index, 1);
+
       if (debug) console.log(`Removed style node ${el.outerHTML}`);
+    };
+
+    // Batch pending mutations so that a burst of style injections only
+    // triggers a single round of addEl/removeEl work instead of one
+    // synchronous call per node.
+    let pendingAdded: HTMLElement[] = [];
+    let pendingRemoved: HTMLElement[] = [];
+    let flushTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const flushPending = () => {
+      flushTimer = null;
+      const toAdd = pendingAdded;
+      const toRemove = pendingRemoved;
+      pendingAdded = [];
+      pendingRemoved = [];
+
+      toRemove.forEach((el) => removeEl(el));
+      // addEl is async but we intentionally don't await here to keep the
+      // flush non-blocking; each addEl checks hashes before touching the DOM.
+      toAdd.forEach((el) => addEl(el));
+    };
+
+    const scheduledFlush = () => {
+      if (flushTimer === null) {
+        flushTimer = defer(flushPending);
+      }
     };
 
     const observer = new MutationObserver((mutations) => {
@@ -202,7 +264,8 @@ const CopyHostStyles = ({
                   : (node as HTMLElement);
 
               if (el && el.matches(styleSelector)) {
-                defer(() => addEl(el));
+                pendingAdded.push(el);
+                scheduledFlush();
               }
             }
           });
@@ -218,7 +281,8 @@ const CopyHostStyles = ({
                   : (node as HTMLElement);
 
               if (el && el.matches(styleSelector)) {
-                defer(() => removeEl(el));
+                pendingRemoved.push(el);
+                scheduledFlush();
               }
             }
           });
@@ -253,10 +317,22 @@ const CopyHostStyles = ({
           hrefs.push(linkHref);
         }
 
+        // Deduplicate style nodes before mirroring: if two <style> tags have
+        // identical content, only mirror the first occurrence.
+        const elHash = styleElHash(styleNode);
+        if (hashes[elHash]) {
+          if (debug)
+            console.log(
+              `Skipping duplicate style node during initial collection...`
+            );
+          return;
+        }
+
         const mirror = await mirrorEl(styleNode);
 
         if (!mirror) return;
 
+        hashes[elHash] = true;
         elements.push({ original: styleNode, mirror });
 
         return mirror;
@@ -302,16 +378,13 @@ const CopyHostStyles = ({
       }
 
       observer.observe(parentDocument.head, { childList: true, subtree: true });
-
-      filtered.forEach((el) => {
-        const elHash = hash(el.outerHTML);
-
-        hashes[elHash] = true;
-      });
     });
 
     return () => {
       observer.disconnect();
+      if (flushTimer !== null) {
+        clearTimeout(flushTimer);
+      }
     };
   }, []);
 
