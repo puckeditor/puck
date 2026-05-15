@@ -7,7 +7,7 @@
     "build": "next build",
     "postbuild": "next-sitemap",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint"
   },
   "devDependencies": {
     "@types/node": "^17.0.12",
