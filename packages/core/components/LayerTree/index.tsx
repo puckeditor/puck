@@ -1,34 +1,208 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { ComponentConfig } from "../../types";
+import { Config } from "../../types";
 import { ItemSelector } from "../../lib/data/get-item";
-import { scrollIntoView } from "../../lib/scroll-into-view";
 import { ChevronDown, LayoutGrid, Layers, Type } from "lucide-react";
-import { rootAreaId, rootDroppableId } from "../../lib/root-droppable-id";
-import { useCallback, useContext } from "react";
+import { rootAreaId } from "../../lib/root-droppable-id";
+import {
+  ForwardedRef,
+  forwardRef,
+  useCallback,
+  useContext,
+  useRef,
+} from "react";
 import { ZoneStoreContext } from "../DropZone/context";
-import { getFrame } from "../../lib/get-frame";
-import { onScrollEnd } from "../../lib/on-scroll-end";
 import { useAppStore } from "../../store";
-import { useShallow } from "zustand/react/shallow";
 import { useContextStore } from "../../lib/use-context-store";
+import { NodeIndex, ZoneIndex } from "../../types/Internal";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 const getClassName = getClassNameFactory("LayerTree", styles);
 const getClassNameLayer = getClassNameFactory("Layer", styles);
+const DEFAULT_LAYER_ROW_HEIGHT = 32;
+const LAYER_TREE_VIRTUALIZATION_OVERSCAN = 8;
+const MIN_VIRTUALIZED_LAYER_COUNT = 25;
+const measuredRowHeights = new Map<string, number>();
 
-const Layer = ({
-  index,
-  itemId,
-  zoneCompound,
-}: {
+export type LayerZoneTree = {
+  items: LayerNodeTree[];
+  label?: string;
+  zoneCompound: string;
+};
+
+type LayerNodeTree = {
+  childZones: LayerZoneTree[];
+  componentType: string;
   index: number;
   itemId: string;
+  label: string;
   zoneCompound: string;
-}) => {
-  const config = useAppStore((s) => s.config);
-  const itemSelector = useAppStore((s) => s.state.ui.itemSelector);
+};
+
+const getZonesByParent = (zones: ZoneIndex) => {
+  return Object.keys(zones).reduce<Record<string, string[]>>((acc, zone) => {
+    const [parentId] = zone.split(":");
+
+    acc[parentId] = [...(acc[parentId] || []), zone];
+
+    return acc;
+  }, {});
+};
+
+const getZoneLabel = (
+  zoneCompound: string,
+  nodes: NodeIndex,
+  config: Config,
+  label?: string
+) => {
+  if (label !== undefined) {
+    return label;
+  }
+
+  const [componentId, slotId] = zoneCompound.split(":");
+
+  if (!slotId) {
+    return;
+  }
+
+  const componentType = nodes[componentId]?.data.type;
+
+  const configForComponent =
+    componentType && componentType !== rootAreaId
+      ? config.components[componentType]
+      : config.root;
+
+  return configForComponent?.fields?.[slotId]?.label ?? slotId;
+};
+
+const buildLayerNode = ({
+  config,
+  itemId,
+  index,
+  nodes,
+  zoneCompound,
+  zones,
+  zonesByParent,
+}: {
+  config: Config;
+  itemId: string;
+  index: number;
+  nodes: NodeIndex;
+  zoneCompound: string;
+  zones: ZoneIndex;
+  zonesByParent: Record<string, string[]>;
+}): LayerNodeTree => {
+  const nodeData = nodes[itemId];
+  const componentType = nodeData?.data.type?.toString() || "Component";
+  const label = config.components[componentType]?.label ?? componentType;
+  const childZoneCompounds = zonesByParent[itemId] || [];
+
+  return {
+    childZones: childZoneCompounds.map((childZoneCompound) =>
+      buildLayerTree({
+        config,
+        nodes,
+        zoneCompound: childZoneCompound,
+        zones,
+        zonesByParent,
+      })
+    ),
+    componentType,
+    index,
+    itemId,
+    label,
+    zoneCompound,
+  };
+};
+
+export const buildLayerTree = ({
+  config,
+  label,
+  nodes,
+  zoneCompound,
+  zones,
+  zonesByParent = getZonesByParent(zones),
+}: {
+  config: Config;
+  label?: string;
+  nodes: NodeIndex;
+  zoneCompound: string;
+  zones: ZoneIndex;
+  zonesByParent?: Record<string, string[]>;
+}): LayerZoneTree => {
+  const contentIds = zones[zoneCompound]?.contentIds ?? [];
+
+  return {
+    items: contentIds.map((itemId, index) =>
+      buildLayerNode({
+        config,
+        itemId,
+        index,
+        nodes,
+        zoneCompound,
+        zones,
+        zonesByParent,
+      })
+    ),
+    label: getZoneLabel(zoneCompound, nodes, config, label),
+    zoneCompound,
+  };
+};
+
+const getEstimatedRowHeight = (itemId: string) =>
+  measuredRowHeights.get(itemId) ?? DEFAULT_LAYER_ROW_HEIGHT;
+
+const cacheMeasuredRowHeight = (itemId: string, height: number) => {
+  if (height <= 0) {
+    return;
+  }
+
+  measuredRowHeights.set(itemId, height);
+};
+
+const getScrollParent = (el: HTMLElement | null) => {
+  let current = el?.parentElement ?? null;
+
+  while (current) {
+    const { overflow, overflowY } = getComputedStyle(current);
+
+    if ([overflow, overflowY].some((value) => /auto|scroll/.test(value))) {
+      return current;
+    }
+
+    current = current.parentElement;
+  }
+
+  return null;
+};
+
+const Layer = forwardRef(function Layer(
+  {
+    childIsSelected,
+    dataIndex,
+    depth,
+    isSelected,
+    node,
+    selectedId,
+    selectedPathIds,
+  }: {
+    childIsSelected: boolean;
+    dataIndex?: number;
+    depth: number;
+    isSelected: boolean;
+    node: LayerNodeTree;
+    selectedId: string | null;
+    selectedPathIds: Set<string>;
+  },
+  ref: ForwardedRef<HTMLLIElement>
+) {
   const dispatch = useAppStore((s) => s.dispatch);
+  const zoneStore = useContext(ZoneStoreContext);
+  const isHovering = useContextStore(
+    ZoneStoreContext,
+    (s) => s.hoveringComponent === node.itemId
+  );
+  const containsZone = node.childZones.length > 0;
 
   const setItemSelector = useCallback(
     (itemSelector: ItemSelector | null) => {
@@ -37,55 +211,19 @@ const Layer = ({
     [dispatch]
   );
 
-  const selecedItemId = useAppStore((s) => s.selectedItem?.props.id);
-
-  const isSelected =
-    selecedItemId === itemId ||
-    (itemSelector && itemSelector.zone === rootDroppableId && !zoneCompound);
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const nodeData = useAppStore((s) => s.state.indexes.nodes[itemId]);
-
-  const zonesForItem = useAppStore(
-    useShallow((s) =>
-      Object.keys(s.state.indexes.zones).filter(
-        (z) => z.split(":")[0] === itemId
-      )
-    )
-  );
-
-  const containsZone = zonesForItem.length > 0;
-
-  const zoneStore = useContext(ZoneStoreContext);
-  const isHovering = useContextStore(
-    ZoneStoreContext,
-    (s) => s.hoveringComponent === itemId
-  );
-
-  const childIsSelected = useAppStore((s) => {
-    const selectedData = s.state.indexes.nodes[s.selectedItem?.props.id];
-
-    return (
-      selectedData?.path.some((candidate) => {
-        const [candidateId] = candidate.split(":");
-
-        return candidateId === itemId;
-      }) ?? false
-    );
-  });
-
-  const componentConfig: ComponentConfig | undefined =
-    config.components[nodeData.data.type];
-  const label = componentConfig?.["label"] ?? nodeData.data.type.toString();
+  const shouldRenderChildren = isSelected || childIsSelected;
 
   return (
     <li
+      ref={ref}
       className={getClassNameLayer({
-        isSelected,
-        isHovering,
-        containsZone,
         childIsSelected,
+        containsZone,
+        isHovering,
+        isSelected,
       })}
+      data-index={dataIndex}
+      data-puck-layer-tree-id={node.itemId}
     >
       <div className={getClassNameLayer("inner")}>
         <button
@@ -97,32 +235,16 @@ const Layer = ({
               return;
             }
 
-            const frame = getFrame();
-
-            const el = frame?.querySelector(
-              `[data-puck-component="${itemId}"]`
-            );
-
-            if (!el) {
-              setItemSelector({
-                index,
-                zone: zoneCompound,
-              });
-              return;
-            }
-
-            scrollIntoView(el as HTMLElement);
-
-            onScrollEnd(frame, () => {
-              setItemSelector({
-                index,
-                zone: zoneCompound,
-              });
+            setItemSelector({
+              index: node.index,
+              zone: node.zoneCompound,
             });
+
+            zoneStore.getState().scrollToComponent(node.itemId);
           }}
           onMouseEnter={(e) => {
             e.stopPropagation();
-            zoneStore.setState({ hoveringComponent: itemId });
+            zoneStore.setState({ hoveringComponent: node.itemId });
           }}
           onMouseLeave={(e) => {
             e.stopPropagation();
@@ -139,83 +261,220 @@ const Layer = ({
           )}
           <div className={getClassNameLayer("title")}>
             <div className={getClassNameLayer("icon")}>
-              {nodeData.data.type === "Text" ||
-              nodeData.data.type === "Heading" ? (
+              {node.componentType === "Text" ||
+              node.componentType === "Heading" ? (
                 <Type size="16" />
               ) : (
                 <LayoutGrid size="16" />
               )}
             </div>
-            <div className={getClassNameLayer("name")}>{label}</div>
+            <div className={getClassNameLayer("name")}>{node.label}</div>
           </div>
         </button>
       </div>
       {containsZone &&
-        zonesForItem.map((subzone) => (
-          <div key={subzone} className={getClassNameLayer("zones")}>
-            <LayerTree zoneCompound={subzone} />
+        shouldRenderChildren &&
+        node.childZones.map((childZone) => (
+          <div
+            key={childZone.zoneCompound}
+            className={getClassNameLayer("zones")}
+          >
+            <LayerTreeZone
+              depth={depth + 1}
+              selectedId={selectedId}
+              selectedPathIds={selectedPathIds}
+              tree={childZone}
+            />
           </div>
         ))}
     </li>
   );
-};
+});
 
-export const LayerTree = ({
-  label: _label,
-  zoneCompound,
+const LayerTreeZone = ({
+  depth,
+  selectedId,
+  selectedPathIds,
+  tree,
 }: {
-  label?: string;
-  zoneCompound: string;
+  depth: number;
+  selectedId: string | null;
+  selectedPathIds: Set<string>;
+  tree: LayerZoneTree;
 }) => {
-  // Use slot label if provided
-  const label = useAppStore((s) => {
-    if (_label) return _label;
-
-    if (zoneCompound === rootDroppableId) return;
-
-    const [componentId, slotId] = zoneCompound.split(":");
-
-    const componentType = s.state.indexes.nodes[componentId]?.data.type;
-
-    const configForComponent =
-      componentType && componentType !== rootAreaId
-        ? s.config.components[componentType]
-        : s.config.root;
-
-    return configForComponent?.fields?.[slotId]?.label ?? slotId;
-  });
-
-  const contentIds = useAppStore(
-    useShallow((s) =>
-      zoneCompound ? s.state.indexes.zones[zoneCompound]?.contentIds ?? [] : []
-    )
-  );
+  const shouldVirtualize =
+    depth === 0 && tree.items.length >= MIN_VIRTUALIZED_LAYER_COUNT;
 
   return (
     <>
-      {label && (
+      {tree.label && (
         <div className={getClassName("zoneTitle")}>
           <div className={getClassName("zoneIcon")}>
             <Layers size="16" />
           </div>
-          {label}
+          {tree.label}
         </div>
       )}
-      <ul className={getClassName()}>
-        {contentIds.length === 0 && (
-          <div className={getClassName("helper")}>No items</div>
-        )}
-        {contentIds.map((itemId, i) => {
-          return (
-            <Layer
-              index={i}
-              itemId={itemId}
-              zoneCompound={zoneCompound}
-              key={itemId}
-            />
-          );
-        })}
-      </ul>
+      {shouldVirtualize ? (
+        <VirtualizedLayerTreeItems
+          depth={depth}
+          selectedId={selectedId}
+          selectedPathIds={selectedPathIds}
+          tree={tree}
+        />
+      ) : (
+        <StaticLayerTreeItems
+          depth={depth}
+          selectedId={selectedId}
+          selectedPathIds={selectedPathIds}
+          tree={tree}
+        />
+      )}
+    </>
+  );
+};
+
+const StaticLayerTreeItems = ({
+  depth,
+  selectedId,
+  selectedPathIds,
+  tree,
+}: {
+  depth: number;
+  selectedId: string | null;
+  selectedPathIds: Set<string>;
+  tree: LayerZoneTree;
+}) => {
+  return (
+    <ul className={getClassName()}>
+      {tree.items.length === 0 && (
+        <div className={getClassName("helper")}>No items</div>
+      )}
+      {tree.items.map((node) => (
+        <Layer
+          childIsSelected={selectedPathIds.has(node.itemId)}
+          depth={depth}
+          isSelected={selectedId === node.itemId}
+          key={node.itemId}
+          node={node}
+          selectedId={selectedId}
+          selectedPathIds={selectedPathIds}
+        />
+      ))}
+    </ul>
+  );
+};
+
+const VirtualizedLayerTreeItems = ({
+  depth,
+  selectedId,
+  selectedPathIds,
+  tree,
+}: {
+  depth: number;
+  selectedId: string | null;
+  selectedPathIds: Set<string>;
+  tree: LayerZoneTree;
+}) => {
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const virtualizer = useVirtualizer({
+    count: tree.items.length,
+    estimateSize: (index) => getEstimatedRowHeight(tree.items[index].itemId),
+    getItemKey: (index) => tree.items[index].itemId,
+    getScrollElement: () => getScrollParent(listRef.current),
+    overscan: LAYER_TREE_VIRTUALIZATION_OVERSCAN,
+    measureElement: (element: HTMLElement) => {
+      const height = Math.ceil(element.getBoundingClientRect().height);
+      const itemId = element.dataset.puckLayerTreeId;
+
+      if (itemId) {
+        cacheMeasuredRowHeight(itemId, height);
+      }
+
+      return height || DEFAULT_LAYER_ROW_HEIGHT;
+    },
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
+  const renderedItems = [];
+  let previousEnd = 0;
+  let previousIndex = -1;
+
+  virtualItems.forEach((virtualItem) => {
+    const node = tree.items[virtualItem.index];
+    const gapSize = Math.max(virtualItem.start - previousEnd, 0);
+
+    if (gapSize > 0) {
+      renderedItems.push(
+        <li
+          key={`gap:${tree.zoneCompound}:${previousIndex}:${virtualItem.index}`}
+          aria-hidden="true"
+          style={{ height: `${gapSize}px` }}
+        />
+      );
+    }
+
+    renderedItems.push(
+      <Layer
+        childIsSelected={selectedPathIds.has(node.itemId)}
+        dataIndex={virtualItem.index}
+        depth={depth}
+        isSelected={selectedId === node.itemId}
+        key={node.itemId}
+        node={node}
+        ref={virtualizer.measureElement}
+        selectedId={selectedId}
+        selectedPathIds={selectedPathIds}
+      />
+    );
+
+    previousEnd = virtualItem.end;
+    previousIndex = virtualItem.index;
+  });
+
+  const trailingGap = Math.max(totalSize - previousEnd, 0);
+
+  if (trailingGap > 0) {
+    renderedItems.push(
+      <li
+        key={`gap:${tree.zoneCompound}:${previousIndex}:end`}
+        aria-hidden="true"
+        style={{ height: `${trailingGap}px` }}
+      />
+    );
+  }
+
+  return (
+    <ul className={getClassName()} ref={listRef}>
+      {tree.items.length === 0 && (
+        <div className={getClassName("helper")}>No items</div>
+      )}
+      {renderedItems}
+    </ul>
+  );
+};
+
+export const LayerTree = ({
+  selectedId,
+  selectedPathIds,
+  trees,
+}: {
+  selectedId: string | null;
+  selectedPathIds: Set<string>;
+  trees: LayerZoneTree[];
+}) => {
+  return (
+    <>
+      {trees.map((tree) => (
+        <LayerTreeZone
+          depth={0}
+          key={tree.zoneCompound}
+          selectedId={selectedId}
+          selectedPathIds={selectedPathIds}
+          tree={tree}
+        />
+      ))}
     </>
   );
 };

@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -30,14 +31,16 @@ import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
 import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { accumulateTransform } from "../../lib/accumulate-transform";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
+import type { NodeHandle } from "../../store/slices/nodes";
+import { assignRefs } from "../../lib/assign-refs";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
 const DEBUG = false;
+const MEASURE_EVERY_MS = 100; // 10fps
 
 // Magic numbers are used to position actions overlay 8px from top of component, bottom of component (when sticky scrolling) and side of preview
 const space = 8;
@@ -98,6 +101,7 @@ export const DraggableComponent = ({
   autoDragAxis,
   userDragAxis,
   inDroppableZone = true,
+  itemRef,
 }: {
   children: (ref: Ref<any>) => ReactNode;
   componentType: string;
@@ -112,13 +116,18 @@ export const DraggableComponent = ({
   autoDragAxis: DragAxis;
   userDragAxis?: DragAxis;
   inDroppableZone: boolean;
+  itemRef?: Ref<HTMLElement>;
 }) => {
   const zoom = useAppStore((s) =>
     s.selectedItem?.props.id === id ? s.zoomConfig.zoom : 1
   );
+  const _experimentalFullScreenCanvas = useAppStore(
+    (s) => s._experimentalFullScreenCanvas
+  );
   const overrides = useAppStore((s) => s.overrides);
   const dispatch = useAppStore((s) => s.dispatch);
   const iframe = useAppStore((s) => s.iframe);
+  const lastMeasureRef = useRef(0);
 
   const ctx = useContext(dropZoneContext);
 
@@ -238,9 +247,13 @@ export const DraggableComponent = ({
       if (ref.current !== el) {
         ref.current = el;
         setRerender((update) => update + 1);
+
+        if (itemRef) {
+          assignRefs([itemRef], el);
+        }
       }
     },
-    [sortableRef]
+    [itemRef, sortableRef]
   );
 
   const [portalEl, setPortalEl] = useState<HTMLElement>();
@@ -252,58 +265,99 @@ export const DraggableComponent = ({
         : ref.current?.closest<HTMLElement>("[data-puck-preview]") ??
             document.body
     );
-  }, [iframe.enabled, ref.current]);
+  }, [iframe.enabled]);
 
   const getStyle = useCallback(() => {
     if (!ref.current) return;
 
-    const rect = ref.current!.getBoundingClientRect();
-    const deepScrollPosition = getDeepScrollPosition(ref.current);
-
+    const el = ref.current!;
+    const rect = el.getBoundingClientRect();
     const portalContainerEl = iframe.enabled
       ? null
-      : ref.current?.closest<HTMLElement>("[data-puck-preview]");
+      : el.closest<HTMLElement>("[data-puck-preview]");
+
+    const targetIsFixed = (() => {
+      let node: HTMLElement | null = el;
+
+      while (node && node !== document.documentElement) {
+        if (getComputedStyle(node).position === "fixed") {
+          return true;
+        }
+        node = node.parentElement;
+      }
+
+      return false;
+    })();
 
     const portalContainerRect = portalContainerEl?.getBoundingClientRect();
     const portalScroll = portalContainerEl
       ? getDeepScrollPosition(portalContainerEl)
       : { x: 0, y: 0 };
+    const deepScrollPosition = targetIsFixed
+      ? { x: 0, y: 0 }
+      : getDeepScrollPosition(el);
 
-    const scroll = {
-      x:
-        deepScrollPosition.x -
-        portalScroll.x -
-        (portalContainerRect?.left ?? 0),
-      y:
-        deepScrollPosition.y - portalScroll.y - (portalContainerRect?.top ?? 0),
-    };
-
-    const untransformed = {
-      height: ref.current.offsetHeight,
-      width: ref.current.offsetWidth,
-    };
-
-    const transform = accumulateTransform(ref.current);
+    const scroll = targetIsFixed
+      ? { x: 0, y: 0 }
+      : {
+          x:
+            deepScrollPosition.x -
+            portalScroll.x -
+            (portalContainerRect?.left ?? 0),
+          y:
+            deepScrollPosition.y -
+            portalScroll.y -
+            (portalContainerRect?.top ?? 0),
+        };
 
     const style: CSSProperties = {
-      left: `${(rect.left + scroll.x) / transform.scaleX}px`,
-      top: `${(rect.top + scroll.y) / transform.scaleY}px`,
-      height: `${untransformed.height}px`,
-      width: `${untransformed.width}px`,
+      left: `${rect.left + scroll.x}px`,
+      top: `${rect.top + scroll.y}px`,
+      height: `${rect.height}px`,
+      width: `${rect.width}px`,
+      position: targetIsFixed ? "fixed" : undefined,
     };
 
     return style;
-  }, [ref.current]);
+  }, [iframe.enabled]);
 
   const [style, setStyle] = useState<CSSProperties>();
+  const lastRectRef = useRef<DOMRectReadOnly | null>(null);
+
+  // PERFORMANCE: coalesce multiple triggers into a single rAF'd sync
+  const syncRafRef = useRef<number | null>(null);
 
   const sync = useCallback(() => {
     setStyle(getStyle());
-  }, [ref.current, iframe]);
+
+    if (itemRef) {
+      assignRefs([itemRef], ref.current);
+    }
+  }, [getStyle, itemRef]);
+
+  const scheduleSync = useCallback(() => {
+    if (syncRafRef.current != null) return;
+
+    syncRafRef.current = requestAnimationFrame(() => {
+      syncRafRef.current = null;
+      sync();
+    });
+  }, [sync]);
+
+  useEffect(() => {
+    return () => {
+      if (syncRafRef.current != null) {
+        cancelAnimationFrame(syncRafRef.current);
+        syncRafRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (ref.current) {
-      const observer = new ResizeObserver(sync);
+      const observer = new ResizeObserver(() => {
+        scheduleSync();
+      });
 
       observer.observe(ref.current);
 
@@ -311,9 +365,10 @@ export const DraggableComponent = ({
         observer.disconnect();
       };
     }
-  }, [ref.current]);
+  }, [scheduleSync, itemRef]);
 
   const registerNode = useAppStore((s) => s.nodes.registerNode);
+  const unregisterNode = useAppStore((s) => s.nodes.unregisterNode);
 
   const hideOverlay = useCallback(() => {
     setIsVisible(false);
@@ -323,23 +378,25 @@ export const DraggableComponent = ({
     setIsVisible(true);
   }, []);
 
+  const nodeHandleRef = useRef<NodeHandle>({
+    sync: () => null,
+    hideOverlay: () => null,
+    showOverlay: () => null,
+  });
+
+  useLayoutEffect(() => {
+    nodeHandleRef.current.sync = sync;
+    nodeHandleRef.current.hideOverlay = hideOverlay;
+    nodeHandleRef.current.showOverlay = showOverlay;
+  }, [hideOverlay, showOverlay, sync]);
+
   useEffect(() => {
-    registerNode(id, {
-      methods: { sync, showOverlay, hideOverlay },
-      element: ref.current ?? null,
-    });
+    registerNode(id, nodeHandleRef.current);
 
     return () => {
-      registerNode(id, {
-        methods: {
-          sync: () => null,
-          hideOverlay: () => null,
-          showOverlay: () => null,
-        },
-        element: null,
-      });
+      unregisterNode(id);
     };
-  }, [id, zoneCompound, index, componentType, sync]);
+  }, [id, registerNode, unregisterNode]);
 
   const CustomActionBar = useMemo(
     () => overrides.actionBar || DefaultActionBar,
@@ -353,17 +410,24 @@ export const DraggableComponent = ({
 
   const onClick = useCallback(
     (e: Event | SyntheticEvent) => {
+      // Don't change selection during a drag.
+      // This avoids mouseup clicks selecting the dragged-over component.
+      const userIsDragging = !!zoneStore.getState().draggedItem;
+      if (userIsDragging) {
+        return;
+      }
+
       const el = e.target as Element;
 
       if (!el.closest("[data-puck-overlay-portal]")) {
         e.stopPropagation();
       }
 
-      if (isSelected) {
+      if (_experimentalFullScreenCanvas) {
         dispatch({
           type: "setUi",
           ui: {
-            itemSelector: null,
+            itemSelector: isSelected ? null : { index, zone: zoneCompound },
           },
         });
       } else {
@@ -375,7 +439,7 @@ export const DraggableComponent = ({
         });
       }
     },
-    [index, zoneCompound, id, isSelected]
+    [index, zoneCompound, id, isSelected, _experimentalFullScreenCanvas]
   );
 
   const appStore = useAppStoreApi();
@@ -491,7 +555,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     startTransition(() => {
       if (hover || indicativeHover || isSelected) {
-        sync();
+        scheduleSync();
         setIsVisible(true);
         setThisWasDragging(false);
       } else {
@@ -505,6 +569,7 @@ export const DraggableComponent = ({
   const onDragFinished = useOnDragFinished((finished) => {
     if (finished) {
       startTransition(() => {
+        // Sync immediately, to avoid a flash of the overlay in the wrong place.
         sync();
         setDragFinished(true);
       });
@@ -522,6 +587,62 @@ export const DraggableComponent = ({
   useEffect(() => {
     if (thisWasDragging) return onDragFinished();
   }, [thisWasDragging, onDragFinished]);
+
+  // PERFORMANCE: when visible, respond to scroll/resize + track layout shifts without a global rAF loop
+  useEffect(() => {
+    if (!dragFinished || !(isSelected || thisIsDragging)) return;
+
+    const el = ref.current;
+    if (!el) return;
+
+    const doc = el.ownerDocument;
+    const view = doc.defaultView;
+    if (!view) return;
+
+    lastMeasureRef.current = 0;
+    scheduleSync(); // immediate position on show
+
+    const onScroll = () => scheduleSync();
+    const onResize = () => scheduleSync();
+
+    doc.addEventListener("scroll", onScroll, true);
+    view.addEventListener("resize", onResize);
+
+    let frame = 0;
+    const tick = (t: number) => {
+      if (t - lastMeasureRef.current >= MEASURE_EVERY_MS) {
+        lastMeasureRef.current = t;
+
+        const node = ref.current;
+        if (node) {
+          const rect = node.getBoundingClientRect();
+          const prev = lastRectRef.current;
+
+          const changed =
+            !prev ||
+            Math.abs(rect.x - prev.x) > 0.5 ||
+            Math.abs(rect.y - prev.y) > 0.5 ||
+            Math.abs(rect.width - prev.width) > 0.5 ||
+            Math.abs(rect.height - prev.height) > 0.5;
+
+          if (changed) {
+            lastRectRef.current = rect;
+            scheduleSync();
+          }
+        }
+      }
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+
+    return () => {
+      doc.removeEventListener("scroll", onScroll, true);
+      view.removeEventListener("resize", onResize);
+      cancelAnimationFrame(frame);
+    };
+  }, [dragFinished, isSelected, thisIsDragging, scheduleSync]);
 
   const syncActionsPosition = useCallback(
     (el: HTMLDivElement | null | undefined) => {

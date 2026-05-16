@@ -1,6 +1,6 @@
 {
   "name": "@puckeditor/core",
-  "version": "0.21.1",
+  "version": "0.21.2",
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
@@ -75,6 +75,7 @@
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/deep-diff": "^1.0.3",
@@ -101,6 +102,7 @@
     "@dnd-kit/helpers": "0.1.18",
     "@dnd-kit/react": "0.1.18",
     "@radix-ui/react-popover": "^1.1.15",
+    "@tanstack/react-virtual": "^3.13.9",
     "@tiptap/core": "^3.11.1",
     "@tiptap/extension-blockquote": "^3.11.1",
     "@tiptap/extension-bold": "^3.11.1",

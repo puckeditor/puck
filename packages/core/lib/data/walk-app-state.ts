@@ -15,6 +15,7 @@ import {
 } from "../../types/Internal";
 import { mapFields } from "./map-fields";
 import { flattenNode } from "./flatten-node";
+import { toComponent } from "./to-component";
 
 /**
  * Walk the Puck state, generate indexes and make modifications to nodes.
@@ -130,7 +131,7 @@ export function walkAppState<UserData extends Data = Data>(
 
     processRelatedZones(item, id, path);
 
-    const newItem = { ...item, props: newProps };
+    const newItem = { ...mappedItem, props: newProps };
 
     const thisZoneCompound = path[path.length - 1];
     const [parentId, zone] = thisZoneCompound
@@ -188,18 +189,19 @@ export function walkAppState<UserData extends Data = Data>(
     newZones[zoneCompound] = newContent;
   }, newZones);
 
-  const processedRoot = processItem(
-    {
-      type: "root",
-      props: { ...(state.data.root.props ?? state.data.root), id: "root" },
-    },
-    [],
-    -1
-  );
+  let rootAsComponent: ComponentData = toComponent({
+    props: { ...(state.data.root.props ?? state.data.root) },
+  });
+
+  if (state.data.root.readOnly) {
+    rootAsComponent.readOnly = state.data.root.readOnly;
+  }
+
+  const processedRoot = processItem(rootAsComponent, [], -1);
 
   const root = {
     ...state.data.root,
-    props: processedRoot.props,
+    ...processedRoot,
   } as RootDataWithProps;
 
   return {

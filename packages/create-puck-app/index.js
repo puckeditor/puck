@@ -96,13 +96,9 @@ program
             value: "react-router",
           },
           {
-            name: "Remix",
-            value: "remix",
-          },
-          {
             name: "TanStack",
             value: "tanstack",
-          }
+          },
         ],
       },
       {

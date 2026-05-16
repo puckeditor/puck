@@ -11,7 +11,7 @@
   "dependencies": {
     "@puckeditor/core": "*",
     "classnames": "^2.3.2",
-    "next": "^16.0.8",
+    "next": "^16.2.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
