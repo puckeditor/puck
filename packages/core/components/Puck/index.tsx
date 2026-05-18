@@ -53,6 +53,7 @@ import { populateIds } from "../../lib/data/populate-ids";
 import { toComponent } from "../../lib/data/to-component";
 import { Layout } from "./components/Layout";
 import { useSafeId } from "../../lib/use-safe-id";
+import { normalizeIframeConfig } from "../../lib/style-config";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -130,11 +131,7 @@ function PuckProvider<
   } = usePropsContext();
 
   const iframe: IframeConfig = useMemo(
-    () => ({
-      enabled: true,
-      waitForStyles: true,
-      ..._iframe,
-    }),
+    () => normalizeIframeConfig(_iframe),
     [_iframe]
   );
 
