@@ -17,6 +17,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@puckeditor/core": "*",
     "next": "^15.5.16",
     "next-sitemap": "^4.2.3",
     "nextra": "^3.3.1",
