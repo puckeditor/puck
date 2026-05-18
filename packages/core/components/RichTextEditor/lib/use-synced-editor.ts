@@ -56,10 +56,16 @@ export function useSyncedEditor({
     immediatelyRender: false,
     parseOptions: { preserveWhitespace: "full" },
     onUpdate: ({ editor }) => {
-      // This can trigger during undo/redo history loads
-      if (syncingRef.current || !isFocused) {
-        appStoreApi.getState().setUi({ field: { focus: name } });
+      // Check focus via multiple sources to avoid stale closure issues.
+      // `isFocused` comes from React's render cycle and can be stale when
+      // this callback fires (React defers re-renders via MessageChannel).
+      // Fall back to the Zustand store directly, then to TipTap's DOM state.
+      const currentlyFocused =
+        isFocused ||
+        appStoreApi.getState().state.ui.field.focus === name ||
+        editor.isFocused;
 
+      if (syncingRef.current || !currentlyFocused) {
         return;
       }
 
