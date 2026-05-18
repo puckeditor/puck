@@ -1,0 +1,121 @@
+import { Callout } from "nextra/components";
+
+# Styling
+
+Puck includes stylesheets for the interface. There are two types of styles:
+
+1. Editor styles, for the editor interface
+2. Preview styles, for the drag-and-drop canvas, isolated within an iframe
+
+By default, Puck will load styles at runtime.
+
+## Style isolation
+
+Puck isolates the canvas using an iframe, automatically syncing stylesheets from the host application. It also provides APIs for fine-tuning behavior.
+
+### Opting out of iframes
+
+Opt-out of iframe rendering to completely disable preview isolation with [`iframe.enabled`](/docs/api-reference/components/puck#enabled):
+
+```tsx
+export function Editor() {
+  return (
+    <Puck
+      iframe={{
+        enabled: false,
+      }}
+      // ...
+    />
+  );
+}
+```
+
+Note that this will also disable [viewports](viewports).
+
+### Disabling style sync
+
+Disable iframe style sync using [`iframe.syncHostStyles`](/docs/api-reference/components/puck#synchoststyles):
+
+```tsx
+export function Editor() {
+  return (
+    <Puck
+      iframe={{
+        syncHostStyles: false,
+      }}
+      // ...
+    />
+  );
+}
+```
+
+Puck will still inject preview styles for drag-and-drop behavior into the iframe.
+
+### Injecting styles manually
+
+Manually inject styles into the iframe using the [`iframe` override](/docs/api-reference/overrides/iframe):
+
+```tsx
+const overrides = {
+  iframe: ({ children, document }) => {
+    useEffect(() => {
+      if (document) {
+        document.body.setAttribute("style", "background: hotpink;");
+      }
+    }, [document]);
+
+    return <>{children}</>;
+  },
+};
+
+export function Editor() {
+  return (
+    <Puck
+      overrides={overrides}
+      // ...
+    />
+  );
+}
+```
+
+Learn more about overrides in [Extending Puck: UI Overrides](/docs/extending-puck/ui-overrides).
+
+## Bundling CSS
+
+By default, Puck loads styles client-side. This is fine for most use-cases, but can result in a flash of unstyled content ([FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)).
+
+### Avoiding FOUC
+
+You can avoid FOUC by bundling `puck.css`:
+
+```css
+@import "@puckeditor/core/puck.css";
+```
+
+When bundling CSS, make sure you consider the impact on your production CSS bundle.
+
+<Callout>
+  Note that this will result in Puck's editor styles being injected into the
+  iframe unless you [disable style sync](#disabling-style-sync).
+</Callout>
+
+### Excluding external imports
+
+Puck includes references to external font packages. Use the `no-external` CSS bundle to exclude them:
+
+```css
+/* @import "@puckeditor/core/puck.css"; */
+@import "@puckeditor/core/no-external.css";
+```
+
+## Theming
+
+Puck currently has limited support for theming. See [Theming](/docs/extending-puck/theming/overview) for more information.
+
+## Further reading
+
+- [`iframe` API reference](/docs/api-reference/components/puck#iframe)
+- [`iframe` override](/docs/api-reference/overrides/iframe)
+- [Theming](/docs/extending-puck/theming/overview)
+- [UI Overrides](/docs/extending-puck/ui-overrides)
+- [Viewports](viewports)
