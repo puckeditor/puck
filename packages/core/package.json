@@ -93,6 +93,7 @@
     "jest-environment-jsdom": "^30.0.0-beta.3",
     "lucide-react": "^0.468.0",
     "ts-jest": "^29.3.4",
+    "ts-node": "^10.9.2",
     "tsconfig": "*",
     "tsup": "^8.2.4",
     "tsup-config": "*",
