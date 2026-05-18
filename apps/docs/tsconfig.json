@@ -3,9 +3,10 @@
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/puck": ["../../packages/core"],
-      "@/core": ["../../packages/core"],
+      "@/puck": ["../../packages/core/index.ts"],
+      "@/core": ["../../packages/core/index.ts"],
       "@/core/*": ["../../packages/core/*"],
+      "@puckeditor/core": ["../../packages/core/index.ts"],
       "@/plugin-heading-analyzer": ["../../packages/plugin-heading-analyzer"],
       "@/plugin-heading-analyzer/*": [
         "../../packages/plugin-heading-analyzer/*"
