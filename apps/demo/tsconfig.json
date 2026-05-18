@@ -4,9 +4,9 @@
     "strict": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/core": ["../../packages/core"],
+      "@/core": ["../../packages/core/index"],
       "@/core/*": ["../../packages/core/*"],
-      "@puckeditor/core": ["../../packages/core"],
+      "@puckeditor/core": ["../../packages/core/index"],
       "@/plugin-heading-analyzer": ["../../packages/plugin-heading-analyzer"],
       "@/plugin-heading-analyzer/*": [
         "../../packages/plugin-heading-analyzer/*"
