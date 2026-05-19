@@ -41,6 +41,7 @@
     "node": ">=20.0.0"
   },
   "resolutions": {
+    "lerna/nx/brace-expansion": "5.0.6",
     "yaml": ">=2.8.3"
   }
 }
