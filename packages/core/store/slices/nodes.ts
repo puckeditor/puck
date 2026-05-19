@@ -1,73 +1,57 @@
 import { AppStore } from "../";
 
-type NodeMethods = {
+export type NodeHandle = {
   sync: () => void;
   hideOverlay: () => void;
   showOverlay: () => void;
 };
 
-type PuckNodeInstance = {
-  id: string;
-  methods: NodeMethods;
-  element: HTMLElement | null;
-};
-
 export type NodesSlice = {
-  nodes: Record<string, PuckNodeInstance | undefined>;
-  registerNode: (id: string, node: Partial<PuckNodeInstance>) => void;
-  unregisterNode: (id: string, node?: Partial<PuckNodeInstance>) => void;
+  registerNode: (id: string, handle: NodeHandle) => void;
+  unregisterNode: (id: string) => void;
+  syncNode: (id?: string | null) => void;
+  syncNodes: (ids: Array<string | null | undefined>) => void;
+  setOverlayVisible: (id: string | null | undefined, visible: boolean) => void;
 };
 
 export const createNodesSlice = (
-  set: (newState: Partial<AppStore>) => void,
-  get: () => AppStore
-): NodesSlice => ({
-  nodes: {},
-  registerNode: (id: string, node: Partial<PuckNodeInstance>) => {
-    const s = get().nodes;
+  _set: (newState: Partial<AppStore>) => void,
+  _get: () => AppStore
+): NodesSlice => {
+  const registry = new Map<string, NodeHandle>();
 
-    const emptyNode: PuckNodeInstance = {
-      id,
-      methods: {
-        sync: () => null,
-        hideOverlay: () => null,
-        showOverlay: () => null,
-      },
-      element: null,
-    };
+  return {
+    registerNode: (id, handle) => {
+      registry.set(id, handle);
+    },
+    unregisterNode: (id) => {
+      registry.delete(id);
+    },
+    syncNode: (id) => {
+      if (!id) return;
 
-    const existingNode: PuckNodeInstance | undefined = s.nodes[id];
+      registry.get(id)?.sync();
+    },
+    syncNodes: (ids) => {
+      ids.forEach((id) => {
+        if (!id) return;
 
-    set({
-      nodes: {
-        ...s,
-        nodes: {
-          ...s.nodes,
-          [id]: {
-            ...emptyNode,
-            ...existingNode,
-            ...node,
-            id,
-          },
-        },
-      },
-    });
-  },
-  unregisterNode: (id) => {
-    const s = get().nodes;
-    const existingNode: PuckNodeInstance | undefined = s.nodes[id];
-
-    if (existingNode) {
-      const newNodes = { ...s.nodes };
-
-      delete newNodes[id];
-
-      set({
-        nodes: {
-          ...s,
-          nodes: newNodes,
-        },
+        registry.get(id)?.sync();
       });
-    }
-  },
-});
+    },
+    setOverlayVisible: (id, visible) => {
+      if (!id) return;
+
+      const node = registry.get(id);
+
+      if (!node) return;
+
+      if (visible) {
+        node.showOverlay();
+        return;
+      }
+
+      node.hideOverlay();
+    },
+  };
+};

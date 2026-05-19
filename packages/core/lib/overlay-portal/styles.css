@@ -4,11 +4,11 @@
 }
 
 [data-puck-overlay-portal]:hover {
-  outline: 2px var(--puck-color-azure-09) dashed;
+  outline: 2px var(--puck-color-azure-09, #cfdff0) dashed;
   outline-offset: 2px;
 }
 
 [data-puck-overlay-portal]:focus-within {
-  outline: 2px var(--puck-color-azure-07) dashed;
+  outline: 2px var(--puck-color-azure-07, #88b0da) dashed;
   outline-offset: 2px;
 }

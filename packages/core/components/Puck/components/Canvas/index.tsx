@@ -28,10 +28,8 @@ export const Canvas = () => {
   const { frameRef } = useCanvasFrame();
   const resetAutoZoom = useResetAutoZoom(frameRef);
 
-  const {
-    _experimentalFullScreenCanvas,
-    viewports: viewportOptions = defaultViewports,
-  } = usePropsContext();
+  const { viewports: viewportOptions = defaultViewports, ui: uiProp } =
+    usePropsContext();
 
   const {
     dispatch,
@@ -41,6 +39,7 @@ export const Canvas = () => {
     setZoomConfig,
     status,
     iframe,
+    _experimentalFullScreenCanvas,
   } = useAppStore(
     useShallow((s) => ({
       dispatch: s.dispatch,
@@ -50,6 +49,7 @@ export const Canvas = () => {
       setZoomConfig: s.setZoomConfig,
       status: s.status,
       iframe: s.iframe,
+      _experimentalFullScreenCanvas: s._experimentalFullScreenCanvas,
     }))
   );
   const {
@@ -156,8 +156,12 @@ export const Canvas = () => {
 
   const appStoreApi = useAppStoreApi();
 
+  // Select closest viewport on load
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Don't override if user has set a viewport
+    if (uiProp?.viewports?.current) return;
 
     const viewportWidth = window.innerWidth;
     const frameWidth = frameRef.current?.getBoundingClientRect().width;
@@ -223,7 +227,13 @@ export const Canvas = () => {
 
       appStoreApi.setState({ ...appState, history });
     }
-  }, [viewportOptions, frameRef.current, iframe, appStoreApi]);
+  }, [
+    viewportOptions,
+    frameRef.current,
+    iframe,
+    appStoreApi,
+    uiProp?.viewports?.current,
+  ]);
 
   return (
     <div
@@ -242,7 +252,7 @@ export const Canvas = () => {
           dispatch({
             type: "setUi",
             ui: { itemSelector: null },
-            recordHistory: true,
+            recordHistory: false,
           });
         }
       }}

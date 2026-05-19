@@ -1,63 +1,118 @@
 import { act } from "@testing-library/react";
 import { createAppStore } from "../../";
 
-const appStore = createAppStore();
-
-function resetStores() {
-  // Reset the main app store
-  appStore.setState(
-    {
-      ...appStore.getInitialState(),
-    },
-    true
-  );
-}
-
 describe("nodes slice", () => {
-  beforeEach(() => {
-    resetStores();
-  });
-
-  it("registerNode stores the node data, merging on subsequent calls", () => {
-    expect(Object.keys(appStore.getState().nodes.nodes)).toHaveLength(0);
-
-    const syncMethod = jest.fn();
+  it("registerNode stores handles and syncNode invokes sync", () => {
+    const appStore = createAppStore();
+    const sync = jest.fn();
 
     act(() => {
       appStore.getState().nodes.registerNode("test-1", {
-        methods: {
-          sync: syncMethod,
-          hideOverlay: () => {},
-          showOverlay: () => {},
-        },
+        sync,
+        hideOverlay: jest.fn(),
+        showOverlay: jest.fn(),
       });
     });
 
-    const initialNode = appStore.getState().nodes.nodes["test-1"];
-    expect(initialNode).toBeDefined();
-
-    // Re-register with partial changes
     act(() => {
-      appStore.getState().nodes.registerNode("test-1", {
-        element: "stub" as any,
-      });
+      appStore.getState().nodes.syncNode("test-1");
     });
 
-    const updatedNode = appStore.getState().nodes.nodes["test-1"];
-    expect(updatedNode).toBeDefined();
-    expect(updatedNode?.methods.sync).toBe(syncMethod);
-    expect(updatedNode?.element).toBe("stub");
+    expect(sync).toHaveBeenCalledTimes(1);
   });
 
-  it("unregisterNode removes from the store", () => {
-    act(() => {
-      appStore.getState().nodes.registerNode("test-2", {});
-    });
-    expect(appStore.getState().nodes.nodes["test-2"]).toBeDefined();
+  it("setOverlayVisible dispatches show and hide", () => {
+    const appStore = createAppStore();
+    const hideOverlay = jest.fn();
+    const showOverlay = jest.fn();
 
     act(() => {
-      appStore.getState().nodes.unregisterNode("test-2");
+      appStore.getState().nodes.registerNode("test-1", {
+        sync: jest.fn(),
+        hideOverlay,
+        showOverlay,
+      });
     });
-    expect(appStore.getState().nodes.nodes["test-2"]).toBeUndefined();
+
+    act(() => {
+      appStore.getState().nodes.setOverlayVisible("test-1", false);
+      appStore.getState().nodes.setOverlayVisible("test-1", true);
+    });
+
+    expect(hideOverlay).toHaveBeenCalledTimes(1);
+    expect(showOverlay).toHaveBeenCalledTimes(1);
+  });
+
+  it("syncNodes preserves order and skips missing ids", () => {
+    const appStore = createAppStore();
+    const calls: string[] = [];
+
+    act(() => {
+      appStore.getState().nodes.registerNode("test-1", {
+        sync: () => calls.push("test-1"),
+        hideOverlay: jest.fn(),
+        showOverlay: jest.fn(),
+      });
+      appStore.getState().nodes.registerNode("test-2", {
+        sync: () => calls.push("test-2"),
+        hideOverlay: jest.fn(),
+        showOverlay: jest.fn(),
+      });
+    });
+
+    act(() => {
+      appStore
+        .getState()
+        .nodes.syncNodes(["test-2", "missing", undefined, "test-1"]);
+    });
+
+    expect(calls).toEqual(["test-2", "test-1"]);
+  });
+
+  it("unregisterNode removes handles and later commands become no-ops", () => {
+    const appStore = createAppStore();
+    const sync = jest.fn();
+    const hideOverlay = jest.fn();
+    const showOverlay = jest.fn();
+
+    act(() => {
+      appStore.getState().nodes.registerNode("test-1", {
+        sync,
+        hideOverlay,
+        showOverlay,
+      });
+      appStore.getState().nodes.unregisterNode("test-1");
+    });
+
+    act(() => {
+      appStore.getState().nodes.syncNode("test-1");
+      appStore.getState().nodes.setOverlayVisible("test-1", false);
+      appStore.getState().nodes.setOverlayVisible("test-1", true);
+    });
+
+    expect(sync).not.toHaveBeenCalled();
+    expect(hideOverlay).not.toHaveBeenCalled();
+    expect(showOverlay).not.toHaveBeenCalled();
+  });
+
+  it("registry operations do not notify store subscribers", () => {
+    const appStore = createAppStore();
+    const listener = jest.fn();
+    const unsubscribe = appStore.subscribe(listener);
+
+    act(() => {
+      appStore.getState().nodes.registerNode("test-1", {
+        sync: jest.fn(),
+        hideOverlay: jest.fn(),
+        showOverlay: jest.fn(),
+      });
+      appStore.getState().nodes.syncNode("test-1");
+      appStore.getState().nodes.setOverlayVisible("test-1", false);
+      appStore.getState().nodes.unregisterNode("test-1");
+    });
+
+    expect(listener).not.toHaveBeenCalled();
+
+    unsubscribe();
   });
 });

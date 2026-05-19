@@ -4,6 +4,7 @@ import { useSensors } from "../../lib/dnd/use-sensors";
 import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
 import "./styles.css";
 import { useSortable } from "@dnd-kit/react/sortable";
+import { PointerActivationConstraints } from "@dnd-kit/dom";
 
 export const SortableProvider = ({
   children,
@@ -16,7 +17,7 @@ export const SortableProvider = ({
   onMove: (moveData: { source: number; target: number }) => void;
 }>) => {
   const sensors = useSensors({
-    mouse: { distance: { value: 5 } },
+    mouse: [new PointerActivationConstraints.Distance({ value: 5 })],
   });
 
   return (

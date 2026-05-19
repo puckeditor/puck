@@ -1,4 +1,5 @@
 import { UserData } from "./types";
+import { performanceData, performancePath } from "./fixtures/performance";
 
 export const initialData: Record<string, UserData> = {
   "/": {
@@ -409,4 +410,12 @@ export const initialData: Record<string, UserData> = {
     content: [],
     root: { props: { title: "About Us" } },
   },
+};
+
+export const getInitialData = (path: string) => {
+  if (path === performancePath) {
+    return performanceData;
+  }
+
+  return initialData[path] || {};
 };

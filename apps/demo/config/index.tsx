@@ -51,7 +51,9 @@ export const conf: UserConfig = {
 };
 
 export const componentKey = Buffer.from(
-  `${Object.keys(conf.components).join("-")}-${JSON.stringify(initialData)}`
+  `${Object.keys(conf.components).join("-")}-${JSON.stringify({
+    initialData,
+  })}`
 ).toString("base64");
 
 export default conf;

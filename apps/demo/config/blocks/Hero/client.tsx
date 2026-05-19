@@ -5,6 +5,7 @@ import { quotes } from "./quotes";
 import { AutoField, FieldLabel, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
+import { heroRenderFields } from "./render-fields";
 
 export const Hero: ComponentConfig<{
   props: HeroProps;
@@ -82,7 +83,7 @@ export const Hero: ComponentConfig<{
     },
     title: { type: "text", contentEditable: true },
     description: {
-      type: "richtext",
+      ...heroRenderFields.description,
       contentEditable: true,
       options: {
         heading: false,
@@ -140,9 +141,9 @@ export const Hero: ComponentConfig<{
       ],
     },
     image: {
-      type: "object",
+      ...heroRenderFields.image,
       objectFields: {
-        content: { type: "slot" },
+        ...heroRenderFields.image.objectFields,
         url: {
           type: "custom",
           render: ({ value, field, name, onChange, readOnly }) => (
