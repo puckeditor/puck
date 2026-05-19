@@ -12,8 +12,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { AutoScroller, defaultPreset, DragDropManager } from "@dnd-kit/dom";
-import { DragDropEvents } from "@dnd-kit/abstract";
+import {
+  AutoScroller,
+  defaultPreset,
+  DragDropManager,
+  PointerActivationConstraints,
+} from "@dnd-kit/dom";
+import { DragDropEventHandlers } from "@dnd-kit/abstract";
 import { DropZoneProvider } from "../DropZone";
 import type { Draggable, Droppable } from "@dnd-kit/dom";
 import { getItem } from "../../lib/data/get-item";
@@ -42,7 +47,7 @@ import { scrollIntoView } from "../../lib/scroll-into-view";
 
 const DEBUG = false;
 
-type Events = DragDropEvents<Draggable, Droppable, DragDropManager>;
+type Events = DragDropEventHandlers<Draggable, Droppable, DragDropManager>;
 type DragCbs = Partial<{ [eventName in keyof Events]: Events[eventName][] }>;
 
 const dragListenerContext = createContext<{
@@ -52,7 +57,7 @@ const dragListenerContext = createContext<{
   dragListeners: {},
 });
 
-type EventKeys = keyof Events;
+type EventKeys = keyof Events & string;
 
 export function useDragListener(
   type: EventKeys,
