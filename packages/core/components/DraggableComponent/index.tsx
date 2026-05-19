@@ -679,6 +679,12 @@ export const DraggableComponent = ({
     [zoom]
   );
 
+  const actionBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    syncActionsPosition(actionBarRef.current);
+  }, [actionBarRef.current, syncActionsPosition]);
+
   useEffect(() => {
     if (userDragAxis) {
       setDragAxis(userDragAxis);
@@ -774,7 +780,7 @@ export const DraggableComponent = ({
                   paddingLeft: actionsSide,
                   paddingRight: actionsSide,
                 }}
-                ref={syncActionsPosition}
+                ref={actionBarRef}
               >
                 <CustomActionBar
                   parentAction={parentAction}
