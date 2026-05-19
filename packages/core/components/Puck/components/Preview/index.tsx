@@ -29,6 +29,9 @@ const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
           cancelable: false,
           clientX: event.clientX,
           clientY: event.clientY,
+          pointerId: event.pointerId,
+          pointerType: event.pointerType,
+          isPrimary: event.isPrimary,
           originalTarget: event.target,
         });
 
