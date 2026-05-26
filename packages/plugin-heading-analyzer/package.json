@@ -19,7 +19,7 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup index.ts",
-    "prepare": "yarn build"
+    "prepare": "pnpm build"
   },
   "files": [
     "dist"
@@ -30,10 +30,10 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "eslint": "^9.0.0",
-    "eslint-config-custom": "*",
-    "tsconfig": "*",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
     "tsup": "^8.2.4",
-    "tsup-config": "*",
+    "tsup-config": "workspace:*",
     "typescript": "^5.5.4"
   },
   "dependencies": {

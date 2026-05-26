@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "generate": "node scripts/generate.js",
-    "prepublishOnly": "yarn generate",
+    "prepublishOnly": "pnpm generate",
     "removeGitignore": "mv templates/.gitignore templates/gitignore",
     "restoreGitignore": "mv templates/gitignore templates/.gitignore"
   },

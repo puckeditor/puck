@@ -8,6 +8,6 @@
     "packages/plugin-heading-analyzer"
   ],
   "version": "0.21.2",
-  "npmClient": "yarn",
+  "npmClient": "pnpm",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }

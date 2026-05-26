@@ -67,7 +67,7 @@
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
     "test": "jest",
-    "prepare": "cp ../../README.md . && yarn build",
+    "prepare": "cp ../../README.md . && pnpm build",
     "postpublish": "rm README.md"
   },
   "files": [
@@ -88,7 +88,7 @@
     "css-box-model": "^1.2.1",
     "esbuild": "^0.25.11",
     "eslint": "^9.0.0",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.0.0-beta.3",
@@ -97,9 +97,9 @@
     "postcss-modules": "^6.0.1",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
-    "tsconfig": "*",
+    "tsconfig": "workspace:*",
     "tsup": "^8.2.4",
-    "tsup-config": "*",
+    "tsup-config": "workspace:*",
     "typescript": "^5.5.4"
   },
   "dependencies": {
