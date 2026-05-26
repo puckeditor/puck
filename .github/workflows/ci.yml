@@ -16,23 +16,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6.0.2
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 20
-
-      - name: Check Yarn Version
-        run: yarn --version
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: yarn
+        run: pnpm install
 
       - name: Run tests
-        run: yarn test
+        run: pnpm test
 
       - name: Check linting and formatting
         run: |
-          if yarn lint && yarn format:check; then
+          if pnpm lint && pnpm format:check; then
             echo "Linting and formatting checks passed."
           else
             echo "Linting or formatting checks failed. Please fix the issues."
@@ -41,7 +42,7 @@ jobs:
 
       - name: Build everything
         run: |
-          yarn build
+          pnpm build
 
       - name: Check for build failures
         run: |
