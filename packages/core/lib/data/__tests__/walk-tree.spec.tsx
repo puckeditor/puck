@@ -365,4 +365,18 @@ describe("walk-tree", () => {
       { parentId: "my-component", propName: "array[0].arraySlot" }
     );
   });
+
+  it("should pass bare propName for slots of components nested inside other slots", () => {
+    const propNamesByParent: Record<string, string[]> = {};
+
+    walkTree(testData, config, (_content, { parentId, propName }) => {
+      propNamesByParent[parentId] ??= [];
+      propNamesByParent[parentId].push(propName);
+    });
+
+    // slotted-a-id is a child inside slotA of another-id.
+    // Its own slots should still receive bare field names, not ".props.slotA".
+    expect(propNamesByParent["slotted-a-id"]?.sort()).toEqual(["slotA", "slotB"]);
+    expect(propNamesByParent["slotted-b-id"]?.sort()).toEqual(["slotA", "slotB"]);
+  });
 });
