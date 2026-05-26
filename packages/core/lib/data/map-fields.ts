@@ -71,22 +71,11 @@ export const walkField = ({
 
     const mappedContent = recurseSlots
       ? content.map((el) => {
-          const componentConfig = config.components[el.type];
-
-          if (!componentConfig) {
+          if (!config.components[el.type]) {
             throw new Error(`Could not find component config for ${el.type}`);
           }
 
-          const fields = componentConfig.fields ?? {};
-
-          return walkField({
-            value: { ...el, props: defaultSlots(el.props, fields) },
-            fields,
-            mappers,
-            id: el.props.id,
-            config,
-            recurseSlots,
-          });
+          return mapFields(el, mappers, config, recurseSlots);
         })
       : content;
 
