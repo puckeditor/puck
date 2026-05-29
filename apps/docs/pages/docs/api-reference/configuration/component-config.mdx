@@ -355,10 +355,10 @@ const config = {
 
 #### Args
 
-| Prop     | Example                                                              | Type   |
-| -------- | -------------------------------------------------------------------- | ------ |
-| `data`   | `{ props: { title: "Hello, world" }, readOnly: {} }`                 | Object |
-| `params` | `{ changed: { title: true }, metadata: { foo: "bar" }, parent: {} }` | Object |
+| Prop     | Example                                                                        | Type   |
+| -------- | ------------------------------------------------------------------------------ | ------ |
+| `data`   | `{ props: { title: "Hello, world" }, readOnly: {} }`                           | Object |
+| `params` | `{ changed: { title: true }, metadata: { foo: "bar" }, parent: {}, root: {} }` | Object |
 
 ##### `data.props`
 
@@ -413,6 +413,18 @@ const resolveData = async ({ props }, { metadata }) => {
 The [component data](/docs/api-reference/data-model/component-data) of the parent.
 
 If the parent implements [resolveData](#resolvedatadata-params), this parameter will return the unresolved data on initial render, as resolvers are executed bottom-up.
+
+##### `params.root`
+
+The [root data](/docs/api-reference/data-model/root-data) for the current document. Useful for resolving a component's props based on values stored on the root.
+
+```tsx copy {2} filename="Example using a root prop to resolve the title"
+const resolveData = async ({ props }, { root }) => {
+  return {
+    props: { title: `${root.props?.title} — ${props.title}` },
+  };
+};
+```
 
 ##### `params.trigger`
 
