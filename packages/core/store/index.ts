@@ -297,7 +297,8 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
             timeouts[id]();
           },
           trigger,
-          parentData
+          parentData,
+          state.data.root
         );
       },
       resolveAndCommitData: async () => {
