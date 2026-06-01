@@ -71,7 +71,7 @@
 
 .PuckCanvas-loader {
   align-items: center;
-  color: var(--puck-color-grey-06);
+  color: var(--puck-color-text-subtle);
   display: flex;
   height: 100%;
   justify-content: center;

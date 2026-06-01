@@ -1,5 +1,9 @@
 .LayerTree {
-  color: var(--puck-color-grey-03);
+  --puck-layer-tree-text: var(--puck-color-grey-03);
+  --puck-layer-tree-component-icon: var(--puck-color-rose-07);
+  --puck-layer-tree-zone-icon: var(--puck-color-grey-08);
+
+  color: var(--puck-layer-tree-text);
   font-family: var(--puck-font-family);
   font-size: var(--puck-font-size-xxs);
   margin: 0;
@@ -109,11 +113,11 @@
 }
 
 .Layer-icon {
-  color: var(--puck-color-rose-07);
+  color: var(--puck-layer-tree-component-icon);
   margin-top: var(--puck-space-1);
 }
 
 .Layer-zoneIcon {
-  color: var(--puck-color-grey-08);
+  color: var(--puck-layer-tree-zone-icon);
   margin-top: var(--puck-space-1);
 }

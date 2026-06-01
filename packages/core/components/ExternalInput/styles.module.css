@@ -144,7 +144,7 @@
 .ExternalInputModal-table {
   border-collapse: unset;
   border-spacing: 0px;
-  color: var(--puck-color-grey-02);
+  color: var(--puck-color-text);
   position: relative;
   z-index: 0;
   min-width: 100%;
