@@ -1,4 +1,11 @@
 .ActionBar {
+  --puck-action-bar-bg: var(--puck-color-grey-01);
+  --puck-action-bar-text: var(--puck-color-grey-08);
+  --puck-action-bar-separator: var(--puck-color-grey-05);
+  --puck-action-bar-disabled: var(--puck-color-grey-06);
+  --puck-action-bar-hover: var(--puck-color-azure-06);
+  --puck-action-bar-active: var(--puck-color-azure-07);
+
   align-items: center;
   cursor: default;
   display: flex;
@@ -9,14 +16,14 @@
   border-top-left-radius: var(--puck-radius-l);
   border-top-right-radius: var(--puck-radius-l);
   border-radius: var(--puck-radius-l);
-  background: var(--puck-color-grey-01);
+  background: var(--puck-action-bar-bg);
   color: var(--puck-color-text-inverse);
   font-family: var(--puck-font-family);
   min-height: 26px;
 }
 
 .ActionBar-label {
-  color: var(--puck-color-grey-08);
+  color: var(--puck-action-bar-text);
   font-size: var(--puck-font-size-xxxs);
   font-weight: var(--puck-font-weight-medium);
   padding-inline-start: var(--puck-space-2);
@@ -38,7 +45,7 @@
 .ActionBar-group {
   align-items: center;
   border-inline-start: var(--puck-border-width-hairline) solid
-    var(--puck-color-grey-05); /* Fractional value required due to scaling */
+    var(--puck-action-bar-separator); /* Fractional value required due to scaling */
   display: flex;
   height: 100%;
   padding-inline-start: var(--puck-space-1);
@@ -56,7 +63,7 @@
 .ActionBarAction {
   background: transparent;
   border: none;
-  color: var(--puck-color-grey-08);
+  color: var(--puck-action-bar-text);
   cursor: pointer;
   padding: 6px;
   margin-inline-start: var(--puck-space-1);
@@ -71,7 +78,7 @@
 
 .ActionBarAction--disabled {
   cursor: auto;
-  color: var(--puck-color-grey-06);
+  color: var(--puck-action-bar-disabled);
 }
 
 .ActionBarAction svg {
@@ -85,14 +92,14 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ActionBarAction:hover:not(.ActionBarAction--disabled) {
-    color: var(--puck-color-azure-06);
+    color: var(--puck-action-bar-hover);
     transition: none;
   }
 }
 
 .ActionBarAction:active:not(.ActionBarAction--disabled),
 .ActionBarAction--active {
-  color: var(--puck-color-azure-07);
+  color: var(--puck-action-bar-active);
   transition: none;
 }
 
@@ -101,7 +108,7 @@
 }
 
 .ActionBar-separator {
-  background: var(--puck-color-grey-05);
+  background: var(--puck-action-bar-separator);
   margin-inline: var(--puck-space-1);
   width: var(--puck-border-width-hairline); /* Fractional value required due to scaling */
   height: 100%;

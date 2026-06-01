@@ -1,4 +1,7 @@
 .RichTextMenu {
+  --puck-rich-text-menu-icon: var(--puck-color-grey-08);
+  --puck-rich-text-menu-inline-separator: var(--puck-color-grey-05);
+
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -33,7 +36,7 @@
 }
 
 .RichTextMenu--inline .RichTextMenu-group {
-  color: var(--puck-color-grey-08);
+  color: var(--puck-rich-text-menu-icon);
   gap: 0px;
   flex-wrap: nowrap;
 }
@@ -43,5 +46,5 @@
 }
 
 .RichTextMenu--inline .RichTextMenu-group + .RichTextMenu-group {
-  border-left: var(--puck-border-width-hairline) solid var(--puck-color-grey-05); /* Match actionbar separator */
+  border-left: var(--puck-border-width-hairline) solid var(--puck-rich-text-menu-inline-separator); /* Match actionbar separator */
 }

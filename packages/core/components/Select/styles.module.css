@@ -1,4 +1,6 @@
 .Select {
+  --puck-select-action-bar-active: var(--puck-color-azure-07);
+
   position: relative;
   z-index: 1;
 }
@@ -54,7 +56,7 @@
   &.Select--hasOptions .Select-button:hover,
   &.Select--hasValue .Select-button {
     background: none;
-    color: var(--puck-color-azure-07);
+    color: var(--puck-select-action-bar-active);
   }
 }
 
