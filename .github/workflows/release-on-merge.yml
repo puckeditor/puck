@@ -1,0 +1,68 @@
+name: Push release branch on merge
+
+# When a "release: v*" PR is merged, push the commit to releases/v<version> (which
+# triggers publish.yml to tag + publish to npm)
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  push-release-branch:
+    if: "github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'release: v')"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Verify head commit is a release commit
+        run: |
+          MSG=$(git log -1 --pretty=%s)
+          if [[ ! "$MSG" =~ ^release:\ v ]]; then
+            echo "Refusing to push: head commit on main is '$MSG', expected 'release: v...'" >&2
+            exit 1
+          fi
+          VERSION="${MSG#release: v}"
+          echo "RELEASE_VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "RELEASE_BRANCH=releases/v${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Push to release branch
+        run: |
+          git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
+
+      - name: Comment on merged PR
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr comment "$PR_NUMBER" --body "Pushed \`${RELEASE_BRANCH}\` — \`publish.yml\` will tag and publish v${RELEASE_VERSION} to npm. See [Actions](${{ github.server_url }}/${{ github.repository }}/actions/workflows/publish.yml)."
+
+      - name: Merge release content PR
+        if: success()
+        continue-on-error: true # never block the npm release on a content-PR hiccup
+        env:
+          GH_TOKEN: ${{ secrets.PLATFORM_DISPATCH_TOKEN }}
+          PLATFORM_REPO: ${{ secrets.PLATFORM_REPO }}
+        run: |
+          PR=$(gh pr list --repo "$PLATFORM_REPO" --state open \
+            --search "in:title content: Puck v${RELEASE_VERSION}" \
+            --json number --jq '.[0].number')
+          if [ -z "$PR" ]; then
+            echo "::warning::No open content PR found for v${RELEASE_VERSION}; generate/merge it manually."
+            exit 0
+          fi
+          echo "Merging content PR #${PR} for v${RELEASE_VERSION}."
+          # Prefer auto-merge so the downstream CI / branch protection is respected;
+          # fall back to a direct squash merge if auto-merge is not enabled.
+          gh pr merge "$PR" --repo "$PLATFORM_REPO" --squash --auto \
+            || gh pr merge "$PR" --repo "$PLATFORM_REPO" --squash

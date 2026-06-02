@@ -1,0 +1,217 @@
+name: Weekly release
+
+# Prepares a code-only release PR (version bump + changelog) for the open-source
+# Puck packages.
+
+on:
+  schedule:
+    - cron: "0 2 23 * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-weekly
+  cancel-in-progress: false
+
+jobs:
+  draft-release-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name "puck-release-bot"
+          git config user.email "release-bot@users.noreply.github.com"
+
+      - name: Check for prior open release PR
+        id: prior
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          PRIOR_JSON=$(gh pr list \
+            --base main \
+            --state open \
+            --json number,headRefName,createdAt,title \
+            --limit 50 \
+            | jq '[.[] | select(.title | startswith("release: v"))]')
+
+          PRIOR_COUNT=$(echo "$PRIOR_JSON" | jq 'length')
+          echo "Found ${PRIOR_COUNT} open release PR(s)."
+
+          if [ "$PRIOR_COUNT" = "0" ]; then
+            echo "action=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          : > /tmp/supersede.txt
+          HUMAN_EDITED=()
+          SUPERSEDE_CANDIDATES=()
+
+          while IFS= read -r row; do
+            number=$(echo "$row" | jq -r '.number')
+            branch=$(echo "$row" | jq -r '.headRefName')
+            created=$(echo "$row" | jq -r '.createdAt')
+
+            git fetch origin "${branch}" --quiet || {
+              echo "Could not fetch origin/${branch}; treating PR #${number} as human-edited to be safe."
+              HUMAN_EDITED+=("${number}")
+              continue
+            }
+
+            created_ts=$(date -u -d "${created}" +%s)
+            latest_ts=$(git log "origin/${branch}" "^origin/main" --pretty='%ct' | sort -nr | head -1)
+            echo "PR #${number} (${branch}) created=${created} (${created_ts}) latest_commit_ts=${latest_ts}"
+
+            if [ "${latest_ts}" -gt "${created_ts}" ]; then
+              HUMAN_EDITED+=("${number}")
+            else
+              SUPERSEDE_CANDIDATES+=("${number}:${branch}")
+            fi
+          done < <(echo "$PRIOR_JSON" | jq -c '.[]')
+
+          if [ "${#HUMAN_EDITED[@]}" -gt 0 ]; then
+            echo "action=skip" >> "$GITHUB_OUTPUT"
+            echo "human_edited_prs=${HUMAN_EDITED[*]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "action=supersede" >> "$GITHUB_OUTPUT"
+            printf '%s\n' "${SUPERSEDE_CANDIDATES[@]}" > /tmp/supersede.txt
+          fi
+
+      - name: Notify on human-edited prior release PR(s)
+        if: steps.prior.outputs.action == 'skip'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          for pr in ${{ steps.prior.outputs.human_edited_prs }}; do
+            gh pr comment "$pr" --body "Weekly release run on ${TODAY} detected manual edits on this branch and is skipping rather than superseding. Merge or close this PR to unblock the next weekly run."
+          done
+          echo "::warning::Skipping weekly release — manual edits found on PR(s): ${{ steps.prior.outputs.human_edited_prs }}"
+
+      - name: Supersede prior bot-only release PR(s)
+        if: steps.prior.outputs.action == 'supersede'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          while IFS=: read -r number branch; do
+            [ -z "$number" ] && continue
+            echo "Superseding PR #${number} (${branch})"
+            gh pr close "$number" \
+              --comment "Superseded by today's weekly release run — no human edits were detected on this branch." \
+              --delete-branch
+          done < /tmp/supersede.txt
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Skip if no notable changes
+        id: gate
+        if: steps.prior.outputs.action != 'skip'
+        run: |
+          if ! node scripts/check-notable-changes.js; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Capture previous version tag
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0 --match 'v*')" >> "$GITHUB_ENV"
+
+      - name: Bump version
+        if: steps.gate.outputs.skip == 'false'
+        run: yarn release:prepare
+
+      - name: Regenerate changelog
+        if: steps.gate.outputs.skip == 'false'
+        run: yarn changelog
+
+      - name: Capture new version
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "RELEASE_VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "BRANCH_NAME=release-prep-v${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Create release branch
+        if: steps.gate.outputs.skip == 'false'
+        run: git checkout -b "${BRANCH_NAME}"
+
+      - name: Extract new changelog section
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          {
+            echo 'CHANGELOG_SECTION<<__CHANGELOG_EOF__'
+            awk '
+              /^## \[?[0-9]/ {
+                if (seen) exit
+                seen = 1
+              }
+              seen { print }
+            ' CHANGELOG.md
+            echo '__CHANGELOG_EOF__'
+          } >> "$GITHUB_ENV"
+
+      - name: Commit release
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          git add -A
+          git commit -m "release: v${RELEASE_VERSION}"
+
+      - name: Push branch
+        if: steps.gate.outputs.skip == 'false'
+        run: git push origin "${BRANCH_NAME}"
+
+      - name: Open pull request
+        if: steps.gate.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "${BRANCH_NAME}" \
+            --title "release: v${RELEASE_VERSION}" \
+            --body "$(cat <<'__PR_BODY__'
+          Automated weekly release prep for v${{ env.RELEASE_VERSION }}.
+
+          On merge, `release-on-merge.yml` pushes this commit to `releases/v${{ env.RELEASE_VERSION }}`, which triggers `publish.yml` to tag and publish to npm.
+
+          ## Changelog
+
+          ${{ env.CHANGELOG_SECTION }}
+
+          ## Reviewer checklist
+
+          - [ ] Changelog entries look right
+          - [ ] Version bump is the expected level (major/minor/patch)
+          __PR_BODY__
+          )"
+
+      - name: Trigger downstream release content
+        if: steps.gate.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.PLATFORM_DISPATCH_TOKEN }}
+          PLATFORM_REPO: ${{ secrets.PLATFORM_REPO }}
+        run: |
+          gh api "repos/${PLATFORM_REPO}/dispatches" \
+            -f event_type=oss-release \
+            -F "client_payload[version]=${RELEASE_VERSION}" \
+            -F "client_payload[previous_tag]=${PREVIOUS_TAG}" \
+            -F "client_payload[sha]=$(git rev-parse HEAD)" \
+            -F "client_payload[branch]=${BRANCH_NAME}"
