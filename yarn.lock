@@ -483,7 +483,7 @@
   resolved "https://registry.yarnpkg.com/@csstools/css-tokenizer/-/css-tokenizer-3.0.4.tgz#333fedabc3fd1a8e5d0100013731cf19e6a8c5d3"
   integrity sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==
 
-"@dnd-kit/abstract@^0.4.0":
+"@dnd-kit/abstract@0.4.0", "@dnd-kit/abstract@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@dnd-kit/abstract/-/abstract-0.4.0.tgz#5dd39a1f6a92604537e1384436813e18fa4d7831"
   integrity sha512-loEEJxKT5oLOLeRBJVTO9qpgvvW/Qq902xO20v1JMbpANuN/NLurUdpxIwNpVz+RtOSyzznnbc7lO7psmOhc9A==
@@ -512,7 +512,7 @@
     "@dnd-kit/state" "^0.4.0"
     tslib "^2.6.2"
 
-"@dnd-kit/geometry@^0.4.0":
+"@dnd-kit/geometry@0.4.0", "@dnd-kit/geometry@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@dnd-kit/geometry/-/geometry-0.4.0.tgz#b24d4e08bdee8b1cba0f798732e399b4c47776a0"
   integrity sha512-d1n+CU54V/qF/g792bmJK2oR4f5jOL7Pls2IfC+j9f5UBECpjsYbcPZ/krom/z8LgieqvMh1qrUkdcBjJJ7vpg==
@@ -538,7 +538,7 @@
     "@dnd-kit/state" "^0.4.0"
     tslib "^2.6.2"
 
-"@dnd-kit/state@^0.4.0":
+"@dnd-kit/state@0.4.0", "@dnd-kit/state@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@dnd-kit/state/-/state-0.4.0.tgz#9c8b2c587eda75b98514beec450ed47ffd0441bd"
   integrity sha512-vVdwOY9VsYdMNa7Z0xQhTXlzHqCcCugGuoM1kzvZhnZ0tYVPRdmIhWfeO6Y2ZoN92JwYAyJRRNl4ICkEe2mneg==

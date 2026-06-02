@@ -103,9 +103,12 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@dnd-kit/abstract": "0.4.0",
     "@dnd-kit/dom": "0.4.0",
     "@dnd-kit/helpers": "0.4.0",
+    "@dnd-kit/geometry": "0.4.0",
     "@dnd-kit/react": "0.4.0",
+    "@dnd-kit/state": "0.4.0",
     "@radix-ui/react-popover": "^1.1.15",
     "@tanstack/react-virtual": "^3.13.9",
     "@tiptap/core": "^3.11.1",
