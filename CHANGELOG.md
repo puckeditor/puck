@@ -2,6 +2,28 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.22.0](https://github.com/puckeditor/puck/compare/v0.21.2...v0.22.0) (2026-06-03)
+
+
+### Bug Fixes
+
+* don't select parent on quick drag ([88fa3ee](https://github.com/puckeditor/puck/commit/88fa3eebcbfc3053daad6945758a1f6a375f3a2d))
+* ignore next-env.d.ts in Next.js recipes ([ed7231b](https://github.com/puckeditor/puck/commit/ed7231bb2559764105537677936410143acd8332))
+* record history when moving a component to a different position ([26cf9e0](https://github.com/puckeditor/puck/commit/26cf9e0b872f66364a1e44533c678aefccd63ec7))
+* stop action bar from flashing in bottom on insertion ([8f15de5](https://github.com/puckeditor/puck/commit/8f15de54522d4ed81a3b79a914f6e48226ba6777))
+* use stable ID when rendering RichText on server ([b3f8fa8](https://github.com/puckeditor/puck/commit/b3f8fa8c63df26ea2d12973f6d2f069192c72d26))
+
+
+### Features
+
+* add iframe.syncHostStyles prop for controlling style sync ([1496ae3](https://github.com/puckeditor/puck/commit/1496ae34e48e2b3e92d2fe8461f98a2615b345d2))
+* expose root to resolveData API ([caeacf9](https://github.com/puckeditor/puck/commit/caeacf979cced77c476066bff23b819eb5333fdb))
+* load CSS dynamically if missing ([3c1f5e4](https://github.com/puckeditor/puck/commit/3c1f5e4fbf487de57a0c60eb12bd4a30703b665e))
+* remove remix recipe from create-puck-app ([d2c2761](https://github.com/puckeditor/puck/commit/d2c2761ed2c32a19eb8f28f89efa5b0b65802536))
+
+
+
+
 ## [0.21.2](https://github.com/puckeditor/puck/compare/v0.21.1...v0.21.2) (2026-04-01)
 
 
