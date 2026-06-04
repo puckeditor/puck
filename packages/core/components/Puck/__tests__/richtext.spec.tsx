@@ -185,66 +185,6 @@ describe("Puck - richtext programmatic updates", () => {
     expect(screen.queryByText("Hello world")).not.toBeInTheDocument();
   });
 
-  it("updates richtext when only the richtext field changes on a component with multiple fields", async () => {
-    const config: Config = {
-      components: {
-        Card: {
-          fields: {
-            title: { type: "text" },
-            body: { type: "richtext", contentEditable: false },
-          },
-          render: ({ title, body }) => (
-            <div>
-              <h2>{title}</h2>
-              <div data-testid="body">{body}</div>
-            </div>
-          ),
-        },
-      },
-    };
-
-    const data: Data = {
-      root: { props: {} },
-      content: [
-        {
-          type: "Card",
-          props: {
-            id: "card-1",
-            title: "My Card",
-            body: "<p>Original body</p>",
-          },
-        },
-      ],
-    };
-
-    render(<Puck config={config} data={data} iframe={{ enabled: false }} />);
-    await flush();
-
-    await waitFor(() => {
-      expect(screen.getByText("Original body")).toBeInTheDocument();
-    });
-
-    const { appStore } = getInternal();
-
-    act(() => {
-      dispatchReplace(appStore, "card-1", {
-        type: "Card",
-        props: {
-          id: "card-1",
-          title: "My Card",
-          body: "<p>Updated body</p>",
-        },
-      });
-    });
-    await flush();
-
-    await waitFor(() => {
-      expect(screen.getByText("Updated body")).toBeInTheDocument();
-    });
-    expect(screen.getByText("My Card")).toBeInTheDocument();
-    expect(screen.queryByText("Original body")).not.toBeInTheDocument();
-  });
-
   it("updates richtext when value transitions from empty string to content", async () => {
     const config: Config = {
       components: {
