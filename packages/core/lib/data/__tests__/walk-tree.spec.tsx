@@ -376,7 +376,13 @@ describe("walk-tree", () => {
 
     // slotted-a-id is a child inside slotA of another-id.
     // Its own slots should still receive bare field names, not ".props.slotA".
-    expect(propNamesByParent["slotted-a-id"]?.sort()).toEqual(["slotA", "slotB"]);
-    expect(propNamesByParent["slotted-b-id"]?.sort()).toEqual(["slotA", "slotB"]);
+    expect(propNamesByParent["slotted-a-id"]?.sort()).toEqual([
+      "slotA",
+      "slotB",
+    ]);
+    expect(propNamesByParent["slotted-b-id"]?.sort()).toEqual([
+      "slotA",
+      "slotB",
+    ]);
   });
 });
