@@ -27,7 +27,6 @@ import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic"
 import { DragAxis } from "../../types";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
 import { Feedback } from "@dnd-kit/dom";
-import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
 import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
 import { getItem } from "../../lib/data/get-item";
@@ -294,24 +293,29 @@ export const DraggableComponent = ({
     })();
 
     const portalContainerRect = portalContainerEl?.getBoundingClientRect();
-    const portalScroll = portalContainerEl
-      ? getDeepScrollPosition(portalContainerEl)
-      : { x: 0, y: 0 };
-    const deepScrollPosition = targetIsFixed
-      ? { x: 0, y: 0 }
-      : getDeepScrollPosition(el);
 
+    // #913: The overlay is position:absolute inside the portal target, so it only
+    // moves with that target's own scroll — NOT with intermediate scroll containers
+    // (e.g. a DropZone with overflow:auto) sitting between the item and the portal
+    // target. The previous getDeepScrollPosition(el) summed every ancestor's scroll,
+    // which cancelled the item's getBoundingClientRect() movement and froze the
+    // overlay whenever such an inner container was scrolled.
     const scroll = targetIsFixed
       ? { x: 0, y: 0 }
+      : portalContainerEl
+      ? {
+          // Non-iframe: overlay is absolutely positioned inside portalContainerEl,
+          // so compensate for that container's own scroll only.
+          x: portalContainerEl.scrollLeft - (portalContainerRect?.left ?? 0),
+          y: portalContainerEl.scrollTop - (portalContainerRect?.top ?? 0),
+        }
       : {
-          x:
-            deepScrollPosition.x -
-            portalScroll.x -
-            (portalContainerRect?.left ?? 0),
-          y:
-            deepScrollPosition.y -
-            portalScroll.y -
-            (portalContainerRect?.top ?? 0),
+          // Portal target is a document <body> — the iframe's body in iframe mode,
+          // or the top document's body when there's no [data-puck-preview] ancestor.
+          // It's positioned against the ICB, so compensate for that document's own
+          // scroll only.
+          x: el.ownerDocument.defaultView?.scrollX ?? 0,
+          y: el.ownerDocument.defaultView?.scrollY ?? 0,
         };
 
     const style: CSSProperties = {
@@ -592,9 +596,16 @@ export const DraggableComponent = ({
     if (thisWasDragging) return onDragFinished();
   }, [thisWasDragging, onDragFinished]);
 
-  // PERFORMANCE: when visible, respond to scroll/resize + track layout shifts without a global rAF loop
+  // PERFORMANCE: when visible, respond to scroll/resize; only selected/dragging
+  // items also run a throttled rAF loop to track layout shifts (hover does not).
   useEffect(() => {
-    if (!dragFinished || !(isSelected || thisIsDragging)) return;
+    // #913: also re-sync on scroll while hovering, not only when selected/dragging,
+    // so a hovered component's overlay tracks inner-container scroll too.
+    if (
+      !dragFinished ||
+      !(isSelected || thisIsDragging || hover || indicativeHover)
+    )
+      return;
 
     const el = ref.current;
     if (!el) return;
@@ -639,14 +650,27 @@ export const DraggableComponent = ({
       frame = requestAnimationFrame(tick);
     };
 
-    frame = requestAnimationFrame(tick);
+    // #913 / perf: only selected or dragging items need the continuous rAF
+    // layout-shift tracker — they can be pushed around by content or animation
+    // changes. A merely-hovered item just needs the event-driven scroll/resize
+    // listeners above, so don't spin a per-frame loop while the mouse rests on it.
+    if (isSelected || thisIsDragging) {
+      frame = requestAnimationFrame(tick);
+    }
 
     return () => {
       doc.removeEventListener("scroll", onScroll, true);
       view.removeEventListener("resize", onResize);
       cancelAnimationFrame(frame);
     };
-  }, [dragFinished, isSelected, thisIsDragging, scheduleSync]);
+  }, [
+    dragFinished,
+    isSelected,
+    thisIsDragging,
+    hover,
+    indicativeHover,
+    scheduleSync,
+  ]);
 
   const syncActionsPosition = useCallback(
     (el: HTMLDivElement | null | undefined) => {
