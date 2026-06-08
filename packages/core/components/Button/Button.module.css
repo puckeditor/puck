@@ -15,8 +15,8 @@
   line-height: 1;
   text-align: center;
   text-decoration: none;
-  transition:
-    background-color var(--puck-duration-fast) var(--puck-ease-standard),
+  transition: background-color var(--puck-duration-fast)
+      var(--puck-ease-standard),
     color var(--puck-duration-fast) var(--puck-ease-standard);
   cursor: pointer;
   white-space: nowrap;

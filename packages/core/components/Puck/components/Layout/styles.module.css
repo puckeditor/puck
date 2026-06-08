@@ -202,7 +202,8 @@
 @media (min-width: 638px) {
   .PuckLayout-nav {
     border-top: 0;
-    border-right: var(--puck-border-width-regular) solid var(--puck-color-border);
+    border-right: var(--puck-border-width-regular) solid
+      var(--puck-color-border);
     box-sizing: border-box;
   }
 }

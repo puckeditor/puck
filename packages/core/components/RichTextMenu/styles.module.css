@@ -42,9 +42,11 @@
 }
 
 .RichTextMenu-group + .RichTextMenu-group {
-  border-left: var(--puck-border-width-regular) solid var(--puck-color-border-muted);
+  border-left: var(--puck-border-width-regular) solid
+    var(--puck-color-border-muted);
 }
 
 .RichTextMenu--inline .RichTextMenu-group + .RichTextMenu-group {
-  border-left: var(--puck-border-width-hairline) solid var(--puck-rich-text-menu-inline-separator); /* Match actionbar separator */
+  border-left: var(--puck-border-width-hairline) solid
+    var(--puck-rich-text-menu-inline-separator); /* Match actionbar separator */
 }

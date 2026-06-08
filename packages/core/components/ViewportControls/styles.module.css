@@ -24,7 +24,8 @@
 .ViewportControls--fullScreen .ViewportControls-toggleButton {
   align-items: center;
   background-color: var(--puck-viewport-toggle-bg);
-  border: var(--puck-border-width-regular) solid var(--puck-viewport-toggle-border);
+  border: var(--puck-border-width-regular) solid
+    var(--puck-viewport-toggle-border);
   border-radius: var(--puck-radius-pill);
   cursor: pointer;
   color: var(--puck-viewport-toggle-text);

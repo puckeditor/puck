@@ -24,12 +24,14 @@
 .DropZone--isAreaSelected,
 .DropZone--hoveringOverArea:not(.DropZone--isRootZone) {
   background: var(--puck-color-selection-bg);
-  outline: var(--puck-border-width-focus) dashed var(--puck-color-selection-border);
+  outline: var(--puck-border-width-focus) dashed
+    var(--puck-color-selection-border);
 }
 
 .DropZone:empty {
   background: var(--puck-color-selection-bg);
-  outline: var(--puck-border-width-focus) dashed var(--puck-color-selection-border);
+  outline: var(--puck-border-width-focus) dashed
+    var(--puck-color-selection-border);
 }
 
 .DropZone--isDestination {
@@ -53,7 +55,8 @@
 }
 
 [data-puck-dragging] .DropZone--isEnabled {
-  outline: var(--puck-border-width-focus) dashed var(--puck-drop-zone-enabled-outline);
+  outline: var(--puck-border-width-focus) dashed
+    var(--puck-drop-zone-enabled-outline);
 }
 
 .DropZone > *:not([data-puck-component]) {

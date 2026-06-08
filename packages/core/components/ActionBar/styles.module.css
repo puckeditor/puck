@@ -110,6 +110,8 @@
 .ActionBar-separator {
   background: var(--puck-action-bar-separator);
   margin-inline: var(--puck-space-1);
-  width: var(--puck-border-width-hairline); /* Fractional value required due to scaling */
+  width: var(
+    --puck-border-width-hairline
+  ); /* Fractional value required due to scaling */
   height: 100%;
 }

@@ -19,7 +19,8 @@
 .DraggableComponent-overlay {
   cursor: pointer;
   height: 100%;
-  outline: var(--puck-border-width-focus) var(--puck-color-selection-border) solid;
+  outline: var(--puck-border-width-focus) var(--puck-color-selection-border)
+    solid;
   outline-offset: calc(var(--puck-border-width-focus) * -1);
   width: 100%;
 }
@@ -48,7 +49,8 @@
   > .DraggableComponent-overlayWrapper
   > .DraggableComponent-overlay {
   background: var(--overlay-background);
-  outline: var(--puck-border-width-focus) var(--puck-color-selection-border) solid;
+  outline: var(--puck-border-width-focus) var(--puck-color-selection-border)
+    solid;
 }
 
 .DraggableComponent--isSelected
