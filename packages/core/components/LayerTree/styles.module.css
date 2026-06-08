@@ -63,8 +63,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .Layer:not(.Layer--isSelected) > .Layer-inner:hover {
-    border-color: var(--puck-color-interactive-soft);
-    background: var(--puck-color-interactive-subtle);
+    border-color: var(--puck-color-interactive-subtle);
+    background: var(--puck-color-interactive-soft);
     color: var(--puck-color-interactive);
     transition: none;
   }
@@ -75,7 +75,7 @@
 }
 
 .Layer--isSelected > .Layer-inner {
-  background: var(--puck-color-interactive-soft);
+  background: var(--puck-color-interactive-subtle);
 }
 
 .Layer--isSelected > .Layer-inner > .Layer-clickable > .Layer-chevron,

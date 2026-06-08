@@ -62,7 +62,7 @@
   .ExternalInput:not(.ExternalInput--readOnly) .ExternalInput-button:hover,
   .ExternalInput:not(.ExternalInput--readOnly)
     .ExternalInput-detachButton:hover {
-    background: var(--puck-color-interactive-subtle-hover);
+    background: var(--puck-color-interactive-soft-hover);
     transition: none;
   }
 
@@ -75,7 +75,7 @@
 .ExternalInput:not(.ExternalInput--readOnly) .ExternalInput-button:active,
 .ExternalInput:not(.ExternalInput--readOnly)
   .ExternalInput-detachButton:active {
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   transition: none;
 }
 
@@ -179,7 +179,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ExternalInputModal-tbody .ExternalInputModal-tr:hover {
-    background: var(--puck-color-interactive-subtle-hover);
+    background: var(--puck-color-interactive-soft-hover);
     color: var(--puck-color-interactive);
     cursor: pointer;
     position: relative;

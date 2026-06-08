@@ -12,6 +12,6 @@
 @media (hover: hover) and (pointer: fine) {
   .DragIcon:not(.DragIcon--disabled):hover {
     color: var(--puck-color-focus-ring);
-    background-color: var(--puck-color-interactive-subtle-hover);
+    background-color: var(--puck-color-interactive-soft-hover);
   }
 }

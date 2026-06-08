@@ -41,14 +41,14 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ComponentList-title:hover {
-    background-color: var(--puck-color-interactive-subtle);
+    background-color: var(--puck-color-interactive-soft);
     color: var(--puck-color-interactive);
     transition: none;
   }
 }
 
 .ComponentList-title:active {
-  background-color: var(--puck-color-interactive-soft);
+  background-color: var(--puck-color-interactive-subtle);
   transition: none;
 }
 

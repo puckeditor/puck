@@ -32,7 +32,7 @@
 }
 
 .IconButton:active {
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   transition: none;
 }
 

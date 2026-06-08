@@ -7,13 +7,13 @@
 
   display: flex;
   flex-direction: column;
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   border: var(--puck-border-width-regular) solid var(--puck-color-border);
   border-radius: var(--puck-radius-m);
 }
 
 .ArrayField--isDraggingFrom {
-  background-color: var(--puck-color-interactive-subtle);
+  background-color: var(--puck-color-interactive-soft);
   overflow: hidden;
 }
 
@@ -47,14 +47,14 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ArrayField:not(.ArrayField--isDraggingFrom) > .ArrayField-addButton:hover {
-    background: var(--puck-color-interactive-subtle-hover);
+    background: var(--puck-color-interactive-soft-hover);
     color: var(--puck-color-interactive);
     transition: none;
   }
 }
 
 .ArrayField:not(.ArrayField--isDraggingFrom) > .ArrayField-addButton:active {
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   color: var(--puck-color-interactive);
   transition: none;
 }
@@ -156,18 +156,18 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ArrayFieldItem-summary:hover {
-    background-color: var(--puck-color-interactive-subtle-hover);
+    background-color: var(--puck-color-interactive-soft-hover);
     transition: none;
   }
 }
 
 .ArrayFieldItem-summary:active {
-  background-color: var(--puck-color-interactive-subtle);
+  background-color: var(--puck-color-interactive-soft);
   transition: none;
 }
 
 .ArrayFieldItem--isExpanded > .ArrayFieldItem-summary {
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   color: var(--puck-color-interactive);
   font-weight: var(--puck-font-weight-semibold);
   transition: none;

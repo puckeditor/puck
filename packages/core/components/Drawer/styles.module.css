@@ -57,7 +57,7 @@
   .Drawer:not(.Drawer--isDraggingFrom)
     .DrawerItem:not(.DrawerItem--disabled)
     .DrawerItem-draggable:hover {
-    background-color: var(--puck-color-interactive-subtle-hover);
+    background-color: var(--puck-color-interactive-soft-hover);
     color: var(--puck-color-interactive);
     transition: none;
   }

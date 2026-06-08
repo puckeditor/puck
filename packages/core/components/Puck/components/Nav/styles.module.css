@@ -93,7 +93,7 @@
 }
 
 .NavItem--active > .NavItem-link {
-  background-color: var(--puck-color-interactive-soft);
+  background-color: var(--puck-color-interactive-subtle);
   color: var(--puck-color-interactive);
   font-weight: var(--puck-font-weight-semibold);
 }
@@ -114,7 +114,7 @@
 }
 
 .NavItem:not(.NavItem--active) > .NavItem-link:hover {
-  background-color: var(--puck-color-interactive-subtle);
+  background-color: var(--puck-color-interactive-soft);
   color: var(--puck-color-interactive);
 }
 

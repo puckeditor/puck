@@ -73,13 +73,13 @@
 
 @media (hover: hover) and (pointer: fine) {
   .Button--secondary:hover {
-    background-color: var(--puck-color-interactive-subtle);
+    background-color: var(--puck-color-interactive-soft);
     color: var(--puck-color-text);
   }
 }
 
 .Button--secondary:active {
-  background-color: var(--puck-color-interactive-subtle);
+  background-color: var(--puck-color-interactive-soft);
   color: var(--puck-color-text);
 }
 

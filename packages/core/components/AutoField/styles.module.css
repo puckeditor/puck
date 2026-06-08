@@ -67,7 +67,7 @@ select.Input-input:dir(rtl) {
     transition: none;
   }
   .Input:has(> select):hover .Input-input:not([disabled]) {
-    background-color: var(--puck-color-interactive-subtle-hover);
+    background-color: var(--puck-color-interactive-soft-hover);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a5a5a'><polygon points='0,0 100,0 50,50'/></svg>");
     border-color: var(--puck-color-text-muted);
     transition: none;
@@ -144,7 +144,7 @@ select.Input-input:dir(rtl) {
 
 @media (hover: hover) and (pointer: fine) {
   .Input-radioInner:hover {
-    background-color: var(--puck-color-interactive-subtle-hover);
+    background-color: var(--puck-color-interactive-soft-hover);
     transition: none;
   }
 }
@@ -156,7 +156,7 @@ select.Input-input:dir(rtl) {
 }
 
 .Input-radio .Input-radioInput:checked ~ .Input-radioInner {
-  background-color: var(--puck-color-interactive-subtle);
+  background-color: var(--puck-color-interactive-soft);
   color: var(--puck-color-interactive);
   font-weight: var(--puck-font-weight-medium);
 }

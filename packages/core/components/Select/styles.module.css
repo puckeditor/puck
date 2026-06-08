@@ -87,7 +87,7 @@
 }
 
 .SelectItem--isSelected {
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   color: var(--puck-color-interactive);
   font-weight: var(--puck-font-weight-medium);
 }
@@ -97,6 +97,6 @@
 }
 
 .SelectItem:hover {
-  background: var(--puck-color-interactive-subtle);
+  background: var(--puck-color-interactive-soft);
   color: var(--puck-color-interactive);
 }
