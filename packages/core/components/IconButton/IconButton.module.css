@@ -24,7 +24,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
-    background: var(--puck-color-border-muted);
+    background: var(--puck-color-interactive-neutral-hover);
     color: var(--puck-color-interactive);
     cursor: pointer;
     transition: none;

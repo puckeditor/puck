@@ -44,7 +44,7 @@
 
 .Select--hasOptions:not(.Select--disabled) .Select-button:hover,
 .Select--hasValue .Select-button {
-  background: var(--puck-color-border-muted);
+  background: var(--puck-color-interactive-neutral-hover);
   color: var(--puck-color-interactive);
 }
 

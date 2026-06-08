@@ -28,6 +28,7 @@ body {
     --puck-color-interactive-subtle: var(--puck-color-grey-03);
     --puck-color-interactive-soft: var(--puck-color-grey-03);
     --puck-color-interactive-soft-hover: var(--puck-color-grey-02);
+    --puck-color-interactive-neutral-hover: var(--puck-color-grey-03);
     --puck-color-surface: var(--puck-color-grey-01);
     --puck-color-surface-subtle: var(--puck-color-grey-01);
     --puck-color-surface-muted: var(--puck-color-grey-02);
