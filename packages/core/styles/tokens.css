@@ -35,7 +35,6 @@
     var(--puck-color-black) 75%,
     transparent
   );
-  --puck-color-danger: var(--puck-color-red-04);
 
   /*
    * Spacing
