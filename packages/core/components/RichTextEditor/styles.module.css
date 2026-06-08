@@ -99,7 +99,7 @@
 }
 
 .RichTextEditor--editor:focus-within {
-  border-color: var(--puck-color-text-muted);
+  border-color: var(--puck-color-border-hover);
   outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
   transition: none;
 }

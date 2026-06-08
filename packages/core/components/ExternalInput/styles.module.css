@@ -255,14 +255,14 @@
 }
 
 .ExternalInputModal-search:focus-within {
-  border-color: var(--puck-color-text-muted);
+  border-color: var(--puck-color-border-hover);
   outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
   transition: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ExternalInputModal-search:hover {
-    border-color: var(--puck-color-text-muted);
+    border-color: var(--puck-color-border-hover);
     transition: none;
   }
 }

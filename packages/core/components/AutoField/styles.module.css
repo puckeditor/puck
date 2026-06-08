@@ -63,19 +63,19 @@ select.Input-input:dir(rtl) {
 @media (hover: hover) and (pointer: fine) {
   .Input:has(> input):hover .Input-input:not([readonly]),
   .Input:has(> textarea):hover .Input-input:not([readonly]) {
-    border-color: var(--puck-color-text-muted);
+    border-color: var(--puck-color-border-hover);
     transition: none;
   }
   .Input:has(> select):hover .Input-input:not([disabled]) {
     background-color: var(--puck-color-interactive-soft-hover);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a5a5a'><polygon points='0,0 100,0 50,50'/></svg>");
-    border-color: var(--puck-color-text-muted);
+    border-color: var(--puck-color-border-hover);
     transition: none;
   }
 }
 
 .Input-input:focus {
-  border-color: var(--puck-color-text-muted);
+  border-color: var(--puck-color-border-hover);
   outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
   transition: none;
 }
