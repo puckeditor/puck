@@ -11,7 +11,7 @@
   border-top-left-radius: var(--puck-radius-m);
   border-top-right-radius: var(--puck-radius-m);
   padding: 6px 6px;
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(--puck-color-surface-subtle);
   position: relative;
   scrollbar-width: none;
   overflow-x: auto;

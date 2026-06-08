@@ -4,8 +4,8 @@
    */
 
   --puck-color-surface: var(--puck-color-white);
-  --puck-color-surface-muted: var(--puck-color-grey-12);
-  --puck-color-surface-subtle: var(--puck-color-grey-11);
+  --puck-color-surface-muted: var(--puck-color-grey-11);
+  --puck-color-surface-subtle: var(--puck-color-grey-12);
   --puck-color-border: var(--puck-color-grey-09);
   --puck-color-border-muted: var(--puck-color-grey-10);
   --puck-color-text: var(--puck-color-black);

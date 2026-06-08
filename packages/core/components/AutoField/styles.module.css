@@ -82,7 +82,7 @@ select.Input-input:dir(rtl) {
 
 .Input--readOnly > .Input-input,
 .Input--readOnly > select.Input-input {
-  background-color: var(--puck-color-surface-subtle);
+  background-color: var(--puck-color-surface-muted);
   border-color: var(--puck-color-border);
   color: var(--puck-color-text-secondary);
   cursor: default;
@@ -162,7 +162,7 @@ select.Input-input:dir(rtl) {
 }
 
 .Input--readOnly .Input-radioInput:checked ~ .Input-radioInner {
-  background-color: var(--puck-color-surface-subtle);
+  background-color: var(--puck-color-surface-muted);
   color: var(--puck-color-text-secondary);
 }
 

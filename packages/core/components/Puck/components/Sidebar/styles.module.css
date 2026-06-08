@@ -12,7 +12,7 @@
 }
 
 .Sidebar--left {
-  background: var(--puck-color-surface-muted);
+  background: var(--puck-color-surface-subtle);
   grid-area: left;
 }
 

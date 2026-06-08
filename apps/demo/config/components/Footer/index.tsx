@@ -78,7 +78,7 @@ const Footer = ({ children }: { children: ReactNode }) => {
           padding: 64,
           textAlign: "center",
           color: "var(--puck-color-text-muted)",
-          background: "var(--puck-color-surface-muted)",
+          background: "var(--puck-color-surface-subtle)",
         }}
       >
         Made by{" "}

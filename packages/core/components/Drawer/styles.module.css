@@ -36,7 +36,7 @@
 }
 
 .DrawerItem--disabled .DrawerItem-draggable {
-  background: var(--puck-color-surface-subtle);
+  background: var(--puck-color-surface-muted);
   color: var(--puck-color-text-muted);
   cursor: not-allowed; /** Move this out of inline styles */
 }

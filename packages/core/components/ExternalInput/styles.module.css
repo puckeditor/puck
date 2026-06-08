@@ -30,14 +30,14 @@
 }
 
 .ExternalInput--readOnly .ExternalInput-button {
-  background-color: var(--puck-color-surface-subtle);
+  background-color: var(--puck-color-surface-muted);
 }
 
 .ExternalInput-detachButton {
   border: var(--puck-border-width-regular) solid var(--puck-color-border);
   border-top-right-radius: var(--puck-radius-m);
   border-bottom-right-radius: var(--puck-radius-m);
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(--puck-color-surface-subtle);
   color: var(--puck-color-text-muted);
   display: flex;
   gap: var(--puck-space-2);
@@ -126,7 +126,7 @@
 }
 
 .ExternalInputModal-masthead {
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(--puck-color-surface-subtle);
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
   display: flex;
   flex-wrap: wrap;
@@ -269,7 +269,7 @@
 
 .ExternalInputModal-searchIcon {
   align-items: center;
-  background: var(--puck-color-surface-muted);
+  background: var(--puck-color-surface-subtle);
   border-bottom-left-radius: var(--puck-radius-m);
   border-top-left-radius: var(--puck-radius-m);
   border-inline-end: var(--puck-border-width-regular) solid
@@ -335,7 +335,7 @@
 }
 
 .ExternalInputModal-footerContainer {
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(--puck-color-surface-subtle);
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
   color: var(--puck-color-text-secondary);
   padding: var(--puck-space-4);

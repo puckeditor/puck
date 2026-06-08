@@ -21,7 +21,7 @@
 }
 
 .RichTextEditor :global(.rich-text code) {
-  background-color: var(--puck-color-surface-subtle);
+  background-color: var(--puck-color-surface-muted);
   padding: var(--puck-space-1) var(--puck-space-2);
   border-radius: var(--puck-radius-m);
 }
@@ -105,7 +105,7 @@
 }
 
 .RichTextEditor--editor.RichTextEditor--disabled {
-  background: var(--puck-color-surface-subtle);
+  background: var(--puck-color-surface-muted);
 }
 
 .RichTextEditor:not(:focus-within):not(.RichTextEditor--isActive)

@@ -50,7 +50,7 @@
     --puck-user-right-side-bar-width,
     var(--puck-side-bar-width)
   );
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(--puck-color-surface-subtle);
   display: grid;
   grid-template-areas: "header" "editor" "left" "right" "sidenav";
   grid-template-columns: var(--puck-frame-width);
@@ -193,7 +193,7 @@
 
 .PuckLayout-nav {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(--puck-color-surface-subtle);
   grid-area: sidenav;
   overflow: hidden;
   width: 100%;

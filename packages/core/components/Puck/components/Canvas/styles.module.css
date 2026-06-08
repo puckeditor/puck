@@ -1,5 +1,5 @@
 .PuckCanvas {
-  background: var(--puck-color-surface-subtle);
+  background: var(--puck-color-surface-muted);
   display: flex;
   grid-area: editor;
   flex-direction: column;
