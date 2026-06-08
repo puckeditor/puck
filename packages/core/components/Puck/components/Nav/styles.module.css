@@ -39,7 +39,7 @@
 .NavItem-link {
   text-align: center;
   align-items: center;
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   display: flex;
   gap: var(--puck-space-2);
   text-decoration: none;

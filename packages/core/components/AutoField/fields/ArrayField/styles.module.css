@@ -89,7 +89,8 @@
 .ArrayFieldItem--isExpanded {
   border-bottom: 0;
   outline-offset: 0px !important; /* Important helps to override Nextra docs */
-  outline: var(--puck-border-width-regular) solid var(--puck-array-field-expanded-outline) !important; /* Important helps to override Nextra docs */
+  outline: var(--puck-border-width-regular) solid
+    var(--puck-array-field-expanded-outline) !important; /* Important helps to override Nextra docs */
   z-index: 2;
 }
 
@@ -109,7 +110,7 @@
 
 .ArrayFieldItem-summary {
   background: var(--puck-color-surface);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -196,7 +197,7 @@
 }
 
 .ArrayFieldItem-actions {
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   display: flex;
   gap: var(--puck-space-1);
   opacity: 0;

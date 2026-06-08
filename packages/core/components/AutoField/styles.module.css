@@ -4,7 +4,7 @@
 
 .Input-label {
   align-items: center;
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   display: flex;
   padding-bottom: var(--puck-space-3);
   font-size: var(--puck-font-size-xxs);
@@ -84,7 +84,7 @@ select.Input-input:dir(rtl) {
 .Input--readOnly > select.Input-input {
   background-color: var(--puck-color-surface-subtle);
   border-color: var(--puck-color-border);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   cursor: default;
   opacity: 1;
   outline: 0;
@@ -127,7 +127,7 @@ select.Input-input:dir(rtl) {
 
 .Input-radioInner {
   background-color: var(--puck-color-surface);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   cursor: pointer;
   font-size: var(--puck-font-size-xxxs);
   padding: var(--puck-space-2) var(--puck-space-3);
@@ -151,7 +151,7 @@ select.Input-input:dir(rtl) {
 
 .Input--readOnly .Input-radioInner {
   background-color: var(--puck-color-surface);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   cursor: default;
 }
 
@@ -163,7 +163,7 @@ select.Input-input:dir(rtl) {
 
 .Input--readOnly .Input-radioInput:checked ~ .Input-radioInner {
   background-color: var(--puck-color-surface-subtle);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
 }
 
 .Input-radio .Input-radioInput {

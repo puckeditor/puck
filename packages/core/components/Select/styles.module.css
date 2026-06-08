@@ -75,7 +75,7 @@
   background: transparent;
   border-radius: var(--puck-radius-m);
   border: none;
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   cursor: pointer;
   display: flex;
   gap: var(--puck-space-2);

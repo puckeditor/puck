@@ -45,8 +45,8 @@
   justify-content: center;
   padding: var(--puck-space-2) var(--puck-space-3);
   position: relative;
-  transition:
-    background-color var(--puck-duration-fast) var(--puck-ease-standard),
+  transition: background-color var(--puck-duration-fast)
+      var(--puck-ease-standard),
     color var(--puck-duration-fast) var(--puck-ease-standard);
   margin-inline-start: -1px;
 }
@@ -159,7 +159,7 @@
 
 .ExternalInputModal-th {
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   font-weight: var(--puck-font-weight-medium);
   font-size: var(--puck-font-size-xxs);
   padding: var(--puck-space-4) var(--puck-space-5);
@@ -282,13 +282,13 @@
 }
 
 .ExternalInputModal-search:focus-within .ExternalInputModal-searchIcon {
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   transition: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ExternalInputModal-search:hover .ExternalInputModal-searchIcon {
-    color: var(--puck-color-text-strong);
+    color: var(--puck-color-text-secondary);
     transition: none;
   }
 }
@@ -337,7 +337,7 @@
 .ExternalInputModal-footerContainer {
   background-color: var(--puck-color-surface-muted);
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   padding: var(--puck-space-4);
 }
 
@@ -348,7 +348,7 @@
 }
 
 .ExternalInputModal-field {
-  color: var(--puck-color-text-strong);
+  color: var(--puck-color-text-secondary);
   margin: var(--puck-space-4);
   margin-bottom: var(--puck-space-3);
   display: block;

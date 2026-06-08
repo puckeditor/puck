@@ -20,7 +20,7 @@ body {
 @media (prefers-color-scheme: dark) {
   :root {
     --puck-color-text: var(--puck-color-grey-09);
-    --puck-color-text-strong: var(--puck-color-grey-08);
+    --puck-color-text-secondary: var(--puck-color-grey-08);
     --puck-color-text-inverse: var(--puck-color-grey-01);
     --puck-color-interactive: var(--puck-color-azure-05);
     --puck-color-interactive-hover: var(--puck-color-azure-07);
