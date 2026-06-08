@@ -118,7 +118,8 @@
   justify-content: space-between;
   font-size: var(--puck-font-size-xxs);
   list-style: none;
-  padding: var(--puck-space-3) 15px;
+  padding: var(--puck-space-3)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
   position: relative;
   overflow: hidden;
   transition: background-color var(--puck-duration-fast)
@@ -187,7 +188,8 @@
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
-  padding: var(--puck-space-4) 15px;
+  padding: var(--puck-space-4)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
 }
 
 .ArrayFieldItem-rhs {

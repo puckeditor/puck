@@ -33,7 +33,8 @@
   color: var(--puck-color-text);
   font-family: inherit;
   font-size: var(--puck-font-size-xs);
-  padding: var(--puck-space-3) 15px;
+  padding: var(--puck-space-3)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
   transition: border-color var(--puck-duration-fast) var(--puck-ease-standard);
   width: 100%;
   max-width: 100%;

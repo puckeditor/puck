@@ -277,7 +277,8 @@
   color: var(--puck-color-text-subtle);
   display: flex;
   justify-content: center;
-  padding: var(--puck-space-3) 15px;
+  padding: var(--puck-space-3)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
   transition: color var(--puck-duration-fast) var(--puck-ease-standard);
 }
 
@@ -309,7 +310,8 @@
   background: var(--puck-color-surface);
   font-family: inherit;
   font-size: var(--puck-font-size-xxs);
-  padding: var(--puck-space-3) 15px;
+  padding: var(--puck-space-3)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
   width: 100%;
 }
 

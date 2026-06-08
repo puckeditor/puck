@@ -74,7 +74,8 @@
 .RichTextEditor--editor :global(.rich-text:not(:has(.ProseMirror))),
 .RichTextEditor--editor :global(.rich-text .ProseMirror) {
   height: 100%;
-  padding: var(--puck-space-3) 15px;
+  padding: var(--puck-space-3)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
 }
 
 .RichTextEditor--editor :global(.rich-text ul),

@@ -14,5 +14,6 @@
   border: none;
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
-  padding: var(--puck-space-4) 15px;
+  padding: var(--puck-space-4)
+    calc(var(--puck-space-4) - var(--puck-border-width-regular));
 }
