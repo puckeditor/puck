@@ -17,7 +17,6 @@
  */
 
 .Puck {
-  --puck-space-px: var(--puck-space-4);
   font-family: var(--puck-font-family);
   overflow-x: hidden;
   visibility: visible !important;
