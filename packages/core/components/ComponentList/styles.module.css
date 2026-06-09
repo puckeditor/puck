@@ -26,9 +26,8 @@
   margin-bottom: 6px;
   padding: var(--puck-space-2);
   text-transform: uppercase;
-  transition: background-color var(--puck-duration-fast)
-      var(--puck-ease-standard),
-    color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
   gap: var(--puck-space-1);
   border-radius: var(--puck-radius-m);
   width: 100%;

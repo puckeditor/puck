@@ -35,7 +35,7 @@
   font-size: var(--puck-font-size-xs);
   padding: var(--puck-space-3)
     calc(var(--puck-space-4) - var(--puck-border-width-regular));
-  transition: border-color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: border-color var(--puck-duration-fast) var(--puck-ease-exit);
   width: 100%;
   max-width: 100%;
 }
@@ -133,8 +133,7 @@ select.Input-input:dir(rtl) {
   font-size: var(--puck-font-size-xxxs);
   padding: var(--puck-space-2) var(--puck-space-3);
   text-align: center;
-  transition: background-color var(--puck-duration-fast)
-    var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .Input-radio:has(:focus-visible) {

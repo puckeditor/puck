@@ -15,8 +15,7 @@
   font-weight: var(--puck-font-weight-medium);
   white-space: nowrap;
   text-overflow: ellipsis;
-  transition: background-color var(--puck-duration-fast)
-    var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
   position: relative;
   overflow: hidden;
   flex-grow: 1;
@@ -45,9 +44,8 @@
   justify-content: center;
   padding: var(--puck-space-2) var(--puck-space-3);
   position: relative;
-  transition: background-color var(--puck-duration-fast)
-      var(--puck-ease-standard),
-    color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
   margin-inline-start: -1px;
 }
 
@@ -251,7 +249,7 @@
   border-color: var(--puck-color-border);
   border-radius: var(--puck-radius-m);
   flex-grow: 1;
-  transition: border-color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: border-color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .ExternalInputModal-search:focus-within {
@@ -279,7 +277,7 @@
   justify-content: center;
   padding: var(--puck-space-3)
     calc(var(--puck-space-4) - var(--puck-border-width-regular));
-  transition: color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .ExternalInputModal-search:focus-within .ExternalInputModal-searchIcon {

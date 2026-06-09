@@ -75,7 +75,7 @@
   --puck-duration-fast: 50ms;
   --puck-duration-medium: 150ms;
   --puck-duration-slow: 250ms;
-  --puck-ease-standard: ease-in;
+  --puck-ease-exit: ease-in;
   --puck-ease-emphasized: ease-in-out;
   --puck-ease-entrance: ease-out;
 

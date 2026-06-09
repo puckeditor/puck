@@ -30,9 +30,8 @@
   font-size: var(--puck-font-size-xxs);
   justify-content: space-between;
   align-items: center;
-  transition: background-color var(--puck-duration-fast)
-      var(--puck-ease-standard),
-    color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .DrawerItem--disabled .DrawerItem-draggable {

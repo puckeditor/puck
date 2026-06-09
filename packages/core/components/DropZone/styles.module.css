@@ -18,7 +18,7 @@
 
 /* We use global data-puck-dragging to avoid re-rendering DropZone */
 [data-puck-entry]:not([data-puck-dragging]) .DropZone {
-  transition: min-height var(--puck-duration-medium) var(--puck-ease-standard);
+  transition: min-height var(--puck-duration-medium) var(--puck-ease-exit);
 }
 
 .DropZone--isAreaSelected,

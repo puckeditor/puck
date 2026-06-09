@@ -33,7 +33,7 @@
 .Layer-inner {
   border: var(--puck-border-width-regular) solid transparent;
   border-radius: var(--puck-radius-m);
-  transition: color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .Layer--containsZone > .Layer-inner {

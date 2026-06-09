@@ -46,7 +46,7 @@
 
 .OutlineListItem--clickable {
   cursor: pointer;
-  transition: color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .OutlineListItem--clickable:focus-visible {

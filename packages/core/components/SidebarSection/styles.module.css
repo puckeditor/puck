@@ -39,7 +39,7 @@
   font: inherit;
   flex-shrink: 0;
   padding: 0;
-  transition: color var(--puck-duration-fast) var(--puck-ease-standard);
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .SidebarSection-breadcrumbLabel:focus-visible {

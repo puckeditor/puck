@@ -29,8 +29,7 @@
   margin: 0;
   padding: 14px; /* Retain same height as other items */
   text-align: left;
-  transition: background-color var(--puck-duration-fast)
-    var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .ArrayField--hasItems > .ArrayField-addButton {
@@ -122,8 +121,7 @@
     calc(var(--puck-space-4) - var(--puck-border-width-regular));
   position: relative;
   overflow: hidden;
-  transition: background-color var(--puck-duration-fast)
-    var(--puck-ease-standard);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .ArrayFieldItem--noFields > .ArrayFieldItem-summary {

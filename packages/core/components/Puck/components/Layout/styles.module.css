@@ -58,7 +58,7 @@
   height: 100%;
   position: relative;
   transition: grid-template-rows var(--puck-duration-medium)
-    var(--puck-ease-standard);
+    var(--puck-ease-exit);
   z-index: 0;
   overflow: hidden;
 }
