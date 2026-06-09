@@ -1,6 +1,6 @@
 .DraggableComponent {
-  --puck-draggable-selected-outline: var(--puck-color-azure-07);
-  --overlay-background: var(--puck-color-selection-bg);
+  --puck-draggable-component-selected-outline: var(--puck-color-azure-07);
+  --puck-draggable-component-overlay-background: var(--puck-color-selection-bg);
 
   position: absolute;
   pointer-events: none;
@@ -48,7 +48,7 @@
 .DraggableComponent--hover
   > .DraggableComponent-overlayWrapper
   > .DraggableComponent-overlay {
-  background: var(--overlay-background);
+  background: var(--puck-draggable-component-overlay-background);
   outline: var(--puck-border-width-focus) var(--puck-color-selection-border)
     solid;
 }
@@ -56,7 +56,7 @@
 .DraggableComponent--isSelected
   > .DraggableComponent-overlayWrapper
   > .DraggableComponent-overlay {
-  outline-color: var(--puck-draggable-selected-outline);
+  outline-color: var(--puck-draggable-component-selected-outline);
 }
 
 /* Won't work in FF */

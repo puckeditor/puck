@@ -1,9 +1,9 @@
 .ViewportControls {
-  --puck-viewport-toggle-bg: var(--puck-color-grey-02);
-  --puck-viewport-toggle-border: var(--puck-color-grey-04);
-  --puck-viewport-toggle-text: var(--puck-color-grey-11);
-  --puck-viewport-toggle-hover-text: var(--puck-color-azure-07);
-  --puck-viewport-toggle-expanded-bg: var(--puck-color-grey-03);
+  --puck-viewports-control-toggle-bg: var(--puck-color-grey-02);
+  --puck-viewports-control-toggle-border: var(--puck-color-grey-04);
+  --puck-viewports-control-toggle-text: var(--puck-color-grey-11);
+  --puck-viewports-control-toggle-hover-text: var(--puck-color-azure-07);
+  --puck-viewports-control-toggle-expanded-bg: var(--puck-color-grey-03);
 
   position: relative;
 }
@@ -23,12 +23,12 @@
 
 .ViewportControls--fullScreen .ViewportControls-toggleButton {
   align-items: center;
-  background-color: var(--puck-viewport-toggle-bg);
+  background-color: var(--puck-viewports-control-toggle-bg);
   border: var(--puck-border-width-regular) solid
-    var(--puck-viewport-toggle-border);
+    var(--puck-viewports-control-toggle-border);
   border-radius: var(--puck-radius-pill);
   cursor: pointer;
-  color: var(--puck-viewport-toggle-text);
+  color: var(--puck-viewports-control-toggle-text);
   display: flex;
   justify-content: center;
   width: 42px;
@@ -37,13 +37,13 @@
 }
 
 .ViewportControls--fullScreen .ViewportControls-toggleButton:hover {
-  background-color: var(--puck-viewport-toggle-bg);
+  background-color: var(--puck-viewports-control-toggle-bg);
   border: var(--puck-border-width-regular) solid var(--puck-color-interactive);
-  color: var(--puck-viewport-toggle-hover-text);
+  color: var(--puck-viewports-control-toggle-hover-text);
 }
 
 .ViewportControls--isExpanded .ViewportControls-toggleButton {
-  background-color: var(--puck-viewport-toggle-expanded-bg);
+  background-color: var(--puck-viewports-control-toggle-expanded-bg);
 }
 
 .ViewportControls-actions {
