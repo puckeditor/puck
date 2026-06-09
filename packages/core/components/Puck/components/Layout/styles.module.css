@@ -84,12 +84,16 @@
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
   grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
+  transition: grid-template-rows var(--puck-duration-medium)
+    var(--puck-ease-exit);
 }
 
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
   grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
+  transition: grid-template-rows var(--puck-duration-medium)
+    var(--puck-ease-exit);
 }
 
 @media (min-width: 638px) {
