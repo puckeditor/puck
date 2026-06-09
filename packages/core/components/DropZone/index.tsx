@@ -515,7 +515,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
         style={
           {
             ...style,
-            "--min-empty-height": minEmptyHeight,
+            "--puck-slot-min-empty-height": minEmptyHeight,
             backgroundColor: RENDER_DEBUG
               ? getRandomColor()
               : style?.backgroundColor,

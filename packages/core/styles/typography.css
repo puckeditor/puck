@@ -56,42 +56,42 @@
   /* Descriptive line heights
       ========================================================================= */
 
-  --line-height-reset: 1;
-  --line-height-xs: calc(
-    var(--space-m-unitless) / var(--puck-font-size-m-unitless)
+  --puck-line-height-reset: 1;
+  --puck-line-height-xs: calc(
+    var(--puck-space-m-unitless) / var(--puck-font-size-m-unitless)
   );
-  --line-height-s: calc(
-    var(--space-m-unitless) / var(--puck-font-size-s-unitless)
+  --puck-line-height-s: calc(
+    var(--puck-space-m-unitless) / var(--puck-font-size-s-unitless)
   );
-  --line-height-m: calc(
-    var(--space-m-unitless) / var(--puck-font-size-xs-unitless)
+  --puck-line-height-m: calc(
+    var(--puck-space-m-unitless) / var(--puck-font-size-xs-unitless)
   );
-  --line-height-l: calc(
-    var(--space-m-unitless) / var(--puck-font-size-xxs-unitless)
+  --puck-line-height-l: calc(
+    var(--puck-space-m-unitless) / var(--puck-font-size-xxs-unitless)
   );
-  --line-height-xl: calc(
-    var(--space-m-unitless) / var(--puck-font-size-scale-base-unitless)
+  --puck-line-height-xl: calc(
+    var(--puck-space-m-unitless) / var(--puck-font-size-scale-base-unitless)
   );
 
   /* Functional line heights
       ========================================================================= */
 
-  --line-height-base: var(--line-height-m);
+  --puck-line-height-base: var(--puck-line-height-m);
 
   /* Font families
   ======================================================================== */
 
-  --fallback-font-stack: -apple-system, BlinkMacSystemFont, Segoe UI,
+  --puck-fallback-font-stack: -apple-system, BlinkMacSystemFont, Segoe UI,
     Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
     Segoe UI Symbol;
 
-  --puck-font-family: Inter, var(--fallback-font-stack);
+  --puck-font-family: Inter, var(--puck-fallback-font-stack);
   --puck-font-family-monospaced: ui-monospace, "Cascadia Code",
     "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
 }
 
 @supports (font-variation-settings: normal) {
   :root {
-    --puck-font-family: InterVariable, var(--fallback-font-stack);
+    --puck-font-family: InterVariable, var(--puck-fallback-font-stack);
   }
 }

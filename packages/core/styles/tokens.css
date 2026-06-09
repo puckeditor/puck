@@ -103,8 +103,8 @@
    * Functional variables
    */
 
-  --space-m-unitless: 24;
+  --puck-space-m-unitless: 24;
   --puck-user-left-side-bar-width: var(--puck-side-bar-width);
   --puck-user-right-side-bar-width: var(--puck-side-bar-width);
-  --min-empty-height: 128px;
+  --puck-slot-min-empty-height: 128px;
 }

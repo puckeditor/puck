@@ -3,7 +3,7 @@
 
   position: relative;
   height: 100%;
-  min-height: var(--min-empty-height);
+  min-height: var(--puck-slot-min-empty-height);
   outline-offset: calc(var(--puck-border-width-focus) * -1);
   width: 100%;
 }
@@ -13,7 +13,7 @@
 }
 
 .DropZone:empty {
-  min-height: var(--min-empty-height);
+  min-height: var(--puck-slot-min-empty-height);
 }
 
 /* We use global data-puck-dragging to avoid re-rendering DropZone */
