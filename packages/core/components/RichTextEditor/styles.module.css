@@ -105,8 +105,21 @@
   transition: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .RichTextEditor--editor:hover:not(.RichTextEditor--disabled) {
+    border-color: var(--puck-color-border-hover);
+    transition: none;
+  }
+}
+
 .RichTextEditor--editor.RichTextEditor--disabled {
   background: var(--puck-color-surface-muted);
+}
+
+.RichTextEditor--editor.RichTextEditor--disabled
+  :global(.ProseMirror[contenteditable="false"]) {
+  /* Reset cursor when disabled for consistency with other inputs */
+  cursor: default;
 }
 
 .RichTextEditor:not(:focus-within):not(.RichTextEditor--isActive)
