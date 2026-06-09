@@ -77,7 +77,7 @@
   --puck-duration-slow: 250ms;
   --puck-ease-standard: ease-in;
   --puck-ease-emphasized: ease-in-out;
-  --puck-ease-exit: ease-out;
+  --puck-ease-entrance: ease-out;
 
   /*
    * Typography

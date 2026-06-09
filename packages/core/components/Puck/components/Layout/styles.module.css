@@ -85,7 +85,7 @@
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
   grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
   transition: grid-template-rows var(--puck-duration-medium)
-    var(--puck-ease-exit);
+    var(--puck-ease-entrance);
 }
 
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
@@ -93,7 +93,7 @@
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
   grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
   transition: grid-template-rows var(--puck-duration-medium)
-    var(--puck-ease-exit);
+    var(--puck-ease-entrance);
 }
 
 @media (min-width: 638px) {
