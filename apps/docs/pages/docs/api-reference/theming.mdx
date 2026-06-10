@@ -122,7 +122,57 @@ CSS properties for theming the default Puck user interface.
 
 Component-level tokens override global tokens for specific components. Set them on `:root` or any ancestor of the Puck editor. If unset, the global token applies.
 
-### IconButton
+### Button
+
+Shared across variants:
+
+| Token                  | Default                |
+| ---------------------- | ---------------------- |
+| `--puck-button-radius` | `var(--puck-radius-m)` |
+
+#### Medium size (`--puck-button-medium-*`)
+
+| Token                              | Default                                                        |
+| ---------------------------------- | -------------------------------------------------------------- |
+| `--puck-button-medium-space-y`     | `calc(var(--puck-space-2) - var(--puck-border-width-regular))` |
+| `--puck-button-medium-space-x`     | `20px`                                                         |
+| `--puck-button-medium-font-weight` | `var(--puck-font-weight-regular)`                              |
+| `--puck-button-medium-font-size`   | `var(--puck-font-size-xxs)`                                    |
+
+#### Large size (`--puck-button-large-*`)
+
+| Token                             | Default                                                        |
+| --------------------------------- | -------------------------------------------------------------- |
+| `--puck-button-large-space-y`     | `calc(var(--puck-space-3) - var(--puck-border-width-regular))` |
+| `--puck-button-large-space-x`     | `20px`                                                         |
+| `--puck-button-large-font-weight` | `var(--puck-font-weight-regular)`                              |
+| `--puck-button-large-font-size`   | `var(--puck-font-size-xxs)`                                    |
+
+#### Primary variant (`--puck-button-primary-*`)
+
+| Token                                       | Default                                |
+| ------------------------------------------- | -------------------------------------- |
+| `--puck-button-primary-color-bg`            | `var(--puck-color-interactive)`        |
+| `--puck-button-primary-color-bg-hover`      | `var(--puck-color-interactive-hover)`  |
+| `--puck-button-primary-color-bg-active`     | `var(--puck-color-interactive-active)` |
+| `--puck-button-primary-color-text`          | `var(--puck-color-text-inverse)`       |
+| `--puck-button-primary-color-border`        | `transparent`                          |
+| `--puck-button-primary-color-disabled-bg`   | `var(--puck-color-disabled-bg)`        |
+| `--puck-button-primary-color-disabled-text` | `var(--puck-color-disabled-text)`      |
+
+#### Secondary variant (`--puck-button-secondary-*`)
+
+| Token                                         | Default                                          |
+| --------------------------------------------- | ------------------------------------------------ |
+| `--puck-button-secondary-color-bg`            | `transparent`                                    |
+| `--puck-button-secondary-color-bg-hover`      | `var(--puck-color-interactive-soft)`             |
+| `--puck-button-secondary-color-bg-active`     | `var(--puck-color-interactive-soft)`             |
+| `--puck-button-secondary-color-text`          | `currentColor`                                   |
+| `--puck-button-secondary-color-border`        | `currentColor`                                   |
+| `--puck-button-secondary-color-disabled-bg`   | `var(--puck-button-default-color-disabled-bg)`   |
+| `--puck-button-secondary-color-disabled-text` | `var(--puck-button-default-color-disabled-text)` |
+
+### Icon Button
 
 | Token                                    | Default                                       |
 | ---------------------------------------- | --------------------------------------------- |
