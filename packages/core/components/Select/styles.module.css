@@ -1,29 +1,11 @@
 .Select {
-  --puck-select-action-bar-active: var(--puck-color-azure-07);
-
   position: relative;
   z-index: 1;
 }
 
-.Select-button {
+.Select-buttonInner {
   align-items: center;
-  background: transparent;
-  border: none;
-  border-radius: var(--puck-radius-m);
   display: flex;
-  justify-content: center;
-  gap: 0px;
-  height: 100%;
-  padding: var(--puck-space-1);
-  padding-right: 2px;
-}
-
-.Select--hasOptions .Select-button {
-  color: currentColor;
-}
-
-.Select--hasOptions:not(.Select--disabled) .Select-button {
-  cursor: pointer;
 }
 
 .Select-buttonIcon {
@@ -40,24 +22,6 @@
 .Select--actionBar .Select-buttonIcon :global(.lucide) {
   height: var(--puck-icon-size-s);
   width: var(--puck-icon-size-s);
-}
-
-.Select--hasOptions:not(.Select--disabled) .Select-button:hover,
-.Select--hasValue .Select-button {
-  background: var(--puck-color-interactive-neutral-hover);
-  color: var(--puck-color-interactive);
-}
-
-.Select--disabled .Select-button {
-  color: var(--puck-color-text-subtle);
-}
-
-.Select--actionBar {
-  &.Select--hasOptions .Select-button:hover,
-  &.Select--hasValue .Select-button {
-    background: none;
-    color: var(--puck-select-action-bar-active);
-  }
 }
 
 .Select-items {
