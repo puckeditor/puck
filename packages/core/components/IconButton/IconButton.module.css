@@ -1,19 +1,22 @@
 .IconButton {
   align-items: center;
-  background: transparent;
+  background: var(--puck-icon-button-color-bg, transparent);
   border: none;
-  border-radius: var(--puck-radius-m);
-  color: currentColor;
+  border-radius: var(--puck-icon-button-radius, var(--puck-radius-m));
+  color: var(--puck-icon-button-color-icon, currentColor);
   display: flex;
   font-family: var(--puck-font-family);
   justify-content: center;
-  padding: var(--puck-space-1);
+  padding: var(--puck-icon-button-space, var(--puck-space-1));
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
     color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .IconButton--active {
-  color: var(--puck-color-interactive);
+  color: var(
+    --puck-icon-button-color-icon-active,
+    var(--puck-color-interactive)
+  );
 }
 
 .IconButton:focus-visible {
@@ -23,18 +26,30 @@
 
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
-    background: var(--puck-color-interactive-neutral-hover);
-    color: var(--puck-color-interactive);
+    background: var(
+      --puck-icon-button-color-bg-hover,
+      var(--puck-color-interactive-neutral-hover)
+    );
+    color: var(
+      --puck-icon-button-color-icon-hover,
+      var(--puck-color-interactive)
+    );
     cursor: pointer;
     transition: none;
   }
 }
 
 .IconButton:active {
-  background: var(--puck-color-interactive-soft);
+  background: var(
+    --puck-icon-button-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
   transition: none;
 }
 
 .IconButton--disabled {
-  color: var(--puck-color-text-subtle);
+  color: var(
+    --puck-icon-button-color-icon-disabled,
+    var(--puck-color-text-subtle)
+  );
 }

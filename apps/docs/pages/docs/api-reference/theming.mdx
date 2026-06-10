@@ -118,6 +118,24 @@ CSS properties for theming the default Puck user interface.
 | `--puck-user-left-side-bar-width`  | `var(--puck-side-bar-width)` |
 | `--puck-user-right-side-bar-width` | `var(--puck-side-bar-width)` |
 
+## Component Tokens
+
+Component-level tokens override global tokens for specific components. Set them on `:root` or any ancestor of the Puck editor. If unset, the global token applies.
+
+### IconButton
+
+| Token                                    | Default                                       |
+| ---------------------------------------- | --------------------------------------------- |
+| `--puck-icon-button-radius`              | `var(--puck-radius-m)`                        |
+| `--puck-icon-button-space`               | `var(--puck-space-1)`                         |
+| `--puck-icon-button-color-bg`            | `transparent`                                 |
+| `--puck-icon-button-color-bg-hover`      | `var(--puck-color-interactive-neutral-hover)` |
+| `--puck-icon-button-color-bg-active`     | `var(--puck-color-interactive-soft)`          |
+| `--puck-icon-button-color-icon`          | `currentColor`                                |
+| `--puck-icon-button-color-icon-hover`    | `var(--puck-color-interactive)`               |
+| `--puck-icon-button-color-icon-active`   | `var(--puck-color-interactive)`               |
+| `--puck-icon-button-color-icon-disabled` | `var(--puck-color-text-subtle)`               |
+
 ## Examples
 
 ### Brand Colors
