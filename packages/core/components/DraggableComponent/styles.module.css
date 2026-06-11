@@ -88,3 +88,8 @@
   transform-origin: right top;
   min-height: 36px;
 }
+
+.DraggableComponent-actionsAction {
+  height: var(--puck-action-bar-action-size, var(--puck-icon-size-s));
+  width: var(--puck-action-bar-action-size, var(--puck-icon-size-s));
+}

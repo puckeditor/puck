@@ -800,12 +800,12 @@ export const DraggableComponent = ({
 
                   {permissions.duplicate && (
                     <ActionBar.Action onClick={onDuplicate} label="Duplicate">
-                      <Copy size={16} />
+                      <Copy className={getClassName("actionsAction")} />
                     </ActionBar.Action>
                   )}
                   {permissions.delete && (
                     <ActionBar.Action onClick={onDelete} label="Delete">
-                      <Trash size={16} />
+                      <Trash className={getClassName("actionsAction")} />
                     </ActionBar.Action>
                   )}
                 </CustomActionBar>

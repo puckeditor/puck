@@ -20,8 +20,8 @@
 }
 
 .Select--actionBar .Select-buttonIcon :global(.lucide) {
-  height: var(--puck-icon-size-s);
-  width: var(--puck-icon-size-s);
+  height: var(--puck-action-bar-action-size, var(--puck-icon-size-s));
+  width: var(--puck-action-bar-action-size, var(--puck-icon-size-s));
 }
 
 .Select-items {
