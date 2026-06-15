@@ -58,8 +58,6 @@ export function useSyncedEditor({
     onUpdate: ({ editor }) => {
       // This can trigger during undo/redo history loads
       if (syncingRef.current || !isFocused) {
-        appStoreApi.getState().setUi({ field: { focus: name } });
-
         return;
       }
 
