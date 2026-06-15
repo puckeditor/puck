@@ -3,7 +3,7 @@ import type { Extensions, JSONContent, Editor } from "@tiptap/react";
 import { useEffect, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import { UiState } from "../../../types";
-import { useAppStore, useAppStoreApi } from "../../../store";
+import { useAppStoreApi } from "../../../store";
 
 export function useSyncedEditor({
   content,
@@ -33,7 +33,6 @@ export function useSyncedEditor({
   const lastSyncedRef = useRef("");
   const editTimer = useRef<NodeJS.Timeout>(null);
   const isPending = !!editTimer.current;
-  const isFocused = useAppStore((s) => s.state.ui.field.focus === name);
 
   const resetTimer = (clearOn: string) => {
     if (editTimer.current) {
@@ -56,6 +55,8 @@ export function useSyncedEditor({
     immediatelyRender: false,
     parseOptions: { preserveWhitespace: "full" },
     onUpdate: ({ editor }) => {
+      const isFocused = appStoreApi.getState().state.ui.field.focus === name;
+
       // This can trigger during undo/redo history loads
       if (syncingRef.current || !isFocused) {
         return;
