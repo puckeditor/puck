@@ -20,14 +20,17 @@ CSS properties for theming the default Puck user interface.
 | `--puck-color-surface`                   | `var(--puck-color-white)`                                         |
 | `--puck-color-surface-muted`             | `var(--puck-color-grey-11)`                                       |
 | `--puck-color-surface-subtle`            | `var(--puck-color-grey-12)`                                       |
+| `--puck-color-surface-inverse`           | `var(--puck-color-grey-01)`                                       |
 | `--puck-color-border`                    | `var(--puck-color-grey-09)`                                       |
 | `--puck-color-border-hover`              | `var(--puck-color-grey-05)`                                       |
 | `--puck-color-border-muted`              | `var(--puck-color-grey-10)`                                       |
+| `--puck-color-border-inverse`            | `var(--puck-color-grey-05)`                                       |
 | `--puck-color-text`                      | `var(--puck-color-black)`                                         |
 | `--puck-color-text-secondary`            | `var(--puck-color-grey-04)`                                       |
 | `--puck-color-text-muted`                | `var(--puck-color-grey-05)`                                       |
 | `--puck-color-text-subtle`               | `var(--puck-color-grey-07)`                                       |
 | `--puck-color-text-inverse`              | `var(--puck-color-white)`                                         |
+| `--puck-color-text-inverse-opacity`      | `0.75`                                                            |
 | `--puck-color-interactive`               | `var(--puck-color-azure-04)`                                      |
 | `--puck-color-interactive-hover`         | `var(--puck-color-azure-03)`                                      |
 | `--puck-color-interactive-active`        | `var(--puck-color-azure-02)`                                      |
@@ -122,7 +125,7 @@ CSS properties for theming the default Puck user interface.
 
 Component-level tokens override global tokens for specific components. Set them on `:root` or any ancestor of the Puck editor. If unset, the global token applies.
 
-### ActionBar
+### Action bar
 
 | Token                                      | Default                                  |
 | ------------------------------------------ | ---------------------------------------- |
@@ -181,15 +184,68 @@ Shared across variants:
 
 #### Secondary variant (`--puck-button-secondary-*`)
 
-| Token                                         | Default                                          |
-| --------------------------------------------- | ------------------------------------------------ |
-| `--puck-button-secondary-color-bg`            | `transparent`                                    |
-| `--puck-button-secondary-color-bg-hover`      | `var(--puck-color-interactive-soft)`             |
-| `--puck-button-secondary-color-bg-active`     | `var(--puck-color-interactive-soft)`             |
-| `--puck-button-secondary-color-text`          | `currentColor`                                   |
-| `--puck-button-secondary-color-border`        | `currentColor`                                   |
-| `--puck-button-secondary-color-disabled-bg`   | `var(--puck-button-default-color-disabled-bg)`   |
-| `--puck-button-secondary-color-disabled-text` | `var(--puck-button-default-color-disabled-text)` |
+| Token                                         | Default                              |
+| --------------------------------------------- | ------------------------------------ |
+| `--puck-button-secondary-color-bg`            | `transparent`                        |
+| `--puck-button-secondary-color-bg-hover`      | `var(--puck-color-interactive-soft)` |
+| `--puck-button-secondary-color-bg-active`     | `var(--puck-color-interactive-soft)` |
+| `--puck-button-secondary-color-text`          | `currentColor`                       |
+| `--puck-button-secondary-color-border`        | `currentColor`                       |
+| `--puck-button-secondary-color-disabled-bg`   | `var(--puck-color-disabled-bg)`      |
+| `--puck-button-secondary-color-disabled-text` | `var(--puck-color-disabled-text)`    |
+
+### Fields
+
+| Token                                | Default                                                        |
+| ------------------------------------ | -------------------------------------------------------------- |
+| `--puck-field-color-surface`         | `var(--puck-color-surface)`                                    |
+| `--puck-field-color-bg`              | `var(--puck-color-surface)`                                    |
+| `--puck-field-color-bg-hover`        | `var(--puck-color-interactive-soft-hover)`                     |
+| `--puck-field-color-bg-active`       | `var(--puck-color-interactive-soft)`                           |
+| `--puck-field-color-text`            | `var(--puck-color-text)`                                       |
+| `--puck-field-color-text-hover`      | `var(--puck-field-color-text)`                                 |
+| `--puck-field-color-text-active`     | `var(--puck-color-interactive)`                                |
+| `--puck-field-color-border`          | `var(--puck-color-border)`                                     |
+| `--puck-field-color-border-hover`    | `var(--puck-color-border-hover)`                               |
+| `--puck-field-color-border-focus`    | `var(--puck-color-focus-ring)`                                 |
+| `--puck-field-color-border-drag`     | `var(--puck-color-selection-border)`                           |
+| `--puck-field-color-disabled-bg`     | `var(--puck-color-surface-muted)`                              |
+| `--puck-field-color-disabled-border` | `var(--puck-color-border)`                                     |
+| `--puck-field-color-disabled-text`   | `var(--puck-color-text-secondary)`                             |
+| `--puck-field-border-width`          | `var(--puck-border-width-regular)`                             |
+| `--puck-field-radius`                | `var(--puck-radius-m)`                                         |
+| `--puck-field-font-size`             | `var(--puck-font-size-xxs)`                                    |
+| `--puck-field-space-x`               | `calc(var(--puck-space-4) - var(--puck-border-width-regular))` |
+| `--puck-field-space-y`               | `var(--puck-space-3)`                                          |
+| `--puck-field-space-surface-x`       | `calc(var(--puck-space-4) - var(--puck-border-width-regular))` |
+| `--puck-field-space-surface-y`       | `var(--puck-space-4)`                                          |
+| `--puck-field-label-color`           | `var(--puck-color-text-secondary)`                             |
+| `--puck-field-label-space-y`         | `var(--puck-space-3)`                                          |
+| `--puck-field-label-font-size`       | `var(--puck-font-size-xxs)`                                    |
+| `--puck-field-label-font-weight`     | `var(--puck-font-weight-semibold)`                             |
+| `--puck-field-label-icon-color`      | `var(--puck-color-text-subtle)`                                |
+
+#### Array
+
+| Token                               | Default                         |
+| ----------------------------------- | ------------------------------- |
+| `--puck-field-array-add-icon-color` | `var(--puck-color-interactive)` |
+
+#### Rich Text
+
+| Token                                        | Default                            |
+| -------------------------------------------- | ---------------------------------- |
+| `--puck-field-richtext-menu-color-bg`        | `var(--puck-color-surface-subtle)` |
+| `--puck-field-richtext-menu-color-separator` | `var(--puck-color-border-muted)`   |
+| `--puck-field-richtext-menu-space-x`         | `6px`                              |
+| `--puck-field-richtext-menu-space-y`         | `6px`                              |
+
+#### External
+
+| Token                                     | Default                            |
+| ----------------------------------------- | ---------------------------------- |
+| `--puck-field-external-detach-color-bg`   | `var(--puck-color-surface-subtle)` |
+| `--puck-field-external-detach-color-text` | `var(--puck-color-text-muted)`     |
 
 ### Icon Button
 

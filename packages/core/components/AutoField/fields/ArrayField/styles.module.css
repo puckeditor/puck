@@ -3,26 +3,44 @@
  */
 
 .ArrayField {
-  --puck-array-field-expanded-outline: var(--puck-color-azure-07);
+  --_puck-field-array-border-color: var(
+    --puck-field-color-border,
+    var(--puck-color-border)
+  );
+  --_puck-field-array-border-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
+  --_puck-field-array-radius: var(--puck-field-radius, var(--puck-radius-m));
+  --_puck-field-array-radius-inner: calc(
+    var(--_puck-field-array-radius) - var(--_puck-field-array-border-width)
+  );
 
   display: flex;
   flex-direction: column;
-  background: var(--puck-color-interactive-soft);
-  border: var(--puck-border-width-regular) solid var(--puck-color-border);
-  border-radius: var(--puck-radius-m);
+  background: var(
+    --puck-field-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
+  border: var(--_puck-field-array-border-width) solid
+    var(--_puck-field-array-border-color);
+  border-radius: var(--_puck-field-array-radius);
 }
 
 .ArrayField--isDraggingFrom {
-  background-color: var(--puck-color-interactive-soft);
+  background-color: var(
+    --puck-field-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
   overflow: hidden;
 }
 
 .ArrayField-addButton {
-  background-color: var(--puck-color-surface);
+  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
   border: none;
-  border-radius: var(--puck-radius-s);
+  border-radius: var(--_puck-field-array-radius-inner);
   display: flex;
-  color: var(--puck-color-focus-ring);
+  color: var(--puck-field-array-add-icon-color, var(--puck-color-interactive));
   justify-content: center;
   cursor: pointer;
   width: 100%;
@@ -33,7 +51,8 @@
 }
 
 .ArrayField--hasItems > .ArrayField-addButton {
-  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-top: var(--_puck-field-array-border-width) solid
+    var(--_puck-field-array-border-color);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
@@ -46,15 +65,23 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ArrayField:not(.ArrayField--isDraggingFrom) > .ArrayField-addButton:hover {
-    background: var(--puck-color-interactive-soft-hover);
-    color: var(--puck-color-interactive);
+    background: var(
+      --puck-field-color-bg-hover,
+      var(--puck-color-interactive-soft-hover)
+    );
+    color: var(
+      --puck-field-color-text-hover,
+      var(--puck-field-color-text, var(--puck-color-text))
+    );
     transition: none;
   }
 }
 
 .ArrayField:not(.ArrayField--isDraggingFrom) > .ArrayField-addButton:active {
-  background: var(--puck-color-interactive-soft);
-  color: var(--puck-color-interactive);
+  background: var(
+    --puck-field-color-bg-hover,
+    var(--puck-color-interactive-soft-hover)
+  );
   transition: none;
 }
 
@@ -67,14 +94,12 @@
  */
 
 .ArrayFieldItem {
-  border-top-left-radius: var(--puck-radius-s);
-  border-top-right-radius: var(--puck-radius-s);
   display: block;
   position: relative;
-}
-
-.ArrayFieldItem {
-  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-top-left-radius: var(--_puck-field-array-radius-inner);
+  border-top-right-radius: var(--_puck-field-array-radius-inner);
+  border-top: var(--_puck-field-array-border-width) solid
+    var(--_puck-field-array-border-color);
 }
 
 .ArrayFieldItem--isDragging {
@@ -88,18 +113,19 @@
 .ArrayFieldItem--isExpanded {
   border-bottom: 0;
   outline-offset: 0px !important; /* Important helps to override Nextra docs */
-  outline: var(--puck-border-width-regular) solid
-    var(--puck-array-field-expanded-outline) !important; /* Important helps to override Nextra docs */
+  outline: var(--_puck-field-array-border-width) solid
+    var(--puck-field-color-border-focus, var(--puck-color-focus-ring)) !important; /* Important helps to override Nextra docs */
   z-index: 2;
 }
 
 .ArrayFieldItem--isDragging {
-  outline: var(--puck-border-width-focus) var(--puck-color-selection-border)
+  outline: var(--puck-border-width-focus)
+    var(--puck-field-color-border-drag, var(--puck-color-selection-border))
     solid !important;
 }
 
 .ArrayFieldItem--isDragging .ArrayFieldItem-summary:active {
-  background-color: var(--puck-color-surface);
+  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
 }
 
 .ArrayFieldItem + .ArrayFieldItem {
@@ -108,17 +134,26 @@
 }
 
 .ArrayFieldItem-summary {
-  background: var(--puck-color-surface);
-  color: var(--puck-color-text-secondary);
+  --_puck-drag-icon-color: var(--puck-field-color-text, var(--puck-color-text));
+  --_puck-drag-icon-color-hover: var(
+    --puck-field-color-text-hover,
+    var(--puck-field-color-text, var(--puck-color-text))
+  );
+
+  background: var(--puck-field-color-bg, var(--puck-color-surface));
+  color: var(--puck-field-color-text, var(--puck-color-text));
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 2px;
   justify-content: space-between;
-  font-size: var(--puck-font-size-xxs);
+  font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
   list-style: none;
-  padding: var(--puck-space-3)
-    calc(var(--puck-space-4) - var(--puck-border-width-regular));
+  padding: var(--puck-field-space-y, var(--puck-space-3))
+    var(
+      --puck-field-space-x,
+      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+    );
   position: relative;
   overflow: hidden;
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
@@ -129,23 +164,23 @@
 }
 
 .ArrayFieldItem:first-of-type > .ArrayFieldItem-summary {
-  border-top-left-radius: var(--puck-radius-s);
-  border-top-right-radius: var(--puck-radius-s);
+  border-top-left-radius: var(--_puck-field-array-radius-inner);
+  border-top-right-radius: var(--_puck-field-array-radius-inner);
 }
 
 .ArrayField--addDisabled
   > .ArrayField-inner
   > .ArrayFieldItem:last-of-type:not(.ArrayFieldItem--isExpanded)
   > .ArrayFieldItem-summary {
-  border-bottom-left-radius: var(--puck-radius-s);
-  border-bottom-right-radius: var(--puck-radius-s);
+  border-bottom-left-radius: var(--_puck-field-array-radius-inner);
+  border-bottom-right-radius: var(--_puck-field-array-radius-inner);
 }
 
 .ArrayField--addDisabled
   > .ArrayField-inner
   > .ArrayFieldItem--isExpanded:last-of-type {
-  border-bottom-left-radius: var(--puck-radius-s);
-  border-bottom-right-radius: var(--puck-radius-s);
+  border-bottom-left-radius: var(--_puck-field-array-radius-inner);
+  border-bottom-right-radius: var(--_puck-field-array-radius-inner);
 }
 
 .ArrayFieldItem-summary:focus-visible {
@@ -155,25 +190,38 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ArrayFieldItem-summary:hover {
-    background-color: var(--puck-color-interactive-soft-hover);
+    background-color: var(
+      --puck-field-color-bg-hover,
+      var(--puck-color-interactive-soft-hover)
+    );
+    color: var(
+      --puck-field-color-text-hover,
+      var(--puck-field-color-text, var(--puck-color-text))
+    );
     transition: none;
   }
 }
 
 .ArrayFieldItem-summary:active {
-  background-color: var(--puck-color-interactive-soft);
+  background-color: var(
+    --puck-field-color-bg-hover,
+    var(--puck-color-interactive-soft-hover)
+  );
   transition: none;
 }
 
 .ArrayFieldItem--isExpanded > .ArrayFieldItem-summary {
-  background: var(--puck-color-interactive-soft);
-  color: var(--puck-color-interactive);
+  background: var(
+    --puck-field-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
+  color: var(--puck-field-color-text-active, var(--puck-color-interactive));
   font-weight: var(--puck-font-weight-semibold);
   transition: none;
 }
 
 .ArrayFieldItem-body {
-  background: var(--puck-color-surface);
+  background: var(--puck-field-color-surface, var(--puck-color-surface));
   display: none;
 }
 
@@ -183,11 +231,15 @@
 
 .ArrayFieldItem-fieldset {
   border: none;
-  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-top: var(--_puck-field-array-border-width) solid
+    var(--_puck-field-array-border-color);
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
-  padding: var(--puck-space-4)
-    calc(var(--puck-space-4) - var(--puck-border-width-regular));
+  padding: var(--puck-field-space-surface-y, var(--puck-space-4))
+    var(
+      --puck-field-space-surface-x,
+      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+    );
 }
 
 .ArrayFieldItem-rhs {

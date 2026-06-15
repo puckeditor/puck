@@ -1,5 +1,7 @@
 .DragIcon {
-  color: var(--puck-color-text-muted);
+  /* --_puck-drag-icon-color[-hover] are set by the surrounding context (e.g. the
+     array summary) to recolor the handle; they default to the shared theming values. */
+  color: var(--_puck-drag-icon-color, var(--puck-color-text-muted));
   cursor: grab;
   padding: var(--puck-space-1);
   border-radius: var(--puck-radius-m);
@@ -11,7 +13,6 @@
 
 @media (hover: hover) and (pointer: fine) {
   .DragIcon:not(.DragIcon--disabled):hover {
-    color: var(--puck-color-focus-ring);
-    background-color: var(--puck-color-interactive-soft-hover);
+    color: var(--_puck-drag-icon-color-hover, var(--puck-color-focus-ring));
   }
 }

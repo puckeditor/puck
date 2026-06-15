@@ -48,16 +48,20 @@
 }
 
 .RichTextEditor--editor {
-  background: var(--puck-color-surface);
-  border-width: var(--puck-border-width-regular);
+  color: var(--puck-field-color-text, var(--puck-color-text));
+  background: var(--puck-field-color-bg, var(--puck-color-surface));
+  border-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
   border-style: solid;
-  border-color: var(--puck-color-border);
-  border-radius: var(--puck-radius-m);
+  border-color: var(--puck-field-color-border, var(--puck-color-border));
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   font-family: inherit;
-  font-size: var(--puck-font-size-xxs);
+  font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
   resize: vertical;
   text-align: initial;
   transition: border-color var(--puck-duration-fast) var(--puck-ease-exit);
@@ -74,8 +78,11 @@
 .RichTextEditor--editor :global(.rich-text:not(:has(.ProseMirror))),
 .RichTextEditor--editor :global(.rich-text .ProseMirror) {
   height: 100%;
-  padding: var(--puck-space-3)
-    calc(var(--puck-space-4) - var(--puck-border-width-regular));
+  padding: var(--puck-field-space-y, var(--puck-space-3))
+    var(
+      --puck-field-space-x,
+      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+    );
 }
 
 .RichTextEditor--editor :global(.rich-text ul),
@@ -100,20 +107,44 @@
 }
 
 .RichTextEditor--editor:focus-within {
-  border-color: var(--puck-color-border-hover);
-  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  border-color: var(
+    --puck-field-color-border-hover,
+    var(--puck-color-border-hover)
+  );
+  outline: var(--puck-border-width-focus) solid
+    var(--puck-field-color-border-focus, var(--puck-color-focus-ring));
   transition: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .RichTextEditor--editor:hover:not(.RichTextEditor--disabled) {
-    border-color: var(--puck-color-border-hover);
+    border-color: var(
+      --puck-field-color-border-hover,
+      var(--puck-color-border-hover)
+    );
     transition: none;
   }
 }
 
 .RichTextEditor--editor.RichTextEditor--disabled {
-  background: var(--puck-color-surface-muted);
+  background: var(
+    --puck-field-color-disabled-bg,
+    var(--puck-color-surface-muted)
+  );
+  border-color: var(
+    --puck-field-color-disabled-border,
+    var(--puck-color-border)
+  );
+}
+
+.RichTextEditor--editor.RichTextEditor--disabled
+  :global(.rich-text:not(:has(.ProseMirror))),
+.RichTextEditor--editor.RichTextEditor--disabled
+  :global(.rich-text .ProseMirror) {
+  color: var(
+    --puck-field-color-disabled-text,
+    var(--puck-color-text-secondary)
+  );
 }
 
 .RichTextEditor--editor.RichTextEditor--disabled

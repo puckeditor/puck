@@ -4,15 +4,18 @@
 
 .Input-label {
   align-items: center;
-  color: var(--puck-color-text-secondary);
+  color: var(--puck-field-label-color, var(--puck-color-text-secondary));
   display: flex;
-  padding-bottom: var(--puck-space-3);
-  font-size: var(--puck-font-size-xxs);
-  font-weight: var(--puck-font-weight-semibold);
+  padding-bottom: var(--puck-field-label-space-y, var(--puck-space-3));
+  font-size: var(--puck-field-label-font-size, var(--puck-font-size-xxs));
+  font-weight: var(
+    --puck-field-label-font-weight,
+    var(--puck-font-weight-semibold)
+  );
 }
 
 .Input-labelIcon {
-  color: var(--puck-color-text-subtle);
+  color: var(--puck-field-label-icon-color, var(--puck-color-text-subtle));
   display: flex;
   margin-inline-end: var(--puck-space-1);
   padding-inline-start: var(--puck-space-1);
@@ -24,17 +27,23 @@
 }
 
 .Input-input {
-  background: var(--puck-color-surface);
-  border-width: var(--puck-border-width-regular);
+  background: var(--puck-field-color-bg, var(--puck-color-surface));
+  border-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
   border-style: solid;
-  border-color: var(--puck-color-border);
-  border-radius: var(--puck-radius-m);
+  border-color: var(--puck-field-color-border, var(--puck-color-border));
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
   box-sizing: border-box;
-  color: var(--puck-color-text);
+  color: var(--puck-field-color-text, var(--puck-color-text));
   font-family: inherit;
   font-size: var(--puck-font-size-xs);
-  padding: var(--puck-space-3)
-    calc(var(--puck-space-4) - var(--puck-border-width-regular));
+  padding: var(--puck-field-space-y, var(--puck-space-3))
+    var(
+      --puck-field-space-x,
+      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+    );
   transition: border-color var(--puck-duration-fast) var(--puck-ease-exit);
   width: 100%;
   max-width: 100%;
@@ -42,128 +51,228 @@
 
 @media (min-width: 458px) {
   .Input-input {
-    font-size: var(--puck-font-size-xxs);
+    font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
   }
+}
+
+.Input-select {
+  position: relative;
+  width: 100%;
 }
 
 select.Input-input {
   appearance: none; /* Safari */
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23c3c3c3'><polygon points='0,0 100,0 50,50'/></svg>")
-    no-repeat;
-  background-size: 12px;
-  background-position: calc(100% - 12px) calc(50% + 3px);
-  background-repeat: no-repeat;
-  background-color: var(--puck-color-surface);
   cursor: pointer;
 }
 
-select.Input-input:dir(rtl) {
-  background-position: 12px calc(50% + 3px);
+.Input-selectIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  fill: var(--puck-field-color-border, var(--puck-color-border));
+  stroke-width: 0;
+}
+
+.Input-selectIcon:dir(rtl) {
+  right: auto;
+  left: 12px;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Input:has(> input):hover .Input-input:not([readonly]),
   .Input:has(> textarea):hover .Input-input:not([readonly]) {
-    border-color: var(--puck-color-border-hover);
+    border-color: var(
+      --puck-field-color-border-hover,
+      var(--puck-color-border-hover)
+    );
     transition: none;
   }
-  .Input:has(> select):hover .Input-input:not([disabled]) {
-    background-color: var(--puck-color-interactive-soft-hover);
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a5a5a'><polygon points='0,0 100,0 50,50'/></svg>");
-    border-color: var(--puck-color-border-hover);
+
+  .Input:has(> .Input-select):hover .Input-input:not([disabled]) {
+    color: var(
+      --puck-field-color-text-hover,
+      var(--puck-field-color-text, var(--puck-color-text))
+    );
+    background-color: var(
+      --puck-field-color-bg-hover,
+      var(--puck-color-interactive-soft-hover)
+    );
+    border-color: var(
+      --puck-field-color-border-hover,
+      var(--puck-color-border-hover)
+    );
     transition: none;
+  }
+  .Input:not(.Input--readOnly):has(> .Input-select):hover .Input-selectIcon {
+    fill: var(--puck-field-color-border-hover, var(--puck-color-border-hover));
   }
 }
 
 .Input-input:focus {
-  border-color: var(--puck-color-border-hover);
-  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  border-color: var(
+    --puck-field-color-border-hover,
+    var(--puck-color-border-hover)
+  );
+  outline: var(--puck-border-width-focus) solid
+    var(--puck-field-color-border-focus, var(--puck-color-focus-ring));
   transition: none;
 }
 
 .Input--readOnly > .Input-input,
-.Input--readOnly > select.Input-input {
-  background-color: var(--puck-color-surface-muted);
-  border-color: var(--puck-color-border);
-  color: var(--puck-color-text-secondary);
+.Input--readOnly > .Input-select > select.Input-input {
+  background-color: var(
+    --puck-field-color-disabled-bg,
+    var(--puck-color-surface-muted)
+  );
+  border-color: var(
+    --puck-field-color-disabled-border,
+    var(--puck-color-border)
+  );
+  color: var(
+    --puck-field-color-disabled-text,
+    var(--puck-color-text-secondary)
+  );
   cursor: default;
   opacity: 1;
   outline: 0;
   transition: none;
 }
 
+.Input--readOnly > .Input-select > select.Input-input ~ .Input-selectIcon {
+  fill: var(--puck-field-color-disabled-text, var(--puck-color-text-secondary));
+}
+
 .Input-radioGroupItems {
+  --_puck-field-radio-radius: var(--puck-field-radius, var(--puck-radius-m));
+  --_puck-field-radio-border-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
+  --_puck-field-radio-border-color: var(
+    --puck-field-color-border,
+    var(--puck-color-border)
+  );
+
   display: flex;
-  border: var(--puck-border-width-regular) solid var(--puck-color-border);
-  border-radius: var(--puck-radius-m);
+  border: var(--_puck-field-radio-border-width) solid
+    var(--_puck-field-radio-border-color);
+  border-radius: var(--_puck-field-radio-radius);
   flex-wrap: wrap;
 }
 
 .Input-radio {
-  border-inline-end: var(--puck-border-width-regular) solid
-    var(--puck-color-border);
+  border-inline-end: var(--_puck-field-radio-border-width) solid
+    var(--_puck-field-radio-border-color);
   flex-grow: 1;
 }
 
 .Input-radio:first-of-type {
-  border-bottom-left-radius: var(--puck-radius-m);
-  border-top-left-radius: var(--puck-radius-m);
+  border-bottom-left-radius: var(--_puck-field-radio-radius);
+  border-top-left-radius: var(--_puck-field-radio-radius);
 }
 
 .Input-radio:first-of-type .Input-radioInner {
-  border-bottom-left-radius: var(--puck-radius-s);
-  border-top-left-radius: var(--puck-radius-s);
+  border-bottom-left-radius: calc(
+    var(--_puck-field-radio-radius) - var(--_puck-field-radio-border-width)
+  );
+  border-top-left-radius: calc(
+    var(--_puck-field-radio-radius) - var(--_puck-field-radio-border-width)
+  );
 }
 
 .Input-radio:last-of-type {
-  border-bottom-right-radius: var(--puck-radius-m);
+  border-bottom-right-radius: var(--_puck-field-radio-radius);
   border-inline-end: 0;
-  border-top-right-radius: var(--puck-radius-m);
+  border-top-right-radius: var(--_puck-field-radio-radius);
 }
 
 .Input-radio:last-of-type .Input-radioInner {
-  border-bottom-right-radius: var(--puck-radius-s);
-  border-top-right-radius: var(--puck-radius-s);
+  border-bottom-right-radius: calc(
+    var(--_puck-field-radio-radius) - var(--_puck-field-radio-border-width)
+  );
+  border-top-right-radius: calc(
+    var(--_puck-field-radio-radius) - var(--_puck-field-radio-border-width)
+  );
 }
 
 .Input-radioInner {
-  background-color: var(--puck-color-surface);
-  color: var(--puck-color-text-secondary);
+  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
+  color: var(--puck-field-color-text, var(--puck-color-text));
   cursor: pointer;
-  font-size: var(--puck-font-size-xxxs);
-  padding: var(--puck-space-2) var(--puck-space-3);
+  font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
+  padding: var(--puck-field-space-y, var(--puck-space-3))
+    var(
+      --puck-field-space-x,
+      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+    );
   text-align: center;
-  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .Input-radio:has(:focus-visible) {
-  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline: var(--puck-border-width-focus) solid
+    var(--puck-field-color-border-focus, var(--puck-color-focus-ring));
   outline-offset: var(--puck-border-width-focus);
   position: relative;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Input-radioInner:hover {
-    background-color: var(--puck-color-interactive-soft-hover);
+    background-color: var(
+      --puck-field-color-bg-hover,
+      var(--puck-color-interactive-soft-hover)
+    );
+    color: var(
+      --puck-field-color-text-hover,
+      var(--puck-field-color-text, var(--puck-color-text))
+    );
     transition: none;
   }
 }
 
+.Input--readOnly .Input-radioGroupItems {
+  border-color: var(
+    --puck-field-color-disabled-border,
+    var(--puck-color-border)
+  );
+}
+
 .Input--readOnly .Input-radioInner {
-  background-color: var(--puck-color-surface);
-  color: var(--puck-color-text-secondary);
+  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
+  color: var(--puck-field-color-text, var(--puck-color-text-secondary));
   cursor: default;
 }
 
+.Input--readOnly .Input-radio {
+  border-inline-end: var(--_puck-field-radio-border-width) solid
+    var(--puck-field-color-disabled-border, var(--puck-color-border));
+}
+
+.Input--readOnly .Input-radio:last-of-type {
+  border-inline-end: 0;
+}
+
 .Input-radio .Input-radioInput:checked ~ .Input-radioInner {
-  background-color: var(--puck-color-interactive-soft);
-  color: var(--puck-color-interactive);
+  background-color: var(
+    --puck-field-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
+  color: var(--puck-field-color-text-active, var(--puck-color-interactive));
   font-weight: var(--puck-font-weight-medium);
 }
 
 .Input--readOnly .Input-radioInput:checked ~ .Input-radioInner {
-  background-color: var(--puck-color-surface-muted);
-  color: var(--puck-color-text-secondary);
+  background-color: var(
+    --puck-field-color-disabled-bg,
+    var(--puck-color-surface-muted)
+  );
+  color: var(
+    --puck-field-color-disabled-text,
+    var(--puck-color-text-secondary)
+  );
 }
 
 .Input-radio .Input-radioInput {

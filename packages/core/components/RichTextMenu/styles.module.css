@@ -1,17 +1,18 @@
 .RichTextMenu {
-  --puck-rich-text-menu-icon: var(--puck-color-grey-08);
-  --puck-rich-text-menu-inline-separator: var(--puck-color-grey-05);
-
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
 
 .RichTextMenu--form {
-  border-top-left-radius: var(--puck-radius-m);
-  border-top-right-radius: var(--puck-radius-m);
-  padding: 6px 6px;
-  background-color: var(--puck-color-surface-subtle);
+  border-top-left-radius: var(--puck-field-radius, var(--puck-radius-m));
+  border-top-right-radius: var(--puck-field-radius, var(--puck-radius-m));
+  padding: var(--puck-field-richtext-menu-space-y, 6px)
+    var(--puck-field-richtext-menu-space-x, 6px);
+  background-color: var(
+    --puck-field-richtext-menu-color-bg,
+    var(--puck-color-surface-subtle)
+  );
   position: relative;
   scrollbar-width: none;
   overflow-x: auto;
@@ -36,17 +37,20 @@
 }
 
 .RichTextMenu--inline .RichTextMenu-group {
-  color: var(--puck-rich-text-menu-icon);
+  color: var(--puck-color-text-inverse);
   gap: 0px;
   flex-wrap: nowrap;
 }
 
 .RichTextMenu-group + .RichTextMenu-group {
   border-left: var(--puck-border-width-regular) solid
-    var(--puck-color-border-muted);
+    var(
+      --puck-field-richtext-menu-color-separator,
+      var(--puck-color-border-muted)
+    );
 }
 
 .RichTextMenu--inline .RichTextMenu-group + .RichTextMenu-group {
   border-left: var(--puck-border-width-hairline) solid
-    var(--puck-rich-text-menu-inline-separator); /* Match actionbar separator */
+    var(--puck-color-border-inverse);
 }

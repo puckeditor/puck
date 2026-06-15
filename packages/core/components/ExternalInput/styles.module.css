@@ -7,11 +7,14 @@
   gap: var(--puck-space-2);
   align-items: center;
   justify-content: center;
-  background-color: var(--puck-color-surface);
-  border: var(--puck-border-width-regular) solid var(--puck-color-border);
-  border-radius: var(--puck-radius-m);
-  color: var(--puck-color-interactive);
-  padding: var(--puck-space-3) var(--puck-space-4);
+  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
+  border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
+    var(--puck-field-color-border, var(--puck-color-border));
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  color: var(--puck-field-color-text-active, var(--puck-color-interactive));
+  padding: var(--puck-field-space-y, var(--puck-space-3))
+    var(--puck-field-space-x, var(--puck-space-4));
+  font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
   font-weight: var(--puck-font-weight-medium);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -19,25 +22,36 @@
   position: relative;
   overflow: hidden;
   flex-grow: 1;
+  cursor: pointer;
 }
 
 .ExternalInput--dataSelected .ExternalInput-button {
-  color: var(--puck-color-disabled-text);
+  color: var(--puck-field-color-text, var(--puck-color-text));
   display: block;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
 
 .ExternalInput--readOnly .ExternalInput-button {
-  background-color: var(--puck-color-surface-muted);
+  background-color: var(
+    --puck-field-color-disabled-bg,
+    var(--puck-color-surface-muted)
+  );
 }
 
 .ExternalInput-detachButton {
-  border: var(--puck-border-width-regular) solid var(--puck-color-border);
-  border-top-right-radius: var(--puck-radius-m);
-  border-bottom-right-radius: var(--puck-radius-m);
-  background-color: var(--puck-color-surface-subtle);
-  color: var(--puck-color-text-muted);
+  border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
+    var(--puck-field-color-border, var(--puck-color-border));
+  border-top-right-radius: var(--puck-field-radius, var(--puck-radius-m));
+  border-bottom-right-radius: var(--puck-field-radius, var(--puck-radius-m));
+  background-color: var(
+    --puck-field-external-detach-color-bg,
+    var(--puck-color-surface-subtle)
+  );
+  color: var(
+    --puck-field-external-detach-color-text,
+    var(--puck-color-text-muted)
+  );
   display: flex;
   gap: var(--puck-space-2);
   align-items: center;
@@ -47,6 +61,7 @@
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
     color var(--puck-duration-fast) var(--puck-ease-exit);
   margin-inline-start: -1px;
+  cursor: pointer;
 }
 
 .ExternalInput-button:focus-visible,
@@ -60,20 +75,37 @@
   .ExternalInput:not(.ExternalInput--readOnly) .ExternalInput-button:hover,
   .ExternalInput:not(.ExternalInput--readOnly)
     .ExternalInput-detachButton:hover {
-    background: var(--puck-color-interactive-soft-hover);
+    background: var(
+      --puck-field-color-bg-hover,
+      var(--puck-color-interactive-soft-hover)
+    );
     transition: none;
   }
 
   .ExternalInput:not(.ExternalInput--readOnly)
     .ExternalInput-detachButton:hover {
-    color: var(--puck-color-interactive);
+    color: var(
+      --puck-field-color-text-hover,
+      var(--puck-field-external-detach-color-text, var(--puck-color-text-muted))
+    );
+  }
+
+  .ExternalInput--dataSelected:not(.ExternalInput--readOnly)
+    .ExternalInput-button:hover {
+    color: var(
+      --puck-field-color-text-hover,
+      var(--puck-field-color-text, var(--puck-color-text))
+    );
   }
 }
 
 .ExternalInput:not(.ExternalInput--readOnly) .ExternalInput-button:active,
 .ExternalInput:not(.ExternalInput--readOnly)
   .ExternalInput-detachButton:active {
-  background: var(--puck-color-interactive-soft);
+  background: var(
+    --puck-field-color-bg-hover,
+    var(--puck-color-interactive-soft-hover)
+  );
   transition: none;
 }
 
