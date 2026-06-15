@@ -1,5 +1,5 @@
 .BlocksPlugin {
-  padding: var(--puck-space-4);
+  padding: var(--puck-drawer-space, var(--puck-space-4));
   height: 100%;
   overflow-y: auto;
   box-sizing: border-box;

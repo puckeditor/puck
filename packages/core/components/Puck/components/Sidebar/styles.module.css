@@ -12,7 +12,10 @@
 }
 
 .Sidebar--left {
-  background: var(--puck-color-surface-subtle);
+  background: var(
+    --puck-sidebar-left-color-bg,
+    var(--puck-color-surface-subtle)
+  );
   grid-area: left;
 }
 
@@ -25,7 +28,7 @@
 }
 
 .Sidebar--right {
-  background: var(--puck-color-surface);
+  background: var(--puck-sidebar-right-color-bg, var(--puck-color-surface));
   grid-area: right;
 }
 

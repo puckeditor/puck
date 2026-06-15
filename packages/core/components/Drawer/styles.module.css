@@ -20,14 +20,15 @@
 }
 
 .DrawerItem-draggable {
-  background: var(--puck-color-surface);
-  color: var(--puck-color-text);
+  background: var(--puck-drawer-item-color-bg, var(--puck-color-surface));
+  color: var(--puck-drawer-item-color-text, var(--puck-color-text));
   cursor: grab;
-  padding: var(--puck-space-3);
+  padding: var(--puck-drawer-item-space, var(--puck-space-3));
   display: flex;
-  border: var(--puck-border-width-regular) var(--puck-color-border) solid;
-  border-radius: var(--puck-radius-m);
-  font-size: var(--puck-font-size-xxs);
+  border: var(--puck-drawer-item-border-width, var(--puck-border-width-regular))
+    var(--puck-drawer-item-color-border, var(--puck-color-border)) solid;
+  border-radius: var(--puck-drawer-item-radius, var(--puck-radius-m));
+  font-size: var(--puck-drawer-item-font-size, var(--puck-font-size-xxs));
   justify-content: space-between;
   align-items: center;
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
@@ -56,8 +57,14 @@
   .Drawer:not(.Drawer--isDraggingFrom)
     .DrawerItem:not(.DrawerItem--disabled)
     .DrawerItem-draggable:hover {
-    background-color: var(--puck-color-interactive-soft-hover);
-    color: var(--puck-color-interactive);
+    background-color: var(
+      --puck-drawer-item-color-bg-hover,
+      var(--puck-color-interactive-soft-hover)
+    );
+    color: var(
+      --puck-drawer-item-color-text-hover,
+      var(--puck-color-interactive)
+    );
     transition: none;
   }
 }

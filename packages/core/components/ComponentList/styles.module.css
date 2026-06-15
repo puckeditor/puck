@@ -17,14 +17,14 @@
 .ComponentList-title {
   background-color: transparent;
   border: 0;
-  color: var(--puck-color-text-muted);
+  color: var(--puck-drawer-category-color-text, var(--puck-color-text-muted));
   cursor: pointer;
   display: flex;
   font: inherit;
-  font-size: var(--puck-font-size-xxxs);
+  font-size: var(--puck-drawer-category-font-size, var(--puck-font-size-xxxs));
   list-style: none;
   margin-bottom: 6px;
-  padding: var(--puck-space-2);
+  padding: var(--puck-drawer-category-space, var(--puck-space-2));
   text-transform: uppercase;
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
     color var(--puck-duration-fast) var(--puck-ease-exit);
@@ -40,14 +40,23 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ComponentList-title:hover {
-    background-color: var(--puck-color-interactive-soft);
-    color: var(--puck-color-interactive);
+    background-color: var(
+      --puck-drawer-category-color-bg-hover,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(
+      --puck-drawer-category-color-text-hover,
+      var(--puck-color-interactive)
+    );
     transition: none;
   }
 }
 
 .ComponentList-title:active {
-  background-color: var(--puck-color-interactive-subtle);
+  background-color: var(
+    --puck-drawer-category-color-bg-active,
+    var(--puck-color-interactive-subtle)
+  );
   transition: none;
 }
 
