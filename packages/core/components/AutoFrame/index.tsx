@@ -319,7 +319,13 @@ const CopyHostStyles = ({
           }
         };
         mirror.onerror = () => {
-          console.warn(`AutoFrame couldn't load a stylesheet`);
+          const href =
+            mirror instanceof HTMLLinkElement ? mirror.href : undefined;
+          console.warn(
+            `AutoFrame couldn't load a stylesheet${href ? `: ${href}` : ""}. ` +
+              `This can happen if the parent document's stylesheet is blocked by the iframe's CSP, ` +
+              `returns a non-2xx status, or fails to reach the network.`
+          );
           stylesLoaded = stylesLoaded + 1;
 
           if (stylesLoaded >= filtered.length) {
