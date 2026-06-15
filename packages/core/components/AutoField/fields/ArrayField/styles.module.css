@@ -120,7 +120,7 @@
 
 .ArrayFieldItem--isDragging {
   outline: var(--puck-border-width-focus)
-    var(--puck-field-color-border-drag, var(--puck-color-selection-border))
+    var(--puck-field-color-border-dragging, var(--puck-color-selection-border))
     solid !important;
 }
 
