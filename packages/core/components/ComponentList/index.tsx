@@ -54,12 +54,16 @@ const ComponentList = ({
 
   const { expanded = true } = componentList[id] || {};
 
+  const contentId = `puck-drawer-category-${id}`;
+
   return (
     <div className={getClassName({ isExpanded: expanded })}>
       {title && (
         <button
           type="button"
           className={getClassName("title")}
+          aria-expanded={expanded}
+          aria-controls={contentId}
           onClick={() =>
             setUi({
               componentList: {
@@ -83,7 +87,7 @@ const ComponentList = ({
           </div>
         </button>
       )}
-      <div className={getClassName("content")}>
+      <div className={getClassName("content")} id={contentId}>
         <Drawer>
           {children ||
             Object.keys(config.components).map((componentKey) => {
