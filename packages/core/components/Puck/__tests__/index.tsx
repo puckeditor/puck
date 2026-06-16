@@ -274,4 +274,26 @@ describe("Puck", () => {
       PUCK_STYLE_SOURCE_VALUE
     );
   });
+
+  it("exposes the preview mode on the canvas entry element", async () => {
+    render(<Puck config={config} data={{}} iframe={{ enabled: false }} />);
+
+    await flush();
+
+    const entry = document.querySelector("[data-puck-entry]");
+
+    expect(entry?.getAttribute("data-puck-preview-mode")).toBe("edit");
+
+    const { appStore } = getInternal();
+
+    act(() => {
+      appStore
+        .getState()
+        .dispatch({ type: "setUi", ui: { previewMode: "interactive" } });
+    });
+
+    await flush();
+
+    expect(entry?.getAttribute("data-puck-preview-mode")).toBe("interactive");
+  });
 });

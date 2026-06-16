@@ -3,12 +3,15 @@
   pointer-events: auto !important;
 }
 
-[data-puck-overlay-portal]:hover {
+/* Render the outline only in edit mode */
+[data-puck-entry][data-puck-preview-mode="edit"]
+  [data-puck-overlay-portal]:hover {
   outline: 2px var(--puck-color-azure-09, #cfdff0) dashed;
   outline-offset: 2px;
 }
 
-[data-puck-overlay-portal]:focus-within {
+[data-puck-entry][data-puck-preview-mode="edit"]
+  [data-puck-overlay-portal]:focus-within {
   outline: 2px var(--puck-color-azure-07, #88b0da) dashed;
   outline-offset: 2px;
 }
