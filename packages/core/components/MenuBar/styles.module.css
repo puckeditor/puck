@@ -1,5 +1,5 @@
 .MenuBar {
-  background-color: var(--puck-color-surface);
+  background-color: var(--_puck-menu-bar-color-bg, var(--puck-color-surface));
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
   display: none;
   left: 0;

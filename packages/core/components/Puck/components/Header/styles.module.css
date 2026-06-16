@@ -1,7 +1,10 @@
 .PuckHeader {
-  background: var(--puck-color-surface);
+  --_puck-menu-bar-color-bg: var(--puck-header-color-bg, var(--puck-color-surface));
+  
+  background: var(--puck-header-color-bg, var(--puck-color-surface));
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
-  color: var(--puck-color-text);
+  color: var(--puck-header-color-text, var(--puck-color-text));
+  --_puck-heading-color: var(--puck-header-color-text, var(--puck-color-text));
   grid-area: header;
   position: relative;
   max-width: 100vw;

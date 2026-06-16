@@ -1,6 +1,6 @@
 .Heading {
   display: block;
-  color: var(--puck-color-text);
+  color: var(--_puck-heading-color, var(--puck-color-text));
   font-weight: var(--puck-font-weight-bold);
   margin: 0;
 }
