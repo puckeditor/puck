@@ -1,5 +1,6 @@
 .PuckCanvas {
-  background: var(--puck-color-surface-muted);
+  color: var(--puck-canvas-color-text, var(--puck-color-text));
+  background: var(--puck-canvas-color-bg, var(--puck-color-surface-muted));
   display: flex;
   grid-area: editor;
   flex-direction: column;
@@ -40,7 +41,7 @@
 }
 
 .PuckCanvas-root {
-  background: var(--puck-color-surface);
+  background: var(--puck-canvas-color-bg, var(--puck-color-surface));
   outline: var(--puck-border-width-regular) solid var(--puck-color-border);
   box-sizing: content-box;
   min-width: 321px;
