@@ -6,14 +6,17 @@
   --puck-color-surface: var(--puck-color-white);
   --puck-color-surface-muted: var(--puck-color-grey-11);
   --puck-color-surface-subtle: var(--puck-color-grey-12);
+  --puck-color-surface-inverse: var(--puck-color-grey-01);
   --puck-color-border: var(--puck-color-grey-09);
   --puck-color-border-hover: var(--puck-color-grey-05);
   --puck-color-border-muted: var(--puck-color-grey-10);
+  --puck-color-border-inverse: var(--puck-color-grey-05);
   --puck-color-text: var(--puck-color-black);
   --puck-color-text-secondary: var(--puck-color-grey-04);
   --puck-color-text-muted: var(--puck-color-grey-05);
   --puck-color-text-subtle: var(--puck-color-grey-07);
   --puck-color-text-inverse: var(--puck-color-white);
+  --puck-color-text-inverse-opacity: 0.75;
   --puck-color-interactive: var(--puck-color-azure-04);
   --puck-color-interactive-hover: var(--puck-color-azure-03);
   --puck-color-interactive-active: var(--puck-color-azure-02);

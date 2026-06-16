@@ -10,7 +10,7 @@
 }
 
 .SidebarSection-title {
-  background: var(--puck-color-surface);
+  background: var(--_puck-sidebar-section-color-bg, var(--puck-color-surface));
   padding: var(--puck-space-4);
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
