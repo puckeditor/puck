@@ -40,14 +40,14 @@
 .PuckLayout-inner {
   --puck-frame-width: auto;
   --puck-side-nav-width: min-content;
-  --puck-side-bar-width: 0px;
-  --puck-left-side-bar-width: var(
-    --puck-user-left-side-bar-width,
-    var(--puck-side-bar-width)
+  --puck-sidebar-width: 0px;
+  --puck-left-sidebar-width: var(
+    --puck-user-left-sidebar-width,
+    var(--puck-sidebar-width)
   );
-  --puck-right-side-bar-width: var(
-    --puck-user-right-side-bar-width,
-    var(--puck-side-bar-width)
+  --puck-right-sidebar-width: var(
+    --puck-user-right-sidebar-width,
+    var(--puck-sidebar-width)
   );
   background-color: var(--puck-color-surface-subtle);
   display: grid;
@@ -76,7 +76,7 @@
 }
 
 .PuckLayout--mounted .PuckLayout-inner {
-  --puck-side-bar-width: 186px;
+  --puck-sidebar-width: 186px;
 }
 
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
@@ -99,7 +99,7 @@
   .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+      var(--puck-side-nav-width) var(--puck-left-sidebar-width) var(
         --puck-frame-width
       )
       0;
@@ -125,7 +125,7 @@
   .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+      var(--puck-side-nav-width) var(--puck-left-sidebar-width) var(
         --puck-frame-width
       )
       0;
@@ -137,7 +137,7 @@
   .PuckLayout--rightSideBarVisible .PuckLayout-inner {
     grid-template-columns:
       var(--puck-side-nav-width) 0 var(--puck-frame-width)
-      var(--puck-right-side-bar-width);
+      var(--puck-right-sidebar-width);
   }
 }
 
@@ -145,10 +145,10 @@
   .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+      var(--puck-side-nav-width) var(--puck-left-sidebar-width) var(
         --puck-frame-width
       )
-      var(--puck-right-side-bar-width);
+      var(--puck-right-sidebar-width);
   }
 }
 
@@ -160,7 +160,7 @@
 
 @media (min-width: 638px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: minmax(186px, 250px);
+    --puck-sidebar-width: minmax(186px, 250px);
   }
 }
 
@@ -172,25 +172,25 @@
 
 @media (min-width: 990px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 256px;
+    --puck-sidebar-width: 256px;
   }
 }
 
 @media (min-width: 1198px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 274px;
+    --puck-sidebar-width: 274px;
   }
 }
 
 @media (min-width: 1398px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 290px;
+    --puck-sidebar-width: 290px;
   }
 }
 
 @media (min-width: 1598px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 320px;
+    --puck-sidebar-width: 320px;
   }
 }
 

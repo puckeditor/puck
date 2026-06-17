@@ -12,7 +12,10 @@
 }
 
 .Sidebar--left {
-  --_puck-sidebar-section-color-bg: var(--puck-sidebar-left-color-bg, var(--puck-color-surface));
+  --_puck-sidebar-section-color-bg: var(
+    --puck-sidebar-left-color-bg,
+    var(--puck-color-surface)
+  );
   background: var(
     --puck-sidebar-left-color-bg,
     var(--puck-color-surface-subtle)
@@ -29,7 +32,10 @@
 }
 
 .Sidebar--right {
-  --_puck-sidebar-section-color-bg: var(--puck-sidebar-right-color-bg, var(--puck-color-surface));
+  --_puck-sidebar-section-color-bg: var(
+    --puck-sidebar-right-color-bg,
+    var(--puck-color-surface)
+  );
   background: var(--puck-sidebar-right-color-bg, var(--puck-color-surface));
   grid-area: right;
 }

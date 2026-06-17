@@ -107,7 +107,7 @@
    */
 
   --puck-space-m-unitless: 24;
-  --puck-user-left-side-bar-width: var(--puck-side-bar-width);
-  --puck-user-right-side-bar-width: var(--puck-side-bar-width);
+  --puck-user-left-sidebar-width: var(--puck-sidebar-width);
+  --puck-user-right-sidebar-width: var(--puck-sidebar-width);
   --puck-slot-min-empty-height: 128px;
 }
