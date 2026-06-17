@@ -143,26 +143,61 @@ export const VirtualizedDropZone = ({
     [pinnedIndexes]
   );
 
+  const getItemKey = useCallback(
+    (index: number) => contentIds[index],
+    [contentIds]
+  );
+
+  const estimateSize = useCallback(
+    (index: number) => getEstimatedItemHeight(contentIds[index]),
+    [contentIds]
+  );
+
+  const getScrollElement = useCallback(
+    () => iframeWindow ?? null,
+    [iframeWindow]
+  );
+
+  const stableObserveElementRect = useCallback(
+    (instance: any, cb: any) =>
+      iframeWindow
+        ? observeWindowRect(instance, cb)
+        : observeElementRect(instance, cb),
+    [iframeWindow]
+  );
+
+  const stableObserveElementOffset = useCallback(
+    (instance: any, cb: any) =>
+      iframeWindow
+        ? observeWindowOffset(instance, cb)
+        : observeElementOffset(instance, cb),
+    [iframeWindow]
+  );
+
+  const stableScrollToFn = useCallback(
+    (offset: any, options: any, instance: any) =>
+      iframeWindow
+        ? windowScroll(offset, options, instance)
+        : elementScroll(offset, options, instance),
+    [iframeWindow]
+  );
+
+  const initialOffset = useCallback(
+    () => (iframeWindow ? iframeWindow.scrollY : 0),
+    [iframeWindow]
+  );
+
   const virtualizer = useVirtualizer<any, HTMLElement>({
     count: contentIds.length,
-    getItemKey: (index) => contentIds[index],
-    estimateSize: (index) => getEstimatedItemHeight(contentIds[index]),
-    getScrollElement: () => iframeWindow ?? null,
+    getItemKey,
+    estimateSize,
+    getScrollElement,
     overscan: ROOT_ZONE_VIRTUALIZATION_OVERSCAN,
-    observeElementRect: (instance, cb) =>
-      iframeWindow
-        ? observeWindowRect(instance as any, cb)
-        : observeElementRect(instance as any, cb),
-    observeElementOffset: (instance, cb) =>
-      iframeWindow
-        ? observeWindowOffset(instance as any, cb)
-        : observeElementOffset(instance as any, cb),
-    scrollToFn: (offset, options, instance) =>
-      iframeWindow
-        ? windowScroll(offset, options, instance as any)
-        : elementScroll(offset, options, instance as any),
+    observeElementRect: stableObserveElementRect,
+    observeElementOffset: stableObserveElementOffset,
+    scrollToFn: stableScrollToFn,
     rangeExtractor,
-    initialOffset: () => (iframeWindow ? iframeWindow.scrollY : 0),
+    initialOffset,
   });
 
   useEffect(() => {
