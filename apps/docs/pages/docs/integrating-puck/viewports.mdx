@@ -35,9 +35,9 @@ export function Editor() {
 }
 ```
 
-## Opting out of iframes
+## Disable viewports
 
-Opt-out of iframe rendering by using the [`iframe` API](/docs/api-reference/components/puck#iframe):
+Disable viewport behavior by disabling iframes with [`iframe.enabled`](/docs/api-reference/components/puck#enabled):
 
 ```tsx
 export function Editor() {
@@ -52,7 +52,7 @@ export function Editor() {
 }
 ```
 
-This will disable all viewport functionality.
+Note that this will also disable [style isolation](styling#style-isolation).
 
 ## Controlling viewports with compositional interfaces
 

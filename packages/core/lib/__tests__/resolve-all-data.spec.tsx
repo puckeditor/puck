@@ -1,4 +1,4 @@
-import { ComponentData, Config, Data } from "../../types";
+import { ComponentData, Config, Data, RootData } from "../../types";
 import { resolveAllData } from "../resolve-all-data";
 
 const item4 = {
@@ -227,6 +227,76 @@ describe("resolve-data", () => {
     expect(receivedParentById[item1_2.props.id]?.props.id).toBe(item1.props.id);
     expect(receivedParentById[item1_2_1.props.id]?.props.id).toBe(
       item1_2.props.id
+    );
+  });
+
+  it("should pass the resolved root to every resolver in params", async () => {
+    const item1_2_1 = {
+      type: "ComponentWithResolveProps",
+      props: { id: "MyComponent-1_2_1", prop: "Original", slot: [] },
+    };
+    const item1_2 = {
+      type: "ComponentWithResolveProps",
+      props: { id: "MyComponent-1_2", prop: "Original", slot: [item1_2_1] },
+    };
+    const item1_1 = {
+      type: "ComponentWithResolveProps",
+      props: { id: "MyComponent-1_1", prop: "Original", slot: [] },
+    };
+    const item1 = {
+      type: "ComponentWithResolveProps",
+      props: { id: "MyComponent-1", prop: "Original", slot: [item1_1] },
+    };
+    const data: Data = {
+      root: { props: { title: "Original title" } },
+      content: [item1],
+      zones: {
+        "MyComponent-1:zone": [item1_2],
+      },
+    };
+
+    let receivedRootById: Record<string, RootData | undefined> = {};
+
+    const resolveData = jest.fn(async ({ props }, { root }) => {
+      receivedRootById[props.id] = root;
+
+      return { props: { ...props, prop: "Resolved" } };
+    });
+
+    const config: Config = {
+      components: {
+        ComponentWithResolveProps: {
+          fields: { slot: { type: "slot" } },
+          defaultProps: { prop: "example" },
+          resolveData,
+          render: () => <div />,
+        },
+      },
+      root: {
+        resolveData: async ({ props }) => ({
+          props: { ...props, title: "Resolved title" },
+        }),
+      },
+    };
+
+    // When: --------------------
+    await resolveAllData(data, config);
+
+    // Then: --------------------
+    expect(resolveData.mock.calls.every((call) => !!call[1].root)).toBe(true);
+
+    // Content, deep slot children and zones all receive the resolved root
+    expect(receivedRootById[item1.props.id]?.props?.title).toBe(
+      "Resolved title"
+    );
+    expect(receivedRootById[item1_1.props.id]?.props?.title).toBe(
+      "Resolved title"
+    );
+    expect(receivedRootById[item1_2.props.id]?.props?.title).toBe(
+      "Resolved title"
+    );
+    expect(receivedRootById[item1_2_1.props.id]?.props?.title).toBe(
+      "Resolved title"
     );
   });
 

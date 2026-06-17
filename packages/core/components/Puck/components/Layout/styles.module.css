@@ -20,6 +20,7 @@
   --puck-space-px: 16px;
   font-family: var(--puck-font-family);
   overflow-x: hidden;
+  visibility: visible !important;
 }
 
 @media (min-width: 766px) {

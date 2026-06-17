@@ -29,6 +29,9 @@ const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
           cancelable: false,
           clientX: event.clientX,
           clientY: event.clientY,
+          pointerId: event.pointerId,
+          pointerType: event.pointerType,
+          isPrimary: event.isPrimary,
           originalTarget: event.target,
         });
 
@@ -158,6 +161,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
           id="preview-frame"
           className={getClassName("frame")}
           data-rfd-iframe
+          syncHostStyles={iframe.syncHostStyles}
           onReady={() => {
             setStatus("READY");
           }}

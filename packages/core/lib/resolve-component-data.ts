@@ -4,6 +4,7 @@ import {
   Content,
   Metadata,
   ResolveDataTrigger,
+  RootData,
   RootDataWithProps,
 } from "../types";
 import { mapFields } from "./data/map-fields";
@@ -24,7 +25,8 @@ export const resolveComponentData = async <
   onResolveStart?: (item: T) => void,
   onResolveEnd?: (item: T) => void,
   trigger: ResolveDataTrigger = "replace",
-  parent: ComponentData | null = null
+  parent: ComponentData | null = null,
+  root: RootData = { props: {} }
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -72,6 +74,7 @@ export const resolveComponentData = async <
         metadata: { ...metadata, ...configForItem.metadata },
         trigger,
         parent,
+        root,
       });
 
     resolvedItem.props = {
@@ -103,7 +106,8 @@ export const resolveComponentData = async <
                   onResolveStart,
                   onResolveEnd,
                   trigger,
-                  itemAsComponentData
+                  itemAsComponentData,
+                  root
                 )
               ).node
           )

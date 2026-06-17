@@ -11,12 +11,13 @@
   "dependencies": {
     "classnames": "^2.3.2",
     "lucide-react": "^0.468.0",
-    "next": "^16.2.1",
+    "next": "^16.2.5",
     "rc-footer": "^0.6.8",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
   "devDependencies": {
+    "@puckeditor/core": "*",
     "@types/node": "^17.0.12",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

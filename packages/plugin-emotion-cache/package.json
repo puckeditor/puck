@@ -1,6 +1,6 @@
 {
   "name": "@puckeditor/plugin-emotion-cache",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
   "bugs": "https://github.com/puckeditor/puck/issues",
@@ -24,11 +24,11 @@
   ],
   "devDependencies": {
     "@emotion/react": "^11.13.3",
-    "@puckeditor/core": "^0.21.2",
+    "@puckeditor/core": "^0.21.3",
     "@types/minimatch": "3.0.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.0.2",
-    "eslint": "^7.32.0",
+    "eslint": "^9.0.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",
     "tsup": "^8.2.4",

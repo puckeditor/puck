@@ -32,7 +32,8 @@ export async function resolveAllData<
 
   const resolveNode = async <T extends ComponentData | RootData>(
     _node: T,
-    parent: ComponentData | null
+    parent: ComponentData | null,
+    root: RootData
   ) => {
     const node = toComponent(_node);
 
@@ -46,7 +47,8 @@ export async function resolveAllData<
         () => {},
         () => {},
         "force",
-        parent
+        parent,
+        root
       )
     ).node as T;
 
@@ -56,7 +58,7 @@ export async function resolveAllData<
     const resolvedDeepPromise = mapFields(
       resolved,
       {
-        slot: ({ value }) => processContent(value, resolvedAsComponent),
+        slot: ({ value }) => processContent(value, resolvedAsComponent, root),
       },
       config
     ) as unknown as Promise<T>;
@@ -69,7 +71,8 @@ export async function resolveAllData<
         async ({ zoneCompound, content }) => {
           resolvedZones[zoneCompound] = await processContent(
             content,
-            resolvedAsComponent
+            resolvedAsComponent,
+            root
           );
         }
       );
@@ -86,17 +89,19 @@ export async function resolveAllData<
 
   const processContent = async (
     content: Content,
-    parent: ComponentData | null
+    parent: ComponentData | null,
+    root: RootData
   ) => {
-    return Promise.all(content.map((item) => resolveNode(item, parent)));
+    return Promise.all(content.map((item) => resolveNode(item, parent, root)));
   };
 
   const result: Data = defaultData({});
 
-  result.root = await resolveNode(defaultedData.root, null);
+  result.root = await resolveNode(defaultedData.root, null, defaultedData.root);
   result.content = await processContent(
     defaultedData.content,
-    toComponent(result.root)
+    toComponent(result.root),
+    result.root
   );
   result.zones = resolvedZones;
 

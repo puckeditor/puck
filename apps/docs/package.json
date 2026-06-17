@@ -1,13 +1,13 @@
 {
   "name": "docs",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "postbuild": "next-sitemap",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint"
   },
   "devDependencies": {
     "@types/node": "^17.0.12",
@@ -17,10 +17,11 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "next": "^15.5.14",
+    "@puckeditor/core": "*",
+    "next": "^15.5.16",
     "next-sitemap": "^4.2.3",
-    "nextra": "^3.2.5",
-    "nextra-theme-docs": "^3.2.5",
+    "nextra": "^3.3.1",
+    "nextra-theme-docs": "^3.3.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   }

@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "rimraf packages/core/dist && turbo run dev --filter=demo",
+    "dev": "turbo run dev --filter=demo",
     "lint": "turbo run lint",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,css}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx,css}\"",
@@ -17,16 +17,15 @@
     "changelog": "node scripts/create-changelog"
   },
   "devDependencies": {
-    "@turbo/gen": "^2.3.3",
     "asciichart": "^1.5.25",
-    "conventional-changelog-angular": "^4.0.0",
-    "conventional-recommended-bump": "^6.0.5",
-    "eslint": "^7.32.0",
+    "conventional-changelog-angular": "^8.3.1",
+    "conventional-recommended-bump": "^11.2.0",
+    "eslint": "^9.0.0",
     "eslint-config-custom": "*",
-    "lerna": "^9.0.0",
+    "lerna": "^9.0.7",
     "prettier": "^2.5.1",
     "puppeteer": "^24.8.2",
-    "rimraf": "^6.1.2",
+    "rimraf": "^6.1.3",
     "standard-changelog": "^2.0.21",
     "turbo": "^2.5.8"
   },
@@ -37,8 +36,11 @@
     "recipes/*",
     "packages/*"
   ],
-  "version": "0.21.2",
+  "version": "0.21.3",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "resolutions": {
+    "yaml": ">=2.8.3"
   }
 }

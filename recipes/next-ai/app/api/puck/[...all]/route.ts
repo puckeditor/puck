@@ -1,9 +1,8 @@
-import { NextRequest } from "next/server";
-import { puckHandler } from "@puckeditor/cloud-client";
-
 // Handles all requests for Puck AI
 // Learn more: https://puckeditor.com/docs/ai/getting-started
-export const POST = (request: NextRequest) => {
+import { puckHandler } from "@puckeditor/cloud-client";
+
+const handleRequest = (request) => {
   return puckHandler(request, {
     ai: {
       // Replace with your business context
@@ -11,3 +10,7 @@ export const POST = (request: NextRequest) => {
     },
   });
 };
+
+export const DELETE = handleRequest;
+export const GET = handleRequest;
+export const POST = handleRequest;

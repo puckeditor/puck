@@ -18,7 +18,7 @@ const InlineTextFieldInternal = ({
   opts = {},
 }: {
   propPath: string;
-  value: string;
+  value: string | null | undefined;
   componentId: string;
   isReadOnly: boolean;
   opts?: { disableLineBreaks?: boolean };
@@ -39,8 +39,12 @@ const InlineTextFieldInternal = ({
     }
 
     if (ref.current) {
-      if (value !== ref.current.innerText) {
-        ref.current.replaceChildren(value);
+      // Coerce nullish values to "" — Node.replaceChildren stringifies non-Node
+      // args, so passing null/undefined renders the literal text "null"/"undefined".
+      const safeValue = value ?? "";
+
+      if (safeValue !== ref.current.innerText) {
+        ref.current.replaceChildren(safeValue);
       }
 
       const cleanupPortal = registerOverlayPortal(ref.current);

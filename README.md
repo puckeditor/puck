@@ -42,7 +42,6 @@ Render the editor:
 ```jsx
 // Editor.jsx
 import { Puck } from "@puckeditor/core";
-import "@puckeditor/core/puck.css";
 
 // Create Puck component config
 const config = {
@@ -77,7 +76,6 @@ Render the page:
 ```jsx
 // Page.jsx
 import { Render } from "@puckeditor/core";
-import "@puckeditor/core/puck.css";
 
 export function Page() {
   return <Render config={config} data={data} />;

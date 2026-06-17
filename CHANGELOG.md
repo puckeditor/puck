@@ -2,6 +2,26 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.21.3](https://github.com/puckeditor/puck/compare/v0.21.2...v0.21.3) (2026-06-08)
+
+
+### Bug Fixes
+
+* don't crash if tiptap is destroyed ([4d9aaa2](https://github.com/puckeditor/puck/commit/4d9aaa21d6063e815de80846e855c74f8d8f7632))
+* don't crash richtext field when string is empty ([e35c030](https://github.com/puckeditor/puck/commit/e35c030cb416be7e9d4d466e150213a53d9cee3f))
+* don't select parent on quick drag ([64479ab](https://github.com/puckeditor/puck/commit/64479ab8b5e0848ac24d66d1c5a488cf7e8a58e7))
+* ignore next-env.d.ts in Next.js recipes ([95c7d25](https://github.com/puckeditor/puck/commit/95c7d25751fcf34c4a2f21aeba9817b03f541565))
+* prevent canvas loader from blocking pointer events when hidden ([7f423c5](https://github.com/puckeditor/puck/commit/7f423c5f4a371c478bb9e99948fef482318b63ee))
+* record history when moving a component to a different position ([c66507a](https://github.com/puckeditor/puck/commit/c66507a17aee09d299f7ff559ab4e0558dddf61a))
+* render empty string instead of literal when contentEditable fields receive nullish values ([737caf4](https://github.com/puckeditor/puck/commit/737caf4827c0db8441968c7bbbba7b8cb0a48e79))
+* stop action bar from flashing in bottom on insertion ([0f13f4b](https://github.com/puckeditor/puck/commit/0f13f4b4e9d32ac4f41ebcd50cb5d5ba239450f3))
+* unwrap propName in walkFields for nested slots ([f83fd09](https://github.com/puckeditor/puck/commit/f83fd092fb21fe9eb29faa4506abab33765c7e8e))
+* use aria-label for accessible name in IconButton ([71238a6](https://github.com/puckeditor/puck/commit/71238a6bc2512034cba2c33b69372667eb9049ab))
+* use stable ID when rendering RichText on server ([29d13dd](https://github.com/puckeditor/puck/commit/29d13ddee90b46058361e460a9daaa6875ffae7a))
+
+
+
+
 ## [0.21.2](https://github.com/puckeditor/puck/compare/v0.21.1...v0.21.2) (2026-04-01)
 
 
