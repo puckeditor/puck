@@ -1,9 +1,9 @@
 .Button {
-  --puck-button-default-space-x: 20px;
-  --puck-button-default-font-size: var(--puck-font-size-xxs);
-  --puck-button-default-font-weight: var(--puck-font-weight-regular);
-  --puck-button-default-color-disabled-bg: var(--puck-color-disabled-bg);
-  --puck-button-default-color-disabled-text: var(--puck-color-disabled-text);
+  --_puck-button-default-space-x: 20px;
+  --_puck-button-default-font-size: var(--puck-font-size-xxs);
+  --_puck-button-default-font-weight: var(--puck-font-weight-regular);
+  --_puck-button-default-color-disabled-bg: var(--puck-color-disabled-bg);
+  --_puck-button-default-color-disabled-text: var(--puck-color-disabled-text);
 
   appearance: none;
   background: none;
@@ -39,11 +39,11 @@
   );
   padding-inline-start: var(
     --puck-button-medium-space-x,
-    calc(var(--puck-button-default-space-x) - var(--puck-border-width-regular))
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
   );
   padding-inline-end: var(
     --puck-button-medium-space-x,
-    calc(var(--puck-button-default-space-x) - var(--puck-border-width-regular))
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
   );
   padding-top: var(
     --puck-button-medium-space-y,
@@ -51,11 +51,11 @@
   );
   font-weight: var(
     --puck-button-medium-font-weight,
-    var(--puck-button-default-font-weight)
+    var(--_puck-button-default-font-weight)
   );
   font-size: var(
     --puck-button-medium-font-size,
-    var(--puck-button-default-font-size)
+    var(--_puck-button-default-font-size)
   );
 }
 
@@ -66,11 +66,11 @@
   );
   padding-inline-start: var(
     --puck-button-large-space-x,
-    calc(var(--puck-button-default-space-x) - var(--puck-border-width-regular))
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
   );
   padding-inline-end: var(
     --puck-button-large-space-x,
-    calc(var(--puck-button-default-space-x) - var(--puck-border-width-regular))
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
   );
   padding-top: var(
     --puck-button-large-space-y,
@@ -78,11 +78,11 @@
   );
   font-weight: var(
     --puck-button-large-font-weight,
-    var(--puck-button-default-font-weight)
+    var(--_puck-button-default-font-weight)
   );
   font-size: var(
     --puck-button-large-font-size,
-    var(--puck-button-default-font-size)
+    var(--_puck-button-default-font-size)
   );
 }
 
@@ -124,11 +124,11 @@
 .Button--primary.Button--disabled:hover {
   background-color: var(
     --puck-button-primary-color-disabled-bg,
-    var(--puck-button-default-color-disabled-bg)
+    var(--_puck-button-default-color-disabled-bg)
   );
   color: var(
     --puck-button-primary-color-disabled-text,
-    var(--puck-button-default-color-disabled-text)
+    var(--_puck-button-default-color-disabled-text)
   );
 }
 
@@ -160,11 +160,11 @@
 .Button--secondary.Button--disabled:hover {
   background-color: var(
     --puck-button-secondary-color-disabled-bg,
-    var(--puck-button-default-color-disabled-bg)
+    var(--_puck-button-default-color-disabled-bg)
   );
   color: var(
     --puck-button-secondary-color-disabled-text,
-    var(--puck-button-default-color-disabled-text)
+    var(--_puck-button-default-color-disabled-text)
   );
 }
 
