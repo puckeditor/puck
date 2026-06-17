@@ -1,6 +1,9 @@
 .PuckHeader {
-  --_puck-menu-bar-color-bg: var(--puck-header-color-bg, var(--puck-color-surface));
-  
+  --_puck-menu-bar-color-bg: var(
+    --puck-header-color-bg,
+    var(--puck-color-surface)
+  );
+
   background: var(--puck-header-color-bg, var(--puck-color-surface));
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
   color: var(--puck-header-color-text, var(--puck-color-text));
@@ -23,11 +26,11 @@
 .PuckHeader-inner {
   align-items: end;
   display: grid;
-  gap: var(--puck-space-px);
+  gap: var(--puck-space-chrome-gutter);
   grid-template-areas: "left middle right";
   grid-template-columns: 1fr auto 1fr;
   grid-template-rows: auto;
-  padding: var(--puck-space-px);
+  padding: var(--puck-space-chrome-gutter);
 }
 
 @media (min-width: 638px) {

@@ -4,19 +4,19 @@
   display: flex;
   grid-area: editor;
   flex-direction: column;
-  padding: var(--puck-space-px);
+  padding: var(--puck-space-chrome-gutter);
   position: relative;
   overflow: auto;
 }
 
 @media (min-width: 1198px) {
   .PuckCanvas {
-    padding: calc(var(--puck-space-px) * 1.5);
-    padding-top: calc(var(--puck-space-px) * 0.5);
+    padding: calc(var(--puck-space-chrome-gutter) * 1.5);
+    padding-top: calc(var(--puck-space-chrome-gutter) * 0.5);
   }
 
   .PuckCanvas:not(.PuckCanvas:has(.PuckCanvas-controls)) {
-    padding-top: calc(var(--puck-space-px) * 1.5);
+    padding-top: calc(var(--puck-space-chrome-gutter) * 1.5);
   }
 }
 
@@ -41,7 +41,7 @@
 }
 
 .PuckCanvas-root {
-  background: var(--puck-canvas-color-bg, var(--puck-color-surface));
+  background: var(--puck-canvas-preview-color-bg, var(--puck-color-surface));
   outline: var(--puck-border-width-regular) solid var(--puck-color-border);
   box-sizing: content-box;
   min-width: 321px;
@@ -92,7 +92,7 @@
 }
 
 .PuckCanvas-controls {
-  padding-bottom: calc(var(--puck-space-px) * 0.5);
+  padding-bottom: calc(var(--puck-space-chrome-gutter) * 0.5);
 }
 
 .PuckCanvas--fullScreen .PuckCanvas-controls {

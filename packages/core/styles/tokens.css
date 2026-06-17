@@ -48,7 +48,7 @@
   --puck-space-3: 12px;
   --puck-space-4: 16px;
   --puck-space-5: 24px;
-  --puck-space-px: var(--puck-space-4);
+  --puck-space-chrome-gutter: var(--puck-space-4);
 
   /*
    * Radius
