@@ -45,7 +45,12 @@
   cursor: pointer;
   width: 100%;
   margin: 0;
-  padding: 14px; /* Retain same height as other items */
+  /* +2px retains the same height as other items */
+  padding: calc(var(--puck-field-space-y, var(--puck-space-3)) + 2px)
+    var(
+      --puck-field-space-x,
+      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+    );
   text-align: left;
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
 }
