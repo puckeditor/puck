@@ -1,0 +1,89 @@
+---
+title: Fields
+---
+
+import { ConfigPreview } from "@/docs/components/Preview";
+
+# Fields
+
+Use the following CSS properties for theming Puck's fields.
+
+```css showLineNumbers
+.Container {
+  --puck-field-radius: 32px;
+  --puck-field-color-border: transparent;
+  --puck-field-color-bg: #f0f0f0;
+}
+```
+
+<div
+  style={{
+    "--puck-field-radius": "32px",
+    "--puck-field-color-border": "transparent",
+    "--puck-field-color-bg": "#f0f0f0",
+  }}
+>
+  <ConfigPreview
+    label="Example"
+    componentConfig={{
+      fields: { title: { type: "text", label: "Title" } },
+      defaultProps: { title: "Hello, world" },
+      render: ({ title }) => <p style={{ margin: 0 }}>{title}</p>,
+    }}
+  />
+</div>
+
+## CSS properties
+
+These apply to every field type; the sections below cover tokens specific to individual fields.
+
+| Token                                | Default                                                        | Description                       |
+| ------------------------------------ | -------------------------------------------------------------- | --------------------------------- |
+| `--puck-field-color-surface`         | `var(--puck-color-surface)`                                    | Object / array body background    |
+| `--puck-field-color-bg`              | `var(--puck-color-surface)`                                    | Background                        |
+| `--puck-field-color-bg-hover`        | `var(--puck-color-interactive-soft-hover)`                     | Background on hover / active      |
+| `--puck-field-color-bg-active`       | `var(--puck-color-interactive-soft)`                           | Active container background       |
+| `--puck-field-color-text`            | `var(--puck-color-text)`                                       | Text color                        |
+| `--puck-field-color-text-hover`      | `var(--puck-field-color-text)`                                 | Text color on hover               |
+| `--puck-field-color-text-active`     | `var(--puck-color-interactive)`                                | Selected state text color         |
+| `--puck-field-color-border`          | `var(--puck-color-border)`                                     | Border color                      |
+| `--puck-field-color-border-hover`    | `var(--puck-color-border-hover)`                               | Border color on hover / focus     |
+| `--puck-field-color-border-focus`    | `var(--puck-color-focus-ring)`                                 | Focus ring color                  |
+| `--puck-field-color-border-dragging` | `var(--puck-color-selection-border)`                           | Border color while dragging       |
+| `--puck-field-color-disabled-bg`     | `var(--puck-color-surface-muted)`                              | Disabled background               |
+| `--puck-field-color-disabled-border` | `var(--puck-color-border)`                                     | Disabled border color             |
+| `--puck-field-color-disabled-text`   | `var(--puck-color-text-secondary)`                             | Disabled text color               |
+| `--puck-field-border-width`          | `var(--puck-border-width-regular)`                             | Border width                      |
+| `--puck-field-radius`                | `var(--puck-radius-m)`                                         | Border radius                     |
+| `--puck-field-font-size`             | `var(--puck-font-size-xxs)`                                    | Font size                         |
+| `--puck-field-space-x`               | `calc(var(--puck-space-4) - var(--puck-border-width-regular))` | Horizontal padding                |
+| `--puck-field-space-y`               | `var(--puck-space-3)`                                          | Vertical padding                  |
+| `--puck-field-space-surface-x`       | `calc(var(--puck-space-4) - var(--puck-border-width-regular))` | Object / array horizontal padding |
+| `--puck-field-space-surface-y`       | `var(--puck-space-4)`                                          | Object / array vertical padding   |
+| `--puck-field-label-color`           | `var(--puck-color-text-secondary)`                             | Label text color                  |
+| `--puck-field-label-space-y`         | `var(--puck-space-3)`                                          | Label bottom spacing              |
+| `--puck-field-label-font-size`       | `var(--puck-font-size-xxs)`                                    | Label font size                   |
+| `--puck-field-label-font-weight`     | `var(--puck-font-weight-semibold)`                             | Label font weight                 |
+| `--puck-field-label-icon-color`      | `var(--puck-color-text-subtle)`                                | Label icon color                  |
+
+### Array
+
+| Token                               | Default                         | Description           |
+| ----------------------------------- | ------------------------------- | --------------------- |
+| `--puck-field-array-add-icon-color` | `var(--puck-color-interactive)` | Add button icon color |
+
+### Rich Text
+
+| Token                                        | Default                            | Description                |
+| -------------------------------------------- | ---------------------------------- | -------------------------- |
+| `--puck-field-richtext-menu-color-bg`        | `var(--puck-color-surface-subtle)` | Toolbar background         |
+| `--puck-field-richtext-menu-color-separator` | `var(--puck-color-border-muted)`   | Toolbar group separator    |
+| `--puck-field-richtext-menu-space-x`         | `6px`                              | Toolbar horizontal padding |
+| `--puck-field-richtext-menu-space-y`         | `6px`                              | Toolbar vertical padding   |
+
+### External
+
+| Token                                     | Default                            | Description              |
+| ----------------------------------------- | ---------------------------------- | ------------------------ |
+| `--puck-field-external-detach-color-bg`   | `var(--puck-color-surface-subtle)` | Detach button background |
+| `--puck-field-external-detach-color-text` | `var(--puck-color-text-muted)`     | Detach button text color |

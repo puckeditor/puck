@@ -46,7 +46,7 @@
 
 [data-puck-dragging] .DropZone--isEnabled {
   outline: var(--puck-border-width-focus) dashed
-    var(--puck-slot-color-enabled, var(--puck-color-azure-06));
+    var(--puck-slot-color-border-enabled, var(--puck-color-azure-06));
 }
 
 .DropZone > *:not([data-puck-component]) {

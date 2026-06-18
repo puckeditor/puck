@@ -196,7 +196,10 @@
 
 .PuckLayout-nav {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
-  background-color: var(--puck-color-surface-subtle);
+  background-color: var(
+    --puck-pluginbar-color-bg,
+    var(--puck-color-surface-subtle)
+  );
   grid-area: sidenav;
   overflow: hidden;
   width: 100%;

@@ -1,0 +1,12 @@
+.Color {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.Color-swatch {
+  height: 1.2em;
+  aspect-ratio: 1 / 1;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: 3px;
+}

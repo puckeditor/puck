@@ -1,20 +1,67 @@
-import { Callout } from "nextra/components";
-
 # Theming
 
-<Callout type="info">
-  Theming in Puck is currently limited in functionality, and being explored via
-  [#139 on GitHub](https://github.com/puckeditor/puck/issues/139).
-</Callout>
+Puck's default interface is styled with CSS custom properties (design tokens). You can override these tokens to create a custom theme that matches your brand or product, or to implement dark mode.
 
-The [Theming API](/docs/api-reference/theming) supports:
+See the [Theming API reference](/docs/api-reference/theming) for the full list of tokens.
 
-- [Fonts](fonts): Change the font family, or font loading mechanism.
+## Applying a theme
 
-For further changes to the Puck interface, use the [composition](../composition) and [UI overrides](../ui-overrides) APIs.
+To apply a theme, import Puck's stylesheet, then override the token you want in any element above the editor in the DOM tree:
+
+```css showLineNumbers
+@import "@puckeditor/core/puck.css";
+
+.Container {
+  --puck-color-interactive: #0f5fff;
+  --puck-radius-m: 8px;
+}
+```
+
+## Global tokens
+
+[Global tokens](/docs/api-reference/theming#colors) restyle the whole interface at once, covering color, spacing, radius, motion and typography.
+
+For example, to change the palette to match the interactive colors of your brand:
+
+```css showLineNumbers
+.Container {
+  --puck-color-interactive: #0d9488;
+  --puck-color-interactive-hover: #0f766e;
+  --puck-color-interactive-active: #115e59;
+  --puck-color-interactive-subtle: #ccfbf1;
+  --puck-color-interactive-soft: #f0fdfa;
+  --puck-color-interactive-soft-hover: #ccfbf1;
+  --puck-color-focus-ring: #14b8a6;
+  --puck-color-selection-bg: color-mix(in srgb, #14b8a6 20%, transparent);
+  --puck-color-selection-border: #14b8a6;
+  --puck-slot-color-border-enabled: #14b8a6;
+  --puck-slot-component-color-placeholder: #99f6e4;
+  --puck-slot-component-color-dragging-border: #5eead4;
+}
+```
+
+The [API reference](/docs/api-reference/theming) lists where each global token is used.
+
+## Component tokens
+
+When you need finer control, [component tokens](/docs/api-reference/theming#component-theming) restyle a single part of the UI and override global tokens.
+
+For example, to set the header and plugin bar background:
+
+```css showLineNumbers
+.Container {
+  --puck-header-color-bg: #fff4e6;
+  --puck-pluginbar-color-bg: #fff4e6;
+}
+```
+
+## Going further
+
+CSS tokens restyle the default interface. To change its behavior or visuals not covered by tokens, use the [composition](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides) APIs.
 
 ## Further reading
 
 - [Theming API reference](/docs/api-reference/theming)
-- [Composition](../composition.mdx)
-- [UI overrides](../ui-overrides.mdx)
+- [Fonts](/docs/extending-puck/theming/fonts)
+- [Composition](/docs/extending-puck/composition)
+- [UI overrides](/docs/extending-puck/ui-overrides)

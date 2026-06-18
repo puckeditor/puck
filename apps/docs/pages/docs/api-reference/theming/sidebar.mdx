@@ -1,0 +1,25 @@
+---
+title: Sidebar
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck } from "@/core";
+import { Sidebar } from "@/core/components/Puck/components/Sidebar";
+
+# Sidebar
+
+Use the following CSS properties for theming the left and right sidebar panels.
+
+```css showLineNumbers
+.Container {
+  --puck-sidebar-left-color-bg: #f5f5f7;
+  --puck-sidebar-right-color-bg: #ffffff;
+}
+```
+
+## CSS properties
+
+| Token                           | Default                            | Description            |
+| ------------------------------- | ---------------------------------- | ---------------------- |
+| `--puck-sidebar-left-color-bg`  | `var(--puck-color-surface-subtle)` | Left panel background  |
+| `--puck-sidebar-right-color-bg` | `var(--puck-color-surface)`        | Right panel background |

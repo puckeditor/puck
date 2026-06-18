@@ -1,10 +1,10 @@
+import { Color } from "@/docs/components/Color";
+
 # Theming
 
 CSS properties for theming the default Puck user interface.
 
-## Usage
-
-```css
+```css showLineNumbers
 @import "@puckeditor/core/puck.css";
 
 :root {
@@ -13,364 +13,124 @@ CSS properties for theming the default Puck user interface.
 }
 ```
 
-## Semantic Color Tokens
-
-| Token                                    | Default                                                           |
-| ---------------------------------------- | ----------------------------------------------------------------- |
-| `--puck-color-surface`                   | `var(--puck-color-white)`                                         |
-| `--puck-color-surface-muted`             | `var(--puck-color-grey-11)`                                       |
-| `--puck-color-surface-subtle`            | `var(--puck-color-grey-12)`                                       |
-| `--puck-color-surface-inverse`           | `var(--puck-color-grey-01)`                                       |
-| `--puck-color-border`                    | `var(--puck-color-grey-09)`                                       |
-| `--puck-color-border-hover`              | `var(--puck-color-grey-05)`                                       |
-| `--puck-color-border-muted`              | `var(--puck-color-grey-10)`                                       |
-| `--puck-color-border-inverse`            | `var(--puck-color-grey-05)`                                       |
-| `--puck-color-text`                      | `var(--puck-color-black)`                                         |
-| `--puck-color-text-secondary`            | `var(--puck-color-grey-04)`                                       |
-| `--puck-color-text-muted`                | `var(--puck-color-grey-05)`                                       |
-| `--puck-color-text-subtle`               | `var(--puck-color-grey-07)`                                       |
-| `--puck-color-text-inverse`              | `var(--puck-color-white)`                                         |
-| `--puck-color-text-inverse-opacity`      | `0.75`                                                            |
-| `--puck-color-interactive`               | `var(--puck-color-azure-04)`                                      |
-| `--puck-color-interactive-hover`         | `var(--puck-color-azure-03)`                                      |
-| `--puck-color-interactive-active`        | `var(--puck-color-azure-02)`                                      |
-| `--puck-color-interactive-subtle`        | `var(--puck-color-azure-10)`                                      |
-| `--puck-color-interactive-soft`          | `var(--puck-color-azure-11)`                                      |
-| `--puck-color-interactive-soft-hover`    | `var(--puck-color-azure-12)`                                      |
-| `--puck-color-interactive-neutral-hover` | `var(--puck-color-grey-10)`                                       |
-| `--puck-color-focus-ring`                | `var(--puck-color-azure-05)`                                      |
-| `--puck-color-selection-bg`              | `color-mix(in srgb, var(--puck-color-azure-09) 30%, transparent)` |
-| `--puck-color-selection-border`          | `var(--puck-color-azure-08)`                                      |
-| `--puck-color-disabled-bg`               | `var(--puck-color-grey-07)`                                       |
-| `--puck-color-disabled-text`             | `var(--puck-color-grey-03)`                                       |
-| `--puck-color-overlay-backdrop`          | `color-mix(in srgb, var(--puck-color-black) 75%, transparent)`    |
-
-## Non-Color Tokens
-
-### Spacing
-
-| Token             | Default               |
-| ----------------- | --------------------- |
-| `--puck-space-1`  | `4px`                 |
-| `--puck-space-2`  | `8px`                 |
-| `--puck-space-3`  | `12px`                |
-| `--puck-space-4`  | `16px`                |
-| `--puck-space-5`  | `24px`                |
-| `--puck-space-px` | `var(--puck-space-4)` |
-
-### Radius
-
-| Token                 | Default |
-| --------------------- | ------- |
-| `--puck-radius-none`  | `0`     |
-| `--puck-radius-xs`    | `2px`   |
-| `--puck-radius-s`     | `3px`   |
-| `--puck-radius-m`     | `4px`   |
-| `--puck-radius-l`     | `8px`   |
-| `--puck-radius-pill`  | `30px`  |
-| `--puck-radius-round` | `100%`  |
-
-### Border Width
-
-| Token                          | Default |
-| ------------------------------ | ------- |
-| `--puck-border-width-hairline` | `0.5px` |
-| `--puck-border-width-regular`  | `1px`   |
-| `--puck-border-width-focus`    | `2px`   |
-| `--puck-border-width-strong`   | `4px`   |
-
-### Motion
-
-| Token                    | Default       |
-| ------------------------ | ------------- |
-| `--puck-duration-fast`   | `50ms`        |
-| `--puck-duration-medium` | `150ms`       |
-| `--puck-duration-slow`   | `250ms`       |
-| `--puck-ease-exit`       | `ease-in`     |
-| `--puck-ease-emphasized` | `ease-in-out` |
-| `--puck-ease-entrance`   | `ease-out`    |
-
-### Typography
-
-| Token                           | Default                                                                                            |
-| ------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--puck-font-family`            | `Inter, var(--puck-fallback-font-stack)`                                                           |
-| `--puck-font-family-monospaced` | `ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace` |
-| `--puck-font-weight-regular`    | `400`                                                                                              |
-| `--puck-font-weight-medium`     | `500`                                                                                              |
-| `--puck-font-weight-semibold`   | `600`                                                                                              |
-| `--puck-font-weight-bold`       | `700`                                                                                              |
-| `--puck-font-weight-heavy`      | `800`                                                                                              |
-| `--puck-letter-spacing-ui`      | `0.05ch`                                                                                           |
-| `--puck-letter-spacing-heading` | `0.08ch`                                                                                           |
-| `--puck-space-m-unitless`       | `24`                                                                                               |
-
-### Icon Size
-
-| Token                | Default |
-| -------------------- | ------- |
-| `--puck-icon-size-s` | `16px`  |
-| `--puck-icon-size-m` | `18px`  |
-| `--puck-icon-size-l` | `24px`  |
-
-### Functional Tokens
-
-| Token                              | Default                      |
-| ---------------------------------- | ---------------------------- |
-| `--puck-slot-min-empty-height`     | `128px`                      |
-| `--puck-user-left-side-bar-width`  | `var(--puck-side-bar-width)` |
-| `--puck-user-right-side-bar-width` | `var(--puck-side-bar-width)` |
-
-## Component Tokens
-
-Component-level tokens override global tokens for specific components. Set them on `:root` or any ancestor of the Puck editor. If unset, the global token applies.
-
-### Action bar
-
-| Token                                      | Default                                  |
-| ------------------------------------------ | ---------------------------------------- |
-| `--puck-action-bar-color-bg`               | `var(--puck-color-surface-inverse)`      |
-| `--puck-action-bar-color-text`             | `var(--puck-color-text-inverse)`         |
-| `--puck-action-bar-color-text-opacity`     | `var(--puck-color-text-inverse-opacity)` |
-| `--puck-action-bar-color-separator`        | `var(--puck-color-border-inverse)`       |
-| `--puck-action-bar-color-hover`            | `var(--puck-color-azure-06)`             |
-| `--puck-action-bar-color-active`           | `var(--puck-color-azure-07)`             |
-| `--puck-action-bar-color-disabled`         | `var(--puck-color-text-inverse)`         |
-| `--puck-action-bar-color-disabled-opacity` | `0.54`                                   |
-| `--puck-action-bar-space-y`                | `6px`                                    |
-| `--puck-action-bar-space-x`                | `0`                                      |
-| `--puck-action-bar-radius`                 | `var(--puck-radius-l)`                   |
-| `--puck-action-bar-font-size`              | `var(--puck-font-size-xxxs)`             |
-| `--puck-action-bar-action-space`           | `6px`                                    |
-| `--puck-action-bar-action-size`            | `var(--puck-icon-size-s)`                |
-
-### Button
-
-Shared across variants:
-
-| Token                  | Default                |
-| ---------------------- | ---------------------- |
-| `--puck-button-radius` | `var(--puck-radius-m)` |
-
-#### Medium size (`--puck-button-medium-*`)
-
-| Token                              | Default                                                        |
-| ---------------------------------- | -------------------------------------------------------------- |
-| `--puck-button-medium-space-y`     | `calc(var(--puck-space-2) - var(--puck-border-width-regular))` |
-| `--puck-button-medium-space-x`     | `20px`                                                         |
-| `--puck-button-medium-font-weight` | `var(--puck-font-weight-regular)`                              |
-| `--puck-button-medium-font-size`   | `var(--puck-font-size-xxs)`                                    |
-
-#### Large size (`--puck-button-large-*`)
-
-| Token                             | Default                                                        |
-| --------------------------------- | -------------------------------------------------------------- |
-| `--puck-button-large-space-y`     | `calc(var(--puck-space-3) - var(--puck-border-width-regular))` |
-| `--puck-button-large-space-x`     | `20px`                                                         |
-| `--puck-button-large-font-weight` | `var(--puck-font-weight-regular)`                              |
-| `--puck-button-large-font-size`   | `var(--puck-font-size-xxs)`                                    |
-
-#### Primary variant (`--puck-button-primary-*`)
-
-| Token                                       | Default                                |
-| ------------------------------------------- | -------------------------------------- |
-| `--puck-button-primary-color-bg`            | `var(--puck-color-interactive)`        |
-| `--puck-button-primary-color-bg-hover`      | `var(--puck-color-interactive-hover)`  |
-| `--puck-button-primary-color-bg-active`     | `var(--puck-color-interactive-active)` |
-| `--puck-button-primary-color-text`          | `var(--puck-color-text-inverse)`       |
-| `--puck-button-primary-color-border`        | `transparent`                          |
-| `--puck-button-primary-color-disabled-bg`   | `var(--puck-color-disabled-bg)`        |
-| `--puck-button-primary-color-disabled-text` | `var(--puck-color-disabled-text)`      |
-
-#### Secondary variant (`--puck-button-secondary-*`)
-
-| Token                                         | Default                              |
-| --------------------------------------------- | ------------------------------------ |
-| `--puck-button-secondary-color-bg`            | `transparent`                        |
-| `--puck-button-secondary-color-bg-hover`      | `var(--puck-color-interactive-soft)` |
-| `--puck-button-secondary-color-bg-active`     | `var(--puck-color-interactive-soft)` |
-| `--puck-button-secondary-color-text`          | `currentColor`                       |
-| `--puck-button-secondary-color-border`        | `currentColor`                       |
-| `--puck-button-secondary-color-disabled-bg`   | `var(--puck-color-disabled-bg)`      |
-| `--puck-button-secondary-color-disabled-text` | `var(--puck-color-disabled-text)`    |
-
-### Canvas
-
-| Token                      | Default                           |
-| -------------------------- | --------------------------------- |
-| `--puck-canvas-color-text` | `var(--puck-color-text)`          |
-| `--puck-canvas-color-bg`   | `var(--puck-color-surface-muted)` |
-
-### Fields
-
-| Token                                | Default                                                        |
-| ------------------------------------ | -------------------------------------------------------------- |
-| `--puck-field-color-surface`         | `var(--puck-color-surface)`                                    |
-| `--puck-field-color-bg`              | `var(--puck-color-surface)`                                    |
-| `--puck-field-color-bg-hover`        | `var(--puck-color-interactive-soft-hover)`                     |
-| `--puck-field-color-bg-active`       | `var(--puck-color-interactive-soft)`                           |
-| `--puck-field-color-text`            | `var(--puck-color-text)`                                       |
-| `--puck-field-color-text-hover`      | `var(--puck-field-color-text)`                                 |
-| `--puck-field-color-text-active`     | `var(--puck-color-interactive)`                                |
-| `--puck-field-color-border`          | `var(--puck-color-border)`                                     |
-| `--puck-field-color-border-hover`    | `var(--puck-color-border-hover)`                               |
-| `--puck-field-color-border-focus`    | `var(--puck-color-focus-ring)`                                 |
-| `--puck-field-color-border-dragging` | `var(--puck-color-selection-border)`                           |
-| `--puck-field-color-disabled-bg`     | `var(--puck-color-surface-muted)`                              |
-| `--puck-field-color-disabled-border` | `var(--puck-color-border)`                                     |
-| `--puck-field-color-disabled-text`   | `var(--puck-color-text-secondary)`                             |
-| `--puck-field-border-width`          | `var(--puck-border-width-regular)`                             |
-| `--puck-field-radius`                | `var(--puck-radius-m)`                                         |
-| `--puck-field-font-size`             | `var(--puck-font-size-xxs)`                                    |
-| `--puck-field-space-x`               | `calc(var(--puck-space-4) - var(--puck-border-width-regular))` |
-| `--puck-field-space-y`               | `var(--puck-space-3)`                                          |
-| `--puck-field-space-surface-x`       | `calc(var(--puck-space-4) - var(--puck-border-width-regular))` |
-| `--puck-field-space-surface-y`       | `var(--puck-space-4)`                                          |
-| `--puck-field-label-color`           | `var(--puck-color-text-secondary)`                             |
-| `--puck-field-label-space-y`         | `var(--puck-space-3)`                                          |
-| `--puck-field-label-font-size`       | `var(--puck-font-size-xxs)`                                    |
-| `--puck-field-label-font-weight`     | `var(--puck-font-weight-semibold)`                             |
-| `--puck-field-label-icon-color`      | `var(--puck-color-text-subtle)`                                |
-
-#### Array
-
-| Token                               | Default                         |
-| ----------------------------------- | ------------------------------- |
-| `--puck-field-array-add-icon-color` | `var(--puck-color-interactive)` |
-
-#### Rich Text
-
-| Token                                        | Default                            |
-| -------------------------------------------- | ---------------------------------- |
-| `--puck-field-richtext-menu-color-bg`        | `var(--puck-color-surface-subtle)` |
-| `--puck-field-richtext-menu-color-separator` | `var(--puck-color-border-muted)`   |
-| `--puck-field-richtext-menu-space-x`         | `6px`                              |
-| `--puck-field-richtext-menu-space-y`         | `6px`                              |
-
-#### External
-
-| Token                                     | Default                            |
-| ----------------------------------------- | ---------------------------------- |
-| `--puck-field-external-detach-color-bg`   | `var(--puck-color-surface-subtle)` |
-| `--puck-field-external-detach-color-text` | `var(--puck-color-text-muted)`     |
-
-### Icon Button
-
-| Token                                    | Default                                       |
-| ---------------------------------------- | --------------------------------------------- |
-| `--puck-icon-button-radius`              | `var(--puck-radius-m)`                        |
-| `--puck-icon-button-space`               | `var(--puck-space-1)`                         |
-| `--puck-icon-button-color-bg`            | `transparent`                                 |
-| `--puck-icon-button-color-bg-hover`      | `var(--puck-color-interactive-neutral-hover)` |
-| `--puck-icon-button-color-bg-active`     | `var(--puck-color-interactive-soft)`          |
-| `--puck-icon-button-color-icon`          | `currentColor`                                |
-| `--puck-icon-button-color-icon-hover`    | `var(--puck-color-interactive)`               |
-| `--puck-icon-button-color-icon-active`   | `var(--puck-color-interactive)`               |
-| `--puck-icon-button-color-icon-disabled` | `var(--puck-color-text-subtle)`               |
-
-### Slot
-
-| Token                                         | Default                              |
-| --------------------------------------------- | ------------------------------------ |
-| `--puck-slot-color-bg`                        | `var(--puck-color-selection-bg)`     |
-| `--puck-slot-color-border`                    | `var(--puck-color-selection-border)` |
-| `--puck-slot-color-enabled`                   | `var(--puck-color-azure-06)`         |
-| `--puck-slot-component-color-overlay`         | `var(--puck-color-selection-bg)`     |
-| `--puck-slot-component-color-overlay-border`  | `var(--puck-color-selection-border)` |
-| `--puck-slot-component-color-selected-border` | `var(--puck-color-azure-07)`         |
-| `--puck-slot-component-color-placeholder`     | `var(--puck-color-azure-06)`         |
-| `--puck-slot-component-color-dragging-border` | `var(--puck-color-azure-09)`         |
-
-### Sidebar
-
-| Token                           | Default                            |
-| ------------------------------- | ---------------------------------- |
-| `--puck-sidebar-left-color-bg`  | `var(--puck-color-surface-subtle)` |
-| `--puck-sidebar-right-color-bg` | `var(--puck-color-surface)`        |
-
-### Drawer
-
-| Token                                     | Default                                    |
-| ----------------------------------------- | ------------------------------------------ |
-| `--puck-drawer-space`                     | `var(--puck-space-4)`                      |
-| `--puck-drawer-category-color-text`       | `var(--puck-color-text-muted)`             |
-| `--puck-drawer-category-color-bg-hover`   | `var(--puck-color-interactive-soft)`       |
-| `--puck-drawer-category-color-text-hover` | `var(--puck-color-interactive)`            |
-| `--puck-drawer-category-color-bg-active`  | `var(--puck-color-interactive-subtle)`     |
-| `--puck-drawer-category-font-size`        | `var(--puck-font-size-xxxs)`               |
-| `--puck-drawer-category-space`            | `var(--puck-space-2)`                      |
-| `--puck-drawer-item-color-bg`             | `var(--puck-color-surface)`                |
-| `--puck-drawer-item-color-text`           | `var(--puck-color-text)`                   |
-| `--puck-drawer-item-color-border`         | `var(--puck-color-border)`                 |
-| `--puck-drawer-item-border-width`         | `var(--puck-border-width-regular)`         |
-| `--puck-drawer-item-color-bg-hover`       | `var(--puck-color-interactive-soft-hover)` |
-| `--puck-drawer-item-color-text-hover`     | `var(--puck-color-interactive)`            |
-| `--puck-drawer-item-radius`               | `var(--puck-radius-m)`                     |
-| `--puck-drawer-item-font-size`            | `var(--puck-font-size-xxs)`                |
-| `--puck-drawer-item-space`                | `var(--puck-space-3)`                      |
-
-### Outline
-
-| Token                                  | Default                                |
-| -------------------------------------- | -------------------------------------- |
-| `--puck-outline-color-text`            | `var(--puck-color-grey-03)`            |
-| `--puck-outline-color-icon`            | `var(--puck-color-rose-07)`            |
-| `--puck-outline-color-bg-hover`        | `var(--puck-color-interactive-soft)`   |
-| `--puck-outline-color-text-hover`      | `var(--puck-color-interactive)`        |
-| `--puck-outline-color-border-hover`    | `var(--puck-color-interactive-subtle)` |
-| `--puck-outline-color-bg-selected`     | `var(--puck-color-interactive-subtle)` |
-| `--puck-outline-color-border-selected` | `var(--puck-color-selection-border)`   |
-| `--puck-outline-border-width`          | `var(--puck-border-width-regular)`     |
-| `--puck-outline-radius`                | `var(--puck-radius-m)`                 |
-| `--puck-outline-font-size`             | `var(--puck-font-size-xxs)`            |
-| `--puck-outline-zone-color-text`       | `var(--puck-color-text-muted)`         |
-| `--puck-outline-zone-font-size`        | `var(--puck-font-size-xxxs)`           |
-
-### Header
-
-| Token                      | Default                     |
-| -------------------------- | --------------------------- |
-| `--puck-header-color-bg`   | `var(--puck-color-surface)` |
-| `--puck-header-color-text` | `var(--puck-color-text)`    |
-
-## Examples
-
-### Brand Colors
-
-```css
-@import "@puckeditor/core/puck.css";
-
-:root {
-  --puck-color-interactive: #0d9488;
-  --puck-color-interactive-hover: #0f766e;
-  --puck-color-interactive-active: #115e59;
-  --puck-color-focus-ring: #14b8a6;
-}
-```
-
-### Compact UI
-
-```css
-@import "@puckeditor/core/puck.css";
-
-:root {
-  --puck-space-4: 14px;
-  --puck-space-px: var(--puck-space-4);
-  --puck-radius-m: 3px;
-  --puck-radius-l: 6px;
-}
-```
-
-### Fonts
-
-If you load your own font file, use the `no-external.css` bundle to prevent loading Puck's default external font.
-
-```css
-/* @import "@puckeditor/core/puck.css"; */
-@import "@puckeditor/core/no-external.css";
-
-:root {
-  --puck-font-family: "IBM Plex Sans", sans-serif;
-  --puck-font-family-monospaced: "IBM Plex Mono", monospace;
-}
-```
+## Colors
+
+| Token                                    | Default                                                     | Used for                                            |
+| ---------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------- |
+| `--puck-color-surface`                   | <Color>#ffffff</Color>                                      | Panel, field and menu backgrounds                   |
+| `--puck-color-surface-muted`             | <Color>#f5f5f5</Color>                                      | Canvas and disabled field backgrounds               |
+| `--puck-color-surface-subtle`            | <Color>#fafafa</Color>                                      | App layout, sidebar and toolbar backgrounds         |
+| `--puck-color-surface-inverse`           | <Color>#181818</Color>                                      | Action bar background                               |
+| `--puck-color-border`                    | <Color>#dcdcdc</Color>                                      | Default borders and dividers                        |
+| `--puck-color-border-hover`              | <Color>#767676</Color>                                      | Input border on hover and focus                     |
+| `--puck-color-border-muted`              | <Color>#efefef</Color>                                      | Subtle dividers and separators                      |
+| `--puck-color-border-inverse`            | <Color>#767676</Color>                                      | Separators on inverse surfaces                      |
+| `--puck-color-text`                      | <Color>#000000</Color>                                      | Default body and field text                         |
+| `--puck-color-text-secondary`            | <Color>#5a5a5a</Color>                                      | Field labels and disabled field text                |
+| `--puck-color-text-muted`                | <Color>#767676</Color>                                      | Drawer categories, drag handles and zone labels     |
+| `--puck-color-text-subtle`               | <Color>#ababab</Color>                                      | Disabled icons, loaders and helper text             |
+| `--puck-color-text-inverse`              | <Color>#ffffff</Color>                                      | Text on inverse and primary surfaces                |
+| `--puck-color-text-inverse-opacity`      | `0.75`                                                      | Action bar label opacity                            |
+| `--puck-color-interactive`               | <Color>#0158ad</Color>                                      | Primary actions, links and active states            |
+| `--puck-color-interactive-hover`         | <Color>#014292</Color>                                      | Links and primary button hover                      |
+| `--puck-color-interactive-active`        | <Color>#002c77</Color>                                      | Links and primary button active                     |
+| `--puck-color-interactive-subtle`        | <Color>#e7eef7</Color>                                      | Active plugin bar, category and outline backgrounds |
+| `--puck-color-interactive-soft`          | <Color>#f3f6fb</Color>                                      | Secondary button and selected item backgrounds      |
+| `--puck-color-interactive-soft-hover`    | <Color>#f7faff</Color>                                      | Row and item hover backgrounds                      |
+| `--puck-color-interactive-neutral-hover` | <Color>#efefef</Color>                                      | Icon button hover background                        |
+| `--puck-color-focus-ring`                | <Color>#3479be</Color>                                      | Keyboard focus outlines                             |
+| `--puck-color-selection-bg`              | <Color>color-mix(in srgb, #cfdff0 30%, transparent)</Color> | Slot, drop zone and selected overlay background     |
+| `--puck-color-selection-border`          | <Color>#abc7e5</Color>                                      | Selected and drop zone outline borders              |
+| `--puck-color-disabled-bg`               | <Color>#ababab</Color>                                      | Disabled button background                          |
+| `--puck-color-disabled-text`             | <Color>#404040</Color>                                      | Disabled button text                                |
+| `--puck-color-overlay-backdrop`          | <Color>color-mix(in srgb, #000000 75%, transparent)</Color> | Modal backdrop                                      |
+
+## Spacing
+
+| Token                        | Default               | Used for                                        |
+| ---------------------------- | --------------------- | ----------------------------------------------- |
+| `--puck-space-1`             | `4px`                 | Small gaps, padding and margins throughout      |
+| `--puck-space-2`             | `8px`                 | Medium spacing in buttons, plugin bar and menus |
+| `--puck-space-3`             | `12px`                | Default field padding and drawer items          |
+| `--puck-space-4`             | `16px`                | Large panel, section and field padding          |
+| `--puck-space-5`             | `24px`                | External input panels and slot indicator height |
+| `--puck-space-chrome-gutter` | `var(--puck-space-4)` | Header and canvas gutter padding                |
+
+## Radius
+
+| Token                 | Default | Used for                                            |
+| --------------------- | ------- | --------------------------------------------------- |
+| `--puck-radius-none`  | `0`     | Square-cornered plugin bar tabs and button variants |
+| `--puck-radius-xs`    | `2px`   | Breadcrumb and sidebar section hover chips          |
+| `--puck-radius-s`     | `3px`   | Radius scale step, not currently consumed           |
+| `--puck-radius-m`     | `4px`   | Default radius for buttons, fields and controls     |
+| `--puck-radius-l`     | `8px`   | Action bar, modal and select dropdown               |
+| `--puck-radius-pill`  | `30px`  | Viewport size control buttons                       |
+| `--puck-radius-round` | `100%`  | Loader spinner ring                                 |
+
+## Border Width
+
+| Token                          | Default | Used for                                   |
+| ------------------------------ | ------- | ------------------------------------------ |
+| `--puck-border-width-hairline` | `0.5px` | Action bar and rich text menu dividers     |
+| `--puck-border-width-regular`  | `1px`   | Default borders and outlines across UI     |
+| `--puck-border-width-focus`    | `2px`   | Focus ring outlines and drop zone outlines |
+| `--puck-border-width-strong`   | `4px`   | Plugin bar active tab and accent borders   |
+
+## Motion
+
+| Token                    | Default       | Used for                                       |
+| ------------------------ | ------------- | ---------------------------------------------- |
+| `--puck-duration-fast`   | `50ms`        | Hover and focus transitions across UI controls |
+| `--puck-duration-medium` | `150ms`       | Layout, sidebar and slot resize transitions    |
+| `--puck-duration-slow`   | `250ms`       | Canvas fade-in transition                      |
+| `--puck-ease-exit`       | `ease-in`     | Easing for most hover and collapse transitions |
+| `--puck-ease-emphasized` | `ease-in-out` | Easing for viewport controls slide             |
+| `--puck-ease-entrance`   | `ease-out`    | Easing for canvas and sidebar entrance         |
+
+## Typography
+
+| Token                           | Default                                                                                                                              | Used for                                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `--puck-font-family`            | `Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol` | Default editor UI font family               |
+| `--puck-font-family-monospaced` | `ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace`                                   | Header path display font                    |
+| `--puck-font-weight-regular`    | `400`                                                                                                                                | Default button font weight                  |
+| `--puck-font-weight-medium`     | `500`                                                                                                                                | Active fields, labels and action bar        |
+| `--puck-font-weight-semibold`   | `600`                                                                                                                                | Field labels, plugin bar items and headers  |
+| `--puck-font-weight-bold`       | `700`                                                                                                                                | Heading component text                      |
+| `--puck-font-weight-heavy`      | `800`                                                                                                                                | Largest heading variant                     |
+| `--puck-letter-spacing-ui`      | `0.05ch`                                                                                                                             | Button label letter spacing                 |
+| `--puck-letter-spacing-heading` | `0.08ch`                                                                                                                             | Largest heading letter spacing              |
+| `--puck-space-m-unitless`       | `24`                                                                                                                                 | Referenced by line-height calculations only |
+
+## Icon Size
+
+| Token                | Default | Used for                                     |
+| -------------------- | ------- | -------------------------------------------- |
+| `--puck-icon-size-s` | `16px`  | Action bar and inline control icons          |
+| `--puck-icon-size-m` | `18px`  | Select and rich text menu icons              |
+| `--puck-icon-size-l` | `24px`  | Icon size scale step, not currently consumed |
+
+## Functional
+
+| Token                             | Default                    | Used for                              |
+| --------------------------------- | -------------------------- | ------------------------------------- |
+| `--puck-slot-min-empty-height`    | `128px`                    | Minimum height of empty slots         |
+| `--puck-user-left-sidebar-width`  | `186px–320px (responsive)` | User override for left sidebar width  |
+| `--puck-user-right-sidebar-width` | `186px–320px (responsive)` | User override for right sidebar width |
+
+## Component theming
+
+Component-level tokens override global tokens for specific components.
+
+- [Action bar](theming/action-bar): The action bar shown when selecting a component.
+- [Button](theming/button): The buttons, such as the Publish button.
+- [Canvas](theming/canvas): The canvas preview area.
+- [Drawer](theming/drawer): The component drawer.
+- [Fields](theming/fields): The puck [fields](/docs/api-reference/fields).
+- [Header](theming/header): The editor header.
+- [Icon button](theming/icon-button): The icon buttons.
+- [Outline](theming/outline): The outline panel.
+- [Plugin bar](theming/plugin-bar): The side navigation for switching plugins.
+- [Sidebar](theming/sidebar): The left and right sidebar panels.
+- [Slot](theming/slot): The slots.

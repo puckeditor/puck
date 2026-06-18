@@ -44,15 +44,9 @@
 }
 
 .PuckHeader-toggle {
-  color: var(--puck-color-text-muted);
   display: flex;
   margin-inline-start: calc(var(--puck-space-1) * -1);
   padding-top: 2px;
-}
-
-.PuckHeader--rightSideBarVisible .PuckHeader-rightSideBarToggle,
-.PuckHeader--leftSideBarVisible .PuckHeader-leftSideBarToggle {
-  color: var(--puck-color-text);
 }
 
 .PuckHeader-rightSideBarToggle,

@@ -1,0 +1,62 @@
+---
+title: Drawer
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Drawer } from "@/puck";
+
+# Drawer
+
+Use the following CSS properties for theming the component drawer, including its category headers and draggable items.
+
+```css showLineNumbers
+.Container {
+  --puck-drawer-item-color-bg: #1e1e2e;
+  --puck-drawer-item-color-text: #cdd6f4;
+  --puck-drawer-item-radius: 12px;
+}
+```
+
+<PuckPreview
+  config={{
+    components: {
+      Heading: { render: () => <div>Heading</div> },
+      Paragraph: { render: () => <div>Paragraph</div> },
+    },
+  }}
+  data={{ root: { props: {} }, content: [] }}
+>
+  <div
+    style={{
+      "--puck-drawer-item-color-bg": "#1e1e2e",
+      "--puck-drawer-item-color-text": "#cdd6f4",
+      "--puck-drawer-item-radius": "12px",
+    }}
+  >
+    <Drawer>
+      <Drawer.Item name="Heading" />
+      <Drawer.Item name="Paragraph" />
+    </Drawer>
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+| Token                                     | Default                                    | Description                          |
+| ----------------------------------------- | ------------------------------------------ | ------------------------------------ |
+| `--puck-drawer-space`                     | `var(--puck-space-4)`                      | Drawer padding                       |
+| `--puck-drawer-category-color-text`       | `var(--puck-color-text-muted)`             | Category header text color           |
+| `--puck-drawer-category-color-bg-hover`   | `var(--puck-color-interactive-soft)`       | Category header background on hover  |
+| `--puck-drawer-category-color-text-hover` | `var(--puck-color-interactive)`            | Category header text color on hover  |
+| `--puck-drawer-category-color-bg-active`  | `var(--puck-color-interactive-subtle)`     | Category header background on active |
+| `--puck-drawer-category-font-size`        | `var(--puck-font-size-xxxs)`               | Category header font size            |
+| `--puck-drawer-category-space`            | `var(--puck-space-2)`                      | Category header padding              |
+| `--puck-drawer-item-color-bg`             | `var(--puck-color-surface)`                | Item background color                |
+| `--puck-drawer-item-color-text`           | `var(--puck-color-text)`                   | Item text color                      |
+| `--puck-drawer-item-color-border`         | `var(--puck-color-border)`                 | Item border color                    |
+| `--puck-drawer-item-border-width`         | `var(--puck-border-width-regular)`         | Item border width                    |
+| `--puck-drawer-item-color-bg-hover`       | `var(--puck-color-interactive-soft-hover)` | Item background on hover             |
+| `--puck-drawer-item-color-text-hover`     | `var(--puck-color-interactive)`            | Item text color on hover             |
+| `--puck-drawer-item-radius`               | `var(--puck-radius-m)`                     | Item border radius                   |
+| `--puck-drawer-item-font-size`            | `var(--puck-font-size-xxs)`                | Item font size                       |
+| `--puck-drawer-item-space`                | `var(--puck-space-3)`                      | Item padding                         |

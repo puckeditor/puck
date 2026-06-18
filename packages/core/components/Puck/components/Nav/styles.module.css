@@ -39,7 +39,7 @@
 .NavItem-link {
   text-align: center;
   align-items: center;
-  color: var(--puck-color-text-secondary);
+  color: var(--puck-pluginbar-color-text, var(--puck-color-text-secondary));
   display: flex;
   gap: var(--puck-space-2);
   text-decoration: none;
@@ -76,7 +76,7 @@
   border-bottom: var(--puck-border-width-strong) solid transparent;
   border-radius: var(--puck-radius-none);
   flex-direction: column;
-  font-size: var(--puck-font-size-xxxs);
+  font-size: var(--puck-pluginbar-font-size, var(--puck-font-size-xxxs));
 }
 
 @media (min-width: 638px) {
@@ -88,13 +88,21 @@
 }
 
 .NavItem-linkIcon {
-  height: var(--puck-icon-size-l);
-  width: var(--puck-icon-size-l);
+  height: 2em;
+  width: 2em;
+}
+
+.NavItem-linkIcon svg {
+  height: 100%;
+  width: 100%;
 }
 
 .NavItem--active > .NavItem-link {
   background-color: var(--puck-color-interactive-subtle);
-  color: var(--puck-color-interactive);
+  color: var(
+    --puck-pluginbar-color-text-selected,
+    var(--puck-color-interactive)
+  );
   font-weight: var(--puck-font-weight-semibold);
 }
 
@@ -109,13 +117,19 @@
 @media (min-width: 638px) {
   .NavItem--active > .NavItem-link {
     border-top-color: transparent;
-    border-right-color: var(--puck-color-interactive);
+    border-right-color: var(
+      --puck-pluginbar-color-text-selected,
+      var(--puck-color-interactive)
+    );
   }
 }
 
 .NavItem:not(.NavItem--active) > .NavItem-link:hover {
-  background-color: var(--puck-color-interactive-soft);
-  color: var(--puck-color-interactive);
+  background-color: var(
+    --puck-pluginbar-color-bg-hover,
+    var(--puck-color-interactive-soft)
+  );
+  color: var(--puck-pluginbar-color-text-hover, var(--puck-color-interactive));
 }
 
 @media (min-width: 638px) {

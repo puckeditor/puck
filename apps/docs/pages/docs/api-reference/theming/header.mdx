@@ -1,0 +1,36 @@
+---
+title: Header
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck } from "@/core";
+import { Header } from "@/core/components/Puck/components/Header";
+
+# Header
+
+Use the following CSS properties for theming the editor header.
+
+```css showLineNumbers
+.Container {
+  --puck-header-color-bg: #1e293b;
+  --puck-header-color-text: #f8fafc;
+}
+```
+
+<PuckPreview disableContentStyles>
+  <div
+    style={{
+      "--puck-header-color-bg": "#1e293b",
+      "--puck-header-color-text": "#f8fafc",
+    }}
+  >
+    <Header />
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+| Token                      | Default                     | Description      |
+| -------------------------- | --------------------------- | ---------------- |
+| `--puck-header-color-bg`   | `var(--puck-color-surface)` | Background color |
+| `--puck-header-color-text` | `var(--puck-color-text)`    | Text color       |

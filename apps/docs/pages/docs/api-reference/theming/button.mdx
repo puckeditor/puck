@@ -1,0 +1,82 @@
+---
+title: Button
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Button } from "@/puck";
+
+# Button
+
+Use the following CSS properties for theming Puck's buttons, such as the Publish button.
+
+```css showLineNumbers
+.Container {
+  --puck-button-radius: 9999px;
+  --puck-button-primary-color-bg: #6d28d9;
+  --puck-button-primary-color-bg-hover: #5b21b6;
+}
+```
+
+<PuckPreview>
+  <div
+    style={{
+      "--puck-button-radius": "9999px",
+      "--puck-button-primary-color-bg": "#6d28d9",
+      "--puck-button-primary-color-bg-hover": "#5b21b6",
+    }}
+  >
+    <Button>Publish</Button>
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+| Token                  | Default                | Description   |
+| ---------------------- | ---------------------- | ------------- |
+| `--puck-button-radius` | `var(--puck-radius-m)` | Border radius |
+
+### Sizes
+
+**Medium size (`--puck-button-medium-*`)**
+
+| Token                              | Default                                                        | Description        |
+| ---------------------------------- | -------------------------------------------------------------- | ------------------ |
+| `--puck-button-medium-space-y`     | `calc(var(--puck-space-2) - var(--puck-border-width-regular))` | Vertical padding   |
+| `--puck-button-medium-space-x`     | `calc(20px - var(--puck-border-width-regular))`                | Horizontal padding |
+| `--puck-button-medium-font-weight` | `var(--puck-font-weight-regular)`                              | Label font weight  |
+| `--puck-button-medium-font-size`   | `var(--puck-font-size-xxs)`                                    | Label font size    |
+
+**Large size (`--puck-button-large-*`)**
+
+| Token                             | Default                                                        | Description        |
+| --------------------------------- | -------------------------------------------------------------- | ------------------ |
+| `--puck-button-large-space-y`     | `calc(var(--puck-space-3) - var(--puck-border-width-regular))` | Vertical padding   |
+| `--puck-button-large-space-x`     | `calc(20px - var(--puck-border-width-regular))`                | Horizontal padding |
+| `--puck-button-large-font-weight` | `var(--puck-font-weight-regular)`                              | Label font weight  |
+| `--puck-button-large-font-size`   | `var(--puck-font-size-xxs)`                                    | Label font size    |
+
+### Variants
+
+**Primary variant (`--puck-button-primary-*`)**
+
+| Token                                       | Default                                | Description            |
+| ------------------------------------------- | -------------------------------------- | ---------------------- |
+| `--puck-button-primary-color-bg`            | `var(--puck-color-interactive)`        | Background             |
+| `--puck-button-primary-color-bg-hover`      | `var(--puck-color-interactive-hover)`  | Background on hover    |
+| `--puck-button-primary-color-bg-active`     | `var(--puck-color-interactive-active)` | Background when active |
+| `--puck-button-primary-color-text`          | `var(--puck-color-text-inverse)`       | Text color             |
+| `--puck-button-primary-color-border`        | `transparent`                          | Border color           |
+| `--puck-button-primary-color-disabled-bg`   | `var(--puck-color-disabled-bg)`        | Disabled background    |
+| `--puck-button-primary-color-disabled-text` | `var(--puck-color-disabled-text)`      | Disabled text color    |
+
+**Secondary variant (`--puck-button-secondary-*`)**
+
+| Token                                         | Default                              | Description            |
+| --------------------------------------------- | ------------------------------------ | ---------------------- |
+| `--puck-button-secondary-color-bg`            | `transparent`                        | Background             |
+| `--puck-button-secondary-color-bg-hover`      | `var(--puck-color-interactive-soft)` | Background on hover    |
+| `--puck-button-secondary-color-bg-active`     | `var(--puck-color-interactive-soft)` | Background when active |
+| `--puck-button-secondary-color-text`          | `currentColor`                       | Text color             |
+| `--puck-button-secondary-color-border`        | `currentColor`                       | Border color           |
+| `--puck-button-secondary-color-disabled-bg`   | `var(--puck-color-disabled-bg)`      | Disabled background    |
+| `--puck-button-secondary-color-disabled-text` | `var(--puck-color-disabled-text)`    | Disabled text color    |

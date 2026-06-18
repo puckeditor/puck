@@ -1,0 +1,49 @@
+---
+title: Icon button
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { IconButton } from "@/puck";
+import { Trash } from "lucide-react";
+
+# Icon button
+
+Use the following CSS properties for theming Puck's icon buttons.
+
+```css showLineNumbers
+.Container {
+  --puck-icon-button-radius: 9999px;
+  --puck-icon-button-color-icon: #1f2937;
+  --puck-icon-button-color-bg-hover: #eef2ff;
+  --puck-icon-button-space: 16px;
+}
+```
+
+<PuckPreview>
+  <div
+    style={{
+      "--puck-icon-button-radius": "9999px",
+      "--puck-icon-button-color-icon": "#1f2937",
+      "--puck-icon-button-color-bg-hover": "#eef2ff",
+      "--puck-icon-button-space": "16px",
+    }}
+  >
+    <IconButton title="Delete">
+      <Trash size={24} />
+    </IconButton>
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+| Token                                    | Default                                       | Description             |
+| ---------------------------------------- | --------------------------------------------- | ----------------------- |
+| `--puck-icon-button-radius`              | `var(--puck-radius-m)`                        | Border radius           |
+| `--puck-icon-button-space`               | `var(--puck-space-1)`                         | Padding                 |
+| `--puck-icon-button-color-bg`            | `transparent`                                 | Background color        |
+| `--puck-icon-button-color-bg-hover`      | `var(--puck-color-interactive-neutral-hover)` | Background on hover     |
+| `--puck-icon-button-color-bg-active`     | `var(--puck-color-interactive-soft)`          | Background when pressed |
+| `--puck-icon-button-color-icon`          | `currentColor`                                | Icon color              |
+| `--puck-icon-button-color-icon-hover`    | `var(--puck-color-interactive)`               | Icon color on hover     |
+| `--puck-icon-button-color-icon-active`   | `var(--puck-color-interactive)`               | Icon color when active  |
+| `--puck-icon-button-color-icon-disabled` | `var(--puck-color-text-subtle)`               | Disabled icon color     |

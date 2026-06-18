@@ -1,0 +1,62 @@
+---
+title: Outline
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+import { Color } from "@/docs/components/Color";
+
+# Outline
+
+Use the following CSS properties for theming the outline (layers) panel.
+
+```css showLineNumbers
+.Container {
+  --puck-outline-color-bg-selected: #f0f0f0;
+  --puck-outline-color-border-selected: #b947ff;
+}
+```
+
+<PuckPreview
+  disableContentStyles
+  config={{
+    components: {
+      Heading: { render: () => <div>Heading</div> },
+      Paragraph: { render: () => <div>Paragraph</div> },
+    },
+  }}
+  data={{
+    root: { props: {} },
+    content: [
+      { type: "Heading", props: { id: "Heading-1" } },
+      { type: "Paragraph", props: { id: "Paragraph-1" } },
+    ],
+  }}
+  ui={{ itemSelector: { index: 0 } }}
+>
+  <div
+    style={{
+      "--puck-outline-color-bg-selected": "#f0f0f0",
+      "--puck-outline-color-border-selected": "#b947ff",
+    }}
+  >
+    <Puck.Outline />
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+| Token                                  | Default                                | Description                      |
+| -------------------------------------- | -------------------------------------- | -------------------------------- |
+| `--puck-outline-color-text`            | <Color>#404040</Color>                 | Layer label text color           |
+| `--puck-outline-color-icon`            | <Color>#d89aba</Color>                 | Layer icon color                 |
+| `--puck-outline-color-bg-hover`        | `var(--puck-color-interactive-soft)`   | Layer background on hover        |
+| `--puck-outline-color-text-hover`      | `var(--puck-color-interactive)`        | Layer text color on hover        |
+| `--puck-outline-color-border-hover`    | `var(--puck-color-interactive-subtle)` | Layer border color on hover      |
+| `--puck-outline-color-bg-selected`     | `var(--puck-color-interactive-subtle)` | Selected layer background        |
+| `--puck-outline-color-border-selected` | `var(--puck-color-selection-border)`   | Selected layer border color      |
+| `--puck-outline-border-width`          | `var(--puck-border-width-regular)`     | Layer border width               |
+| `--puck-outline-radius`                | `var(--puck-radius-m)`                 | Layer border radius              |
+| `--puck-outline-font-size`             | `var(--puck-font-size-xxs)`            | Layer label font size            |
+| `--puck-outline-zone-color-text`       | `var(--puck-color-text-muted)`         | Nested-zone label and icon color |
+| `--puck-outline-zone-font-size`        | `var(--puck-font-size-xxxs)`           | Nested-zone label font size      |
