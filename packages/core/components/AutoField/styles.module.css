@@ -42,7 +42,10 @@
   padding: var(--puck-field-space-y, var(--puck-space-3))
     var(
       --puck-field-space-x,
-      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+      calc(
+        var(--puck-space-4) -
+          var(--puck-field-border-width, var(--puck-border-width-regular))
+      )
     );
   transition: border-color var(--puck-duration-fast) var(--puck-ease-exit);
   width: 100%;
@@ -205,7 +208,7 @@ select.Input-input {
   padding: var(--puck-field-space-y, var(--puck-space-3))
     var(
       --puck-field-space-x,
-      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+      calc(var(--puck-space-4) - var(--_puck-field-radio-border-width))
     );
   text-align: center;
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),

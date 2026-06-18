@@ -15,7 +15,10 @@
   padding: var(--puck-field-space-y, var(--puck-space-3))
     var(
       --puck-field-space-x,
-      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+      calc(
+        var(--puck-space-4) -
+          var(--puck-field-border-width, var(--puck-border-width-regular))
+      )
     );
   font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
   font-weight: var(--puck-font-weight-medium);

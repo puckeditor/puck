@@ -49,7 +49,7 @@
   padding: calc(var(--puck-field-space-y, var(--puck-space-3)) + 2px)
     var(
       --puck-field-space-x,
-      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+      calc(var(--puck-space-4) - var(--_puck-field-array-border-width))
     );
   text-align: left;
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit);
@@ -157,7 +157,7 @@
   padding: var(--puck-field-space-y, var(--puck-space-3))
     var(
       --puck-field-space-x,
-      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+      calc(var(--puck-space-4) - var(--_puck-field-array-border-width))
     );
   position: relative;
   overflow: hidden;
@@ -243,7 +243,7 @@
   padding: var(--puck-field-space-surface-y, var(--puck-space-4))
     var(
       --puck-field-space-surface-x,
-      calc(var(--puck-space-4) - var(--puck-border-width-regular))
+      calc(var(--puck-space-4) - var(--_puck-field-array-border-width))
     );
 }
 
