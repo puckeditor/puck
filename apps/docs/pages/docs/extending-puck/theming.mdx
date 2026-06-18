@@ -55,6 +55,15 @@ For example, to set the header and plugin bar background:
 }
 ```
 
+## Load your own font file
+
+By default, Puck loads the [Inter typeface family](https://rsms.me/inter/) from a CDN. To host your own copy of Inter, or load a different font file, switch Puck to the `no-external` runtime bundle:
+
+```css
+/* @import "@puckeditor/core/puck.css"; */
+@import "@puckeditor/core/no-external.css";
+```
+
 ## Going further
 
 CSS tokens restyle the default interface. To change its behavior or visuals not covered by tokens, use the [composition](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides) APIs.
@@ -62,6 +71,5 @@ CSS tokens restyle the default interface. To change its behavior or visuals not 
 ## Further reading
 
 - [Theming API reference](/docs/api-reference/theming)
-- [Fonts](/docs/extending-puck/theming/fonts)
 - [Composition](/docs/extending-puck/composition)
 - [UI overrides](/docs/extending-puck/ui-overrides)
