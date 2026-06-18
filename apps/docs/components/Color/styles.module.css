@@ -5,6 +5,7 @@
 }
 
 .Color-swatch {
+  display: inline-block;
   height: 1.2em;
   aspect-ratio: 1 / 1;
   border: 1px solid color-mix(in srgb, currentColor 30%, transparent);

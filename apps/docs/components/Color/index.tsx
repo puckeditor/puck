@@ -13,7 +13,7 @@ export const Color = ({ children }: { children: ReactNode }) => {
 
   return (
     <span className={getClassName()}>
-      <div
+      <span
         aria-hidden="true"
         className={getClassName("swatch")}
         style={{ background: value }}
