@@ -765,52 +765,54 @@ export const DraggableComponent = ({
                 <Loader />
               </div>
             )}
-            <div
-              className={getClassName("actionsOverlay")}
-              style={{
-                top: actionsOverlayTop / zoom,
-              }}
-            >
+            {isSelected && (
               <div
-                className={getClassName("actions")}
+                className={getClassName("actionsOverlay")}
                 style={{
-                  transform: `scale(${1 / zoom}`,
-                  top: actionsTop / zoom,
-                  right: 0,
-                  paddingLeft: actionsSide,
-                  paddingRight: actionsSide,
+                  top: actionsOverlayTop / zoom,
                 }}
-                ref={actionBarRef}
               >
-                <CustomActionBar
-                  parentAction={parentAction}
-                  label={DEBUG ? id : label}
+                <div
+                  className={getClassName("actions")}
+                  style={{
+                    transform: `scale(${1 / zoom}`,
+                    top: actionsTop / zoom,
+                    right: 0,
+                    paddingLeft: actionsSide,
+                    paddingRight: actionsSide,
+                  }}
+                  ref={actionBarRef}
                 >
-                  {richText && (
-                    <>
-                      <LoadedRichTextMenu
-                        editor={richText.editor}
-                        field={richText.field}
-                        inline
-                        readOnly={false}
-                      />
-                      {hasNormalActions && <ActionBar.Separator />}
-                    </>
-                  )}
+                  <CustomActionBar
+                    parentAction={parentAction}
+                    label={DEBUG ? id : label}
+                  >
+                    {richText && (
+                      <>
+                        <LoadedRichTextMenu
+                          editor={richText.editor}
+                          field={richText.field}
+                          inline
+                          readOnly={false}
+                        />
+                        {hasNormalActions && <ActionBar.Separator />}
+                      </>
+                    )}
 
-                  {permissions.duplicate && (
-                    <ActionBar.Action onClick={onDuplicate} label="Duplicate">
-                      <Copy size={16} />
-                    </ActionBar.Action>
-                  )}
-                  {permissions.delete && (
-                    <ActionBar.Action onClick={onDelete} label="Delete">
-                      <Trash size={16} />
-                    </ActionBar.Action>
-                  )}
-                </CustomActionBar>
+                    {permissions.duplicate && (
+                      <ActionBar.Action onClick={onDuplicate} label="Duplicate">
+                        <Copy size={16} />
+                      </ActionBar.Action>
+                    )}
+                    {permissions.delete && (
+                      <ActionBar.Action onClick={onDelete} label="Delete">
+                        <Trash size={16} />
+                      </ActionBar.Action>
+                    )}
+                  </CustomActionBar>
+                </div>
               </div>
-            </div>
+            )}
             <div className={getClassName("overlayWrapper")}>
               <CustomOverlay
                 componentId={id}
