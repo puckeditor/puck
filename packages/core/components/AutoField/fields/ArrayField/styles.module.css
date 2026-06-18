@@ -40,7 +40,7 @@
   border: none;
   border-radius: var(--_puck-field-array-radius-inner);
   display: flex;
-  color: var(--puck-field-array-add-icon-color, var(--puck-color-interactive));
+  color: var(--puck-field-array-add-color-icon, var(--puck-color-interactive));
   justify-content: center;
   cursor: pointer;
   width: 100%;
