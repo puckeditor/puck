@@ -1,5 +1,5 @@
 .LayerTree {
-  color: var(--puck-outline-color-text, var(--puck-color-grey-03));
+  color: var(--puck-outline-color-text, var(--puck-color-text-secondary));
   font-family: var(--puck-font-family);
   font-size: var(--puck-outline-font-size, var(--puck-font-size-xxs));
   margin: 0;
@@ -123,7 +123,7 @@
 }
 
 .Layer-icon {
-  color: var(--puck-outline-color-icon, var(--puck-color-rose-07));
+  color: var(--puck-outline-color-icon, var(--puck-color-highlight));
   margin-top: var(--puck-space-1);
 }
 
