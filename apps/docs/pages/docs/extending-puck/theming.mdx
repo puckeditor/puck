@@ -2,7 +2,21 @@
 
 Puck's default interface is styled with CSS custom properties (design tokens). You can override these tokens to create a custom theme that matches your brand or product, or to implement dark mode.
 
-See the [Theming API reference](/docs/api-reference/theming) for the full list of tokens.
+See the theming API reference for the full list of tokens:
+
+- [Global tokens](/docs/api-reference/theming/global): Tokens that restyle the whole interface at once.
+- [Action bar](/docs/api-reference/theming/action-bar): Tokens that style the action bar shown when selecting a component.
+- [Button](/docs/api-reference/theming/button): Tokens that style the text buttons.
+- [Canvas](/docs/api-reference/theming/canvas): Tokens that style the canvas preview area.
+- [Drawer](/docs/api-reference/theming/drawer): Tokens that style the component drawer.
+- [Fields](/docs/api-reference/theming/fields): Tokens that style the puck [fields](/docs/api-reference/fields).
+- [Header](/docs/api-reference/theming/header): Tokens that style the editor header.
+- [Icon button](/docs/api-reference/theming/icon-button): Tokens that style the icon buttons.
+- [Outline](/docs/api-reference/theming/outline): Tokens that style the outline panel.
+- [Plugin bar](/docs/api-reference/theming/plugin-bar): Tokens that style the side navigation for switching plugins.
+- [Sidebar](/docs/api-reference/theming/sidebar): Tokens that style the left and right sidebar panels.
+- [Slot](/docs/api-reference/theming/slot): Tokens that style the slots.
+- [Computed values](/docs/api-reference/theming/computed-values): Tokens that define default computed values for all component-level tokens.
 
 ## Applying a theme
 
@@ -19,7 +33,7 @@ To apply a theme, import Puck's stylesheet, then override the token you want in 
 
 ## Global tokens
 
-[Global tokens](/docs/api-reference/theming#colors) restyle the whole interface at once, covering color, spacing, radius, motion and typography.
+[Global tokens](/docs/api-reference/theming/global) restyle the whole interface at once, covering color, spacing, radius, motion and typography.
 
 For example, to change the palette to match the interactive colors of your brand:
 
@@ -40,11 +54,11 @@ For example, to change the palette to match the interactive colors of your brand
 }
 ```
 
-The [API reference](/docs/api-reference/theming) lists where each global token is used.
+The [API reference](/docs/api-reference/theming/global) lists where each global token is used.
 
 ## Component tokens
 
-When you need finer control, [component tokens](/docs/api-reference/theming#component-theming) restyle a single part of the UI and override global tokens.
+When you need finer control, component tokens restyle a single part of the UI and override global tokens.
 
 For example, to set the header and plugin bar background:
 

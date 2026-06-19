@@ -6,7 +6,7 @@ const menu = {
   functions: {},
   overrides: {},
   plugins: { title: "Plugins" },
-  theming: {},
+  theming: { title: "Theming" },
 };
 
 export default menu;

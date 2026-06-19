@@ -1,8 +1,8 @@
 import { Color } from "@/docs/components/Color";
 
-# Theming
+# Global theming
 
-CSS properties for theming the default Puck user interface.
+CSS properties for theming the entire Puck user interface.
 
 ```css showLineNumbers
 @import "@puckeditor/core/puck.css";
@@ -119,20 +119,3 @@ CSS properties for theming the default Puck user interface.
 | `--puck-slot-min-empty-height`    | `128px`                    | Minimum height of empty slots         |
 | `--puck-user-left-sidebar-width`  | `186px–320px (responsive)` | User override for left sidebar width  |
 | `--puck-user-right-sidebar-width` | `186px–320px (responsive)` | User override for right sidebar width |
-
-## Component theming
-
-Component-level tokens override global tokens for specific components.
-
-- [Action bar](theming/action-bar): The action bar shown when selecting a component.
-- [Button](theming/button): The buttons, such as the Publish button.
-- [Canvas](theming/canvas): The canvas preview area.
-- [Drawer](theming/drawer): The component drawer.
-- [Fields](theming/fields): The puck [fields](/docs/api-reference/fields).
-- [Header](theming/header): The editor header.
-- [Icon button](theming/icon-button): The icon buttons.
-- [Outline](theming/outline): The outline panel.
-- [Plugin bar](theming/plugin-bar): The side navigation for switching plugins.
-- [Sidebar](theming/sidebar): The left and right sidebar panels.
-- [Slot](theming/slot): The slots.
-- [Computed values](theming/computed-values): Default computed values for all component-level tokens.
