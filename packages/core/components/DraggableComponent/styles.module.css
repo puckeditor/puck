@@ -101,6 +101,6 @@
 }
 
 .DraggableComponent-actionsAction {
-  height: var(--puck-action-bar-action-size, var(--puck-icon-size-s));
-  width: var(--puck-action-bar-action-size, var(--puck-icon-size-s));
+  height: var(--puck-actionbar-action-size, var(--puck-icon-size-s));
+  width: var(--puck-actionbar-action-size, var(--puck-icon-size-s));
 }

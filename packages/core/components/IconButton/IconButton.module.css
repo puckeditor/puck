@@ -1,20 +1,20 @@
 .IconButton {
   align-items: center;
-  background: var(--puck-icon-button-color-bg, transparent);
+  background: var(--puck-iconbutton-color-bg, transparent);
   border: none;
-  border-radius: var(--puck-icon-button-radius, var(--puck-radius-m));
-  color: var(--puck-icon-button-color-icon, currentColor);
+  border-radius: var(--puck-iconbutton-radius, var(--puck-radius-m));
+  color: var(--puck-iconbutton-color-icon, currentColor);
   display: flex;
   font-family: var(--puck-font-family);
   justify-content: center;
-  padding: var(--puck-icon-button-space, var(--puck-space-1));
+  padding: var(--puck-iconbutton-space, var(--puck-space-1));
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
     color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .IconButton--active {
   color: var(
-    --puck-icon-button-color-icon-active,
+    --puck-iconbutton-color-icon-active,
     var(--puck-color-interactive)
   );
 }
@@ -27,11 +27,11 @@
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
     background: var(
-      --puck-icon-button-color-bg-hover,
+      --puck-iconbutton-color-bg-hover,
       var(--puck-color-interactive-neutral-hover)
     );
     color: var(
-      --puck-icon-button-color-icon-hover,
+      --puck-iconbutton-color-icon-hover,
       var(--puck-color-interactive)
     );
     cursor: pointer;
@@ -41,7 +41,7 @@
 
 .IconButton:active {
   background: var(
-    --puck-icon-button-color-bg-active,
+    --puck-iconbutton-color-bg-active,
     var(--puck-color-interactive-soft)
   );
   transition: none;
@@ -49,7 +49,7 @@
 
 .IconButton--disabled {
   color: var(
-    --puck-icon-button-color-icon-disabled,
+    --puck-iconbutton-color-icon-disabled,
     var(--puck-color-text-subtle)
   );
 }
