@@ -41,10 +41,15 @@
 
 [data-dnd-dragging][data-puck-component] {
   pointer-events: none !important;
-  outline: 2px
+  outline: var(
+      --puck-slot-component-border-width,
+      var(--puck-border-width-focus)
+    )
     var(--puck-slot-component-color-dragging-border, var(--puck-color-azure-09))
     solid !important;
-  outline-offset: -2px !important;
+  outline-offset: calc(
+    var(--puck-slot-component-border-width, var(--puck-border-width-focus)) * -1
+  ) !important;
 }
 
 /*

@@ -14,7 +14,6 @@ Use the following CSS properties for theming slots (drop zones) and the componen
 .Container {
   --puck-slot-color-bg: #fff2ee;
   --puck-slot-color-border: #f6ab3b;
-  --puck-slot-color-border-enabled: #009603;
 }
 ```
 
@@ -62,7 +61,6 @@ Use the following CSS properties for theming slots (drop zones) and the componen
     style={{
       "--puck-slot-color-bg": "#fff2ee",
       "--puck-slot-color-border": "#f6823b",
-      "--puck-slot-color-border-enabled": "#009603"
     }}
   ><div style={{display:"grid", gridTemplateColumns: "1fr 2fr", gap: 8}}>
   <Puck.Components />
@@ -77,10 +75,12 @@ Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-referenc
 | Token                                         | Default                              | Description                           |
 | --------------------------------------------- | ------------------------------------ | ------------------------------------- |
 | `--puck-slot-color-bg`                        | `var(--puck-color-selection-bg)`     | Drop zone background when active      |
-| `--puck-slot-color-border`                    | `var(--puck-color-selection-border)` | Drop zone outline when active         |
-| `--puck-slot-color-border-enabled`            | <Color>#6499cf</Color>               | Outline of enabled drop zone          |
+| `--puck-slot-color-border`                    | `var(--puck-color-selection-border)` | Drop zone outline color               |
+| `--puck-slot-border-width`                    | `var(--puck-border-width-focus)`     | Drop zone outline width               |
+| `--puck-slot-border-style`                    | `dashed`                             | Drop zone outline style               |
 | `--puck-slot-component-color-overlay`         | `var(--puck-color-selection-bg)`     | Component overlay background on hover |
 | `--puck-slot-component-color-overlay-border`  | `var(--puck-color-selection-border)` | Component overlay outline             |
+| `--puck-slot-component-border-width`          | `var(--puck-border-width-focus)`     | Component overlay outline width       |
 | `--puck-slot-component-color-selected-border` | `var(--puck-color-selection-border)` | Selected component overlay outline    |
 | `--puck-slot-component-color-placeholder`     | <Color>#6499cf</Color>               | Drag placeholder background           |
 | `--puck-slot-component-color-dragging-border` | <Color>#cfdff0</Color>               | Outline while dragging component      |
