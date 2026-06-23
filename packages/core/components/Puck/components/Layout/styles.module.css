@@ -41,12 +41,12 @@
   --puck-frame-width: auto;
   --puck-side-nav-width: min-content;
   --puck-sidebar-width: 0px;
-  --puck-left-sidebar-width: var(
-    --puck-user-left-sidebar-width,
+  --puck-sidebar-left-width: var(
+    --puck-user-sidebar-left-width,
     var(--puck-sidebar-width)
   );
-  --puck-right-sidebar-width: var(
-    --puck-user-right-sidebar-width,
+  --puck-sidebar-right-width: var(
+    --puck-user-sidebar-right-width,
     var(--puck-sidebar-width)
   );
   background-color: var(--puck-color-surface-subtle);
@@ -99,7 +99,7 @@
   .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-sidebar-width) var(
+      var(--puck-side-nav-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       0;
@@ -125,7 +125,7 @@
   .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-sidebar-width) var(
+      var(--puck-side-nav-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       0;
@@ -137,7 +137,7 @@
   .PuckLayout--rightSideBarVisible .PuckLayout-inner {
     grid-template-columns:
       var(--puck-side-nav-width) 0 var(--puck-frame-width)
-      var(--puck-right-sidebar-width);
+      var(--puck-sidebar-right-width);
   }
 }
 
@@ -145,10 +145,10 @@
   .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-sidebar-width) var(
+      var(--puck-side-nav-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
-      var(--puck-right-sidebar-width);
+      var(--puck-sidebar-right-width);
   }
 }
 
