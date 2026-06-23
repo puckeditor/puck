@@ -1,5 +1,5 @@
 .OutlineList {
-  --puck-outline-list-connector: var(--puck-color-grey-08);
+  --_puck-outline-list-connector: var(--puck-color-border);
 
   color: var(--puck-color-text);
   font-family: var(--puck-font-family);
@@ -10,7 +10,7 @@
 }
 
 .OutlineList::before {
-  background: var(--puck-outline-list-connector);
+  background: var(--_puck-outline-list-connector);
   position: absolute;
   left: -1px;
   top: 0px;
@@ -30,7 +30,7 @@
 }
 
 .OutlineListItem::before {
-  background: var(--puck-outline-list-connector);
+  background: var(--_puck-outline-list-connector);
   position: absolute;
   left: -17px;
   top: 9px;
