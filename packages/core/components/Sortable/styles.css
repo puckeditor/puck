@@ -3,7 +3,10 @@
 }
 
 [data-dnd-placeholder] {
-  background: var(--puck-color-azure-09) !important;
+  background: var(
+    --_puck-field-array-color-placeholder,
+    var(--puck-color-azure-06)
+  ) !important;
   border: none !important;
   color: transparent !important;
   opacity: 0.3 !important;
