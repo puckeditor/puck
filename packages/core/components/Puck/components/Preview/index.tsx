@@ -10,7 +10,6 @@ import { Render } from "../../../Render";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
 import { useSlots } from "../../../../lib/use-slots";
 import { useRichtextProps } from "../../../RichTextEditor/lib/use-richtext-props";
-import { getFrame } from "../../../../lib/get-frame";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
 
@@ -69,6 +68,22 @@ const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
   }, [status]);
 };
 
+const usePreviewModeAttribute = (ref: RefObject<HTMLIFrameElement | null>) => {
+  const previewMode = useAppStore((s) => s.state.ui.previewMode);
+  const status = useAppStore((s) => s.status);
+  const iframeEnabled = useAppStore((s) => s.iframe.enabled);
+
+  // Expose the current preview mode on the canvas entry so CSS can hide
+  // editor-only styles (e.g. overlay portal outlines) while interactive.
+  useEffect(() => {
+    const entry = iframeEnabled
+      ? ref.current?.contentDocument?.querySelector("[data-puck-entry]")
+      : ref.current;
+
+    entry?.setAttribute("data-puck-preview-mode", previewMode);
+  }, [previewMode, status, iframeEnabled]);
+};
+
 const Page = memo(({ config, ...pageProps }: { config: any } & PageProps) => {
   const propsWithSlots = useSlots(
     config,
@@ -95,12 +110,10 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const dispatch = useAppStore((s) => s.dispatch);
   const root = useAppStore((s) => s.state.data.root);
   const config = useAppStore((s) => s.config);
-  const status = useAppStore((s) => s.status);
   const setStatus = useAppStore((s) => s.setStatus);
   const iframe = useAppStore((s) => s.iframe);
   const overrides = useAppStore((s) => s.overrides);
   const metadata = useAppStore((s) => s.metadata);
-  const previewMode = useAppStore((s) => s.state.ui.previewMode);
   const renderData = useAppStore((s) =>
     s.state.ui.previewMode === "edit" ? null : s.state.data
   );
@@ -113,14 +126,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const ref = useRef<HTMLIFrameElement>(null);
 
   useBubbleIframeEvents(ref);
-
-  // Expose the current preview mode on the canvas entry so CSS can hide
-  // editor-only styles (e.g. overlay portal outlines) while interactive.
-  useEffect(() => {
-    const entry = getFrame()?.querySelector("[data-puck-entry]");
-
-    entry?.setAttribute("data-puck-preview-mode", previewMode);
-  }, [previewMode, status, iframe.enabled]);
+  usePreviewModeAttribute(ref);
 
   const inner = !renderData ? (
     <Page
