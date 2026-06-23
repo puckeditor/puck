@@ -39,12 +39,14 @@ Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-referenc
 
 These apply to every field type; the sections below cover tokens specific to individual fields.
 
+The `-hover` and `-active` variants only affect controls that respond to interaction, like selects, radio options, and array buttons. Plain text inputs change their border on hover, not their background.
+
 | Token                                | Default                                                        | Description                       |
 | ------------------------------------ | -------------------------------------------------------------- | --------------------------------- |
 | `--puck-field-color-surface`         | `var(--puck-color-surface)`                                    | Object / array body background    |
-| `--puck-field-color-bg`              | `var(--puck-color-surface)`                                    | Background                        |
-| `--puck-field-color-bg-hover`        | `var(--puck-color-interactive-soft-hover)`                     | Background on hover / active      |
-| `--puck-field-color-bg-active`       | `var(--puck-color-interactive-soft)`                           | Active container background       |
+| `--puck-field-color-bg`              | `var(--puck-color-surface)`                                    | Field control background          |
+| `--puck-field-color-bg-hover`        | `var(--puck-color-interactive-soft-hover)`                     | Control background on hover       |
+| `--puck-field-color-bg-active`       | `var(--puck-color-interactive-soft)`                           | Active or selected background     |
 | `--puck-field-color-text`            | `var(--puck-color-text)`                                       | Text color                        |
 | `--puck-field-color-text-hover`      | `var(--puck-field-color-text)`                                 | Text color on hover               |
 | `--puck-field-color-text-active`     | `var(--puck-color-interactive)`                                | Selected state text color         |
@@ -52,7 +54,7 @@ These apply to every field type; the sections below cover tokens specific to ind
 | `--puck-field-color-border-hover`    | `var(--puck-color-border-hover)`                               | Border color on hover / focus     |
 | `--puck-field-color-border-focus`    | `var(--puck-color-focus-ring)`                                 | Focus ring color                  |
 | `--puck-field-color-border-dragging` | `var(--puck-color-selection-border)`                           | Border color while dragging       |
-| `--puck-field-color-bg-disabled`     | `var(--puck-color-surface-muted)`                              | Disabled background               |
+| `--puck-field-color-bg-disabled`     | `var(--puck-color-surface-muted)`                              | Disabled control background       |
 | `--puck-field-color-border-disabled` | `var(--puck-color-border)`                                     | Disabled border color             |
 | `--puck-field-color-text-disabled`   | `var(--puck-color-text-secondary)`                             | Disabled text color               |
 | `--puck-field-border-width`          | `var(--puck-border-width-regular)`                             | Border width                      |
