@@ -16,7 +16,7 @@
   --puck-color-text-muted: var(--puck-color-grey-05);
   --puck-color-text-subtle: var(--puck-color-grey-07);
   --puck-color-text-inverse: var(--puck-color-white);
-  --puck-color-text-inverse-opacity: 0.75;
+  --puck-opacity-text-inverse: 0.75;
   --puck-color-interactive: var(--puck-color-azure-04);
   --puck-color-interactive-hover: var(--puck-color-azure-03);
   --puck-color-interactive-active: var(--puck-color-azure-02);

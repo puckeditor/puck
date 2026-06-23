@@ -17,10 +17,7 @@
 .ActionBar-label {
   color: var(--puck-actionbar-color-text, var(--puck-color-text-inverse));
   font-size: var(--puck-actionbar-font-size, var(--puck-font-size-xxxs));
-  opacity: var(
-    --puck-actionbar-color-text-opacity,
-    var(--puck-color-text-inverse-opacity)
-  );
+  opacity: var(--puck-actionbar-opacity-text, var(--puck-opacity-text-inverse));
   font-weight: var(--puck-font-weight-medium);
   padding-inline-start: var(--puck-space-2);
   padding-inline-end: var(--puck-space-2);
@@ -69,10 +66,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: var(
-    --puck-actionbar-color-text-opacity,
-    var(--puck-color-text-inverse-opacity)
-  );
+  opacity: var(--puck-actionbar-opacity-text, var(--puck-opacity-text-inverse));
   transition: color var(--puck-duration-fast) var(--puck-ease-exit),
     opacity var(--puck-duration-fast) var(--puck-ease-exit);
 }
@@ -83,7 +77,7 @@
     --puck-actionbar-color-action-disabled,
     var(--puck-color-text-inverse)
   );
-  opacity: var(--puck-actionbar-color-action-opacity-disabled, 0.54);
+  opacity: var(--puck-actionbar-opacity-action-disabled, 0.54);
 }
 
 .ActionBarAction svg {

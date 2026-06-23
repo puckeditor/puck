@@ -38,7 +38,7 @@ body {
     --puck-color-text-muted: #7d8493;
     --puck-color-text-subtle: #565d6b;
     --puck-color-text-inverse: #f3f5f9; /* light, for the action bar and primary button */
-    --puck-color-text-inverse-opacity: 0.85;
+    --puck-opacity-text-inverse: 0.85;
 
     /* Interactive */
     --puck-color-interactive: var(--puck-color-azure-06);
