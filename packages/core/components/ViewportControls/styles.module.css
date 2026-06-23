@@ -1,10 +1,4 @@
 .ViewportControls {
-  --puck-viewports-control-toggle-bg: var(--puck-color-grey-02);
-  --puck-viewports-control-toggle-border: var(--puck-color-grey-04);
-  --puck-viewports-control-toggle-text: var(--puck-color-grey-11);
-  --puck-viewports-control-toggle-hover-text: var(--puck-color-azure-07);
-  --puck-viewports-control-toggle-expanded-bg: var(--puck-color-grey-03);
-
   position: relative;
 }
 
@@ -23,12 +17,12 @@
 
 .ViewportControls--fullScreen .ViewportControls-toggleButton {
   align-items: center;
-  background-color: var(--puck-viewports-control-toggle-bg);
+  background-color: var(--puck-color-surface-inverse);
   border: var(--puck-border-width-regular) solid
-    var(--puck-viewports-control-toggle-border);
+    var(--puck-color-border-inverse);
   border-radius: var(--puck-radius-pill);
   cursor: pointer;
-  color: var(--puck-viewports-control-toggle-text);
+  color: var(--puck-color-text-inverse);
   display: flex;
   justify-content: center;
   width: 42px;
@@ -37,13 +31,9 @@
 }
 
 .ViewportControls--fullScreen .ViewportControls-toggleButton:hover {
-  background-color: var(--puck-viewports-control-toggle-bg);
-  border: var(--puck-border-width-regular) solid var(--puck-color-interactive);
-  color: var(--puck-viewports-control-toggle-hover-text);
-}
-
-.ViewportControls--isExpanded .ViewportControls-toggleButton {
-  background-color: var(--puck-viewports-control-toggle-expanded-bg);
+  color: var(--puck-color-interactive-inverse-hover);
+  border: var(--puck-border-width-regular) solid
+    var(--puck-color-interactive-inverse-hover);
 }
 
 .ViewportControls-actions {

@@ -24,6 +24,8 @@
   --puck-color-interactive-soft: var(--puck-color-azure-11);
   --puck-color-interactive-soft-hover: var(--puck-color-azure-12);
   --puck-color-interactive-neutral-hover: var(--puck-color-grey-10);
+  --puck-color-interactive-inverse-hover: var(--puck-color-azure-06);
+  --puck-color-interactive-inverse-active: var(--puck-color-azure-07);
   --puck-color-focus-ring: var(--puck-color-azure-05);
   --puck-color-selection-bg: color-mix(
     in srgb,
