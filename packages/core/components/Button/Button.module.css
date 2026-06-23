@@ -2,8 +2,8 @@
   --_puck-button-default-space-x: 20px;
   --_puck-button-default-font-size: var(--puck-font-size-xxs);
   --_puck-button-default-font-weight: var(--puck-font-weight-regular);
-  --_puck-button-default-color-disabled-bg: var(--puck-color-disabled-bg);
-  --_puck-button-default-color-disabled-text: var(--puck-color-disabled-text);
+  --_puck-button-default-color-bg-disabled: var(--puck-color-bg-disabled);
+  --_puck-button-default-color-text-disabled: var(--puck-color-text-disabled);
 
   appearance: none;
   background: none;
@@ -123,12 +123,12 @@
 .Button--primary.Button--disabled,
 .Button--primary.Button--disabled:hover {
   background-color: var(
-    --puck-button-primary-color-disabled-bg,
-    var(--_puck-button-default-color-disabled-bg)
+    --puck-button-primary-color-bg-disabled,
+    var(--_puck-button-default-color-bg-disabled)
   );
   color: var(
-    --puck-button-primary-color-disabled-text,
-    var(--_puck-button-default-color-disabled-text)
+    --puck-button-primary-color-text-disabled,
+    var(--_puck-button-default-color-text-disabled)
   );
 }
 
@@ -159,12 +159,12 @@
 .Button--secondary.Button--disabled,
 .Button--secondary.Button--disabled:hover {
   background-color: var(
-    --puck-button-secondary-color-disabled-bg,
-    var(--_puck-button-default-color-disabled-bg)
+    --puck-button-secondary-color-bg-disabled,
+    var(--_puck-button-default-color-bg-disabled)
   );
   color: var(
-    --puck-button-secondary-color-disabled-text,
-    var(--_puck-button-default-color-disabled-text)
+    --puck-button-secondary-color-text-disabled,
+    var(--_puck-button-default-color-text-disabled)
   );
 }
 

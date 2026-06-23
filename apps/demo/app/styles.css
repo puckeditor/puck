@@ -63,8 +63,8 @@ body {
     );
     --puck-color-selection-border: var(--puck-color-azure-06);
 
-    --puck-color-disabled-bg: #252527;
-    --puck-color-disabled-text: #565d6b;
+    --puck-color-bg-disabled: #252527;
+    --puck-color-text-disabled: #565d6b;
     --puck-color-overlay-backdrop: color-mix(in srgb, #000000 72%, transparent);
 
     /* The primary (Publish) button fills with the bright azure, so its label

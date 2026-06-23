@@ -126,15 +126,15 @@ select.Input-input {
 .Input--readOnly > .Input-input,
 .Input--readOnly > .Input-select > select.Input-input {
   background-color: var(
-    --puck-field-color-disabled-bg,
+    --puck-field-color-bg-disabled,
     var(--puck-color-surface-muted)
   );
   border-color: var(
-    --puck-field-color-disabled-border,
+    --puck-field-color-border-disabled,
     var(--puck-color-border)
   );
   color: var(
-    --puck-field-color-disabled-text,
+    --puck-field-color-text-disabled,
     var(--puck-color-text-secondary)
   );
   cursor: default;
@@ -144,7 +144,7 @@ select.Input-input {
 }
 
 .Input--readOnly > .Input-select > select.Input-input ~ .Input-selectIcon {
-  fill: var(--puck-field-color-disabled-text, var(--puck-color-text-secondary));
+  fill: var(--puck-field-color-text-disabled, var(--puck-color-text-secondary));
 }
 
 .Input-radioGroupItems {
@@ -238,7 +238,7 @@ select.Input-input {
 
 .Input--readOnly .Input-radioGroupItems {
   border-color: var(
-    --puck-field-color-disabled-border,
+    --puck-field-color-border-disabled,
     var(--puck-color-border)
   );
 }
@@ -251,7 +251,7 @@ select.Input-input {
 
 .Input--readOnly .Input-radio {
   border-inline-end: var(--_puck-field-radio-border-width) solid
-    var(--puck-field-color-disabled-border, var(--puck-color-border));
+    var(--puck-field-color-border-disabled, var(--puck-color-border));
 }
 
 .Input--readOnly .Input-radio:last-of-type {
@@ -269,11 +269,11 @@ select.Input-input {
 
 .Input--readOnly .Input-radioInput:checked ~ .Input-radioInner {
   background-color: var(
-    --puck-field-color-disabled-bg,
+    --puck-field-color-bg-disabled,
     var(--puck-color-surface-muted)
   );
   color: var(
-    --puck-field-color-disabled-text,
+    --puck-field-color-text-disabled,
     var(--puck-color-text-secondary)
   );
 }

@@ -34,8 +34,8 @@
   );
   --puck-color-selection-border: var(--puck-color-azure-08);
   --puck-color-highlight: var(--puck-color-rose-07);
-  --puck-color-disabled-bg: var(--puck-color-grey-07);
-  --puck-color-disabled-text: var(--puck-color-grey-03);
+  --puck-color-bg-disabled: var(--puck-color-grey-07);
+  --puck-color-text-disabled: var(--puck-color-grey-03);
   --puck-color-overlay-backdrop: color-mix(
     in srgb,
     var(--puck-color-black) 75%,

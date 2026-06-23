@@ -40,7 +40,7 @@
 
 .ExternalInput--readOnly .ExternalInput-button {
   background-color: var(
-    --puck-field-color-disabled-bg,
+    --puck-field-color-bg-disabled,
     var(--puck-color-surface-muted)
   );
 }

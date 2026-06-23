@@ -73,7 +73,7 @@
   > .DraggableComponent-overlayWrapper
   > .DraggableComponent-overlay {
   outline-color: var(
-    --puck-slot-component-color-selected-border,
+    --puck-slot-component-color-border-selected,
     var(--puck-color-selection-border)
   );
 }

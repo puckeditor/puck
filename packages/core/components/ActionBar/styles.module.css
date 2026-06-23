@@ -79,8 +79,11 @@
 
 .ActionBarAction--disabled {
   cursor: auto;
-  color: var(--puck-actionbar-color-disabled, var(--puck-color-text-inverse));
-  opacity: var(--puck-actionbar-color-disabled-opacity, 0.54);
+  color: var(
+    --puck-actionbar-color-action-disabled,
+    var(--puck-color-text-inverse)
+  );
+  opacity: var(--puck-actionbar-color-action-opacity-disabled, 0.54);
 }
 
 .ActionBarAction svg {
@@ -95,7 +98,7 @@
 @media (hover: hover) and (pointer: fine) {
   .ActionBarAction:hover:not(.ActionBarAction--disabled) {
     color: var(
-      --puck-actionbar-color-hover,
+      --puck-actionbar-color-action-hover,
       var(--puck-color-interactive-inverse-hover)
     );
     opacity: 1;
@@ -106,7 +109,7 @@
 .ActionBarAction:active:not(.ActionBarAction--disabled),
 .ActionBarAction--active {
   color: var(
-    --puck-actionbar-color-active,
+    --puck-actionbar-color-action-active,
     var(--puck-color-interactive-inverse-active)
   );
   opacity: 1;

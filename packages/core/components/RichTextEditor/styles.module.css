@@ -131,11 +131,11 @@
 
 .RichTextEditor--editor.RichTextEditor--disabled {
   background: var(
-    --puck-field-color-disabled-bg,
+    --puck-field-color-bg-disabled,
     var(--puck-color-surface-muted)
   );
   border-color: var(
-    --puck-field-color-disabled-border,
+    --puck-field-color-border-disabled,
     var(--puck-color-border)
   );
 }
@@ -145,7 +145,7 @@
 .RichTextEditor--editor.RichTextEditor--disabled
   :global(.rich-text .ProseMirror) {
   color: var(
-    --puck-field-color-disabled-text,
+    --puck-field-color-text-disabled,
     var(--puck-color-text-secondary)
   );
 }

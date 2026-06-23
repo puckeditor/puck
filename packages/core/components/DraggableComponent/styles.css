@@ -45,7 +45,7 @@
       --puck-slot-component-border-width,
       var(--puck-border-width-focus)
     )
-    var(--puck-slot-component-color-dragging-border, var(--puck-color-azure-09))
+    var(--puck-slot-component-color-border-dragging, var(--puck-color-azure-09))
     solid !important;
   outline-offset: calc(
     var(--puck-slot-component-border-width, var(--puck-border-width-focus)) * -1
