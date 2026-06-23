@@ -48,6 +48,12 @@ body {
     --puck-color-interactive-soft: #18212f; /* secondary button, selected item */
     --puck-color-interactive-soft-hover: #1f2a3c; /* row and item hover */
     --puck-color-interactive-neutral-hover: #29292b; /* icon button hover */
+    --puck-color-interactive-inverse-hover: var(
+      --puck-color-azure-07
+    ); /* action bar and toggle hover */
+    --puck-color-interactive-inverse-active: var(
+      --puck-color-azure-08
+    ); /* action bar active */
 
     --puck-color-focus-ring: var(--puck-color-azure-06);
     --puck-color-selection-bg: color-mix(
