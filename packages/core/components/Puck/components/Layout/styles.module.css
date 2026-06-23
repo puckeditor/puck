@@ -39,7 +39,7 @@
 
 .PuckLayout-inner {
   --puck-frame-width: auto;
-  --puck-side-nav-width: min-content;
+  --puck-pluginbar-width: min-content;
   --puck-sidebar-width: 0px;
   --puck-sidebar-left-width: var(
     --puck-user-sidebar-left-width,
@@ -53,7 +53,7 @@
   display: grid;
   grid-template-areas: "header" "editor" "left" "right" "sidenav";
   grid-template-columns: var(--puck-frame-width);
-  grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
+  grid-template-rows: min-content auto 0 0 var(--puck-pluginbar-width);
   height: 100%;
   position: relative;
   transition: grid-template-rows var(--puck-duration-medium)
@@ -64,14 +64,14 @@
 
 @media (min-width: 638px) {
   .PuckLayout-inner {
-    --puck-side-nav-width: 68px;
+    --puck-pluginbar-width: 68px;
     grid-template-areas: "header header header header" "sidenav left editor right";
-    grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
+    grid-template-columns: var(--puck-pluginbar-width) 0 var(--puck-frame-width) 0;
     grid-template-rows: min-content auto;
   }
 
   .Puck--hidePlugins .PuckLayout-inner {
-    --puck-side-nav-width: 0;
+    --puck-pluginbar-width: 0;
   }
 }
 
@@ -82,7 +82,7 @@
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
-  grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
+  grid-template-rows: 0 auto 30% 0 var(--puck-pluginbar-width);
   transition: grid-template-rows var(--puck-duration-medium)
     var(--puck-ease-entrance);
 }
@@ -90,7 +90,7 @@
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
-  grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
+  grid-template-rows: 0 auto 55% 0 var(--puck-pluginbar-width);
   transition: grid-template-rows var(--puck-duration-medium)
     var(--puck-ease-entrance);
 }
@@ -99,7 +99,7 @@
   .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-sidebar-left-width) var(
+      var(--puck-pluginbar-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       0;
@@ -112,7 +112,7 @@
 .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
-  grid-template-rows: 0 auto min-content 0 var(--puck-side-nav-width);
+  grid-template-rows: 0 auto min-content 0 var(--puck-pluginbar-width);
 }
 
 @media (min-width: 638px) {
@@ -125,7 +125,7 @@
   .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-sidebar-left-width) var(
+      var(--puck-pluginbar-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       0;
@@ -136,7 +136,7 @@
 @media (min-width: 638px) {
   .PuckLayout--rightSideBarVisible .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) 0 var(--puck-frame-width)
+      var(--puck-pluginbar-width) 0 var(--puck-frame-width)
       var(--puck-sidebar-right-width);
   }
 }
@@ -145,7 +145,7 @@
   .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-sidebar-left-width) var(
+      var(--puck-pluginbar-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       var(--puck-sidebar-right-width);
