@@ -14,8 +14,8 @@ export const useMinEmptyHeight = ({
 }: {
   zoneCompound: string;
   userMinEmptyHeight: CSSProperties["minHeight"] | number;
-  ref: RefObject<HTMLDivElement | null>;
-}) => {
+  ref: RefObject<HTMLElement | null>;
+}): [string | number | undefined, boolean] => {
   const appStore = useAppStoreApi();
   const [prevHeight, setPrevHeight] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
