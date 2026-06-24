@@ -2,6 +2,12 @@
 @import "../styles/tokens.css";
 @import "../styles/typography.css";
 
+:root {
+  /* Runtime marker: presence tells use-inject-css.ts that Puck's CSS is
+     already loaded, so it skips dynamic injection. Do not remove. */
+  --_puck-styles-loaded: "true";
+}
+
 #frame-root {
   height: 1px; /* Enables DropZone to inherit min-height */
   min-height: 100vh;
