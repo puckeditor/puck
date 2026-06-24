@@ -1,6 +1,6 @@
 {
   "name": "@puckeditor/core",
-  "version": "0.21.3",
+  "version": "0.22.0",
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
@@ -105,8 +105,8 @@
   "dependencies": {
     "@dnd-kit/abstract": "0.4.0",
     "@dnd-kit/dom": "0.4.0",
-    "@dnd-kit/helpers": "0.4.0",
     "@dnd-kit/geometry": "0.4.0",
+    "@dnd-kit/helpers": "0.4.0",
     "@dnd-kit/react": "0.4.0",
     "@dnd-kit/state": "0.4.0",
     "@radix-ui/react-popover": "^1.1.15",
