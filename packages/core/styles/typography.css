@@ -1,5 +1,6 @@
-:root {
-  /**
+@layer puck-tokens {
+  :root {
+    /**
      * Modular Scale
      *
      * 2:1 - octave - 2.0
@@ -17,81 +18,86 @@
      * 1rem = 16px
      */
 
-  /* Unitless font sizes
+    /* Unitless font sizes
        ======================================================================== */
 
-  --puck-font-size-scale-base-unitless: 12;
-  --puck-font-size-xxxs-unitless: 12;
-  --puck-font-size-xxs-unitless: 14;
-  --puck-font-size-xs-unitless: 16;
-  --puck-font-size-s-unitless: 18;
-  --puck-font-size-m-unitless: 21;
-  --puck-font-size-l-unitless: 24;
-  --puck-font-size-xl-unitless: 28;
-  --puck-font-size-xxl-unitless: 36;
-  --puck-font-size-xxxl-unitless: 48;
-  --puck-font-size-xxxxl-unitless: 56;
+    --puck-font-size-scale-base-unitless: 12;
+    --puck-font-size-xxxs-unitless: 12;
+    --puck-font-size-xxs-unitless: 14;
+    --puck-font-size-xs-unitless: 16;
+    --puck-font-size-s-unitless: 18;
+    --puck-font-size-m-unitless: 21;
+    --puck-font-size-l-unitless: 24;
+    --puck-font-size-xl-unitless: 28;
+    --puck-font-size-xxl-unitless: 36;
+    --puck-font-size-xxxl-unitless: 48;
+    --puck-font-size-xxxxl-unitless: 56;
 
-  /* Descriptive font sizes
+    /* Descriptive font sizes
        ======================================================================== */
 
-  --puck-font-size-xxxs: calc(1rem * var(--puck-font-size-xxxs-unitless) / 16);
-  --puck-font-size-xxs: calc(1rem * var(--puck-font-size-xxs-unitless) / 16);
-  --puck-font-size-xs: calc(1rem * var(--puck-font-size-xs-unitless) / 16);
-  --puck-font-size-s: calc(1rem * var(--puck-font-size-s-unitless) / 16);
-  --puck-font-size-m: calc(1rem * var(--puck-font-size-m-unitless) / 16);
-  --puck-font-size-l: calc(1rem * var(--puck-font-size-l-unitless) / 16);
-  --puck-font-size-xl: calc(1rem * var(--puck-font-size-xl-unitless) / 16);
-  --puck-font-size-xxl: calc(1rem * var(--puck-font-size-xxl-unitless) / 16);
-  --puck-font-size-xxxl: calc(1rem * var(--puck-font-size-xxxl-unitless) / 16);
-  --puck-font-size-xxxxl: calc(
-    1rem * var(--puck-font-size-xxxxl-unitless) / 16
-  );
+    --puck-font-size-xxxs: calc(
+      1rem * var(--puck-font-size-xxxs-unitless) / 16
+    );
+    --puck-font-size-xxs: calc(1rem * var(--puck-font-size-xxs-unitless) / 16);
+    --puck-font-size-xs: calc(1rem * var(--puck-font-size-xs-unitless) / 16);
+    --puck-font-size-s: calc(1rem * var(--puck-font-size-s-unitless) / 16);
+    --puck-font-size-m: calc(1rem * var(--puck-font-size-m-unitless) / 16);
+    --puck-font-size-l: calc(1rem * var(--puck-font-size-l-unitless) / 16);
+    --puck-font-size-xl: calc(1rem * var(--puck-font-size-xl-unitless) / 16);
+    --puck-font-size-xxl: calc(1rem * var(--puck-font-size-xxl-unitless) / 16);
+    --puck-font-size-xxxl: calc(
+      1rem * var(--puck-font-size-xxxl-unitless) / 16
+    );
+    --puck-font-size-xxxxl: calc(
+      1rem * var(--puck-font-size-xxxxl-unitless) / 16
+    );
 
-  /* Functional font sizes
+    /* Functional font sizes
       ========================================================================= */
 
-  --puck-font-size-base: var(--puck-font-size-xs);
+    --puck-font-size-base: var(--puck-font-size-xs);
 
-  /* Descriptive line heights
+    /* Descriptive line heights
       ========================================================================= */
 
-  --puck-line-height-reset: 1;
-  --puck-line-height-xs: calc(
-    var(--puck-space-m-unitless) / var(--puck-font-size-m-unitless)
-  );
-  --puck-line-height-s: calc(
-    var(--puck-space-m-unitless) / var(--puck-font-size-s-unitless)
-  );
-  --puck-line-height-m: calc(
-    var(--puck-space-m-unitless) / var(--puck-font-size-xs-unitless)
-  );
-  --puck-line-height-l: calc(
-    var(--puck-space-m-unitless) / var(--puck-font-size-xxs-unitless)
-  );
-  --puck-line-height-xl: calc(
-    var(--puck-space-m-unitless) / var(--puck-font-size-scale-base-unitless)
-  );
+    --puck-line-height-reset: 1;
+    --puck-line-height-xs: calc(
+      var(--puck-space-m-unitless) / var(--puck-font-size-m-unitless)
+    );
+    --puck-line-height-s: calc(
+      var(--puck-space-m-unitless) / var(--puck-font-size-s-unitless)
+    );
+    --puck-line-height-m: calc(
+      var(--puck-space-m-unitless) / var(--puck-font-size-xs-unitless)
+    );
+    --puck-line-height-l: calc(
+      var(--puck-space-m-unitless) / var(--puck-font-size-xxs-unitless)
+    );
+    --puck-line-height-xl: calc(
+      var(--puck-space-m-unitless) / var(--puck-font-size-scale-base-unitless)
+    );
 
-  /* Functional line heights
+    /* Functional line heights
       ========================================================================= */
 
-  --puck-line-height-base: var(--puck-line-height-m);
+    --puck-line-height-base: var(--puck-line-height-m);
 
-  /* Font families
+    /* Font families
   ======================================================================== */
 
-  --puck-fallback-font-stack: -apple-system, BlinkMacSystemFont, Segoe UI,
-    Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol;
+    --puck-fallback-font-stack: -apple-system, BlinkMacSystemFont, Segoe UI,
+      Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
+      Segoe UI Symbol;
 
-  --puck-font-family: Inter, var(--puck-fallback-font-stack);
-  --puck-font-family-monospaced: ui-monospace, "Cascadia Code",
-    "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
-}
+    --puck-font-family: Inter, var(--puck-fallback-font-stack);
+    --puck-font-family-monospaced: ui-monospace, "Cascadia Code",
+      "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  }
 
-@supports (font-variation-settings: normal) {
-  :root {
-    --puck-font-family: InterVariable, var(--puck-fallback-font-stack);
+  @supports (font-variation-settings: normal) {
+    :root {
+      --puck-font-family: InterVariable, var(--puck-fallback-font-stack);
+    }
   }
 }

@@ -16,3 +16,59 @@ body {
       Segoe UI Symbol;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surfaces — near-neutral grey (a whisper of cool keeps them from going
+       flat). Canvas (deepest) → chrome → panels → action bar (highest). */
+    --puck-color-surface: #1f1f21; /* panels, fields, menus */
+    --puck-color-surface-subtle: #161618; /* app, sidebars, plugin bar */
+    --puck-color-surface-muted: #0f0f11; /* canvas gutter and disabled fields */
+    --puck-color-surface-inverse: #2d2d2f; /* action bar, floating above the canvas */
+
+    /* Borders — low-contrast, just enough to define edges */
+    --puck-color-border: #2f2f31;
+    --puck-color-border-hover: #4d4d4f;
+    --puck-color-border-muted: #252527;
+    --puck-color-border-inverse: #4a4a4c;
+
+    /* Text */
+    --puck-color-text: #e7e9ef;
+    --puck-color-text-secondary: #abb2c0;
+    --puck-color-text-muted: #7d8493;
+    --puck-color-text-subtle: #565d6b;
+    --puck-color-text-inverse: #f3f5f9; /* light, for the action bar and primary button */
+    --puck-opacity-text-inverse: 0.85;
+
+    /* Interactive */
+    --puck-color-interactive: var(--puck-color-azure-06);
+    --puck-color-interactive-hover: var(--puck-color-azure-07);
+    --puck-color-interactive-active: var(--puck-color-azure-08);
+    --puck-color-interactive-subtle: #1b2a40; /* active plugin bar, category, outline */
+    --puck-color-interactive-soft: #18212f; /* secondary button, selected item */
+    --puck-color-interactive-soft-hover: #1f2a3c; /* row and item hover */
+    --puck-color-interactive-neutral-hover: #29292b; /* icon button hover */
+    --puck-color-interactive-inverse-hover: var(
+      --puck-color-azure-07
+    ); /* action bar and toggle hover */
+    --puck-color-interactive-inverse-active: var(
+      --puck-color-azure-08
+    ); /* action bar active */
+
+    --puck-color-focus-ring: var(--puck-color-azure-06);
+    --puck-color-selection-bg: color-mix(
+      in srgb,
+      var(--puck-color-azure-06) 22%,
+      transparent
+    );
+    --puck-color-selection-border: var(--puck-color-azure-06);
+
+    --puck-color-bg-disabled: #252527;
+    --puck-color-text-disabled: #565d6b;
+    --puck-color-overlay-backdrop: color-mix(in srgb, #000000 72%, transparent);
+
+    /* The primary (Publish) button fills with the bright azure, so its label
+       flips to a dark neutral to stay readable on top. */
+    --puck-button-primary-color-text: #161618;
+  }
+}
