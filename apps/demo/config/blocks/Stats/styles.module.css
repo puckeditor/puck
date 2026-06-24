@@ -12,19 +12,19 @@
   justify-content: space-between;
   margin: 0 auto;
   max-width: 768px;
-  padding: 64px 16px;
+  padding: 64px var(--puck-space-4);
 }
 
 @media (min-width: 768px) {
   .Stats-items {
-    padding: 64px 24px;
+    padding: 64px var(--puck-space-5);
   }
 }
 
 @media (min-width: 1024px) {
   .Stats-items {
     grid-template-columns: 1fr 1fr;
-    padding: 128px 24px;
+    padding: 128px var(--puck-space-5);
     max-width: 100%;
   }
 }
@@ -34,7 +34,7 @@
   flex-direction: column;
   align-items: center;
   color: white;
-  gap: 8px;
+  gap: var(--puck-space-2);
   width: 100%;
   text-align: center;
 }
@@ -53,12 +53,12 @@
 .Stats-label {
   font-size: 22px;
   text-align: center;
-  font-weight: 600;
+  font-weight: var(--puck-font-weight-semibold);
   opacity: 0.8;
 }
 
 .Stats-value {
   font-size: 72px;
   line-height: 1;
-  font-weight: 700;
+  font-weight: var(--puck-font-weight-bold);
 }

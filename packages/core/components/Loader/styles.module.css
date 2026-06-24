@@ -12,8 +12,8 @@
 
 .Loader {
   background: transparent;
-  border-radius: 100%;
-  border: 2px solid currentColor;
+  border-radius: var(--puck-radius-round);
+  border: var(--puck-border-width-focus) solid currentColor;
   border-bottom-color: transparent;
   display: inline-block;
   animation: loader-animation 1s 0s infinite linear;

@@ -17,7 +17,6 @@
  */
 
 .Puck {
-  --puck-space-px: 16px;
   font-family: var(--puck-font-family);
   overflow-x: hidden;
   visibility: visible !important;
@@ -40,62 +39,67 @@
 
 .PuckLayout-inner {
   --puck-frame-width: auto;
-  --puck-side-nav-width: min-content;
-  --puck-side-bar-width: 0px;
-  --puck-left-side-bar-width: var(
-    --puck-user-left-side-bar-width,
-    var(--puck-side-bar-width)
+  --puck-pluginbar-width: min-content;
+  --puck-sidebar-width: 0px;
+  --puck-sidebar-left-width: var(
+    --puck-user-sidebar-left-width,
+    var(--puck-sidebar-width)
   );
-  --puck-right-side-bar-width: var(
-    --puck-user-right-side-bar-width,
-    var(--puck-side-bar-width)
+  --puck-sidebar-right-width: var(
+    --puck-user-sidebar-right-width,
+    var(--puck-sidebar-width)
   );
-  background-color: var(--puck-color-grey-12);
+  background-color: var(--puck-color-surface-subtle);
   display: grid;
   grid-template-areas: "header" "editor" "left" "right" "sidenav";
   grid-template-columns: var(--puck-frame-width);
-  grid-template-rows: min-content auto 0 0 var(--puck-side-nav-width);
+  grid-template-rows: min-content auto 0 0 var(--puck-pluginbar-width);
   height: 100%;
   position: relative;
-  transition: grid-template-rows 150ms ease-in;
+  transition: grid-template-rows var(--puck-duration-medium)
+    var(--puck-ease-exit);
   z-index: 0;
   overflow: hidden;
 }
 
 @media (min-width: 638px) {
   .PuckLayout-inner {
-    --puck-side-nav-width: 68px;
+    --puck-pluginbar-width: 68px;
     grid-template-areas: "header header header header" "sidenav left editor right";
-    grid-template-columns: var(--puck-side-nav-width) 0 var(--puck-frame-width) 0;
+    grid-template-columns: var(--puck-pluginbar-width) 0 var(--puck-frame-width) 0;
     grid-template-rows: min-content auto;
   }
 
   .Puck--hidePlugins .PuckLayout-inner {
-    --puck-side-nav-width: 0;
+    --puck-pluginbar-width: 0;
   }
 }
 
 .PuckLayout--mounted .PuckLayout-inner {
-  --puck-side-bar-width: 186px;
+  --puck-sidebar-width: 186px;
 }
 
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
-  grid-template-rows: 0 auto 30% 0 var(--puck-side-nav-width);
+  grid-template-rows: 0 auto 30% 0 var(--puck-pluginbar-width);
+  transition: grid-template-rows var(--puck-duration-medium)
+    var(--puck-ease-entrance);
 }
 
 .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
-  grid-template-rows: 0 auto 55% 0 var(--puck-side-nav-width);
+  grid-template-rows: 0 auto 55% 0 var(--puck-pluginbar-width);
+  transition: grid-template-rows var(--puck-duration-medium)
+    var(--puck-ease-entrance);
 }
 
 @media (min-width: 638px) {
   .PuckLayout--mobilePanelHeightToggle.PuckLayout--leftSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+      var(--puck-pluginbar-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       0;
@@ -108,7 +112,7 @@
 .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
   .PuckLayout-inner {
   /* Setting header to 0 causes jump as it can't be animated. Can't use fixed number as we don't know user's header dimensions. Consider using ref + JS. */
-  grid-template-rows: 0 auto min-content 0 var(--puck-side-nav-width);
+  grid-template-rows: 0 auto min-content 0 var(--puck-pluginbar-width);
 }
 
 @media (min-width: 638px) {
@@ -121,7 +125,7 @@
   .PuckLayout--mobilePanelHeightMinContent.PuckLayout--leftSideBarVisible.PuckLayout--isExpanded
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+      var(--puck-pluginbar-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
       0;
@@ -132,8 +136,8 @@
 @media (min-width: 638px) {
   .PuckLayout--rightSideBarVisible .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) 0 var(--puck-frame-width)
-      var(--puck-right-side-bar-width);
+      var(--puck-pluginbar-width) 0 var(--puck-frame-width)
+      var(--puck-sidebar-right-width);
   }
 }
 
@@ -141,10 +145,10 @@
   .PuckLayout--leftSideBarVisible.PuckLayout--rightSideBarVisible
     .PuckLayout-inner {
     grid-template-columns:
-      var(--puck-side-nav-width) var(--puck-left-side-bar-width) var(
+      var(--puck-pluginbar-width) var(--puck-sidebar-left-width) var(
         --puck-frame-width
       )
-      var(--puck-right-side-bar-width);
+      var(--puck-sidebar-right-width);
   }
 }
 
@@ -156,7 +160,7 @@
 
 @media (min-width: 638px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: minmax(186px, 250px);
+    --puck-sidebar-width: minmax(186px, 250px);
   }
 }
 
@@ -168,31 +172,34 @@
 
 @media (min-width: 990px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 256px;
+    --puck-sidebar-width: 256px;
   }
 }
 
 @media (min-width: 1198px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 274px;
+    --puck-sidebar-width: 274px;
   }
 }
 
 @media (min-width: 1398px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 290px;
+    --puck-sidebar-width: 290px;
   }
 }
 
 @media (min-width: 1598px) {
   .PuckLayout .PuckLayout-inner {
-    --puck-side-bar-width: 320px;
+    --puck-sidebar-width: 320px;
   }
 }
 
 .PuckLayout-nav {
-  border-top: 1px solid var(--puck-color-grey-09);
-  background-color: var(--puck-color-grey-12);
+  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+  background-color: var(
+    --puck-pluginbar-color-bg,
+    var(--puck-color-surface-subtle)
+  );
   grid-area: sidenav;
   overflow: hidden;
   width: 100%;
@@ -201,7 +208,8 @@
 @media (min-width: 638px) {
   .PuckLayout-nav {
     border-top: 0;
-    border-right: 1px solid var(--puck-color-grey-09);
+    border-right: var(--puck-border-width-regular) solid
+      var(--puck-color-border);
     box-sizing: border-box;
   }
 }

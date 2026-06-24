@@ -1,0 +1,88 @@
+# Theming
+
+Puck's default interface is styled with CSS custom properties (design tokens). You can override these tokens to create a custom theme that matches your brand or product, or to implement dark mode.
+
+See the theming API reference for the full list of tokens:
+
+- [Global tokens](/docs/api-reference/theming/global): Tokens that restyle the whole interface at once.
+- [Action bar](/docs/api-reference/theming/action-bar): Tokens that style the action bar shown when selecting a component.
+- [Button](/docs/api-reference/theming/button): Tokens that style the text buttons.
+- [Canvas](/docs/api-reference/theming/canvas): Tokens that style the canvas preview area.
+- [Drawer](/docs/api-reference/theming/drawer): Tokens that style the component drawer.
+- [Fields](/docs/api-reference/theming/fields): Tokens that style the puck [fields](/docs/api-reference/fields).
+- [Header](/docs/api-reference/theming/header): Tokens that style the editor header.
+- [Icon button](/docs/api-reference/theming/icon-button): Tokens that style the icon buttons.
+- [Outline](/docs/api-reference/theming/outline): Tokens that style the outline panel.
+- [Plugin bar](/docs/api-reference/theming/plugin-bar): Tokens that style the side navigation for switching plugins.
+- [Sidebar](/docs/api-reference/theming/sidebar): Tokens that style the left and right sidebar panels.
+- [Slot](/docs/api-reference/theming/slot): Tokens that style the slots.
+- [Computed values](/docs/api-reference/theming/computed-values): Tokens that define default computed values for all component-level tokens.
+
+## Applying a theme
+
+To apply a theme override the token you want in any element above the editor in the DOM tree:
+
+```css showLineNumbers
+@import "@puckeditor/core/puck.css";
+
+.Container {
+  --puck-color-interactive: #0f5fff;
+  --puck-radius-m: 8px;
+}
+```
+
+## Global tokens
+
+[Global tokens](/docs/api-reference/theming/global) restyle the whole interface at once, covering color, spacing, radius, motion and typography.
+
+For example, to change the palette to match the interactive colors of your brand:
+
+```css showLineNumbers
+.Container {
+  --puck-color-interactive: #0d9488;
+  --puck-color-interactive-hover: #0f766e;
+  --puck-color-interactive-active: #115e59;
+  --puck-color-interactive-subtle: #ccfbf1;
+  --puck-color-interactive-soft: #f0fdfa;
+  --puck-color-interactive-soft-hover: #ccfbf1;
+  --puck-color-focus-ring: #14b8a6;
+  --puck-color-selection-bg: color-mix(in srgb, #14b8a6 20%, transparent);
+  --puck-color-selection-border: #14b8a6;
+  --puck-slot-component-color-placeholder: #99f6e4;
+  --puck-slot-component-color-border-dragging: #5eead4;
+}
+```
+
+The [API reference](/docs/api-reference/theming/global) lists where each global token is used.
+
+## Component tokens
+
+When you need finer control, component tokens restyle a single part of the UI and override global tokens.
+
+For example, to set the header and plugin bar background:
+
+```css showLineNumbers
+.Container {
+  --puck-header-color-bg: #fff4e6;
+  --puck-pluginbar-color-bg: #fff4e6;
+}
+```
+
+## Load your own font file
+
+By default, Puck loads the [Inter typeface family](https://rsms.me/inter/) from a CDN. To host your own copy of Inter, or load a different font file, switch Puck to the `no-external` runtime bundle:
+
+```css
+/* @import "@puckeditor/core/puck.css"; */
+@import "@puckeditor/core/no-external.css";
+```
+
+## Going further
+
+CSS tokens restyle the default interface. To change its behavior or visuals not covered by tokens, use the [composition](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides) APIs.
+
+## Further reading
+
+- [Theming API reference](/docs/api-reference/theming)
+- [Composition](/docs/extending-puck/composition)
+- [UI overrides](/docs/extending-puck/ui-overrides)

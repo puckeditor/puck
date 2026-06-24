@@ -17,13 +17,13 @@
 .RichTextEditor :global(.rich-text blockquote) {
   margin: 1em 0;
   padding: 0 1em;
-  border-left: 4px solid var(--puck-color-grey-09);
+  border-left: var(--puck-border-width-strong) solid var(--puck-color-border);
 }
 
 .RichTextEditor :global(.rich-text code) {
-  background-color: var(--puck-color-grey-11);
-  padding: 4px 8px;
-  border-radius: 4px;
+  background-color: var(--puck-color-surface-muted);
+  padding: var(--puck-space-1) var(--puck-space-2);
+  border-radius: var(--puck-radius-m);
 }
 
 .RichTextEditor :global(.rich-text p:empty::before) {
@@ -32,7 +32,7 @@
 
 .RichTextEditor :global(.rich-text pre code) {
   display: block;
-  padding: 8px 12px;
+  padding: var(--puck-space-2) var(--puck-space-3);
 }
 
 .RichTextEditor :global(.rich-text > *:first-child),
@@ -48,19 +48,23 @@
 }
 
 .RichTextEditor--editor {
-  background: var(--puck-color-white);
-  border-width: 1px;
+  color: var(--puck-field-color-text, var(--puck-color-text));
+  background: var(--puck-field-color-bg, var(--puck-color-surface));
+  border-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
   border-style: solid;
-  border-color: var(--puck-color-grey-09);
-  border-radius: 4px;
+  border-color: var(--puck-field-color-border, var(--puck-color-border));
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   font-family: inherit;
-  font-size: var(--puck-font-size-xxs);
+  font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
   resize: vertical;
   text-align: initial;
-  transition: border-color 50ms ease-in;
+  transition: border-color var(--puck-duration-fast) var(--puck-ease-exit);
   width: 100%;
   max-width: 100%;
   min-height: 128px;
@@ -74,12 +78,19 @@
 .RichTextEditor--editor :global(.rich-text:not(:has(.ProseMirror))),
 .RichTextEditor--editor :global(.rich-text .ProseMirror) {
   height: 100%;
-  padding: 12px 15px;
+  padding: var(--puck-field-space-y, var(--puck-space-3))
+    var(
+      --puck-field-space-x,
+      calc(
+        var(--puck-space-4) -
+          var(--puck-field-border-width, var(--puck-border-width-regular))
+      )
+    );
 }
 
 .RichTextEditor--editor :global(.rich-text ul),
 .RichTextEditor--editor :global(.rich-text ol) {
-  padding-left: 24px;
+  padding-left: var(--puck-space-5);
 }
 
 .RichTextEditor--editor :global(.rich-text li) {
@@ -87,7 +98,7 @@
 }
 
 .RichTextEditor--editor :global(.rich-text p) {
-  margin-block: 12px;
+  margin-block: var(--puck-space-3);
 }
 
 .RichTextEditor--editor :global(.rich-text ul) {
@@ -99,13 +110,50 @@
 }
 
 .RichTextEditor--editor:focus-within {
-  border-color: var(--puck-color-grey-05);
-  outline: 2px solid var(--puck-color-azure-05);
+  border-color: var(
+    --puck-field-color-border-hover,
+    var(--puck-color-border-hover)
+  );
+  outline: var(--puck-border-width-focus) solid
+    var(--puck-field-color-border-focus, var(--puck-color-focus-ring));
   transition: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .RichTextEditor--editor:hover:not(.RichTextEditor--disabled) {
+    border-color: var(
+      --puck-field-color-border-hover,
+      var(--puck-color-border-hover)
+    );
+    transition: none;
+  }
+}
+
 .RichTextEditor--editor.RichTextEditor--disabled {
-  background: var(--puck-color-grey-11);
+  background: var(
+    --puck-field-color-bg-disabled,
+    var(--puck-color-surface-muted)
+  );
+  border-color: var(
+    --puck-field-color-border-disabled,
+    var(--puck-color-border)
+  );
+}
+
+.RichTextEditor--editor.RichTextEditor--disabled
+  :global(.rich-text:not(:has(.ProseMirror))),
+.RichTextEditor--editor.RichTextEditor--disabled
+  :global(.rich-text .ProseMirror) {
+  color: var(
+    --puck-field-color-text-disabled,
+    var(--puck-color-text-secondary)
+  );
+}
+
+.RichTextEditor--editor.RichTextEditor--disabled
+  :global(.ProseMirror[contenteditable="false"]) {
+  /* Reset cursor when disabled for consistency with other inputs */
+  cursor: default;
 }
 
 .RichTextEditor:not(:focus-within):not(.RichTextEditor--isActive)
@@ -115,12 +163,13 @@
 }
 
 .RichTextEditor-menu {
-  border-bottom: 1px solid var(--puck-color-grey-10);
+  border-bottom: var(--puck-border-width-regular) solid
+    var(--puck-color-border-muted);
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
 .RichTextEditor--disabled .RichTextEditor-menu {
-  border-bottom: 1px solid var(--puck-color-grey-09);
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
 }

@@ -1,39 +1,55 @@
 .IconButton {
   align-items: center;
-  background: transparent;
+  background: var(--puck-iconbutton-color-bg, transparent);
   border: none;
-  border-radius: 4px;
-  color: currentColor;
+  border-radius: var(--puck-iconbutton-radius, var(--puck-radius-m));
+  color: var(--puck-iconbutton-color-icon, currentColor);
   display: flex;
   font-family: var(--puck-font-family);
   justify-content: center;
-  padding: 4px;
-  transition: background-color 50ms ease-in, color 50ms ease-in;
+  padding: var(--puck-iconbutton-space, var(--puck-space-1));
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .IconButton--active {
-  color: var(--puck-color-azure-04);
+  color: var(
+    --puck-iconbutton-color-icon-active,
+    var(--puck-color-interactive)
+  );
 }
 
 .IconButton:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: -2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .IconButton:hover:not(.IconButton--disabled) {
-    background: var(--puck-color-grey-10);
-    color: var(--puck-color-azure-04);
+    background: var(
+      --puck-iconbutton-color-bg-hover,
+      var(--puck-color-interactive-neutral-hover)
+    );
+    color: var(
+      --puck-iconbutton-color-icon-hover,
+      var(--puck-color-interactive)
+    );
     cursor: pointer;
     transition: none;
   }
 }
 
 .IconButton:active {
-  background: var(--puck-color-azure-11);
+  background: var(
+    --puck-iconbutton-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
   transition: none;
 }
 
 .IconButton--disabled {
-  color: var(--puck-color-grey-07);
+  color: var(
+    --puck-iconbutton-color-icon-disabled,
+    var(--puck-color-text-subtle)
+  );
 }

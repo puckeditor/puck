@@ -1,0 +1,51 @@
+---
+title: Icon button
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { IconButton } from "@/puck";
+import { Trash } from "lucide-react";
+
+# Icon button
+
+Use the following CSS properties for theming Puck's icon buttons.
+
+```css showLineNumbers
+.Container {
+  --puck-iconbutton-radius: 9999px;
+  --puck-iconbutton-color-icon: #1f2937;
+  --puck-iconbutton-color-bg-hover: #eef2ff;
+  --puck-iconbutton-space: 16px;
+}
+```
+
+<PuckPreview>
+  <div
+    style={{
+      "--puck-iconbutton-radius": "9999px",
+      "--puck-iconbutton-color-icon": "#1f2937",
+      "--puck-iconbutton-color-bg-hover": "#eef2ff",
+      "--puck-iconbutton-space": "16px",
+    }}
+  >
+    <IconButton title="Delete">
+      <Trash size={24} />
+    </IconButton>
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-reference/theming/global). See [computed values](/docs/api-reference/theming/computed-values#icon-button) for the values they resolve to.
+
+| Token                                   | Default                                       | Description             |
+| --------------------------------------- | --------------------------------------------- | ----------------------- |
+| `--puck-iconbutton-radius`              | `var(--puck-radius-m)`                        | Border radius           |
+| `--puck-iconbutton-space`               | `var(--puck-space-1)`                         | Padding                 |
+| `--puck-iconbutton-color-bg`            | `transparent`                                 | Background color        |
+| `--puck-iconbutton-color-bg-hover`      | `var(--puck-color-interactive-neutral-hover)` | Background on hover     |
+| `--puck-iconbutton-color-bg-active`     | `var(--puck-color-interactive-soft)`          | Background when pressed |
+| `--puck-iconbutton-color-icon`          | `currentColor`                                | Icon color              |
+| `--puck-iconbutton-color-icon-hover`    | `var(--puck-color-interactive)`               | Icon color on hover     |
+| `--puck-iconbutton-color-icon-active`   | `var(--puck-color-interactive)`               | Icon color when active  |
+| `--puck-iconbutton-color-icon-disabled` | `var(--puck-color-text-subtle)`               | Disabled icon color     |

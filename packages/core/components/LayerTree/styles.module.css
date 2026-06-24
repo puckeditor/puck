@@ -1,7 +1,7 @@
 .LayerTree {
-  color: var(--puck-color-grey-03);
+  color: var(--puck-outline-color-text, var(--puck-color-text-secondary));
   font-family: var(--puck-font-family);
-  font-size: var(--puck-font-size-xxs);
+  font-size: var(--puck-outline-font-size, var(--puck-font-size-xxs));
   margin: 0;
   position: relative;
   list-style: none;
@@ -9,27 +9,29 @@
 }
 
 .LayerTree-zoneTitle {
-  color: var(--puck-color-grey-05);
-  font-size: var(--puck-font-size-xxxs);
+  color: var(--puck-outline-zone-color-text, var(--puck-color-text-muted));
+  font-size: var(--puck-outline-zone-font-size, var(--puck-font-size-xxxs));
   text-transform: uppercase;
 }
 
 .LayerTree-helper {
   text-align: center;
-  color: var(--puck-color-grey-07);
-  margin: 8px 4px;
+  color: var(--puck-color-text-subtle);
+  margin: var(--puck-space-2) var(--puck-space-1);
 }
 
 .Layer {
   position: relative;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  border: var(--puck-outline-border-width, var(--puck-border-width-regular))
+    solid transparent;
+  border-radius: var(--puck-outline-radius, var(--puck-radius-m));
 }
 
 .Layer-inner {
-  border: 1px solid transparent;
-  border-radius: 4px;
-  transition: color 50ms ease-in;
+  border: var(--puck-outline-border-width, var(--puck-border-width-regular))
+    solid transparent;
+  border-radius: var(--puck-outline-radius, var(--puck-radius-m));
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .Layer--containsZone > .Layer-inner {
@@ -40,38 +42,50 @@
   align-items: center;
   background: none;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--puck-outline-radius, var(--puck-radius-m));
   color: inherit;
   cursor: pointer;
   display: flex;
   font: inherit;
-  padding-inline-start: 12px;
-  padding-inline-end: 4px;
+  padding-inline-start: var(--puck-space-3);
+  padding-inline-end: var(--puck-space-1);
   width: 100%;
 }
 
 .Layer-clickable:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
   position: relative;
   z-index: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Layer:not(.Layer--isSelected) > .Layer-inner:hover {
-    border-color: var(--puck-color-azure-10);
-    background: var(--puck-color-azure-11);
-    color: var(--puck-color-azure-04);
+    border-color: var(
+      --puck-outline-color-border-hover,
+      var(--puck-color-interactive-subtle)
+    );
+    background: var(
+      --puck-outline-color-bg-hover,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(--puck-outline-color-text-hover, var(--puck-color-interactive));
     transition: none;
   }
 }
 
 .Layer--isSelected {
-  border-color: var(--puck-color-azure-08);
+  border-color: var(
+    --puck-outline-color-border-selected,
+    var(--puck-color-selection-border)
+  );
 }
 
 .Layer--isSelected > .Layer-inner {
-  background: var(--puck-color-azure-10);
+  background: var(
+    --puck-outline-color-bg-selected,
+    var(--puck-color-interactive-subtle)
+  );
 }
 
 .Layer--isSelected > .Layer-inner > .Layer-clickable > .Layer-chevron,
@@ -81,7 +95,7 @@
 
 .Layer-zones {
   display: none;
-  margin-inline-start: 12px;
+  margin-inline-start: var(--puck-space-3);
 }
 
 .Layer--isSelected > .Layer-zones,
@@ -90,15 +104,15 @@
 }
 
 .Layer-zones > .LayerTree {
-  margin-inline-start: 12px;
+  margin-inline-start: var(--puck-space-3);
 }
 
 .Layer-title,
 .LayerTree-zoneTitle {
   display: flex;
-  gap: 8px;
+  gap: var(--puck-space-2);
   align-items: center;
-  margin: 8px 4px;
+  margin: var(--puck-space-2) var(--puck-space-1);
   overflow-x: hidden;
 }
 
@@ -109,11 +123,11 @@
 }
 
 .Layer-icon {
-  color: var(--puck-color-rose-07);
-  margin-top: 4px;
+  color: var(--puck-outline-color-icon, var(--puck-color-highlight));
+  margin-top: var(--puck-space-1);
 }
 
 .Layer-zoneIcon {
-  color: var(--puck-color-grey-08);
-  margin-top: 4px;
+  color: var(--puck-outline-zone-color-text, var(--puck-color-text-muted));
+  margin-top: var(--puck-space-1);
 }

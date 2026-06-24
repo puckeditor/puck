@@ -8,6 +8,8 @@ import {
 } from "@radix-ui/react-popover";
 import { ChevronDown } from "lucide-react";
 import { getClassNameFactory } from "../../lib";
+import { IconButton } from "../IconButton";
+import { Action } from "../ActionBar";
 
 const getClassName = getClassNameFactory("Select", styles);
 const getItemClassName = getClassNameFactory("SelectItem", styles);
@@ -50,31 +52,40 @@ export const Select = ({
   const hasOptions = options.length > 0;
   const isDisabled = disabled || !hasOptions;
 
+  const buttonInner = (
+    <div className={getClassName("buttonInner")}>
+      <span className={getClassName("buttonIcon")}>{children}</span>
+      <ChevronDown size={12} />
+    </div>
+  );
+
+  const trigger =
+    mode === "actionBar" ? (
+      <Action active={value !== defaultValue} disabled={isDisabled}>
+        {buttonInner}
+      </Action>
+    ) : (
+      <IconButton
+        title="Select"
+        active={value !== defaultValue}
+        disabled={isDisabled}
+      >
+        {buttonInner}
+      </IconButton>
+    );
+
   return (
     <div
       className={getClassName({
-        hasValue: value !== defaultValue,
-        hasOptions,
         actionBar: mode === "actionBar",
         standalone: mode === "standalone",
-        disabled: isDisabled,
       })}
     >
       <Popover open={open} onOpenChange={setOpen}>
         {hasOptions ? (
-          <PopoverTrigger asChild>
-            <button className={getClassName("button")}>
-              <span className={getClassName("buttonIcon")}>{children}</span>
-              <ChevronDown size={12} />
-            </button>
-          </PopoverTrigger>
+          <PopoverTrigger asChild>{trigger}</PopoverTrigger>
         ) : (
-          <div>
-            <div className={getClassName("button")}>
-              <span className={getClassName("buttonIcon")}>{children}</span>
-              <ChevronDown size={12} />
-            </div>
-          </div>
+          trigger
         )}
 
         {options.length > 0 && (

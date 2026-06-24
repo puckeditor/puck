@@ -1,21 +1,22 @@
 .PuckCanvas {
-  background: var(--puck-color-grey-11);
+  color: var(--puck-canvas-color-text, var(--puck-color-text));
+  background: var(--puck-canvas-color-bg, var(--puck-color-surface-muted));
   display: flex;
   grid-area: editor;
   flex-direction: column;
-  padding: var(--puck-space-px);
+  padding: var(--puck-space-chrome-gutter);
   position: relative;
   overflow: auto;
 }
 
 @media (min-width: 1198px) {
   .PuckCanvas {
-    padding: calc(var(--puck-space-px) * 1.5);
-    padding-top: calc(var(--puck-space-px) * 0.5);
+    padding: calc(var(--puck-space-chrome-gutter) * 1.5);
+    padding-top: calc(var(--puck-space-chrome-gutter) * 0.5);
   }
 
   .PuckCanvas:not(.PuckCanvas:has(.PuckCanvas-controls)) {
-    padding-top: calc(var(--puck-space-px) * 1.5);
+    padding-top: calc(var(--puck-space-chrome-gutter) * 1.5);
   }
 }
 
@@ -40,8 +41,8 @@
 }
 
 .PuckCanvas-root {
-  background: white;
-  outline: 1px solid var(--puck-color-grey-09);
+  background: var(--puck-canvas-preview-color-bg, var(--puck-color-surface));
+  outline: var(--puck-border-width-regular) solid var(--puck-color-border);
   box-sizing: content-box;
   min-width: 321px;
   position: absolute;
@@ -71,11 +72,11 @@
 
 .PuckCanvas-loader {
   align-items: center;
-  color: var(--puck-color-grey-06);
+  color: var(--puck-color-text-subtle);
   display: flex;
   height: 100%;
   justify-content: center;
-  transition: opacity 250ms ease-out;
+  transition: opacity var(--puck-duration-slow) var(--puck-ease-entrance);
   opacity: 0;
   pointer-events: none;
 }
@@ -91,7 +92,7 @@
 }
 
 .PuckCanvas-controls {
-  padding-bottom: calc(var(--puck-space-px) * 0.5);
+  padding-bottom: calc(var(--puck-space-chrome-gutter) * 0.5);
 }
 
 .PuckCanvas--fullScreen .PuckCanvas-controls {

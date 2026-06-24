@@ -3,6 +3,7 @@ import { getClassNameFactory } from "@/core/lib";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("Header", styles);
+const getClassNameItem = getClassNameFactory("HeaderItem", styles);
 
 const NavItem = ({ label, href }: { label: string; href: string }) => {
   const navPath =
@@ -15,16 +16,7 @@ const NavItem = ({ label, href }: { label: string; href: string }) => {
   const El = href ? "a" : "span";
 
   return (
-    <El
-      href={href || "/"}
-      style={{
-        textDecoration: "none",
-        color: isActive
-          ? "var(--puck-color-grey-02)"
-          : "var(--puck-color-grey-06)",
-        fontWeight: isActive ? "600" : "400",
-      }}
-    >
+    <El className={getClassNameItem({ isActive })} href={href || "/"}>
       {label}
     </El>
   );
