@@ -2,7 +2,7 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
-## [0.22.0](https://github.com/puckeditor/puck/compare/v0.21.2...v0.22.0) (2026-06-24)
+## [0.22.0](https://github.com/puckeditor/puck/compare/v0.21.3...v0.22.0) (2026-06-24)
 
 
 ### Bug Fixes
