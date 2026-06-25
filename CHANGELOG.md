@@ -2,6 +2,27 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.22.0](https://github.com/puckeditor/puck/compare/v0.21.3...v0.22.0) (2026-06-24)
+
+
+### Bug Fixes
+
+* capture first change in inline richtext field ([208b221](https://github.com/puckeditor/puck/commit/208b22140c0fcf85447ef9da2e838872aced0a77))
+* don't lazy load the rich text render on every re-render ([497aedf](https://github.com/puckeditor/puck/commit/497aedfec5a0cd362ad9f19f2c03904d787c83ef))
+* show overlay portal outline only in edit mode ([31c3d21](https://github.com/puckeditor/puck/commit/31c3d217a3c4ad36bf77d8889c56ac9a538e36c1))
+* use aria-expanded for accessible name in component category buttons ([f949417](https://github.com/puckeditor/puck/commit/f9494176c8c936faec6fc6d5ecbf7d5c5dce33fa))
+
+### Features
+
+* add iframe.syncHostStyles prop for controlling style sync ([1496ae3](https://github.com/puckeditor/puck/commit/1496ae34e48e2b3e92d2fe8461f98a2615b345d2))
+* add theming support with CSS variables ([d4c8bcf](https://github.com/puckeditor/puck/commit/d4c8bcf2dce09cc174ab405cf1d5cd39239a7c99))
+* expose root to resolveData API ([caeacf9](https://github.com/puckeditor/puck/commit/caeacf979cced77c476066bff23b819eb5333fdb))
+* load CSS dynamically if missing ([3c1f5e4](https://github.com/puckeditor/puck/commit/3c1f5e4fbf487de57a0c60eb12bd4a30703b665e))
+* remove remix recipe from create-puck-app ([d2c2761](https://github.com/puckeditor/puck/commit/d2c2761ed2c32a19eb8f28f89efa5b0b65802536))
+
+
+
+
 ## [0.21.3](https://github.com/puckeditor/puck/compare/v0.21.2...v0.21.3) (2026-06-08)
 
 
