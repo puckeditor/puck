@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { Components } from "../../types";
 
 const getClassName = getClassNameFactory("Flex", styles);
 
@@ -15,7 +16,10 @@ export type FlexProps = WithLayout<{
   items: Slot;
 }>;
 
-const FlexInternal: ComponentConfig<FlexProps> = {
+const FlexInternal: ComponentConfig<{
+  props: FlexProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     direction: {
       label: "Direction",
