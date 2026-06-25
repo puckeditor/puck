@@ -86,7 +86,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/uuid": "^10.0.0",
     "css-box-model": "^1.2.1",
-    "esbuild": "^0.25.11",
+    "esbuild": "^0.28.1",
     "eslint": "^9.0.0",
     "eslint-config-custom": "*",
     "identity-obj-proxy": "^3.0.0",
