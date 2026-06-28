@@ -277,12 +277,17 @@ export const createNestedDroppablePlugin = (
           handleMoveThrottled(event);
         };
 
-        document.body.addEventListener("pointermove", handlePointerMove, {
+        // `document.body` can be null when this effect tears down during an
+        // unmount (e.g. React StrictMode's mount/unmount/mount in dev, a keyed
+        // remount, or route navigation). Guard the listener add/remove so the
+        // cleanup never throws "Cannot read properties of null (reading
+        // 'removeEventListener')" out of DragDropRegistry.destroy().
+        document.body?.addEventListener("pointermove", handlePointerMove, {
           capture: true, // dndkit's PointerSensor prevents propagation during drag
         });
 
         const cleanup = () => {
-          document.body.removeEventListener("pointermove", handlePointerMove, {
+          document.body?.removeEventListener("pointermove", handlePointerMove, {
             capture: true,
           });
         };
