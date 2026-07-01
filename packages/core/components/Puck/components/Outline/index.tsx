@@ -1,5 +1,6 @@
 import { buildLayerTree, LayerTree } from "../../../LayerTree";
 import { useAppStore } from "../../../../store";
+import { useMessage } from "../../../../lib/use-message";
 import { useMemo } from "react";
 import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
 import { useShallow } from "zustand/react/shallow";
@@ -10,6 +11,7 @@ export const Outline = () => {
   const nodes = useAppStore((s) => s.state.indexes.nodes);
   const zones = useAppStore((s) => s.state.indexes.zones);
   const selectedId = useAppStore((s) => s.selectedItem?.props.id || null);
+  const componentFallbackLabel = useMessage("label-component");
 
   const rootZones = useAppStore(
     useShallow((s) => findZonesForArea(s.state, "root"))
@@ -34,9 +36,10 @@ export const Outline = () => {
           nodes,
           zoneCompound,
           zones,
+          componentFallbackLabel,
         })
       ),
-    [config, nodes, rootZones, zones]
+    [config, nodes, rootZones, zones, componentFallbackLabel]
   );
 
   const Wrapper = useMemo(() => outlineOverride || "div", [outlineOverride]);

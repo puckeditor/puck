@@ -1,11 +1,13 @@
 import { ReactNode, useEffect, useState } from "react";
 import { ComponentList } from "../components/ComponentList";
 import { useAppStore } from "../store";
+import { useMessage } from "./use-message";
 
 export const useComponentList = () => {
   const [componentList, setComponentList] = useState<ReactNode[]>();
   const config = useAppStore((s) => s.config);
   const uiComponentList = useAppStore((s) => s.state.ui.componentList);
+  const otherLabel = useMessage("component-list-other");
 
   useEffect(() => {
     if (Object.keys(uiComponentList).length > 0) {
@@ -63,7 +65,7 @@ export const useComponentList = () => {
           <ComponentList
             id="other"
             key="other"
-            title={uiComponentList.other?.title || "Other"}
+            title={uiComponentList.other?.title || otherLabel}
           >
             {remainingComponents.map((componentName, i) => {
               const componentConf = config.components[componentName] || {};
@@ -83,7 +85,7 @@ export const useComponentList = () => {
 
       setComponentList(_componentList);
     }
-  }, [config.categories, config.components, uiComponentList]);
+  }, [config.categories, config.components, uiComponentList, otherLabel]);
 
   return componentList;
 };

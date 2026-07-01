@@ -1,0 +1,95 @@
+# Localization
+
+Puck's default UI uses English. Use the [`dictionary`](/docs/api-reference/dictionary) prop to translate or reword any of the default strings.
+
+See the [Dictionary API reference](/docs/api-reference/dictionary) for the full list of strings and their defaults.
+
+## Translating strings
+
+To translate strings, provide a dictionary object with the keys you want to change and their corresponding translations.
+
+```tsx showLineNumbers copy {6-10}
+import { Puck } from "@puckeditor/core";
+
+export function Editor() {
+  return (
+    <Puck
+      dictionary={{
+        "header-publish": "Publicar", // "Publish" button
+        "plugin-blocks": "Bloques", // "Blocks" plugin
+        "plugin-outline": "Estructura", // "Outline" plugin
+      }}
+      config={config}
+      data={data}
+    />
+  );
+}
+```
+
+## Switching languages at runtime
+
+Puck reacts to any changes in the `dictionary` prop, so you can swap the object at runtime to change the language of the UI.
+
+```tsx showLineNumbers copy
+import { useState } from "react";
+import { Puck } from "@puckeditor/core";
+
+const dictionaries = {
+  en: {},
+  es: { "header-publish": "Publicar", "plugin-blocks": "Bloques" },
+};
+
+export function Editor() {
+  const [locale, setLocale] = useState<"en" | "es">("en");
+
+  return (
+    <>
+      <button onClick={() => setLocale(locale === "en" ? "es" : "en")}>
+        Toggle language
+      </button>
+      <Puck dictionary={dictionaries[locale]} config={config} data={data} />
+    </>
+  );
+}
+```
+
+If you already use a library like [`react-i18next`](https://react.i18next.com/) or [`next-intl`](https://next-intl.dev/), resolve your strings into a plain object and feed that object into `dictionary`.
+
+```tsx showLineNumbers copy {4-11}
+export function Editor() {
+  const { t } = useTranslation();
+
+  const dictionary = useMemo(
+    () => ({
+      "header-publish": t("header-publish"),
+      "plugin-blocks": t("plugin-blocks"),
+      "plugin-outline": t("plugin-outline"),
+    }),
+    [t]
+  );
+
+  return <Puck dictionary={dictionary} config={config} data={data} />;
+}
+```
+
+## Interpolating values
+
+Some messages have dynamic values that can be interpolated into the string.
+
+Use `{key}` in the string to interpolate a value from the `dictionary` object.
+
+```tsx
+// Interpolates the viewport `label` value into the string.
+<Puck dictionary={{ "viewport-switch": "Cambiar a {label}" }} />
+```
+
+See the [Dictionary API reference](/docs/api-reference/dictionary) for the full list of strings that support interpolation and their corresponding keys.
+
+## Hiding a string
+
+Set a key to an empty string to render nothing for that message.
+
+```tsx
+// Hides the page label entirely.
+<Puck dictionary={{ "label-page": "" }} />
+```
