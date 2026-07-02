@@ -13,6 +13,7 @@ import {
 } from "react";
 import { ZoneStoreContext } from "../DropZone/context";
 import { useAppStore } from "../../store";
+import { useMessage } from "../../lib/use-message";
 import { useContextStore } from "../../lib/use-context-store";
 import { NodeIndex, ZoneIndex } from "../../types/Internal";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -83,6 +84,7 @@ const buildLayerNode = ({
   zoneCompound,
   zones,
   zonesByParent,
+  componentFallbackLabel = "Component",
 }: {
   config: Config;
   itemId: string;
@@ -91,9 +93,11 @@ const buildLayerNode = ({
   zoneCompound: string;
   zones: ZoneIndex;
   zonesByParent: Record<string, string[]>;
+  componentFallbackLabel?: string;
 }): LayerNodeTree => {
   const nodeData = nodes[itemId];
-  const componentType = nodeData?.data.type?.toString() || "Component";
+  const componentType =
+    nodeData?.data.type?.toString() || componentFallbackLabel;
   const label = config.components[componentType]?.label ?? componentType;
   const childZoneCompounds = zonesByParent[itemId] || [];
 
@@ -105,6 +109,7 @@ const buildLayerNode = ({
         zoneCompound: childZoneCompound,
         zones,
         zonesByParent,
+        componentFallbackLabel,
       })
     ),
     componentType,
@@ -122,6 +127,7 @@ export const buildLayerTree = ({
   zoneCompound,
   zones,
   zonesByParent = getZonesByParent(zones),
+  componentFallbackLabel = "Component",
 }: {
   config: Config;
   label?: string;
@@ -129,6 +135,7 @@ export const buildLayerTree = ({
   zoneCompound: string;
   zones: ZoneIndex;
   zonesByParent?: Record<string, string[]>;
+  componentFallbackLabel?: string;
 }): LayerZoneTree => {
   const contentIds = zones[zoneCompound]?.contentIds ?? [];
 
@@ -142,6 +149,7 @@ export const buildLayerTree = ({
         zoneCompound,
         zones,
         zonesByParent,
+        componentFallbackLabel,
       })
     ),
     label: getZoneLabel(zoneCompound, nodes, config, label),
@@ -204,6 +212,9 @@ const Layer = forwardRef(function Layer(
   );
   const containsZone = node.childZones.length > 0;
 
+  const collapseLabel = useMessage("outline-collapse");
+  const expandLabel = useMessage("outline-expand");
+
   const setItemSelector = useCallback(
     (itemSelector: ItemSelector | null) => {
       dispatch({ type: "setUi", ui: { itemSelector } });
@@ -254,7 +265,7 @@ const Layer = forwardRef(function Layer(
           {containsZone && (
             <div
               className={getClassNameLayer("chevron")}
-              title={isSelected ? "Collapse" : "Expand"}
+              title={isSelected ? collapseLabel : expandLabel}
             >
               <ChevronDown size="12" />
             </div>
@@ -345,10 +356,12 @@ const StaticLayerTreeItems = ({
   selectedPathIds: Set<string>;
   tree: LayerZoneTree;
 }) => {
+  const noItemsLabel = useMessage("outline-empty");
+
   return (
     <ul className={getClassName()}>
       {tree.items.length === 0 && (
-        <div className={getClassName("helper")}>No items</div>
+        <div className={getClassName("helper")}>{noItemsLabel}</div>
       )}
       {tree.items.map((node) => (
         <Layer
@@ -377,6 +390,7 @@ const VirtualizedLayerTreeItems = ({
   tree: LayerZoneTree;
 }) => {
   const listRef = useRef<HTMLUListElement | null>(null);
+  const noItemsLabel = useMessage("outline-empty");
   const virtualizer = useVirtualizer({
     count: tree.items.length,
     estimateSize: (index) => getEstimatedRowHeight(tree.items[index].itemId),
@@ -448,7 +462,7 @@ const VirtualizedLayerTreeItems = ({
   return (
     <ul className={getClassName()} ref={listRef}>
       {tree.items.length === 0 && (
-        <div className={getClassName("helper")}>No items</div>
+        <div className={getClassName("helper")}>{noItemsLabel}</div>
       )}
       {renderedItems}
     </ul>

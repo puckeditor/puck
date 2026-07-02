@@ -1,0 +1,149 @@
+---
+title: Dictionary
+---
+
+# Dictionary
+
+The dictionary defines the text strings used throughout Puck's UI.
+
+Use this to implement [localization](/docs/integrating-puck/localization) or to override default messages:
+
+```tsx showLineNumbers copy
+const dictionary = {
+  "header-publish": "Save",
+};
+
+<Puck dictionary={dictionary} />;
+```
+
+When a default string contains a template variable (e.g. `{count}`), you can use that to position the variable in your string:
+
+```tsx showLineNumbers copy
+const dictionary = {
+  "field-external-result-singular": "Total: {count}",
+  "field-external-result-plural": "Total: {count}",
+};
+```
+
+## Tokens
+
+Tokens follow a `{area}-{name}-{variant}` format.
+
+### Header
+
+| Token                        | Default                | Used for             |
+| ---------------------------- | ---------------------- | -------------------- |
+| `header-publish`             | `Publish`              | Publish button       |
+| `header-undo`                | `undo`                 | Undo button          |
+| `header-redo`                | `redo`                 | Redo button          |
+| `header-toggle-leftsidebar`  | `Toggle left sidebar`  | Sidebar toggle       |
+| `header-toggle-rightsidebar` | `Toggle right sidebar` | Sidebar toggle       |
+| `header-toggle-menubar`      | `Toggle menu bar`      | Menu toggle (mobile) |
+
+### Actions
+
+| Token                 | Default         | Used for             |
+| --------------------- | --------------- | -------------------- |
+| `action-selectparent` | `Select parent` | Component action bar |
+| `action-duplicate`    | `Duplicate`     | Component action bar |
+| `action-delete`       | `Delete`        | Component action bar |
+
+### Labels
+
+| Token             | Default     | Used for                                                |
+| ----------------- | ----------- | ------------------------------------------------------- |
+| `label-page`      | `Page`      | Breadcrumbs, fields panel title, header title fallback  |
+| `label-component` | `Component` | Outline and breadcrumbs, for unresolved component types |
+
+### Outline
+
+| Token              | Default    | Used for     |
+| ------------------ | ---------- | ------------ |
+| `outline-empty`    | `No items` | Empty zone   |
+| `outline-collapse` | `Collapse` | Layer toggle |
+| `outline-expand`   | `Expand`   | Layer toggle |
+
+### Drawer
+
+| Token                      | Default            | Used for                                      |
+| -------------------------- | ------------------ | --------------------------------------------- |
+| `drawer-category-collapse` | `Collapse {title}` | Category toggle                               |
+| `drawer-category-expand`   | `Expand {title}`   | Category toggle                               |
+| `drawer-category-other`    | `Other`            | Default category for uncategorized components |
+
+### Fields
+
+| Token            | Default     | Used for                  |
+| ---------------- | ----------- | ------------------------- |
+| `field-readonly` | `Read-only` | Read-only field lock icon |
+
+#### Array field
+
+| Token                       | Default         | Used for           |
+| --------------------------- | --------------- | ------------------ |
+| `field-arrayitem-summary`   | `Item #{index}` | Item default label |
+| `field-arrayitem-duplicate` | `Duplicate`     | Item action        |
+| `field-arrayitem-delete`    | `Delete`        | Item action        |
+
+#### External field
+
+| Token                            | Default           | Used for                    |
+| -------------------------------- | ----------------- | --------------------------- |
+| `field-external-selectdata`      | `Select data`     | Modal heading               |
+| `field-external-search`          | `Search`          | Modal search                |
+| `field-external-togglefilters`   | `Toggle filters`  | Modal filter toggle         |
+| `field-external-item`            | `External item`   | Selected item default label |
+| `field-external-result-singular` | `{count} result`  | Modal footer                |
+| `field-external-result-plural`   | `{count} results` | Modal footer                |
+
+#### Rich text field
+
+| Token                           | Default           | Used for          |
+| ------------------------------- | ----------------- | ----------------- |
+| `field-richtext-bold`           | `Bold`            | Formatting button |
+| `field-richtext-italic`         | `Italic`          | Formatting button |
+| `field-richtext-underline`      | `Underline`       | Formatting button |
+| `field-richtext-strikethrough`  | `Strikethrough`   | Formatting button |
+| `field-richtext-blockquote`     | `Blockquote`      | Formatting button |
+| `field-richtext-code-inline`    | `Inline code`     | Formatting button |
+| `field-richtext-code-block`     | `Code block`      | Formatting button |
+| `field-richtext-list-bullet`    | `Bullet list`     | Formatting button |
+| `field-richtext-list-ordered`   | `Ordered list`    | Formatting button |
+| `field-richtext-horizontalrule` | `Horizontal rule` | Formatting button |
+| `field-richtext-align-left`     | `Align left`      | Alignment button  |
+| `field-richtext-align-center`   | `Align center`    | Alignment button  |
+| `field-richtext-align-right`    | `Align right`     | Alignment button  |
+| `field-richtext-align-justify`  | `Justify`         | Alignment button  |
+| `field-richtext-select`         | `Select`          | Select controls   |
+
+### Viewport controls
+
+| Token                     | Default                      | Used for                      |
+| ------------------------- | ---------------------------- | ----------------------------- |
+| `viewport-zoom-in`        | `Zoom viewport in`           | Zoom button                   |
+| `viewport-zoom-out`       | `Zoom viewport out`          | Zoom button                   |
+| `viewport-toggle-menu`    | `Toggle viewport menu`       | Menu toggle                   |
+| `viewport-switch`         | `Switch to {label} viewport` | Viewport button               |
+| `viewport-switch-default` | `Switch viewport`            | Viewport button, if unlabeled |
+
+### Plugin bar
+
+| Token               | Default      | Used for                     |
+| ------------------- | ------------ | ---------------------------- |
+| `plugin-blocks`     | `Blocks`     | Sidebar tab                  |
+| `plugin-outline`    | `Outline`    | Sidebar tab                  |
+| `plugin-fields`     | `Fields`     | Sidebar tab                  |
+| `plugin-components` | `Components` | Legacy sidebar section title |
+
+### Layout
+
+| Token             | Default    | Used for            |
+| ----------------- | ---------- | ------------------- |
+| `layout-maximize` | `maximize` | Mobile panel toggle |
+| `layout-minimize` | `minimize` | Mobile panel toggle |
+
+### Loader
+
+| Token            | Default   | Used for                     |
+| ---------------- | --------- | ---------------------------- |
+| `loader-loading` | `loading` | Loading spinner (aria-label) |

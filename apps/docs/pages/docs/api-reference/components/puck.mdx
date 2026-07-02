@@ -29,6 +29,7 @@ export function Editor() {
 | ----------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
 | [`config`](#config)                                               | `config: { components: {} }`                       | [Config](/docs/api-reference/configuration/config)                       | Required     |
 | [`data`](#data)                                                   | `data: {}`                                         | [Data](/docs/api-reference/data-model/data)                              | Required     |
+| [`dictionary`](#dictionary)                                       | `dictionary: { "header-publish": "Publicar" }`     | [Dictionary](/docs/api-reference/dictionary)                             | -            |
 | [`dnd`](#dnd)                                                     | `dnd: {}`                                          | [DndConfig](#dnd-params)                                                 | -            |
 | [`children`](#children)                                           | `children: <Puck.Preview />`                       | ReactNode                                                                | -            |
 | [`fieldTransforms`](#fieldtransforms)                             | `fieldTransforms: {text: () => <div />}`           | [FieldTransforms](/docs/api-reference/field-transforms)                  | -            |
@@ -113,6 +114,21 @@ export function Editor() {
     <Puck /*...*/>
       <Puck.Preview />
     </Puck>
+  );
+}
+```
+
+### `dictionary`
+
+Override Puck's default UI strings. See the [`Dictionary` docs](/docs/api-reference/dictionary) for a full list of supported messages.
+
+```tsx {4} copy
+export function Editor() {
+  return (
+    <Puck
+      dictionary={{ "header-publish": "Save" }}
+      // ...
+    />
   );
 }
 ```

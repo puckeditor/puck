@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { IconButton } from "../IconButton";
 import { useAppStore } from "../../store";
+import { useMessage } from "../../lib/use-message";
 import { ReactNode, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { getClassNameFactory } from "../../lib";
 
@@ -64,6 +65,34 @@ const defaultZoomOptions = [
   { label: "200%", value: 2 },
 ];
 
+const ViewportButton = ({
+  viewport,
+  isActive,
+  onClick,
+}: {
+  viewport: Viewport;
+  isActive: boolean;
+  onClick: (e: SyntheticEvent) => void;
+}) => {
+  // Resolve both unconditionally (rules of hooks), then pick based on label.
+  const switchTitle = useMessage("viewport-switch", {
+    label: viewport.label ?? "",
+  });
+  const switchDefaultTitle = useMessage("viewport-switch-default");
+
+  return (
+    <ActionButton
+      title={viewport.label ? switchTitle : switchDefaultTitle}
+      onClick={onClick}
+      isActive={isActive}
+    >
+      {typeof viewport.icon === "string"
+        ? icons[viewport.icon as keyof typeof icons] || viewport.icon
+        : viewport.icon || icons.Smartphone}
+    </ActionButton>
+  );
+};
+
 export const ViewportControls = ({
   autoZoom,
   zoom,
@@ -112,6 +141,10 @@ export const ViewportControls = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const zoomOutLabel = useMessage("viewport-zoom-out");
+  const zoomInLabel = useMessage("viewport-zoom-in");
+  const toggleMenuLabel = useMessage("viewport-toggle-menu");
+
   return (
     <div
       className={getClassName({ isExpanded, fullScreen })}
@@ -120,27 +153,19 @@ export const ViewportControls = ({
       <div className={getClassName("actions")}>
         <div className={getClassName("actionsInner")}>
           {viewports.map((viewport, i) => (
-            <ActionButton
+            <ViewportButton
               key={i}
-              title={
-                viewport.label
-                  ? `Switch to ${viewport.label} viewport`
-                  : "Switch viewport"
-              }
+              viewport={viewport}
               onClick={() => {
                 setActiveViewport(viewport.width);
                 onViewportChange(viewport);
               }}
               isActive={activeViewport === viewport.width}
-            >
-              {typeof viewport.icon === "string"
-                ? icons[viewport.icon as keyof typeof icons] || viewport.icon
-                : viewport.icon || icons.Smartphone}
-            </ActionButton>
+            />
           ))}
           <div className={getClassName("divider")} />
           <ActionButton
-            title="Zoom viewport out"
+            title={zoomOutLabel}
             disabled={zoom <= zoomOptions[0]?.value}
             onClick={(e) => {
               e.stopPropagation();
@@ -158,7 +183,7 @@ export const ViewportControls = ({
             <ZoomOut size={16} />
           </ActionButton>
           <ActionButton
-            title="Zoom viewport in"
+            title={zoomInLabel}
             disabled={zoom >= zoomOptions[zoomOptions.length - 1]?.value}
             onClick={(e) => {
               e.stopPropagation();
@@ -203,7 +228,7 @@ export const ViewportControls = ({
 
       <button
         className={getClassName("toggleButton")}
-        title="Toggle viewport menu"
+        title={toggleMenuLabel}
         onClick={() => setIsExpanded((s) => !s)}
       >
         {isExpanded ? <X size={16} /> : <Monitor size={16} />}

@@ -28,6 +28,7 @@ import type {
   Metadata,
   AsFieldProps,
   DefaultComponentProps,
+  Dictionary,
 } from "../../types";
 
 import { PuckAction } from "../../reducer";
@@ -88,6 +89,7 @@ type PuckProps<
   };
   initialHistory?: InitialHistory;
   metadata?: Metadata;
+  dictionary?: Dictionary;
   height?: CSSProperties["height"];
   _experimentalFullScreenCanvas?: boolean;
   _experimentalVirtualization?: boolean;
@@ -124,6 +126,7 @@ function PuckProvider<
     iframe: _iframe,
     initialHistory: _initialHistory,
     metadata,
+    dictionary,
     onAction,
     fieldTransforms,
     _experimentalFullScreenCanvas,
@@ -266,6 +269,7 @@ function PuckProvider<
         _experimentalVirtualization: !!_experimentalVirtualization,
         onAction,
         metadata,
+        dictionary: dictionary || {},
         fieldTransforms: loadedFieldTransforms,
       };
     },
@@ -281,6 +285,7 @@ function PuckProvider<
       _experimentalVirtualization,
       onAction,
       metadata,
+      dictionary,
       loadedFieldTransforms,
     ]
   );
