@@ -3,6 +3,7 @@ import {
   UserGenerics,
   ResolveDataTrigger,
   ComponentData,
+  Dictionary,
 } from "../types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AppStore, useAppStoreApi } from "../store";
@@ -49,6 +50,7 @@ export type UsePuckData<
     hasPast: boolean;
     hasFuture: boolean;
   };
+  dictionary: Dictionary;
 };
 
 export type PuckApi<UserConfig extends Config = Config> =
@@ -58,7 +60,13 @@ type UsePuckStore<UserConfig extends Config = Config> = PuckApi<UserConfig>;
 
 type PickedStore = Pick<
   AppStore,
-  "config" | "dispatch" | "selectedItem" | "permissions" | "history" | "state"
+  | "config"
+  | "dispatch"
+  | "selectedItem"
+  | "permissions"
+  | "history"
+  | "state"
+  | "dictionary"
 >;
 
 export const generateUsePuck = (
@@ -98,6 +106,7 @@ export const generateUsePuck = (
       if (!parentNode) return;
       return parentNode.data;
     },
+    dictionary: store.dictionary,
   };
 
   (storeData as any).__private = {
@@ -119,6 +128,7 @@ const convertToPickedStore = (store: AppStore): PickedStore => {
     permissions: store.permissions,
     history: store.history,
     selectedItem: store.selectedItem,
+    dictionary: store.dictionary,
   };
 };
 

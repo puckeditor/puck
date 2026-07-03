@@ -7,6 +7,7 @@ import type {
 import { ExternalInput } from "../../../ExternalInput";
 import { Link } from "lucide-react";
 import { useDeepField } from "../../lib/use-deep-field";
+import { useMessage } from "../../../../lib/use-message";
 
 export const ExternalField = ({
   field,
@@ -23,6 +24,8 @@ export const ExternalField = ({
   // DEPRECATED
   const validField = field as ExternalFieldType;
   const deprecatedField = field as ExternalFieldWithAdaptor;
+
+  const selectDataLabel = useMessage("field-external-selectdata");
 
   useEffect(() => {
     if (deprecatedField.adaptor) {
@@ -50,7 +53,7 @@ export const ExternalField = ({
 
           placeholder: deprecatedField.adaptor?.name
             ? `Select from ${deprecatedField.adaptor.name}`
-            : validField.placeholder || "Select data",
+            : validField.placeholder || selectDataLabel,
           mapProp: deprecatedField.adaptor?.mapProp || validField.mapProp,
           mapRow: validField.mapRow,
           fetchList: deprecatedField.adaptor?.fetchList

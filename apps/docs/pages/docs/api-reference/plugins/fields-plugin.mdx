@@ -20,9 +20,11 @@ export function Editor() {
 
 ## Params
 
-| Param            | Example                  | Type              | Status |
-| ---------------- | ------------------------ | ----------------- | ------ |
-| `desktopSideBar` | `desktopSideBar: "left"` | "left" \| "right" | -      |
+| Param                               | Example                  | Type              | Status |
+| ----------------------------------- | ------------------------ | ----------------- | ------ |
+| [`desktopSideBar`](#desktopsidebar) | `desktopSideBar: "left"` | "left" \| "right" | -      |
+| [`icon`](#icon)                     | `icon: <FormInput />`    | ReactNode         | -      |
+| [`label`](#label)                   | `label: "Fields"`        | String            | -      |
 
 ## Optional params
 
@@ -34,4 +36,37 @@ Display the plugin in the left or right sidebar on desktop. This field is `"righ
 const fields = fieldsPlugin({
   desktopSideBar: "left",
 });
+```
+
+### `icon`
+
+React node displayed alongside `label` in the plugin rail. Defaults to a form input icon.
+
+```tsx copy
+import { Puck, fieldsPlugin } from "@puckeditor/core";
+import { Form } from "lucide-react";
+
+const fields = fieldsPlugin({
+  icon: <Form />,
+});
+
+export function Editor() {
+  return <Puck plugins={[fields]} />;
+}
+```
+
+### `label`
+
+Label shown in the plugin rail. Defaults to `"Fields"`.
+
+```tsx copy
+import { Puck, fieldsPlugin } from "@puckeditor/core";
+
+const fields = fieldsPlugin({
+  label: "Properties",
+});
+
+export function Editor() {
+  return <Puck plugins={[fields]} />;
+}
 ```

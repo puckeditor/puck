@@ -1,0 +1,172 @@
+---
+title: Dictionary
+---
+
+# Dictionary
+
+The dictionary defines the text strings used throughout Puck's UI.
+
+Use this to implement [localization](/docs/integrating-puck/localization) or to override default messages:
+
+```tsx showLineNumbers copy
+const dictionary = {
+  "header-publish": "Save",
+};
+
+<Puck dictionary={dictionary} />;
+```
+
+When a default string contains a template variable (e.g. `{count}`), you can use that to position the variable in your string:
+
+```tsx showLineNumbers copy
+const dictionary = {
+  "field-external-result-singular": "Total: {count}",
+  "field-external-result-plural": "Total: {count}",
+};
+```
+
+The dictionary also accepts your own keys, which you can read from the [internal Puck API](/docs/api-reference/puck-api#dictionary). See [Custom strings](/docs/integrating-puck/localization#custom-strings).
+
+## Tokens
+
+Tokens follow a `{area}-{name}-{variant}` format.
+
+Many tokens set an element's HTML `title` attribute, a tooltip that only appears on hover, rather than always-visible text. These are marked _(tooltip)_ below.
+
+### Header
+
+| Token                        | Default                  | Used for                         |
+| ---------------------------- | ------------------------ | -------------------------------- |
+| `header-publish`             | `"Publish"`              | Publish button                   |
+| `header-undo`                | `"undo"`                 | Undo button (tooltip)            |
+| `header-redo`                | `"redo"`                 | Redo button (tooltip)            |
+| `header-toggle-leftsidebar`  | `"Toggle left sidebar"`  | Sidebar toggle (tooltip)         |
+| `header-toggle-rightsidebar` | `"Toggle right sidebar"` | Sidebar toggle (tooltip)         |
+| `header-toggle-menubar`      | `"Toggle menu bar"`      | Mobile menu bar toggle (tooltip) |
+
+### Actions
+
+| Token                 | Default           | Used for                       |
+| --------------------- | ----------------- | ------------------------------ |
+| `action-selectparent` | `"Select parent"` | Component action bar (tooltip) |
+| `action-duplicate`    | `"Duplicate"`     | Component action bar (tooltip) |
+| `action-delete`       | `"Delete"`        | Component action bar (tooltip) |
+
+### Labels
+
+| Token             | Default       | Used for                                                |
+| ----------------- | ------------- | ------------------------------------------------------- |
+| `label-page`      | `"Page"`      | Breadcrumbs, fields panel title, header title fallback  |
+| `label-component` | `"Component"` | Outline and breadcrumbs, for unresolved component types |
+
+### Outline
+
+| Token              | Default      | Used for               |
+| ------------------ | ------------ | ---------------------- |
+| `outline-empty`    | `"No items"` | Empty zone             |
+| `outline-collapse` | `"Collapse"` | Layer toggle (tooltip) |
+| `outline-expand`   | `"Expand"`   | Layer toggle (tooltip) |
+
+### Drawer
+
+| Token                      | Default              | Used for                                      |
+| -------------------------- | -------------------- | --------------------------------------------- |
+| `drawer-category-collapse` | `"Collapse {title}"` | Category toggle (tooltip)                     |
+| `drawer-category-expand`   | `"Expand {title}"`   | Category toggle (tooltip)                     |
+| `drawer-category-other`    | `"Other"`            | Default category for uncategorized components |
+
+### Canvas
+
+| Token             | Default                         | Used for                                           |
+| ----------------- | ------------------------------- | -------------------------------------------------- |
+| `canvas-noconfig` | `"No configuration for {type}"` | Placeholder for components missing from the config |
+
+### Fields
+
+| Token            | Default       | Used for                            |
+| ---------------- | ------------- | ----------------------------------- |
+| `field-readonly` | `"Read-only"` | Read-only field lock icon (tooltip) |
+
+#### Array field
+
+| Token                       | Default           | Used for              |
+| --------------------------- | ----------------- | --------------------- |
+| `field-arrayitem-summary`   | `"Item #{index}"` | Item default label    |
+| `field-arrayitem-duplicate` | `"Duplicate"`     | Item action (tooltip) |
+| `field-arrayitem-delete`    | `"Delete"`        | Item action (tooltip) |
+
+#### External field
+
+| Token                            | Default             | Used for                         |
+| -------------------------------- | ------------------- | -------------------------------- |
+| `field-external-selectdata`      | `"Select data"`     | Trigger button and modal heading |
+| `field-external-search`          | `"Search"`          | Modal search                     |
+| `field-external-togglefilters`   | `"Toggle filters"`  | Modal filter toggle (tooltip)    |
+| `field-external-item`            | `"External item"`   | Selected item default label      |
+| `field-external-result-singular` | `"{count} result"`  | Modal footer                     |
+| `field-external-result-plural`   | `"{count} results"` | Modal footer                     |
+
+#### Rich text field
+
+| Token                                | Default             | Used for                    |
+| ------------------------------------ | ------------------- | --------------------------- |
+| `field-richtext-bold`                | `"Bold"`            | Formatting button (tooltip) |
+| `field-richtext-italic`              | `"Italic"`          | Formatting button (tooltip) |
+| `field-richtext-underline`           | `"Underline"`       | Formatting button (tooltip) |
+| `field-richtext-strikethrough`       | `"Strikethrough"`   | Formatting button (tooltip) |
+| `field-richtext-blockquote`          | `"Blockquote"`      | Formatting button (tooltip) |
+| `field-richtext-code-inline`         | `"Inline code"`     | Formatting button (tooltip) |
+| `field-richtext-code-block`          | `"Code block"`      | Formatting button (tooltip) |
+| `field-richtext-list-bullet`         | `"Bullet list"`     | Formatting button (tooltip) |
+| `field-richtext-list-ordered`        | `"Ordered list"`    | Formatting button (tooltip) |
+| `field-richtext-horizontalrule`      | `"Horizontal rule"` | Formatting button (tooltip) |
+| `field-richtext-align-left`          | `"Align left"`      | Alignment button (tooltip)  |
+| `field-richtext-align-center`        | `"Align center"`    | Alignment button (tooltip)  |
+| `field-richtext-align-right`         | `"Align right"`     | Alignment button (tooltip)  |
+| `field-richtext-align-justify`       | `"Justify"`         | Alignment button (tooltip)  |
+| `field-richtext-select`              | `"Select"`          | Select control (tooltip)    |
+| `field-richtext-headingselect-1`     | `"Heading 1"`       | Heading select option       |
+| `field-richtext-headingselect-2`     | `"Heading 2"`       | Heading select option       |
+| `field-richtext-headingselect-3`     | `"Heading 3"`       | Heading select option       |
+| `field-richtext-headingselect-4`     | `"Heading 4"`       | Heading select option       |
+| `field-richtext-headingselect-5`     | `"Heading 5"`       | Heading select option       |
+| `field-richtext-headingselect-6`     | `"Heading 6"`       | Heading select option       |
+| `field-richtext-alignselect-left`    | `"Left"`            | Alignment select option     |
+| `field-richtext-alignselect-center`  | `"Center"`          | Alignment select option     |
+| `field-richtext-alignselect-right`   | `"Right"`           | Alignment select option     |
+| `field-richtext-alignselect-justify` | `"Justify"`         | Alignment select option     |
+| `field-richtext-listselect-bullet`   | `"Bullet list"`     | List select option          |
+| `field-richtext-listselect-ordered`  | `"Ordered list"`    | List select option          |
+
+### Viewport controls
+
+| Token                     | Default                        | Used for                                |
+| ------------------------- | ------------------------------ | --------------------------------------- |
+| `viewport-zoom-in`        | `"Zoom viewport in"`           | Zoom button (tooltip)                   |
+| `viewport-zoom-out`       | `"Zoom viewport out"`          | Zoom button (tooltip)                   |
+| `viewport-zoom-auto`      | `"{zoom}% (Auto)"`             | Auto zoom select option                 |
+| `viewport-toggle-menu`    | `"Toggle viewport menu"`       | Menu toggle (tooltip)                   |
+| `viewport-switch`         | `"Switch to {label} viewport"` | Viewport button (tooltip)               |
+| `viewport-switch-default` | `"Switch viewport"`            | Viewport button, if unlabeled (tooltip) |
+
+### Plugin bar
+
+| Token               | Default        | Used for                             |
+| ------------------- | -------------- | ------------------------------------ |
+| `plugin-blocks`     | `"Blocks"`     | Sidebar tab and legacy section title |
+| `plugin-outline`    | `"Outline"`    | Sidebar tab                          |
+| `plugin-fields`     | `"Fields"`     | Sidebar tab                          |
+| `plugin-components` | `"Components"` | Legacy sidebar section title         |
+
+### Layout
+
+| Token             | Default      | Used for                      |
+| ----------------- | ------------ | ----------------------------- |
+| `layout-maximize` | `"maximize"` | Mobile panel toggle (tooltip) |
+| `layout-minimize` | `"minimize"` | Mobile panel toggle (tooltip) |
+
+### Loader
+
+| Token            | Default     | Used for                     |
+| ---------------- | ----------- | ---------------------------- |
+| `loader-loading` | `"loading"` | Loading spinner (aria-label) |

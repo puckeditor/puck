@@ -15,6 +15,7 @@ import { Config, Overrides, UserGenerics } from "../../../../types";
 import { DefaultOverride } from "../../../DefaultOverride";
 import { usePropsContext } from "../..";
 import { getClassNameFactory } from "../../../../lib";
+import { useMessage } from "../../../../lib/use-message";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("PuckHeader", styles);
@@ -125,6 +126,12 @@ const HeaderInner = <
     [dispatch, leftSideBarVisible, rightSideBarVisible]
   );
 
+  const publishLabel = useMessage("header-publish");
+  const pageLabel = useMessage("label-page");
+  const toggleLeftLabel = useMessage("header-toggle-leftsidebar");
+  const toggleRightLabel = useMessage("header-toggle-rightsidebar");
+  const toggleMenuLabel = useMessage("header-toggle-menubar");
+
   return (
     <CustomHeader
       actions={
@@ -137,7 +144,7 @@ const HeaderInner = <
               }}
               icon={<Globe size="14px" />}
             >
-              Publish
+              {publishLabel}
             </Button>
           </CustomHeaderActions>
         </>
@@ -158,7 +165,7 @@ const HeaderInner = <
                 onClick={() => {
                   toggleSidebars("left");
                 }}
-                title="Toggle left sidebar"
+                title={toggleLeftLabel}
               >
                 <PanelLeft focusable="false" />
               </IconButton>
@@ -169,7 +176,7 @@ const HeaderInner = <
                 onClick={() => {
                   toggleSidebars("right");
                 }}
-                title="Toggle right sidebar"
+                title={toggleRightLabel}
               >
                 <PanelRight focusable="false" />
               </IconButton>
@@ -177,7 +184,7 @@ const HeaderInner = <
           </div>
           <div className={getClassName("title")}>
             <Heading rank="2" size="xs">
-              {headerTitle || rootTitle || "Page"}
+              {headerTitle || rootTitle || pageLabel}
               {headerPath && (
                 <>
                   {" "}
@@ -193,7 +200,7 @@ const HeaderInner = <
                 onClick={() => {
                   return setMenuOpen(!menuOpen);
                 }}
-                title="Toggle menu bar"
+                title={toggleMenuLabel}
               >
                 {menuOpen ? (
                   <ChevronUp focusable="false" />
@@ -216,7 +223,7 @@ const HeaderInner = <
                     }}
                     icon={<Globe size="14px" />}
                   >
-                    Publish
+                    {publishLabel}
                   </Button>
                 </CustomHeaderActions>
               )}
