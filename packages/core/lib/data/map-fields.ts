@@ -43,6 +43,7 @@ type WalkObjectOpts = {
   getPropPath: (str: string) => string;
   config: Config;
   recurseSlots?: boolean;
+  ownedFields?: boolean;
 };
 
 const isPromise = <T = unknown>(v: any): v is Promise<T> =>
@@ -141,6 +142,8 @@ export const walkField = ({
         getPropPath: (k) => `${propPath}.${k}`,
         config,
         recurseSlots,
+        // Only default missing fields when objectFields describe this value
+        ownedFields: fields[propKey]?.type === "object",
       });
     }
   }
@@ -156,10 +159,26 @@ const walkObject = ({
   getPropPath,
   config,
   recurseSlots,
+  ownedFields,
 }: WalkObjectOpts): Record<string, any> => {
-  const newProps = Object.entries(value).map(([k, v]) => {
+  const keys = Object.keys(value);
+
+  // Include fields that have a mapper but no value, so their transforms still
+  // run (e.g. a contentEditable text field without a default prop). Slots are
+  // defaulted separately via defaultSlots.
+  if (ownedFields) {
+    for (const fieldName in fields) {
+      const fieldType = fields[fieldName].type;
+
+      if (fieldType !== "slot" && mappers[fieldType] && !(fieldName in value)) {
+        keys.push(fieldName);
+      }
+    }
+  }
+
+  const newProps = keys.map((k) => {
     const opts: WalkFieldOpts = {
-      value: v,
+      value: value[k],
       fields,
       mappers,
       propKey: k,
@@ -227,6 +246,7 @@ export function mapFields(
     getPropPath: (k) => k,
     config,
     recurseSlots,
+    ownedFields: true,
   });
 
   if (isPromise(newProps)) {
