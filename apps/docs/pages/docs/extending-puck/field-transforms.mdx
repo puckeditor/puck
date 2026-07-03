@@ -48,11 +48,28 @@ const EditableText = ({ value }) => {
 };
 
 const fieldTransforms = {
-  text: EditableText,
+  // Return EditableText as an element so React renders it as a component
+  text: (props) => <EditableText {...props} />,
 };
 
 const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 ```
+
+<Callout type="warning">
+  Puck calls transform functions directly rather than rendering them as
+  components, so you can't use [hooks](https://react.dev/reference/rules/rules-of-hooks)
+  (like `useState` or `useEffect`) in the transform function itself. To use hooks,
+  return a component and let React render it:
+
+```tsx
+// 🚫 Throws "Do not call Hooks inside useMemo(...)"
+const fieldTransforms = { text: EditableText };
+
+// ✅ Works — EditableText is rendered as a component
+const fieldTransforms = { text: (props) => <EditableText {...props} /> };
+```
+
+</Callout>
 
 ## Define new fields
 
