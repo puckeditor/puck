@@ -10,6 +10,7 @@ import { ChevronDown } from "lucide-react";
 import { getClassNameFactory } from "../../lib";
 import { IconButton } from "../IconButton";
 import { Action } from "../ActionBar";
+import { useMessage } from "../../lib/use-message";
 
 const getClassName = getClassNameFactory("Select", styles);
 const getItemClassName = getClassNameFactory("SelectItem", styles);
@@ -48,6 +49,7 @@ export const Select = ({
   disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+  const selectLabel = useMessage("field-richtext-select");
 
   const hasOptions = options.length > 0;
   const isDisabled = disabled || !hasOptions;
@@ -66,7 +68,7 @@ export const Select = ({
       </Action>
     ) : (
       <IconButton
-        title="Select"
+        title={selectLabel}
         active={value !== defaultValue}
         disabled={isDisabled}
       >

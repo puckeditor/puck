@@ -1,9 +1,11 @@
 import { AlignLeft as AlignLeftIcon } from "lucide-react";
 import { Control } from "../components/Control";
+import { useMessage } from "../../../lib/use-message";
 import { useControlContext } from "../lib/use-control-context";
 
 export function AlignLeft() {
   const { editor, editorState } = useControlContext();
+  const alignLeftLabel = useMessage("field-richtext-align-left");
 
   return (
     <Control
@@ -14,7 +16,7 @@ export function AlignLeft() {
       }}
       disabled={!editorState?.canAlignLeft}
       active={editorState?.isAlignLeft}
-      title="Align left"
+      title={alignLeftLabel}
     />
   );
 }

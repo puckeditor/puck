@@ -47,6 +47,7 @@ import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
+import { useMessage } from "../../lib/use-message";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
@@ -180,7 +181,12 @@ const DropZoneChild = ({
     (s) => s.selectedItem?.props.id === componentId || false
   );
 
-  let label = componentConfig?.label ?? item?.type.toString() ?? "Component";
+  const componentLabel = useMessage("label-component");
+  const noConfigMessage = useMessage("canvas-noconfig", {
+    type: item?.type?.toString() ?? "",
+  });
+
+  let label = componentConfig?.label ?? item?.type.toString() ?? componentLabel;
 
   const defaultsProps = useMemo(
     () => ({
@@ -231,7 +237,7 @@ const DropZoneChild = ({
     ? componentConfig.render
     : () => (
         <div style={{ padding: 48, textAlign: "center" }}>
-          No configuration for {item.type}
+          {noConfigMessage}
         </div>
       );
 

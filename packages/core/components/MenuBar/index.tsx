@@ -8,6 +8,7 @@ import type { Data } from "../../types";
 
 import styles from "./styles.module.css";
 import { useAppStore } from "../../store";
+import { useMessage } from "../../lib/use-message";
 
 const getClassName = getClassNameFactory("MenuBar", styles);
 
@@ -26,6 +27,9 @@ export function MenuBar<UserData extends Data>({
   const forward = useAppStore((s) => s.history.forward);
   const hasFuture = useAppStore((s) => s.history.hasFuture());
   const hasPast = useAppStore((s) => s.history.hasPast());
+
+  const undoLabel = useMessage("header-undo");
+  const redoLabel = useMessage("header-redo");
 
   return (
     <div
@@ -48,7 +52,7 @@ export function MenuBar<UserData extends Data>({
         <div className={getClassName("history")}>
           <IconButton
             type="button"
-            title="undo"
+            title={undoLabel}
             disabled={!hasPast}
             onClick={back}
           >
@@ -56,7 +60,7 @@ export function MenuBar<UserData extends Data>({
           </IconButton>
           <IconButton
             type="button"
-            title="redo"
+            title={redoLabel}
             disabled={!hasFuture}
             onClick={forward}
           >

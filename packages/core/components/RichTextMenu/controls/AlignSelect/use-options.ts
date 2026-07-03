@@ -1,17 +1,30 @@
 import { useMemo } from "react";
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 import { RichtextField } from "../../../../types";
+import { useMessage } from "../../../../lib/use-message";
 
-const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
-  left: { label: "Left", icon: AlignLeft },
-  center: { label: "Center", icon: AlignCenter },
-  right: { label: "Right", icon: AlignRight },
-  justify: { label: "Justify", icon: AlignJustify },
+const optionIcons: Record<string, React.FC | undefined> = {
+  left: AlignLeft,
+  center: AlignCenter,
+  right: AlignRight,
+  justify: AlignJustify,
 };
 
 export type AlignDirection = "left" | "center" | "right" | "justify";
 
 export const useAlignOptions = (fieldOptions: RichtextField["options"]) => {
+  const leftString = useMessage("field-richtext-alignselect-left");
+  const centerString = useMessage("field-richtext-alignselect-center");
+  const rightString = useMessage("field-richtext-alignselect-right");
+  const justifyString = useMessage("field-richtext-alignselect-justify");
+
+  const optionLabels: Record<AlignDirection, string> = {
+    left: leftString,
+    center: centerString,
+    right: rightString,
+    justify: justifyString,
+  };
+
   let blockOptions: AlignDirection[] = [];
 
   if (fieldOptions?.textAlign !== false) {
@@ -40,9 +53,9 @@ export const useAlignOptions = (fieldOptions: RichtextField["options"]) => {
     () =>
       blockOptions.map((item) => ({
         value: item,
-        label: optionNodes[item].label,
-        icon: optionNodes[item].icon,
+        label: optionLabels[item],
+        icon: optionIcons[item],
       })),
-    [blockOptions]
+    [blockOptions, optionLabels]
   );
 };

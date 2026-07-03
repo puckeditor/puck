@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Hammer } from "lucide-react";
 import { Plugin } from "../../types";
 import { Components } from "../../components/Puck/components/Components";
@@ -6,13 +7,20 @@ import { getClassNameFactory } from "../../lib";
 
 const getClassName = getClassNameFactory("BlocksPlugin", styles);
 
-export const blocksPlugin: () => Plugin = () => ({
+export type BlocksPluginProps = {
+  label?: string;
+  icon?: ReactNode;
+};
+
+export const blocksPlugin: (props?: BlocksPluginProps) => Plugin = (
+  props = {}
+) => ({
   name: "blocks",
-  label: "Blocks",
+  label: props.label ?? "Blocks",
   render: () => (
     <div className={getClassName()}>
       <Components />
     </div>
   ),
-  icon: <Hammer />,
+  icon: props.icon ?? <Hammer />,
 });

@@ -20,4 +20,42 @@ export function Editor() {
 
 ## Params
 
-This plugin does not accept any params.
+| Param             | Example           | Type      | Status |
+| ----------------- | ----------------- | --------- | ------ |
+| [`icon`](#icon)   | `icon: <Box />`   | ReactNode | -      |
+| [`label`](#label) | `label: "Blocks"` | String    | -      |
+
+## Optional params
+
+### `icon`
+
+React node displayed alongside `label` in the plugin rail. Defaults to a hammer icon.
+
+```tsx copy
+import { Puck, blocksPlugin } from "@puckeditor/core";
+import { Box } from "lucide-react";
+
+const blocks = blocksPlugin({
+  icon: <Box />,
+});
+
+export function Editor() {
+  return <Puck plugins={[blocks]} />;
+}
+```
+
+### `label`
+
+Label shown in the plugin rail. Defaults to `"Blocks"`.
+
+```tsx copy
+import { Puck, blocksPlugin } from "@puckeditor/core";
+
+const blocks = blocksPlugin({
+  label: "Components",
+});
+
+export function Editor() {
+  return <Puck plugins={[blocks]} />;
+}
+```

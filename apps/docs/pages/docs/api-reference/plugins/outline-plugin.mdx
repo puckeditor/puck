@@ -20,4 +20,42 @@ export function Editor() {
 
 ## Params
 
-This plugin does not accept any params.
+| Param             | Example            | Type      | Status |
+| ----------------- | ------------------ | --------- | ------ |
+| [`icon`](#icon)   | `icon: <Layers />` | ReactNode | -      |
+| [`label`](#label) | `label: "Outline"` | String    | -      |
+
+## Optional params
+
+### `icon`
+
+React node displayed alongside `label` in the plugin rail. Defaults to a layers icon.
+
+```tsx
+import { Puck, outlinePlugin } from "@puckeditor/core";
+import { ListTree } from "lucide-react";
+
+const outline = outlinePlugin({
+  icon: <ListTree />,
+});
+
+export function Editor() {
+  return <Puck plugins={[outline]} />;
+}
+```
+
+### `label`
+
+Label shown in the plugin rail. Defaults to `"Outline"`.
+
+```tsx
+import { Puck, outlinePlugin } from "@puckeditor/core";
+
+const outline = outlinePlugin({
+  label: "Layers",
+});
+
+export function Editor() {
+  return <Puck plugins={[outline]} />;
+}
+```
