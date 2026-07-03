@@ -12,7 +12,12 @@ export { AutoField, FieldLabel } from "../components/AutoField";
 export * from "../components/Button";
 export { Drawer } from "../components/Drawer";
 
-export { DropZone } from "../components/DropZone";
+export {
+  /**
+   * @deprecated Use {@link https://puckeditor.com/docs/api-reference/fields/slot Slots} instead.
+   */
+  DropZone,
+} from "../components/DropZone";
 export * from "../components/IconButton";
 export { Puck } from "../components/Puck";
 export * from "../components/Render";

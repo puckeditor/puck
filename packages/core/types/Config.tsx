@@ -1,12 +1,13 @@
-import type { JSX, ReactNode } from "react";
-import { BaseField, Field, Fields } from "./Fields";
-import { ComponentData, ComponentMetadata, RootData } from "./Data";
+import type { JSX, ReactNode, ElementType } from "react";
 
+import { SlotProps } from "../components/DropZone/types";
+
+import { ComponentData, ComponentMetadata, RootData } from "./Data";
+import { BaseField, Field, Fields } from "./Fields";
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
 import { AppState } from "./AppState";
 import { DefaultComponentProps, WithDefaultRootFieldProps } from "./Props";
 import { Permissions } from "./API";
-import { DropZoneProps } from "../components/DropZone/types";
 import {
   AssertHasValue,
   FieldsExtension,
@@ -14,7 +15,9 @@ import {
   WithDeepSlots,
 } from "./Internal";
 
-export type SlotComponent = (props?: Omit<DropZoneProps, "zone">) => ReactNode;
+export type SlotComponent = <ComponentType extends ElementType = "div">(
+  props?: SlotProps<ComponentType>
+) => ReactNode;
 
 export type PuckComponent<Props> = (
   props: WithId<
