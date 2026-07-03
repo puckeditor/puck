@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Config, ExtractConfigParams } from "./Config";
-import { DefaultRootFieldProps, PuckContext } from "./Props";
+import { PuckContext, WithDefaultRootFieldProps } from "./Props";
 import { ComponentData, Data } from "./Data";
 import { PrivateAppState } from "./Internal";
 import { AppState } from "./AppState";
@@ -32,7 +32,7 @@ export type UserGenerics<
   UserConfig: UserConfig;
   UserParams: UserParams;
   UserProps: UserParams["props"];
-  UserRootProps: UserParams["rootProps"] & DefaultRootFieldProps;
+  UserRootProps: WithDefaultRootFieldProps<UserParams["rootProps"]>;
   UserData: UserData;
   UserAppState: UserAppState;
   UserPublicAppState: UserPublicAppState;
