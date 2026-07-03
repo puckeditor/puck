@@ -50,6 +50,7 @@ import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
+import { renderTransformsAsComponents } from "../../lib/field-transforms/render-transforms-as-components";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
@@ -208,11 +209,13 @@ const DropZoneChild = ({
       )),
       ...getInlineTextTransform(),
       ...getRichTextTransform(),
-      ...plugins.reduce<FieldTransforms>(
-        (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
-        {}
-      ),
-      ...userFieldTransforms,
+      ...renderTransformsAsComponents({
+        ...plugins.reduce<FieldTransforms>(
+          (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
+          {}
+        ),
+        ...userFieldTransforms,
+      }),
     }),
     [plugins, userFieldTransforms]
   );

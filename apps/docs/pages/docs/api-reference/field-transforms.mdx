@@ -15,7 +15,7 @@ const fieldTransforms = {
 
 You can specify a custom render method for each known [field type](/docs/api-reference/fields), or introduce completely new ones.
 
-Transform functions are called directly by Puck, so you can't use [hooks](https://react.dev/reference/rules/rules-of-hooks) within them. To use hooks, return a component and let React render it—for example `text: (props) => <MyComponent {...props} />`. See [Making it interactive](/docs/extending-puck/field-transforms#making-it-interactive) for a full example.
+Transforms are rendered as React components, so you can use [hooks](https://react.dev/reference/rules/rules-of-hooks) within them. See [Making it interactive](/docs/extending-puck/field-transforms#making-it-interactive) for an example.
 
 ## Render Props
 
