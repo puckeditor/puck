@@ -102,4 +102,47 @@ describe("ServerRender", () => {
     expect(html).toContain("<h2>Nested heading</h2>");
     expect(html).not.toContain("&lt;p&gt;Hello");
   });
+
+  it("forwards additional props to the element provided via `as`", () => {
+    const config: Config = {
+      components: {
+        Section: {
+          fields: {
+            content: { type: "slot" },
+          },
+          render: ({ content: Content }) => (
+            <Content as="section" id="my-slot" data-custom="foo" />
+          ),
+        },
+        Heading: {
+          fields: { title: { type: "text" } },
+          render: ({ title }) => <h2>{title}</h2>,
+        },
+      },
+    };
+
+    const data: Data = {
+      root: { props: {} },
+      content: [
+        {
+          type: "Section",
+          props: {
+            id: "section-1",
+            content: [
+              { type: "Heading", props: { id: "heading-1", title: "Hello" } },
+            ],
+          },
+        },
+      ],
+    };
+
+    const html = renderToString(<Render config={config} data={data} />);
+
+    expect(html).toContain("<section");
+    expect(html).toContain('id="my-slot"');
+    expect(html).toContain('data-custom="foo"');
+    expect(html).toContain("<h2>Hello</h2>");
+    // Puck-internal props should not leak onto the element
+    expect(html).not.toContain('zone="');
+  });
 });

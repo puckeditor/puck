@@ -13,8 +13,11 @@ import {
   LeftOrExactRight,
   WithDeepSlots,
 } from "./Internal";
+import { ElementType } from "react";
 
-export type SlotComponent = (props?: Omit<DropZoneProps, "zone">) => ReactNode;
+export type SlotComponent = <T extends ElementType = "div">(
+  props?: Omit<DropZoneProps<T>, "zone">
+) => ReactNode;
 
 export type PuckComponent<Props> = (
   props: WithId<

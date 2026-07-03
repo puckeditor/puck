@@ -225,6 +225,20 @@ const config = {
 };
 ```
 
+Any additional props are forwarded to the element or component provided via `as`, typed against it.
+
+```tsx copy {5}
+const config = {
+  components: {
+    Example: {
+      render: ({ content: Content }) => {
+        return <Content as={Box} sx={{ display: "flex" }} />;
+      },
+    },
+  },
+};
+```
+
 ### `className`
 
 Provide a className to the rendered element. The default styles will still be applied.
