@@ -1,9 +1,15 @@
+import { ElementType } from "react";
 import { DropZoneProps } from "../components/DropZone/types";
 import { Metadata } from "./Data";
 import { WithChildren, WithPuckProps } from "./Utils";
 
 export type PuckContext = {
-  renderDropZone: (props: DropZoneProps) => React.ReactNode;
+  /**
+   * @deprecated Use {@link https://puckeditor.com/docs/api-reference/fields/slot Slots} instead.
+   */
+  renderDropZone: <ComponentType extends ElementType = "div">(
+    props: DropZoneProps<ComponentType>
+  ) => React.ReactNode;
   metadata: Metadata;
   isEditing: boolean;
   dragRef: ((element: Element | null) => void) | null;

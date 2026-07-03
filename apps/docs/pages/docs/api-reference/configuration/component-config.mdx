@@ -4,6 +4,7 @@ title: ComponentConfig
 
 import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
 import { Drawer } from "@/puck";
+import { Callout } from "nextra/components";
 
 # ComponentConfig
 
@@ -109,6 +110,10 @@ const config = {
 ```
 
 ##### `puck.renderDropZone`
+
+<Callout>
+`puck.renderDropZone` and the [`<DropZone>` component](/docs/api-reference/components/drop-zone) are deprecated in favor of the [`slot` field](/docs/api-reference/fields/slot), and will be removed in a future release. For migration notes, see [these docs](/docs/guides/migrations/dropzones-to-slots).
+</Callout>
 
 A render method that creates a [`<DropZone>`](/docs/api-reference/components/drop-zone) for creating nested components. Use this method instead of the `<DropZone>` when implementing React server components.
 
