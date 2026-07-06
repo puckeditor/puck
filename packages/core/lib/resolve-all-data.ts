@@ -8,7 +8,10 @@ import {
   Metadata,
   RootData,
 } from "../types";
-import { resolveComponentData } from "./resolve-component-data";
+import {
+  ResolveDataCache,
+  resolveComponentData,
+} from "./resolve-component-data";
 import { groupZonesByComponent } from "./group-zones-by-component";
 import { defaultData } from "./data/default-data";
 import { toComponent } from "./data/to-component";
@@ -27,6 +30,12 @@ export async function resolveAllData<
   const defaultedData = defaultData(data);
 
   const zonesByComponent = groupZonesByComponent(defaultedData);
+
+  // Use a local cache so entries are garbage collected when this function
+  // returns, rather than accumulating in the shared module-level cache. This
+  // prevents unbounded memory growth when resolving many pages with unique
+  // component IDs.
+  const cacheStore: ResolveDataCache = { lastChange: {} };
 
   let resolvedZones: Record<string, Content> = {};
 
@@ -48,7 +57,8 @@ export async function resolveAllData<
         () => {},
         "force",
         parent,
-        root
+        root,
+        cacheStore
       )
     ).node as T;
 
