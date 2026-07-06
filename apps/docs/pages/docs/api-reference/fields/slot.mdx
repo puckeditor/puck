@@ -239,6 +239,17 @@ const config = {
 };
 ```
 
+The following Puck-internal props are **not** forwarded, as they are consumed by Puck itself:
+
+| Prop | Reason |
+| ---- | ------ |
+| `zone` | Identifies the drop zone internally |
+| `allow` | Controls which component types are allowed |
+| `disallow` | Controls which component types are disallowed |
+| `collisionAxis` | Configures drag collision detection |
+| `minEmptyHeight` | Sets the minimum height of an empty zone |
+| `content` | Injected by Puck with the slot's component data |
+
 ### `className`
 
 Provide a className to the rendered element. The default styles will still be applied.
