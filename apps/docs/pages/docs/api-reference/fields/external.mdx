@@ -66,6 +66,7 @@ const config = {
 | [`placeholder`](#placeholder)             | `placeholder: "Select content"`              | String     | -        |
 | [`renderFooter()`](#renderfooterprops)    | `renderFooter: (props) => <p>Hello</p>`      | Function   | -        |
 | [`showSearch`](#showsearch)               | `showSearch: true`                           | Boolean    | -        |
+| [`searchButtonLabel`](#searchbuttonlabel) | `searchButtonLabel: "Search"`                | String     | -        |
 
 ## Required params
 
@@ -652,6 +653,77 @@ const config = {
             });
           },
           showSearch: true,
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      data: {
+        type: "external",
+        fetchList: async ({ query }) => {
+          return [
+            {
+              title: "Apple",
+              description:
+                "An apple is a round, edible fruit produced by an apple tree.",
+            },
+            {
+              title: "Orange",
+              description:
+                "An orange is a fruit of various citrus species in the family Rutaceae.",
+            },
+          ].filter((item) => {
+            if (!query) return item;
+
+            const queryLowercase = query.toLowerCase();
+
+            if (item.title.toLowerCase().indexOf(queryLowercase) > -1) {
+              return item;
+            }
+
+            if (item.description.toLowerCase().indexOf(queryLowercase) > -1) {
+              return item;
+            }
+          })
+        },
+        showSearch: true,
+      },
+    },
+    render: ({ data }) => {
+      return <p>{data?.title || "No data selected"}</p>;
+    },
+
+}}
+/>
+
+### `searchButtonLabel`
+
+Overrides the text shown in the search button when [`showSearch`](#showsearch) is enabled.
+
+```tsx {16} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        data: {
+          type: "external",
+          fetchList: async ({ query }) => {
+            return [
+              { title: "Apple", description: "Lorem ipsum 1" },
+              { title: "Orange", description: "Lorem ipsum 2" },
+            ].filter((item) => {
+              // ...
+            });
+          },
+          showSearch: true,
+          searchButtonLabel: "Find fruit",
         },
       },
       // ...
