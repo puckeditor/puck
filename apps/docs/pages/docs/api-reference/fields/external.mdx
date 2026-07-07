@@ -709,26 +709,26 @@ Overrides the text shown in the search button when [`showSearch`](#showsearch) i
 
 ```tsx {16} copy
 const config = {
-components: {
-  Example: {
-    fields: {
-      data: {
-        type: "external",
+  components: {
+    Example: {
+      fields: {
+        data: {
+          type: "external",
           fetchList: async ({ query }) => {
-          return [
-            { title: "Apple", description: "Lorem ipsum 1" },
-            { title: "Orange", description: "Lorem ipsum 2" },
-          ].filter((item) => {
-            // ...
-          });
-        },
+            return [
+              { title: "Apple", description: "Lorem ipsum 1" },
+              { title: "Orange", description: "Lorem ipsum 2" },
+            ].filter((item) => {
+              // ...
+            });
+          },
           showSearch: true,
           searchButtonLabel: "Find fruit",
+        },
       },
+      // ...
     },
-    // ...
   },
-},
 };
 ```
 
@@ -771,7 +771,7 @@ components: {
       return <p>{data?.title || "No data selected"}</p>;
     },
 
-  }}
+}}
 />
 
 <div id="puck-portal-root" />
