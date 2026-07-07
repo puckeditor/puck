@@ -199,7 +199,7 @@ export const ExternalInput = ({
                 </label>
                 <div className={getClassNameModal("searchActions")}>
                   <Button type="submit" loading={isLoading} fullWidth>
-                    Search
+                    {field.searchButtonLabel ?? "Search"}
                   </Button>
                   {hasFilterFields && (
                     <div className={getClassNameModal("searchActionIcon")}>

@@ -145,6 +145,7 @@ export interface ExternalField<Props extends any = { [key: string]: any }>
   mapRow?: (value: any) => Record<string, string | number | ReactElement>;
   getItemSummary?: (item: NotUndefined<Props>, index?: number) => ReactNode;
   showSearch?: boolean;
+  searchButtonLabel?: string;
   renderFooter?: (props: { items: any[] }) => ReactElement;
   initialQuery?: string;
   filterFields?: Record<string, Field>;
