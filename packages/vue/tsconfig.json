@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig/react-library.json",
+  "include": [".", "../core/globals.d.ts"],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}

@@ -1,4 +1,5 @@
 const menu = {
+  "using-with-vue": { title: "Using with Vue" },
   "component-configuration": {},
   "root-configuration": {},
   "multi-column-layouts": {},

@@ -1,0 +1,71 @@
+{
+  "name": "@puckeditor/vue",
+  "version": "0.22.0",
+  "description": "Use the Puck visual editor in Vue 3 apps, with Vue components as your config components. No React dependency required.",
+  "author": "Chris Villa <chris@puckeditor.com>",
+  "repository": "puckeditor/puck",
+  "bugs": "https://github.com/puckeditor/puck/issues",
+  "homepage": "https://puckeditor.com",
+  "keywords": [
+    "puck",
+    "vue",
+    "vue3",
+    "visual",
+    "editor",
+    "drag and drop",
+    "page",
+    "website",
+    "builder",
+    "headless",
+    "cms",
+    "low-code",
+    "no-code",
+    "WYSIWYG"
+  ],
+  "private": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./puck.css": "./dist/index.css",
+    "./no-external.css": "./dist/no-external.css",
+    "./dist/index.css": "./dist/index.css",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "rm -rf dist && tsup && node scripts/make-no-external-css.mjs",
+    "smoke": "node scripts/smoke/index.cjs",
+    "prepare": "yarn build"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@puckeditor/core": "*",
+    "esbuild": "^0.25.11",
+    "eslint": "^9.0.0",
+    "eslint-config-custom": "*",
+    "jsdom": "^26.0.0",
+    "preact": "^10.28.0",
+    "tsconfig": "*",
+    "tsup": "^8.2.4",
+    "tsup-config": "*",
+    "typescript": "^5.5.4",
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@types/react": "^19.2.7"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
+  }
+}

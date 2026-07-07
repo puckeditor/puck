@@ -1,0 +1,266 @@
+# Using with Vue
+
+Use the full Puck editor and `<Render>` in a [Vue 3](https://vuejs.org/) app,
+with **Vue components as your Puck components** — no React dependency in your
+app, and no framework rewrite of Puck.
+
+This is provided by the [`@puckeditor/vue`](https://www.npmjs.com/package/@puckeditor/vue)
+package. Internally it compiles `@puckeditor/core` against
+[Preact](https://preactjs.com/) and bundles Preact inside the package as an
+implementation detail — you never install or import React or Preact yourself.
+
+## Installation
+
+```sh copy
+npm i @puckeditor/vue vue
+```
+
+`vue` (`^3.3`) is a peer dependency. That's it — no `react` or `react-dom`.
+
+## Quick start
+
+Define a `VueConfig` — identical to a core `Config`, except each component's
+`render` is a **Vue component**:
+
+```ts copy showLineNumbers filename="puck.config.ts"
+import type { VueConfig } from "@puckeditor/vue";
+import Heading from "./components/Heading.vue";
+
+export const config: VueConfig = {
+  components: {
+    Heading: {
+      fields: { title: { type: "text" } },
+      defaultProps: { title: "Hello" },
+      render: Heading,
+    },
+  },
+};
+```
+
+```vue copy filename="components/Heading.vue"
+<script setup lang="ts">
+defineProps<{ title?: string }>();
+</script>
+
+<template>
+  <h1>{{ title }}</h1>
+</template>
+```
+
+Render the editor with `<Puck>` and the published page with `<Render>`:
+
+```vue copy filename="Editor.vue"
+<script setup lang="ts">
+import { Puck } from "@puckeditor/vue";
+import "@puckeditor/vue/puck.css";
+import { config } from "./puck.config";
+
+const data = { root: {}, content: [] };
+function onPublish(data: unknown) {
+  /* persist data */
+}
+</script>
+
+<template>
+  <div style="height: 100vh">
+    <Puck :config="config" :data="data" @publish="onPublish" />
+  </div>
+</template>
+```
+
+```vue copy filename="Page.vue"
+<script setup lang="ts">
+import { Render } from "@puckeditor/vue";
+import "@puckeditor/vue/puck.css";
+import { config } from "./puck.config";
+
+const data = {
+  /* your published data */
+};
+</script>
+
+<template>
+  <Render :config="config" :data="data" />
+</template>
+```
+
+Everything else in `Config` — `fields`, `defaultProps`, `resolveData`,
+`resolveFields`, `resolvePermissions`, `categories`, `label` — is
+framework-agnostic and works exactly as documented for
+[`@puckeditor/core`](/docs/api-reference/configuration/config).
+
+## `<Puck>` props and events
+
+`<Puck>` accepts `config`, `data`, and the passthrough props `ui`,
+`permissions`, `viewports`, `iframe`, `initialHistory`, `metadata`,
+`headerTitle`, `headerPath`, `height`, plus:
+
+| Event      | Payload                                                    |
+| ---------- | ---------------------------------------------------------- |
+| `@change`  | the current data (on every edit)                           |
+| `@publish` | the current data (on publish)                              |
+| `@ready`   | a `getPuck` accessor — call `getPuck()` for the `PuckApi`  |
+
+```vue copy
+<Puck
+  :config="config"
+  :data="data"
+  @change="onChange"
+  @publish="onPublish"
+  @ready="(getPuck) => (myGetPuck = getPuck)"
+/>
+```
+
+As with React, `data` is **initial-only** — changing it after mount does not
+reset the editor. Changing `config` identity is a full remount.
+
+## Slots and DropZones
+
+For a [slot field](/docs/integrating-puck/multi-column-layouts), render the slot
+prop in your template with `<component :is>`:
+
+```ts copy
+// config
+Columns: {
+  fields: { items: { type: "slot" } },
+  render: Columns,
+},
+```
+
+```vue copy filename="Columns.vue"
+<script setup lang="ts">
+import type { Component } from "vue";
+defineProps<{ items?: Component }>();
+</script>
+
+<template>
+  <div class="columns">
+    <component :is="items" />
+  </div>
+</template>
+```
+
+You can pass DropZone props as attributes, e.g.
+`<component :is="items" :allow="['Heading']" />`.
+
+## Custom fields
+
+Set a field to `{ type: "custom", render: MyVueField }`. The field render props
+(`id`, `name`, `value`, `onChange`, `field`, `readOnly`) arrive as plain props;
+call `onChange` to update the value. Use the exported `FieldLabel` for a
+native-looking label:
+
+```vue copy filename="ColorField.vue"
+<script setup lang="ts">
+import { FieldLabel } from "@puckeditor/vue";
+defineProps<{
+  name?: string;
+  value?: string;
+  field?: { label?: string };
+  readOnly?: boolean;
+  onChange: (value: string) => void;
+}>();
+</script>
+
+<template>
+  <FieldLabel :label="field?.label || name || ''" :read-only="readOnly">
+    <input
+      type="color"
+      :value="value"
+      @input="onChange(($event.target as HTMLInputElement).value)"
+    />
+  </FieldLabel>
+</template>
+```
+
+To replace a built-in field UI globally, pass a `fieldTypes` map to `<Puck>`:
+
+```vue copy
+<Puck :config="config" :data="data" :field-types="{ text: MyTextField }" />
+```
+
+## Sharing Pinia, plugins and global components
+
+Bridged Vue components are mounted standalone, so they don't automatically share
+your app's Pinia stores, plugins, or globally-registered components. To share
+them, create an (unmounted) app instance carrying the plugins and pass it via
+the `app` prop — its context is threaded into every bridged mount:
+
+```ts copy
+import { createApp } from "vue";
+import { pinia } from "./store";
+
+const bridgeApp = createApp({});
+bridgeApp.use(pinia);
+```
+
+```vue copy
+<Puck :config="config" :data="data" :app="bridgeApp" />
+<!-- and likewise: <Render :config="config" :data="data" :app="bridgeApp" /> -->
+```
+
+Use the **same** Pinia instance in your main app and the bridge app so state is
+shared. Vue components can then read stores as usual.
+
+## The `usePuck` composable
+
+Inside a bridged component, `usePuck()` returns the per-component Puck context
+(`isEditing`, `metadata`, `renderDropZone`, `id`):
+
+```vue copy
+<script setup lang="ts">
+import { usePuck } from "@puckeditor/vue";
+const puck = usePuck();
+</script>
+
+<template>
+  <span v-if="puck.isEditing">Editing…</span>
+</template>
+```
+
+For imperative editor control, use the `getPuck` accessor from `@ready` — it
+returns the same [`PuckApi`](/docs/api-reference/puck-api) as React's `usePuck`.
+
+## Mixed React/Vue configs
+
+If you have an existing React config and want to add a few Vue components, use
+the escape hatches instead of `transformConfig`:
+
+- `defineVueComponent(MyVueComponent)` → a component `render`
+- `defineVueField(MyVueField)` → a custom field `render`
+
+```ts copy
+import { defineVueComponent } from "@puckeditor/vue";
+
+const config = {
+  components: {
+    MyReactComponent: {
+      /* ... */
+    },
+    MyVueComponent: {
+      fields: {
+        /* ... */
+      },
+      render: defineVueComponent(VueHeading),
+    },
+  },
+};
+```
+
+## Styling
+
+Import the styles once, exactly as with core:
+
+```ts copy
+import "@puckeditor/vue/puck.css";
+```
+
+Single-File Component `<style scoped>` styles work in the editor preview with no
+extra setup — Vite injects them into the document head and Puck's iframe mirrors
+head styles into the preview.
+
+## Limitations
+
+- **Rich text fields** (`type: "richtext"`) are not yet supported from Vue.
+- Advanced `overrides` / `plugins` are passed through as Preact components (for
+  advanced users); Vue equivalents are not yet available.
