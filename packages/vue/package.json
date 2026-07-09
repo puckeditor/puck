@@ -42,7 +42,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup && node scripts/make-no-external-css.mjs",
+    "build": "rm -rf dist && tsup && node ../tsup-config/make-no-external-css.mjs",
     "smoke": "node scripts/smoke/index.cjs",
     "prepare": "yarn build"
   },
@@ -51,6 +51,7 @@
   ],
   "devDependencies": {
     "@puckeditor/core": "*",
+    "@puckeditor/framework-shim": "*",
     "esbuild": "^0.25.11",
     "eslint": "^9.0.0",
     "eslint-config-custom": "*",

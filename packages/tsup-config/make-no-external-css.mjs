@@ -2,12 +2,15 @@
 // `@import` rules (e.g. the Inter webfont). Mirrors @puckeditor/core's
 // `no-external.css`, for users who self-host fonts / disallow remote CSS.
 //
-// Kept as a post-build step (rather than a second tsup entry) so the package
-// ships exactly one JS bundle and therefore exactly one bundled Preact copy.
+// Kept as a post-build step (rather than a second tsup entry) so each framework
+// package ships exactly one JS bundle and therefore exactly one bundled Preact
+// copy. Shared across framework packages; the `dist` dir is resolved relative
+// to the build cwd (the framework package dir), so run it from there:
+//   node ../tsup-config/make-no-external-css.mjs
 import fs from "fs";
 import path from "path";
 
-const distDir = path.resolve(import.meta.dirname, "../dist");
+const distDir = path.resolve(process.cwd(), "dist");
 const indexCssPath = path.join(distDir, "index.css");
 const noExternalCssPath = path.join(distDir, "no-external.css");
 

@@ -7,20 +7,17 @@ import {
   type PropType,
   type App,
 } from "vue";
-import { h, render as preactRender, Fragment } from "../runtime";
-import { Puck as CorePuck } from "../core";
+import { createEditorHost, type EditorProps } from "@puckeditor/framework-shim";
 import { transformConfig, transformFieldTypes } from "../transform-config";
-import { ReadyBridge } from "../bridge/ready-bridge";
 import type { VueConfig, VueComponent } from "../types";
 
 /**
  * Vue `<Puck>` — the full Puck editor, driven by a Vue config.
  *
- * Renders one host `<div>` and, on mount, renders core's (preact-compiled)
- * `Puck` into it. Passthrough prop changes re-invoke the Preact render with the
- * SAME component identity on the SAME container, so Preact reconciles in place
- * and editor state survives. `data` is initial-only (matches React `<Puck>`).
- * A `config` identity change is a documented full remount.
+ * A thin shell over the shared `createEditorHost`: it renders one host `<div>`,
+ * translates Vue props/emits into host calls, and lets the shared host own the
+ * Preact render into that div. `data` is initial-only (matches React `<Puck>`);
+ * a `config` identity change is a documented full remount.
  */
 export const Puck = defineComponent({
   name: "PuckEditor",
@@ -78,68 +75,44 @@ export const Puck = defineComponent({
 
     const appContext = (props.app as any)?._context ?? null;
 
-    // Callbacks created once with stable identity (Puck resubscribes on
-    // identity change, so a fresh closure per render would thrash).
+    const host = createEditorHost({
+      transformConfig: (config) => transformConfig(config, { appContext }),
+      transformFieldTypes: (fieldTypes) =>
+        transformFieldTypes(fieldTypes, { appContext }),
+    });
+
+    // Callbacks created once with stable identity (the host also stabilises
+    // them for core, but `emit` is stable so this is exact parity anyway).
     const onChange = (data: any) => emit("change", data);
     const onPublish = (data: any) => emit("publish", data);
     const onAction = (action: any, appState: any, prevAppState: any) =>
       emit("action", action, appState, prevAppState);
     const onReady = (getPuck: any) => emit("ready", getPuck);
 
-    let transformed = transformConfig(props.config, { appContext });
+    const collectProps = (): EditorProps => ({
+      config: props.config,
+      data: props.data,
+      ui: props.ui,
+      permissions: props.permissions,
+      viewports: props.viewports,
+      iframe: props.iframe,
+      initialHistory: props.initialHistory,
+      metadata: props.metadata,
+      headerTitle: props.headerTitle,
+      headerPath: props.headerPath,
+      height: props.height,
+      overrides: props.overrides,
+      plugins: props.plugins,
+      fieldTypes: props.fieldTypes,
+      onChange,
+      onPublish,
+      onAction,
+      onReady,
+    });
 
-    // Inject the ready bridge via `overrides.puck`, which receives the default
-    // editor layout as `children` — so we augment (not replace) the editor and
-    // stay inside the Puck store context. Composes with a user override.
-    const buildOverrides = () => {
-      const userOverrides = { ...(props.overrides ?? {}) } as Record<string, any>;
-      const userPuck = userOverrides.puck;
-
-      // Vue fieldTypes → overrides.fieldTypes (composed with any user-provided).
-      if (props.fieldTypes) {
-        userOverrides.fieldTypes = {
-          ...transformFieldTypes(props.fieldTypes, { appContext }),
-          ...(userOverrides.fieldTypes ?? {}),
-        };
-      }
-
-      return {
-        ...userOverrides,
-        puck: ({ children }: { children: any }) =>
-          h(
-            Fragment,
-            null,
-            userPuck ? userPuck({ children }) : children,
-            h(ReadyBridge as any, { onReady })
-          ),
-      };
-    };
-
-    const buildVnode = () =>
-      h(CorePuck as any, {
-        config: transformed,
-        data: props.data, // initial-only; core ignores later values
-        ui: props.ui,
-        permissions: props.permissions,
-        viewports: props.viewports,
-        iframe: props.iframe,
-        initialHistory: props.initialHistory,
-        metadata: props.metadata,
-        headerTitle: props.headerTitle,
-        headerPath: props.headerPath,
-        height: props.height,
-        plugins: props.plugins,
-        overrides: buildOverrides(),
-        onChange,
-        onPublish,
-        onAction,
-      });
-
-    const renderPuck = () => {
-      if (hostEl) preactRender(buildVnode(), hostEl);
-    };
-
-    onMounted(renderPuck);
+    onMounted(() => {
+      if (hostEl) host.mount(hostEl, collectProps());
+    });
 
     // Passthrough props: reconcile in place, editor state survives.
     watch(
@@ -156,24 +129,16 @@ export const Puck = defineComponent({
         props.overrides,
         props.fieldTypes,
       ],
-      renderPuck
+      () => host.update(collectProps())
     );
 
     // config identity change ⇒ documented full remount.
     watch(
       () => props.config,
-      () => {
-        if (hostEl) preactRender(null, hostEl);
-        transformed = transformConfig(props.config, { appContext });
-        renderPuck();
-      }
+      () => host.updateConfig(collectProps())
     );
 
-    onBeforeUnmount(() => {
-      // Tearing down the Preact tree runs its cleanups, which unmount every
-      // embedded Vue root.
-      if (hostEl) preactRender(null, hostEl);
-    });
+    onBeforeUnmount(() => host.unmount());
 
     return () => vueH("div", { ref: setHost });
   },

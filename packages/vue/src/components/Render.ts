@@ -7,18 +7,16 @@ import {
   type PropType,
   type App,
 } from "vue";
-import { h, render as preactRender } from "../runtime";
-import { Render as CoreRender } from "../core";
+import { createRenderHost, type RenderProps } from "@puckeditor/framework-shim";
 import { transformConfig } from "../transform-config";
 import type { VueConfig } from "../types";
 
 /**
  * Vue `<Render>` — renders published Puck data with Vue config components.
  *
- * Stateless: it re-invokes the Preact render on any prop change. Wrapping core's
- * (React/Preact-compiled) `Render` in a single host `<div>`, it mounts once on
- * `onMounted` and tears the Preact tree down on unmount (which unmounts every
- * embedded Vue root).
+ * A thin shell over the shared `createRenderHost`: it wraps core's `Render` in a
+ * single host `<div>`, re-invoking the host on any prop change. `config` is
+ * re-transformed only on identity change.
  */
 export const Render = defineComponent({
   name: "PuckRender",
@@ -43,37 +41,29 @@ export const Render = defineComponent({
 
     const appContext = (props.app as any)?._context ?? null;
 
-    // config identity change ⇒ re-transform. Everything else re-renders freely.
-    let transformed = transformConfig(props.config, { appContext });
-    let lastConfig = props.config;
+    const host = createRenderHost({
+      transformConfig: (config) => transformConfig(config, { appContext }),
+    });
 
-    const renderInto = () => {
-      if (!hostEl) return;
-      if (props.config !== lastConfig) {
-        transformed = transformConfig(props.config, { appContext });
-        lastConfig = props.config;
-      }
-      preactRender(
-        h(CoreRender as any, {
-          config: transformed,
-          data: props.data,
-          metadata: props.metadata,
-        }),
-        hostEl
-      );
-    };
+    const collectProps = (): RenderProps => ({
+      config: props.config,
+      data: props.data,
+      metadata: props.metadata,
+    });
 
-    onMounted(renderInto);
+    onMounted(() => {
+      if (hostEl) host.mount(hostEl, collectProps());
+    });
 
     // config / metadata by identity; data deeply (published data usually swaps
     // by reference, but deep-watch keeps in-place edits correct too).
-    watch(() => props.config, renderInto);
-    watch(() => props.metadata, renderInto, { deep: true });
-    watch(() => props.data, renderInto, { deep: true });
-
-    onBeforeUnmount(() => {
-      if (hostEl) preactRender(null, hostEl);
+    watch(() => props.config, () => host.update(collectProps()));
+    watch(() => props.metadata, () => host.update(collectProps()), {
+      deep: true,
     });
+    watch(() => props.data, () => host.update(collectProps()), { deep: true });
+
+    onBeforeUnmount(() => host.unmount());
 
     return () => vueH("div", { ref: setHost });
   },

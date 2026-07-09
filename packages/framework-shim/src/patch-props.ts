@@ -1,9 +1,10 @@
 /**
- * Reconcile a live `shallowReactive` object toward `next`: update changed keys
- * and delete removed ones. Vue reactivity propagates the changes so a mounted
- * component patches instead of remounting.
+ * Reconcile a live reactive object toward `next`: update changed keys and
+ * delete removed ones. The framework's reactivity (Vue `shallowReactive`,
+ * Svelte `$state`, …) propagates the mutations so a mounted component patches
+ * instead of remounting.
  */
-export const patchReactiveProps = (
+export const patchProps = (
   reactive: Record<string, any>,
   next: Record<string, any>
 ) => {

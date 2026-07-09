@@ -1,0 +1,25 @@
+{
+  "name": "@puckeditor/framework-shim",
+  "version": "0.22.0",
+  "description": "Private shared Preact machinery that bridges framework components (Vue, Svelte, …) into Puck's render boundary. Consumed as SOURCE and bundled into each framework package, preserving the single-Preact-instance invariant. Never published.",
+  "private": true,
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "@puckeditor/core": "*",
+    "@types/react": "^19.2.7",
+    "eslint": "^9.0.0",
+    "eslint-config-custom": "*",
+    "preact": "^10.28.0",
+    "tsconfig": "*",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "preact": "^10.28.0"
+  }
+}

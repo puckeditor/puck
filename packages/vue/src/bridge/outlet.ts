@@ -6,33 +6,7 @@ import {
   onUnmounted,
   watch,
 } from "vue";
-
-/**
- * A registered slot/DropZone outlet: a Vue-owned DOM element into which the
- * Preact bridge portals the slot's (Preact-rendered) content.
- */
-export type SlotMount = {
-  uid: number;
-  /** Which thunk (slot prop name, or a reserved key) fills this outlet. */
-  thunkKey: string;
-  el: HTMLElement;
-  /** DropZoneProps derived from the outlet's attrs (allow, disallow, zone…). */
-  dzProps: Record<string, any>;
-};
-
-/**
- * Bridge registry: Vue outlets register their elements here; the Preact side
- * renders a portal per registered mount. Backed by Preact state so registering
- * triggers a re-render that commits the portals.
- */
-export type SlotRegistry = {
-  register: (mount: SlotMount) => void;
-  update: (uid: number, dzProps: Record<string, any>) => void;
-  unregister: (uid: number) => void;
-};
-
-let uidSeq = 0;
-const nextUid = () => (uidSeq += 1);
+import { nextUid, type SlotRegistry } from "@puckeditor/framework-shim";
 
 /**
  * Map a Vue outlet's attrs to core `DropZoneProps`. Vue's `class` → React's
@@ -84,7 +58,3 @@ export const createOutlet = (registry: SlotRegistry, thunkKey: string) =>
       return () => vueH("div", { ref: elRef, style: { display: "contents" } });
     },
   });
-
-/** Reserved thunk keys for non-field slots. */
-export const RENDER_DROPZONE_KEY = "__puck_render_dropzone";
-export const CHILDREN_KEY = "__puck_children";

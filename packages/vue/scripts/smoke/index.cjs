@@ -4,7 +4,7 @@
 // These validate the Vue<->Preact bridge mechanics (mount, patch-in-place,
 // state persistence, slots, custom fields, editor `ready`) without a browser.
 // Full drag/overlay behaviour is verified in apps/demo-vue.
-const { setupDom, tick } = require("./env.cjs");
+const { setupDom, tick } = require("tsup-config/smoke-env.cjs");
 const dom = setupDom();
 const w = dom.window;
 
@@ -62,11 +62,13 @@ async function testPatchAndStatePersistence() {
     setup() {
       mountCount++;
       const localState = `local#${mountCount}`;
-      const ctx = usePuck();
-      return { localState, ctx };
+      // usePuck() returns refs (Vue composable convention); destructure at the
+      // top of setup so `isEditing` auto-unwraps when read in the render.
+      const { isEditing } = usePuck();
+      return { localState, isEditing };
     },
     render() {
-      return h("div", { class: "card" }, `label=${this.label} state=${this.localState} editing=${this.ctx.isEditing}`);
+      return h("div", { class: "card" }, `label=${this.label} state=${this.localState} editing=${this.isEditing}`);
     },
   });
   const config = { components: { Card: { fields: { label: { type: "text" } }, render: Card } } };

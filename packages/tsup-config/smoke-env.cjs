@@ -1,8 +1,9 @@
-// Shared jsdom environment + browser-API stubs for the Vue bridge smoke tests.
-// Puck's editor uses APIs jsdom lacks or implements strictly (localStorage,
-// ResizeObserver, matchMedia, dnd-kit's addEventListener({signal})); these
-// stubs let the whole editor mount headlessly. In a real browser none are
-// needed. Call setupDom() once before requiring the built bundle.
+// Shared jsdom environment + browser-API stubs for framework bridge smoke
+// tests (@puckeditor/vue, @puckeditor/svelte, …). Puck's editor uses APIs jsdom
+// lacks or implements strictly (localStorage, ResizeObserver, matchMedia,
+// dnd-kit's addEventListener({signal})); these stubs let the whole editor mount
+// headlessly. In a real browser none are needed. Call setupDom() once before
+// requiring the built bundle.
 const { JSDOM } = require("jsdom");
 
 function setupDom() {
