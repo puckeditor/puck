@@ -27,12 +27,14 @@ export type WrapVueFieldOptions = {
  * Wrap a Vue component so it can be used as a custom field's `render`
  * (`type: "custom"`) or a `fieldTypes` override.
  *
- * Same mount/patch bridge as `wrapVueComponent`, minus slots/dragRef/puck. The
- * field render props (`{ id, name, value, onChange, field, readOnly }`) are
- * plain data + functions and pass straight into the reactive props object;
- * `onChange` flows back unmodified. For `fieldTypes` overrides that wrap the
- * default UI, `children` (a Preact node) is bridged via a children outlet, so
- * the Vue component can render `<component :is="children" />`.
+ * Same mount/patch bridge as `wrapVueComponent`, minus slots/dragRef/puck.
+ *
+ * The field is given a Vue-idiomatic `v-model` contract: the value arrives as
+ * `modelValue` and updates are emitted as `update:modelValue`, so a field can
+ * use `defineModel()`. `{ name, id, field, readOnly }` pass through as plain
+ * props; a `change(value)` callback prop is also provided as a convenience.
+ * For `fieldTypes` overrides that wrap the default UI, `children` (a Preact
+ * node) is bridged via a children outlet (`<component :is="children" />`).
  */
 export const wrapVueField = (
   VueComp: VueComponent,

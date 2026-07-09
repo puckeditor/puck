@@ -1,4 +1,4 @@
-import { inject, type InjectionKey } from "vue";
+import { inject, toRefs, reactive, type Ref, type InjectionKey } from "vue";
 
 /**
  * The per-component Puck context, made available to bridged Vue components via
@@ -8,7 +8,7 @@ import { inject, type InjectionKey } from "vue";
  *  - `isEditing`   — true inside `<Puck>`, false inside `<Render>`
  *  - `metadata`    — merged Puck + component metadata
  *  - `id`          — this component instance's Puck id
- *  - `renderDropZone` — a Vue outlet component for imperative DropZones (Step 5)
+ *  - `renderDropZone` — a Vue outlet component for imperative DropZones
  */
 export type VuePuckContext = {
   isEditing: boolean;
@@ -17,22 +17,41 @@ export type VuePuckContext = {
   renderDropZone?: unknown;
 };
 
+/** The reactive shape returned by `usePuck()` — a ref per context field. */
+export type UsePuckReturn = {
+  isEditing: Ref<boolean>;
+  metadata: Ref<Record<string, any>>;
+  id: Ref<string | undefined>;
+  renderDropZone: Ref<unknown>;
+};
+
 export const PUCK_INJECTION_KEY: InjectionKey<VuePuckContext> =
   Symbol("puck-vue-context");
 
-const DEFAULT_CONTEXT: VuePuckContext = {
+const defaultContext = (): VuePuckContext => ({
   isEditing: false,
   metadata: {},
-};
+});
 
 /**
  * Access the current component's Puck context from within a bridged Vue
- * component. Returns a reactive object (safe to destructure in template via
- * `toRefs` if you need reactivity on individual fields).
+ * component. Returns reactive refs (Vue composable convention), so you can
+ * destructure and keep reactivity:
  *
- * Note: this is the Vue package's `usePuck` — it returns the per-component
- * context. To drive the editor imperatively, use the `getPuck` accessor from
- * `<Puck>`'s `@ready` event instead.
+ * ```vue
+ * <script setup>
+ * import { usePuck } from "@puckeditor/vue";
+ * const { isEditing, metadata } = usePuck();
+ * </script>
+ * <template>
+ *   <span v-if="isEditing">Editing…</span>
+ * </template>
+ * ```
+ *
+ * To drive the editor imperatively, use the `getPuck` accessor exposed by
+ * `<Puck>` (via a template ref or its `@ready` event) instead.
  */
-export const usePuck = (): VuePuckContext =>
-  inject(PUCK_INJECTION_KEY, DEFAULT_CONTEXT);
+export const usePuck = (): UsePuckReturn => {
+  const ctx = inject(PUCK_INJECTION_KEY, null);
+  return toRefs(ctx ?? reactive(defaultContext())) as UsePuckReturn;
+};
