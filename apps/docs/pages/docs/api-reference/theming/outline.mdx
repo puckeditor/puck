@@ -47,17 +47,22 @@ Use the following CSS properties for theming the outline (layers) panel.
 
 Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-reference/theming/global). See [computed values](/docs/api-reference/theming/computed-values#outline) for the values they resolve to.
 
-| Token                                  | Default                                | Description                      |
-| -------------------------------------- | -------------------------------------- | -------------------------------- |
-| `--puck-outline-color-text`            | `var(--puck-color-text-secondary)`     | Layer label text color           |
-| `--puck-outline-color-icon`            | `var(--puck-color-highlight)`          | Layer icon color                 |
-| `--puck-outline-color-bg-hover`        | `var(--puck-color-interactive-soft)`   | Layer background on hover        |
-| `--puck-outline-color-text-hover`      | `var(--puck-color-interactive)`        | Layer text color on hover        |
-| `--puck-outline-color-border-hover`    | `var(--puck-color-interactive-subtle)` | Layer border color on hover      |
-| `--puck-outline-color-bg-selected`     | `var(--puck-color-interactive-subtle)` | Selected layer background        |
-| `--puck-outline-color-border-selected` | `var(--puck-color-selection-border)`   | Selected layer border color      |
-| `--puck-outline-border-width`          | `var(--puck-border-width-regular)`     | Layer border width               |
-| `--puck-outline-radius`                | `var(--puck-radius-m)`                 | Layer border radius              |
-| `--puck-outline-font-size`             | `var(--puck-font-size-xxs)`            | Layer label font size            |
-| `--puck-outline-zone-color-text`       | `var(--puck-color-text-muted)`         | Nested-zone label and icon color |
-| `--puck-outline-zone-font-size`        | `var(--puck-font-size-xxxs)`           | Nested-zone label font size      |
+| Token                                  | Default                                | Description                           |
+| -------------------------------------- | -------------------------------------- | ------------------------------------- |
+| `--puck-outline-color-text`            | `var(--puck-color-text-secondary)`     | Layer label text color                |
+| `--puck-outline-color-text-hover`      | `var(--puck-color-interactive)`        | Layer text color on hover             |
+| `--puck-outline-color-text-helper`     | `var(--puck-color-text-subtle)`        | Empty-zone helper text color          |
+| `--puck-outline-color-icon`            | `var(--puck-color-highlight)`          | Layer icon color                      |
+| `--puck-outline-color-bg-hover`        | `var(--puck-color-interactive-soft)`   | Layer background on hover             |
+| `--puck-outline-color-border-hover`    | `var(--puck-color-interactive-subtle)` | Layer border color on hover           |
+| `--puck-outline-color-bg-selected`     | `var(--puck-color-interactive-subtle)` | Selected layer background             |
+| `--puck-outline-color-border-selected` | `var(--puck-color-selection-border)`   | Selected layer border color           |
+| `--puck-outline-color-drop-indicator`  | `var(--puck-color-interactive-active)` | Drag-and-drop line indicator color    |
+| `--puck-outline-border-width`          | `var(--puck-border-width-regular)`     | Layer border width                    |
+| `--puck-outline-radius`                | `var(--puck-radius-m)`                 | Layer border radius                   |
+| `--puck-outline-font-size`             | `var(--puck-font-size-xxs)`            | Layer label font size                 |
+| `--puck-outline-icon-size`             | `var(--puck-icon-size-s)`              | Layer and zone icon size              |
+| `--puck-outline-action-size`           | `var(--puck-icon-size-xs)`             | Expand caret and row action icon size |
+| `--puck-outline-space-indent`          | `var(--puck-space-3)`                  | Indentation per nesting level         |
+| `--puck-outline-zone-color-text`       | `var(--puck-color-text-muted)`         | Nested-zone label and icon color      |
+| `--puck-outline-zone-font-size`        | `var(--puck-font-size-xxxs)`           | Nested-zone label font size           |

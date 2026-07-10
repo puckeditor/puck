@@ -1,10 +1,17 @@
 import { DragDropProvider } from "@dnd-kit/react";
 import { PropsWithChildren, ReactNode } from "react";
-import { useSensors } from "../../lib/dnd/use-sensors";
-import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
-import "./styles.css";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { PointerActivationConstraints } from "@dnd-kit/dom";
+
+import { useSensors } from "../../lib/dnd/use-sensors";
+import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
+
+import {
+  getCollisionPosition,
+  getInsertIndex,
+} from "../../lib/dnd/get-insert-index";
+
+import "./styles.css";
 
 export const SortableProvider = ({
   children,
@@ -34,26 +41,20 @@ export const SortableProvider = ({
 
         if (!source || !target) return;
 
-        let sourceIndex = source.data.index;
-        let targetIndex = target.data.index;
+        const sourceIndex = source.data.index;
+        const targetIndex = target.data.index;
 
         const collisionData = manager.collisionObserver.collisions[0]?.data;
 
         if (sourceIndex !== targetIndex && source.id !== target.id) {
-          const collisionPosition =
-            collisionData?.direction === "up" ? "before" : "after";
-
-          if (targetIndex >= sourceIndex) {
-            targetIndex = targetIndex - 1;
-          }
-
-          if (collisionPosition === "after") {
-            targetIndex = targetIndex + 1;
-          }
-
           onMove({
             source: sourceIndex,
-            target: targetIndex,
+            target: getInsertIndex({
+              position: getCollisionPosition(collisionData?.direction),
+              sourceIndex,
+              targetIndex,
+              isSameZone: true,
+            }),
           });
         }
       }}

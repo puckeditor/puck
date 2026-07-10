@@ -10,6 +10,7 @@ export const defaultAppState: PrivateAppState = {
     itemSelector: null,
     componentList: {},
     isDragging: false,
+    itemExpanded: {},
     previewMode: "edit",
     viewports: {
       current: {

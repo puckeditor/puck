@@ -5,6 +5,9 @@ import { Loader } from "../Loader";
 
 const getClassName = getClassNameFactory("IconButton", styles);
 
+const mergeClassNames = (...classNames: string[]) =>
+  [getClassName(), ...classNames].filter(Boolean).join(" ");
+
 export const IconButton = forwardRef<
   HTMLButtonElement & HTMLAnchorElement,
   {
@@ -19,6 +22,7 @@ export const IconButton = forwardRef<
     fullWidth?: boolean;
     title: string;
     suppressHydrationWarning?: boolean;
+    variant?: "primary" | "secondary";
   }
 >(
   (
@@ -42,15 +46,20 @@ export const IconButton = forwardRef<
 
     const ElementType = href ? "a" : "button";
 
+    const variant = rest.variant || "primary";
+
     return (
       <ElementType
         {...rest}
         ref={ref}
-        className={getClassName({
-          active,
-          disabled,
-          fullWidth,
-        })}
+        className={mergeClassNames(
+          getClassName({
+            active,
+            disabled,
+            fullWidth,
+          }),
+          getClassName(variant)
+        )}
         onClick={(e) => {
           if (!onClick) return;
 

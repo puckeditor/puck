@@ -29,6 +29,8 @@ export type UiState = {
     }
   >;
   isDragging: boolean;
+  /** Outline items whose children are shown, keyed by item id */
+  itemExpanded?: Record<string, boolean>;
   viewports: {
     current: {
       width: number | "100%";

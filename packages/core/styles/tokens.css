@@ -102,6 +102,7 @@
    * Icon sizing
    */
 
+    --puck-icon-size-xs: 14px;
     --puck-icon-size-s: 16px;
     --puck-icon-size-m: 18px;
     --puck-icon-size-l: 24px;

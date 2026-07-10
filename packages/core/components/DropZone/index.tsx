@@ -33,6 +33,7 @@ import {
 } from "../../types";
 
 import { useDroppable, UseDroppableInput } from "@dnd-kit/react";
+import { isComponentAllowed } from "../../lib/data/is-component-allowed";
 import { DrawerItemInner } from "../Drawer";
 import { pointerIntersection } from "@dnd-kit/collision";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
@@ -383,30 +384,8 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
     const ref = useRef<HTMLDivElement | null>(null);
 
     const acceptsTarget = useCallback(
-      (componentType: string | null | undefined) => {
-        if (!componentType) {
-          return true;
-        }
-
-        if (disallow) {
-          const defaultedAllow = allow || [];
-
-          // remove any explicitly allowed items from disallow
-          const filteredDisallow = (disallow || []).filter(
-            (item) => defaultedAllow.indexOf(item) === -1
-          );
-
-          if (filteredDisallow.indexOf(componentType) !== -1) {
-            return false;
-          }
-        } else if (allow) {
-          if (allow.indexOf(componentType) === -1) {
-            return false;
-          }
-        }
-
-        return true;
-      },
+      (componentType: string | null | undefined) =>
+        isComponentAllowed(componentType, { allow, disallow }),
       [allow, disallow]
     );
 

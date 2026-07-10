@@ -1,10 +1,24 @@
-import { buildLayerTree, LayerTree } from "../../../LayerTree";
-import { useAppStore } from "../../../../store";
-import { useMessage } from "../../../../lib/use-message";
 import { useMemo } from "react";
-import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
 import { useShallow } from "zustand/react/shallow";
 
+import { useAppStore } from "../../../../store";
+import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
+import { getClassNameFactory } from "../../../../lib";
+
+import { buildLayerTree, LayerTree } from "../../../LayerTree";
+
+import CollapseAll from "./collapse-all";
+import styles from "./styles.module.css";
+
+const getClassName = getClassNameFactory("OutlineWrapper", styles);
+
+const DefaultWrapper = ({ children }: { children: React.ReactNode }) => (
+  <div className={getClassName()}>{children}</div>
+);
+
+/**
+ * Renders the outline for the Puck component, which is a tree view of the layers and zones in the application.
+ */
 export const Outline = () => {
   const outlineOverride = useAppStore((s) => s.overrides.outline);
   const config = useAppStore((s) => s.config);
@@ -16,16 +30,6 @@ export const Outline = () => {
   const rootZones = useAppStore(
     useShallow((s) => findZonesForArea(s.state, "root"))
   );
-
-  const selectedPathIds = useMemo(() => {
-    const selectedPath = selectedId ? nodes[selectedId]?.path : null;
-
-    return new Set(
-      selectedPath
-        ?.map((candidate) => candidate.split(":")[0])
-        .filter(Boolean) || []
-    );
-  }, [nodes, selectedId]);
 
   const trees = useMemo(
     () =>
@@ -42,15 +46,15 @@ export const Outline = () => {
     [config, nodes, rootZones, zones, componentFallbackLabel]
   );
 
-  const Wrapper = useMemo(() => outlineOverride || "div", [outlineOverride]);
+  const Wrapper = useMemo(
+    () => outlineOverride || DefaultWrapper,
+    [outlineOverride]
+  );
 
   return (
     <Wrapper>
-      <LayerTree
-        selectedId={selectedId}
-        selectedPathIds={selectedPathIds}
-        trees={trees}
-      />
+      <CollapseAll className={getClassName("collapseAll")} />
+      <LayerTree selectedId={selectedId} trees={trees} />
     </Wrapper>
   );
 };
