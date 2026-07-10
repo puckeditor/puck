@@ -40,6 +40,17 @@
   position: relative;
 }
 
+.DropZone-linePlaceholder {
+  background: var(
+    --puck-slot-component-color-placeholder,
+    var(--puck-color-azure-06)
+  );
+  border-radius: 2px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
 .DropZone-hitbox {
   position: absolute;
   bottom: calc(var(--puck-space-3) * -1);
@@ -54,7 +65,7 @@
     var(--puck-slot-color-border, var(--puck-color-selection-border));
 }
 
-.DropZone > *:not([data-puck-component]) {
+.DropZone > *:not([data-puck-component]):not([data-puck-line-placeholder]) {
   opacity: 0;
 }
 

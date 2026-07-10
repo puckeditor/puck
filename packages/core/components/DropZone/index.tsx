@@ -56,6 +56,7 @@ import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
+import { LinePlaceholder } from "./LinePlaceholder";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -429,7 +430,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
     const isDropEnabled =
       isEnabled &&
       (preview
-        ? contentIdsWithPreview.length === 1
+        ? contentIdsWithPreview.length === (preview.linePlaceholder ? 0 : 1)
         : contentIdsWithPreview.length === 0);
 
     const zoneStore = useContext(ZoneStoreContext);
@@ -536,6 +537,14 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
               inDroppableZone={targetAccepted}
             />
           ))
+        )}
+        {preview?.linePlaceholder && (
+          <LinePlaceholder
+            zoneRef={ref}
+            contentIds={contentIds}
+            index={preview.index}
+            dragAxis={dragAxis}
+          />
         )}
       </El>
     );
