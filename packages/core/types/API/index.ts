@@ -22,6 +22,8 @@ export type IframeConfig = {
   syncHostStyles?: boolean;
 };
 
+export type DndBehavior = "auto" | "fluid" | "static";
+
 export type OnAction<UserData extends Data = Data> = (
   action: PuckAction,
   appState: AppState<UserData>,

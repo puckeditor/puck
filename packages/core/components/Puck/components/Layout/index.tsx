@@ -274,7 +274,10 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
       id={instanceId}
       style={{ height, visibility: "hidden" }}
     >
-      <DragDropContext disableAutoScroll={dnd?.disableAutoScroll}>
+      <DragDropContext
+        disableAutoScroll={dnd?.disableAutoScroll}
+        behavior={dnd?.behavior}
+      >
         <CustomPuck>
           {children || (
             <FrameProvider>

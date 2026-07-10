@@ -1,8 +1,11 @@
-[data-dnd-placeholder] * {
+/* Guarded with data-puck-line-drag so canvas placeholders can render as a
+   faded ghost during line placeholder drags — see
+   DraggableComponent/styles.css */
+[data-dnd-placeholder]:not([data-puck-line-drag] *) * {
   opacity: 0 !important;
 }
 
-[data-dnd-placeholder] {
+[data-dnd-placeholder]:not([data-puck-line-drag] *) {
   background: var(
     --_puck-field-array-color-placeholder,
     var(--puck-color-azure-06)

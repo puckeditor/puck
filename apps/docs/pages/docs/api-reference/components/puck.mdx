@@ -123,9 +123,18 @@ Configure drag-and-drop behavior.
 
 #### dnd params
 
-| Param                                     | Example                   | Type    | Status |
-| ----------------------------------------- | ------------------------- | ------- | ------ |
-| [`disableAutoScroll`](#disableautoscroll) | `disableAutoScroll: true` | boolean | -      |
+| Param                                     | Example                   | Type                            | Status |
+| ----------------------------------------- | ------------------------- | ------------------------------- | ------ |
+| [`behavior`](#behavior)                   | `behavior: "static"`      | `"auto" \| "fluid" \| "static"` | -      |
+| [`disableAutoScroll`](#disableautoscroll) | `disableAutoScroll: true` | boolean                         | -      |
+
+##### `behavior`
+
+Control animation behavior while dragging. Defaults to `"auto"`.
+
+- `"auto"`: Use fluid behavior within a slot, then switch to a static when dragging an item between slots.
+- `"fluid"`: Move the item during a drag, animating other items out of the way.
+- `"static"`: Freeze the item in-place during a drag, showing a line placeholder at the drop destination.
 
 ##### `disableAutoScroll`
 

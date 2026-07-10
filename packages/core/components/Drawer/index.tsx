@@ -1,11 +1,23 @@
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { DragIcon } from "../DragIcon";
-import { ReactElement, ReactNode, Ref, useMemo, useState } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  Ref,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import { generateId } from "../../lib/generate-id";
 import { useDragListener } from "../DragDropContext";
 import { useSafeId } from "../../lib/use-safe-id";
 import { useDraggable, useDroppable } from "@dnd-kit/react";
+import { Feedback, type DropAnimationFunction } from "@dnd-kit/dom";
+import { ZoneStoreContext } from "../DropZone/context";
+import { useAppStoreApi } from "../../store";
+import { runDropAnimation } from "../../lib/dnd/drop-animation";
 
 const getClassName = getClassNameFactory("Drawer", styles);
 const getClassNameItem = getClassNameFactory("DrawerItem", styles);
@@ -72,11 +84,36 @@ const DrawerItemDraggable = ({
   id: string;
   isDragDisabled?: boolean;
 }) => {
+  const zoneStore = useContext(ZoneStoreContext);
+  const appStore = useAppStoreApi();
+
+  const dropAnimation: DropAnimationFunction = useCallback(
+    (context) => {
+      const preview = Object.values(
+        zoneStore.getState().previewIndex ?? {}
+      ).find((preview) => preview?.type === "insert");
+
+      return runDropAnimation(
+        context,
+        preview
+          ? {
+              targetZone: preview.zone,
+              getExpectedOrder: () =>
+                appStore.getState().state.indexes.zones[preview.zone]
+                  ?.contentIds ?? [],
+            }
+          : undefined
+      );
+    },
+    [appStore, zoneStore]
+  );
+
   const { ref } = useDraggable({
     id,
     data: { componentType: name },
     disabled: isDragDisabled,
     type: "drawer",
+    plugins: [Feedback.configure({ dropAnimation })],
   });
 
   return (
