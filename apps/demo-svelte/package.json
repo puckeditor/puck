@@ -1,0 +1,20 @@
+{
+  "name": "demo-svelte",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4175",
+    "e2e": "node scripts/e2e.mjs"
+  },
+  "dependencies": {
+    "@puckeditor/svelte": "*",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.0.0",
+    "vite": "^7.0.0"
+  }
+}

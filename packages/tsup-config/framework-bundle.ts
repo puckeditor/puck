@@ -1,4 +1,5 @@
-import { defineConfig } from "tsup";
+import { defineConfig, type Options } from "tsup";
+import type { Plugin } from "esbuild";
 import path from "path";
 import { cssModulePlugin } from "./css-module-plugin";
 import { createRuntimeCssPlugin } from "./runtime-css-plugin";
@@ -13,12 +14,31 @@ export type FrameworkBundleOptions = {
   framework: string;
   /** Bundle entry. Defaults to `["bundle/index.ts"]`. */
   entry?: string[];
+  /** Output formats. Defaults to `["cjs", "esm"]`. Svelte ships ESM-only. */
+  format?: Options["format"];
   /**
    * Absolute path to the `@puckeditor/core` package root, used by the runtime
    * CSS plugin. Defaults to `../core` relative to the build cwd (the framework
    * package dir), which is correct for `packages/*`.
    */
   coreRoot?: string;
+};
+
+/**
+ * Externalize `*.svelte` imports (the source layer). Svelte's compiler model
+ * can't mint components at runtime, so the compiled layer keeps its imports of
+ * the raw `.svelte` source layer external; the host app's vite-plugin-svelte
+ * compiles them (sharing the host's single `svelte/internal` runtime). No-op
+ * for frameworks with no `.svelte` imports (e.g. Vue).
+ */
+const externalizeSvelteFilesPlugin: Plugin = {
+  name: "externalize-svelte-files",
+  setup(build) {
+    build.onResolve({ filter: /\.svelte$/ }, (args) => ({
+      path: args.path,
+      external: true,
+    }));
+  },
 };
 
 /**
@@ -43,13 +63,14 @@ export const createFrameworkBundleConfig = (options: FrameworkBundleOptions) => 
   const {
     framework,
     entry = ["bundle/index.ts"],
+    format = ["cjs", "esm"],
     coreRoot = path.resolve(import.meta.dirname, "../core"),
   } = options;
 
   return defineConfig({
     entry,
     dts: true,
-    format: ["cjs", "esm"],
+    format,
     // Resolve browser builds/conditions (like core does), so deps such as
     // @tiptap/html use the global DOM instead of pulling happy-dom + Node
     // built-ins into a browser bundle.
@@ -74,6 +95,10 @@ export const createFrameworkBundleConfig = (options: FrameworkBundleOptions) => 
         react: "preact/compat",
       };
     },
-    esbuildPlugins: [cssModulePlugin, createRuntimeCssPlugin(coreRoot)],
+    esbuildPlugins: [
+      externalizeSvelteFilesPlugin,
+      cssModulePlugin,
+      createRuntimeCssPlugin(coreRoot),
+    ],
   });
 };

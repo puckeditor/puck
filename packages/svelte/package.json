@@ -1,0 +1,76 @@
+{
+  "name": "@puckeditor/svelte",
+  "version": "0.22.0",
+  "description": "Use the Puck visual editor in Svelte 5 apps, with Svelte components as your config components. No React dependency required.",
+  "author": "Chris Villa <chris@puckeditor.com>",
+  "repository": "puckeditor/puck",
+  "bugs": "https://github.com/puckeditor/puck/issues",
+  "homepage": "https://puckeditor.com",
+  "keywords": [
+    "puck",
+    "svelte",
+    "svelte5",
+    "visual",
+    "editor",
+    "drag and drop",
+    "page",
+    "website",
+    "builder",
+    "headless",
+    "cms",
+    "low-code",
+    "no-code",
+    "WYSIWYG"
+  ],
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "svelte": "./svelte/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./svelte/index.js",
+      "import": "./dist/index.js"
+    },
+    "./puck.css": "./dist/index.css",
+    "./no-external.css": "./dist/no-external.css",
+    "./dist/index.css": "./dist/index.css",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "rm -rf dist && tsup && node ../tsup-config/make-no-external-css.mjs",
+    "smoke": "node scripts/smoke/index.mjs",
+    "prepare": "yarn build"
+  },
+  "files": [
+    "dist",
+    "svelte"
+  ],
+  "devDependencies": {
+    "@puckeditor/core": "*",
+    "@puckeditor/framework-shim": "*",
+    "esbuild": "^0.25.11",
+    "eslint": "^9.0.0",
+    "eslint-config-custom": "*",
+    "jsdom": "^26.0.0",
+    "preact": "^10.28.0",
+    "svelte": "^5.0.0",
+    "tsconfig": "*",
+    "tsup": "^8.2.4",
+    "tsup-config": "*",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@types/react": "^19.2.7"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  }
+}
