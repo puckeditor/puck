@@ -1,9 +1,11 @@
 <script>
-  // Plain props — the simplest bridged component.
-  let { title = "" } = $props();
+  // `title` is a contentEditable text field. Core swaps its value for an inline
+  // editor element in the editor (a plain string in <Render>), so render it via
+  // <PuckText>, which bridges the value in.
+  import { PuckText } from "@puckeditor/svelte";
 </script>
 
-<h1 class="heading">{title}</h1>
+<h1 class="heading"><PuckText name="title" /></h1>
 
 <style>
   .heading {

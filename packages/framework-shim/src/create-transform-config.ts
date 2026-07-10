@@ -1,15 +1,32 @@
 import type { Config, Fields } from "./core";
 
 /**
- * Slot prop names for a component = the field names whose field `type` is
- * `"slot"`. These props arrive as render functions and are bridged via the
- * outlet/portal protocol rather than passed as plain props.
+ * Prop names for a component that must be bridged via the outlet/portal protocol
+ * rather than passed as plain props, because their value is a Preact node the
+ * host framework can't render as a prop:
+ *
+ *  - **slot** fields — arrive as a render function (a DropZone thunk);
+ *  - **contentEditable** text/textarea/custom fields — core's inline-text
+ *    transform swaps the string for an `<InlineTextField>` Preact element in the
+ *    editor (a plain string in `<Render>`). Either way it's portaled; the bridge
+ *    wraps the non-function value in a thunk.
+ *
+ * The host component renders these the same way it renders a slot (Vue:
+ * `<component :is="name" />`; Svelte: `<PuckSlot name>` / `<PuckText name>`).
  */
-const getSlotPropNames = (fields?: Fields): string[] => {
+const getOutletPropNames = (fields?: Fields): string[] => {
   if (!fields) return [];
-  return Object.keys(fields).filter(
-    (name) => (fields as Record<string, any>)[name]?.type === "slot"
-  );
+  return Object.keys(fields).filter((name) => {
+    const field = (fields as Record<string, any>)[name];
+    if (!field || typeof field !== "object") return false;
+    if (field.type === "slot") return true;
+    return (
+      (field.type === "text" ||
+        field.type === "textarea" ||
+        field.type === "custom") &&
+      field.contentEditable === true
+    );
+  });
 };
 
 export type CreateTransformConfigDeps<WrapOptions> = {
@@ -77,7 +94,7 @@ export const createTransformConfig = <WrapOptions>(
 
     for (const name in frameworkConfig.components) {
       const { render, fields, ...rest } = frameworkConfig.components[name];
-      const slotPropNames = getSlotPropNames(fields as Fields | undefined);
+      const slotPropNames = getOutletPropNames(fields as Fields | undefined);
 
       components[name] = {
         ...rest,
@@ -99,7 +116,7 @@ export const createTransformConfig = <WrapOptions>(
         fields: rootFields,
         ...rootRest
       } = frameworkConfig.root;
-      const rootSlotPropNames = getSlotPropNames(
+      const rootSlotPropNames = getOutletPropNames(
         rootFields as Fields | undefined
       );
 

@@ -8,6 +8,7 @@
 export { default as Puck } from "./Puck.svelte";
 export { default as Render } from "./Render.svelte";
 export { default as PuckSlot } from "./PuckSlot.svelte";
+export { default as PuckText } from "./PuckText.svelte";
 export { default as PuckDropZone } from "./PuckDropZone.svelte";
 export { default as PuckChildren } from "./PuckChildren.svelte";
 export { default as FieldLabel } from "./FieldLabel.svelte";

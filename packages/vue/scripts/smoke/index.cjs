@@ -266,6 +266,67 @@ async function testCustomVueField() {
   check("Custom field: onChange flows back to Puck data", title === "Changed via Vue field", `title=${title}`);
 }
 
+async function testContentEditable() {
+  // A text field with contentEditable: core swaps the string value for an
+  // <InlineTextField> Preact element in the editor (plain string in <Render>).
+  // The bridge portals it via the outlet protocol; the component renders it with
+  // <component :is>.
+  const EditableHeading = defineComponent({
+    name: "EditableHeading",
+    props: { title: { type: [String, Object, Function], default: undefined } },
+    render() {
+      return h("h1", { class: "eh" }, this.title ? [h(this.title)] : []);
+    },
+  });
+  const config = {
+    components: {
+      EH: {
+        fields: { title: { type: "text", contentEditable: true } },
+        render: EditableHeading,
+      },
+    },
+  };
+  const data = {
+    root: {},
+    content: [{ type: "EH", props: { id: "eh1", title: "Editable Hi" } }],
+  };
+
+  // <Render>: value is a plain string, portaled as text.
+  const { el: renderEl } = mountApp(() => h(Render, { config, data }));
+  await tick(120);
+  check(
+    "contentEditable: renders as text in <Render>",
+    renderEl.textContent.includes("Editable Hi") &&
+      renderEl.innerHTML.includes('class="eh"'),
+    renderEl.innerHTML.slice(0, 200)
+  );
+  check(
+    "contentEditable: no [object Object] leak in <Render>",
+    !renderEl.innerHTML.includes("[object Object]")
+  );
+
+  // Editor: value is an <InlineTextField> element, portaled as editable.
+  let el;
+  try {
+    ({ el } = mountApp(() =>
+      h(Puck, { config, data, iframe: { enabled: false } })
+    ));
+  } catch (e) {
+    /* ignore */
+  }
+  await tick(300);
+  const html = el ? el.innerHTML : "";
+  check(
+    "contentEditable: inline-editable element renders in editor",
+    html.includes("Editable Hi") && /contenteditable/i.test(html),
+    `len=${html.length}`
+  );
+  check(
+    "contentEditable: no [object Object] leak in editor",
+    !html.includes("[object Object]")
+  );
+}
+
 (async () => {
   await testRenderPlainProps();
   await testPatchAndStatePersistence();
@@ -275,6 +336,7 @@ async function testCustomVueField() {
   await testPuckEditorReady();
   await testPuckEditorSlot();
   await testCustomVueField();
+  await testContentEditable();
 
   console.log("\n@puckeditor/vue bridge smoke tests\n");
   console.log(results.join("\n"));

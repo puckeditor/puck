@@ -95,9 +95,15 @@ export const createComponentBridge = (
     }
     const outlets = outletsRef.current;
 
-    // Refresh thunks from the raw core props each render.
+    // Refresh thunks from the raw core props each render. Slot fields arrive as
+    // a render function (called with dzProps); contentEditable text fields
+    // arrive as a value (an <InlineTextField> Preact element in the editor, a
+    // plain string in <Render>) — wrap those so the portal renders the value.
     const thunks = thunksRef.current;
-    for (const name of slotPropNames) thunks[name] = props[name];
+    for (const name of slotPropNames) {
+      const value = props[name];
+      thunks[name] = typeof value === "function" ? value : () => value;
+    }
     thunks[RENDER_DROPZONE_KEY] = props.puck?.renderDropZone;
     if (isRoot) thunks[CHILDREN_KEY] = () => props.children;
 

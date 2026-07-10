@@ -15,7 +15,7 @@ export const config: VueConfig = {
   components: {
     Heading: {
       label: "Heading",
-      fields: { title: { type: "text" } },
+      fields: { title: { type: "text", contentEditable: true } },
       defaultProps: { title: "Heading" },
       render: Heading,
     },

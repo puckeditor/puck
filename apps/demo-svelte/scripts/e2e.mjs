@@ -60,6 +60,15 @@ try {
   if (headingFrame) {
     const t = await headingFrame.evaluate(() => document.body.innerText);
     check("editor: Heading (plain props) renders", t.includes("Puck + Svelte"));
+
+    // contentEditable: the Heading title should render as an inline-editable
+    // element in the editor (not [object Object]).
+    const editable = await headingFrame.evaluate(() =>
+      [...document.querySelectorAll("[contenteditable]")].some((e) =>
+        (e.textContent || "").includes("Puck + Svelte")
+      )
+    );
+    check("editor: Heading title is inline-editable (contentEditable)", editable);
   }
 
   if (headingFrame) {

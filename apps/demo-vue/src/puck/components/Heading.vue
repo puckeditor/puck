@@ -1,10 +1,14 @@
 <script setup lang="ts">
-// Plain props — the simplest bridged component.
-defineProps<{ title?: string }>();
+import type { Component } from "vue";
+
+// `title` is a contentEditable text field. Core swaps its value for an inline
+// editor element in the editor (a plain string in <Render>), so the bridge
+// passes it as an outlet — render it with `<component :is>`, like a slot.
+defineProps<{ title?: string | Component }>();
 </script>
 
 <template>
-  <h1 class="heading">{{ title }}</h1>
+  <h1 class="heading"><component :is="title" /></h1>
 </template>
 
 <style scoped>

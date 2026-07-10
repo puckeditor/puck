@@ -12,6 +12,7 @@ import Text from "./fixtures/Text.svelte";
 import Columns from "./fixtures/Columns.svelte";
 import TextControl from "./fixtures/TextControl.svelte";
 import RenderProbe from "./fixtures/RenderProbe.svelte";
+import EditableHeading from "./fixtures/EditableHeading.svelte";
 
 const tick = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
@@ -267,6 +268,61 @@ export async function run() {
       "Puck slot: nested Svelte slot content renders in editor (DropZone portal)",
       html.includes("Slot in editor"),
       `len=${html.length}`
+    );
+  }
+
+  // --- contentEditable text field (via <PuckText>) ---
+  {
+    const config = {
+      components: {
+        EH: {
+          fields: { title: { type: "text", contentEditable: true } },
+          render: EditableHeading,
+        },
+      },
+    };
+    const data = {
+      root: {},
+      content: [{ type: "EH", props: { id: "eh1", title: "Editable Hi" } }],
+    };
+
+    // <Render>: value is a plain string, portaled as text.
+    const rel = mountTop(Render, { config, data });
+    await tick(150);
+    check(
+      "contentEditable: renders as text in <Render>",
+      rel.textContent.includes("Editable Hi") &&
+        rel.innerHTML.includes('class="eh"'),
+      rel.innerHTML.slice(0, 200)
+    );
+    check(
+      "contentEditable: no [object Object] leak in <Render>",
+      !rel.innerHTML.includes("[object Object]")
+    );
+
+    // Editor: value is an <InlineTextField> element, portaled as editable.
+    let eel;
+    let threw = null;
+    try {
+      eel = mountTop(Puck, { config, data, iframe: { enabled: false } });
+    } catch (e) {
+      threw = e;
+    }
+    await tick(350);
+    const ehHtml = eel ? eel.innerHTML : "";
+    check(
+      "contentEditable: editor mounts without throwing",
+      !threw,
+      threw && threw.message
+    );
+    check(
+      "contentEditable: inline-editable element renders in editor",
+      ehHtml.includes("Editable Hi") && /contenteditable/i.test(ehHtml),
+      `len=${ehHtml.length}`
+    );
+    check(
+      "contentEditable: no [object Object] leak in editor",
+      !ehHtml.includes("[object Object]")
     );
   }
 
