@@ -30,7 +30,8 @@ export const useContentIdsWithPreview = (
       preview: Preview | undefined,
       isDragging: boolean,
       draggedItemId?: string,
-      previewExists?: boolean
+      previewExists?: boolean,
+      linePlaceholderActive?: boolean
     ) => {
       // Preview is cleared but context hasn't yet caught up
       // This is necessary because Zustand clears the preview before the dispatcher finishes
@@ -38,27 +39,19 @@ export const useContentIdsWithPreview = (
         return;
       }
 
-      if (preview) {
-        if (preview.type === "insert") {
-          setContentIdsWithPreview(
-            insert(
-              contentIds.filter((id) => id !== preview.props.id),
-              preview.index,
-              preview.props.id
-            )
-          );
-        } else {
-          setContentIdsWithPreview(
-            insert(
-              contentIds.filter((id) => id !== preview.props.id),
-              preview.index,
-              preview.props.id
-            )
-          );
-        }
-      } else {
+      if (preview && !preview.linePlaceholder) {
         setContentIdsWithPreview(
-          previewExists
+          insert(
+            contentIds.filter((id) => id !== preview.props.id),
+            preview.index,
+            preview.props.id
+          )
+        );
+      } else {
+        // Line placeholders render as a zone overlay rather than as content,
+        // and the rendered item order remains unchanged during the drag
+        setContentIdsWithPreview(
+          previewExists && !linePlaceholderActive
             ? contentIds.filter((id) => id !== draggedItemId)
             : contentIds
         );
@@ -76,14 +69,17 @@ export const useContentIdsWithPreview = (
     // the renderedCallback.
     const s = zoneStore.getState();
     const draggedItemId = s.draggedItem?.id;
-    const previewExists = Object.keys(s.previewIndex || {}).length > 0;
+    const previews = Object.values(s.previewIndex || {});
+    const previewExists = previews.length > 0;
+    const linePlaceholderActive = previews.some((p) => p?.linePlaceholder);
 
     updateContent(
       contentIds,
       preview,
       isDragging,
       draggedItemId,
-      previewExists
+      previewExists,
+      linePlaceholderActive
     );
   }, [contentIds, preview, isDragging]);
 

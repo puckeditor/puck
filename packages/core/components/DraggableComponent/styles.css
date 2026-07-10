@@ -20,8 +20,10 @@
   cursor: pointer;
 }
 
-/* Placeholder */
-[data-dnd-placeholder] {
+/* Placeholder. The entry carries data-puck-line-drag during line placeholder
+   drags, where the placeholder renders as a faded ghost
+   of the actual content instead of a solid block */
+[data-dnd-placeholder]:not([data-puck-line-drag] *) {
   background: var(
     --puck-slot-component-color-placeholder,
     var(--puck-color-azure-06)
@@ -33,10 +35,16 @@
   transition: none !important;
 }
 
-[data-dnd-placeholder] *,
-[data-dnd-placeholder]::after,
-[data-dnd-placeholder]::before {
+[data-dnd-placeholder]:not([data-puck-line-drag] *) *,
+[data-dnd-placeholder]:not([data-puck-line-drag] *)::after,
+[data-dnd-placeholder]:not([data-puck-line-drag] *)::before {
   opacity: 0 !important;
+}
+
+[data-puck-line-drag] [data-dnd-placeholder] {
+  opacity: 0.4 !important;
+  outline: none !important;
+  transition: none !important;
 }
 
 [data-dnd-dragging][data-puck-component] {

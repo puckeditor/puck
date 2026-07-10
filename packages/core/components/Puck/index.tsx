@@ -28,6 +28,7 @@ import type {
   Metadata,
   AsFieldProps,
   DefaultComponentProps,
+  DndBehavior,
 } from "../../types";
 
 import { PuckAction } from "../../reducer";
@@ -85,6 +86,14 @@ type PuckProps<
   iframe?: IframeConfig;
   dnd?: {
     disableAutoScroll?: boolean;
+    /**
+     * - `auto` (default): fluid drags within a slot, switching to a static
+     *   line placeholder when dragging between slots or inserting a new item
+     * - `fluid`: always animate sibling items during a drag
+     * - `static`: always show a line placeholder during a drag, only
+     *   animating sibling items on drop
+     */
+    behavior?: DndBehavior;
   };
   initialHistory?: InitialHistory;
   metadata?: Metadata;
