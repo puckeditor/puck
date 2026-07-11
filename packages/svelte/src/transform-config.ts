@@ -1,8 +1,4 @@
-import {
-  createTransformConfig,
-  createComponentBridge,
-  createFieldBridge,
-} from "@puckeditor/framework-shim";
+import { createFrameworkApi } from "./shim";
 import type { Config, Field } from "./core";
 import type {
   SvelteConfig,
@@ -11,29 +7,24 @@ import type {
 } from "./types";
 import { makeSvelteAdapter } from "./adapter";
 
-/** Per-call wrap options threaded through the shared config walker. */
-type SvelteWrapOptions = { context?: Map<any, any> | null };
-
-const { transformConfig: walkConfig, transformFieldTypes: walkFieldTypes } =
-  createTransformConfig<SvelteWrapOptions>({
-    wrapComponent: (render, opts, { context = null }) =>
-      createComponentBridge(makeSvelteAdapter(context), render, opts),
-    wrapField: (render, { context = null }) =>
-      createFieldBridge(makeSvelteAdapter(context), render),
-  });
+const api = createFrameworkApi<TransformConfigOptions>((opts) =>
+  makeSvelteAdapter(opts.context ?? null)
+);
 
 /**
  * Convert a Svelte `SvelteConfig` into a core `Config`.
  *
- * For each component (and `root`): derives slot prop names from `fields`, sets
- * `inline: true`, replaces `render` with the Svelte bridge, and walks `fields`
- * (recursively through object/array) wrapping any `type: "custom"` Svelte field
- * renders. All other config keys pass through untouched.
+ * For each component (and `root`): derives outlet prop names from `fields`
+ * (slots, richtext, contentEditable text), sets `inline: true`, replaces
+ * `render` with the Svelte bridge, and walks `fields` (recursively through
+ * object/array, and through `resolveFields` results) wrapping any
+ * `type: "custom"` Svelte field renders. All other config keys pass through
+ * untouched.
  */
 export const transformConfig = (
   svelteConfig: SvelteConfig,
   options: TransformConfigOptions = {}
-): Config => walkConfig(svelteConfig, options);
+): Config => api.transformConfig(svelteConfig, options);
 
 /**
  * Wrap a map of Svelte components into `overrides.fieldTypes` (replacing
@@ -42,7 +33,7 @@ export const transformConfig = (
 export const transformFieldTypes = (
   fieldTypes: Record<string, SvelteComponent>,
   options: TransformConfigOptions = {}
-): Record<string, any> => walkFieldTypes(fieldTypes, options);
+): Record<string, any> => api.transformFieldTypes(fieldTypes, options);
 
 /**
  * Per-component escape hatch: wrap a single Svelte component into a
@@ -54,12 +45,7 @@ export const defineSvelteComponent = (
     slotPropNames?: string[];
     isRoot?: boolean;
   } = {}
-) =>
-  createComponentBridge(
-    makeSvelteAdapter(options.context ?? null),
-    component,
-    { slotPropNames: options.slotPropNames, isRoot: options.isRoot }
-  );
+) => api.defineComponent(component, options);
 
 /**
  * Per-field escape hatch: wrap a single Svelte component into a Puck-compatible
@@ -68,6 +54,6 @@ export const defineSvelteComponent = (
 export const defineSvelteField = (
   component: SvelteComponent,
   options: TransformConfigOptions = {}
-) => createFieldBridge(makeSvelteAdapter(options.context ?? null), component);
+) => api.defineField(component, options);
 
 export type { Field };

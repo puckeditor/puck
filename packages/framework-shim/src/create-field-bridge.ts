@@ -4,8 +4,10 @@ import {
   useState,
   useLayoutEffect,
   useCallback,
+  useContext,
   Fragment,
 } from "./runtime";
+import { UsePuckStoreContext } from "./core";
 import {
   createSlotRegistry,
   CHILDREN_KEY,
@@ -65,6 +67,10 @@ export const createFieldBridge = (adapter: FrameworkAdapter, comp: unknown) => {
       return out;
     };
 
+    // Fields only render inside <Puck>, so the store is normally present;
+    // threaded to the adapter so field UIs get reactive editor-state access.
+    const storeApi = useContext(UsePuckStoreContext as any);
+
     useLayoutEffect(() => {
       const hostEl = hostRef.current;
       if (!hostEl) return;
@@ -77,6 +83,7 @@ export const createFieldBridge = (adapter: FrameworkAdapter, comp: unknown) => {
           comp,
           props: next,
           registry,
+          storeApi: storeApi ?? undefined,
         });
         mountedRef.current = true;
       } else {

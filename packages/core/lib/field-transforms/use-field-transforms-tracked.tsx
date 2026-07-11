@@ -61,9 +61,22 @@ export function useFieldTransformsTracked<
       changeIncludesSlot
     ).props;
 
-    prevResult.current = { ...prevResult.current, ...mapped };
+    // Only adopt mapped values for props that were actually re-mapped this
+    // pass: changed props, and props the mapper defaulted because they have no
+    // value at all (e.g. a contentEditable text field without a default).
+    // mapFields defaults every mapper-covered field, so adopting its output
+    // for *unchanged* props would clobber them with `undefined`.
+    const next: Record<string, any> = { ...prevResult.current };
 
-    return prevResult.current;
+    for (const key in mapped) {
+      if (key in changedProps || !(key in item.props)) {
+        next[key] = mapped[key];
+      }
+    }
+
+    prevResult.current = next;
+
+    return next;
   }, [config, item, mappers]);
 
   const mergedProps = useMemo(

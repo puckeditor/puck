@@ -1,33 +1,6 @@
+import { getNodePropNames } from "./get-node-prop-names";
 import type { Config, Fields } from "./core";
-
-/**
- * Prop names for a component that must be bridged via the outlet/portal protocol
- * rather than passed as plain props, because their value is a Preact node the
- * host framework can't render as a prop:
- *
- *  - **slot** fields — arrive as a render function (a DropZone thunk);
- *  - **contentEditable** text/textarea/custom fields — core's inline-text
- *    transform swaps the string for an `<InlineTextField>` Preact element in the
- *    editor (a plain string in `<Render>`). Either way it's portaled; the bridge
- *    wraps the non-function value in a thunk.
- *
- * The host component renders these the same way it renders a slot (Vue:
- * `<component :is="name" />`; Svelte: `<PuckSlot name>` / `<PuckText name>`).
- */
-const getOutletPropNames = (fields?: Fields): string[] => {
-  if (!fields) return [];
-  return Object.keys(fields).filter((name) => {
-    const field = (fields as Record<string, any>)[name];
-    if (!field || typeof field !== "object") return false;
-    if (field.type === "slot") return true;
-    return (
-      (field.type === "text" ||
-        field.type === "textarea" ||
-        field.type === "custom") &&
-      field.contentEditable === true
-    );
-  });
-};
+import { isBridged, markBridged } from "./bridge-marker";
 
 export type CreateTransformConfigDeps<WrapOptions> = {
   /** Wrap a component's `render` into a Puck-compatible Preact `render`. */
@@ -42,10 +15,13 @@ export type CreateTransformConfigDeps<WrapOptions> = {
 
 /**
  * Build a framework's `transformConfig` / `transformFieldTypes` from its
- * component/field wrappers. Framework-agnostic walker: derives slot prop names,
- * sets `inline: true`, replaces `render` with the framework bridge, and walks
- * `fields` (recursively through object/array) wrapping any `type: "custom"`
- * framework field renders. All other config keys pass through untouched.
+ * component/field wrappers. Framework-agnostic walker: derives outlet prop
+ * names (core's node-valued fields — slots, richtext, contentEditable text:
+ * `getNodePropNames`), sets `inline: true`, replaces `render` with the
+ * framework bridge, and walks `fields` (recursively through object/array)
+ * wrapping any `type: "custom"` framework field renders. `resolveFields` is
+ * wrapped so fields it returns at runtime are walked the same way. All other
+ * config keys pass through untouched.
  *
  * `WrapOptions` is the framework's per-call wrap options (e.g. Vue's
  * `{ appContext }`), threaded verbatim to `wrapComponent` / `wrapField`.
@@ -59,7 +35,13 @@ export const createTransformConfig = <WrapOptions>(
     if (!field || typeof field !== "object") return field;
 
     if (field.type === "custom" && field.render) {
-      return { ...field, render: wrapField(field.render, wrapOptions) };
+      // Skip renders that are already bridged: core hands *transformed* fields
+      // back to `resolveFields` resolvers, which may return them unchanged.
+      if (isBridged(field.render)) return field;
+      return {
+        ...field,
+        render: markBridged(wrapField(field.render, wrapOptions)),
+      };
     }
     if (field.type === "object" && field.objectFields) {
       return {
@@ -86,53 +68,72 @@ export const createTransformConfig = <WrapOptions>(
     return out;
   };
 
+  /**
+   * Wrap a `resolveFields` resolver so the fields it returns at runtime pass
+   * through the same walk as static config fields (core awaits resolvers, so
+   * always returning a promise is safe).
+   */
+  const wrapResolveFields =
+    (resolveFields: any, wrapOptions: WrapOptions) =>
+    async (...args: any[]) =>
+      walkFields(await resolveFields(...args), wrapOptions);
+
+  const transformComponent = (
+    componentConfig: any,
+    wrapOptions: WrapOptions,
+    isRoot: boolean
+  ) => {
+    const { render, fields, resolveFields, ...rest } = componentConfig;
+    const slotPropNames = getNodePropNames(fields as Fields | undefined);
+
+    return {
+      ...rest,
+      ...(fields ? { fields: walkFields(fields, wrapOptions) } : {}),
+      ...(resolveFields
+        ? { resolveFields: wrapResolveFields(resolveFields, wrapOptions) }
+        : {}),
+      ...(render
+        ? {
+            // `inline` only applies to draggable components, not the root.
+            ...(isRoot ? {} : { inline: true }),
+            // Skip renders already bridged via `defineComponent` (or a prior
+            // transform) — double-wrapping would mount a bridge inside a
+            // bridge.
+            render: isBridged(render)
+              ? render
+              : markBridged(
+                  wrapComponent(render, { slotPropNames, isRoot }, wrapOptions)
+                ),
+          }
+        : {}),
+    };
+  };
+
   const transformConfig = (
     frameworkConfig: any,
     wrapOptions: WrapOptions
   ): Config => {
+    // Unknown top-level keys (categories, future additions) pass through.
+    const { components: rawComponents, root: rawRoot, ...rest } =
+      frameworkConfig;
+
     const components: Record<string, any> = {};
-
-    for (const name in frameworkConfig.components) {
-      const { render, fields, ...rest } = frameworkConfig.components[name];
-      const slotPropNames = getOutletPropNames(fields as Fields | undefined);
-
-      components[name] = {
-        ...rest,
-        ...(fields ? { fields: walkFields(fields, wrapOptions) } : {}),
-        inline: true,
-        render: wrapComponent(render, { slotPropNames }, wrapOptions),
-      };
-    }
-
-    const config: Config = { components };
-
-    if (frameworkConfig.categories) {
-      (config as any).categories = frameworkConfig.categories;
-    }
-
-    if (frameworkConfig.root) {
-      const {
-        render: rootRender,
-        fields: rootFields,
-        ...rootRest
-      } = frameworkConfig.root;
-      const rootSlotPropNames = getOutletPropNames(
-        rootFields as Fields | undefined
+    for (const name in rawComponents) {
+      components[name] = transformComponent(
+        rawComponents[name],
+        wrapOptions,
+        false
       );
+    }
 
-      config.root = {
-        ...rootRest,
-        ...(rootFields ? { fields: walkFields(rootFields, wrapOptions) } : {}),
-        ...(rootRender
-          ? {
-              render: wrapComponent(
-                rootRender,
-                { slotPropNames: rootSlotPropNames, isRoot: true },
-                wrapOptions
-              ),
-            }
-          : {}),
-      } as Config["root"];
+    const config: Config = { ...rest, components };
+
+    if (rawRoot) {
+      config.root = transformComponent(
+        rawRoot,
+        wrapOptions,
+        true
+      ) as Config["root"];
     }
 
     return config;
@@ -148,7 +149,9 @@ export const createTransformConfig = <WrapOptions>(
   ): Record<string, any> => {
     const out: Record<string, any> = {};
     for (const type in fieldTypes) {
-      out[type] = wrapField(fieldTypes[type], wrapOptions);
+      out[type] = isBridged(fieldTypes[type])
+        ? fieldTypes[type]
+        : markBridged(wrapField(fieldTypes[type], wrapOptions));
     }
     return out;
   };

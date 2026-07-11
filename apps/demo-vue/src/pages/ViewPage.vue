@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { createApp } from "vue";
 import { Render } from "@puckeditor/vue";
 import "@puckeditor/vue/puck.css";
 import { config } from "../puck/config";
 import { loadData } from "../puck/data";
-import { pinia } from "../store";
 
-const bridgeApp = createApp({});
-bridgeApp.use(pinia);
-
+// No `app` prop needed: bridged components inherit this app's context (Pinia,
+// router, …) by default.
 const data = loadData();
 </script>
 
@@ -18,7 +15,7 @@ const data = loadData();
       <strong>Published page</strong>
       <router-link to="/edit">Open editor →</router-link>
     </nav>
-    <Render :config="config" :data="data" :app="bridgeApp" />
+    <Render :config="config" :data="data" />
   </div>
 </template>
 

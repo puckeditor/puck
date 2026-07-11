@@ -18,3 +18,10 @@
  * imported by package name from another workspace package.
  */
 export * from "../../core/bundle/core";
+
+// Same-repo deep imports into core source (NOT via core's published bundles —
+// `bundle/internal` is reserved for internal releases). Named, so a future
+// collision with the public surface is a build error rather than a
+// silently-dropped ambiguous re-export.
+export { fieldLabelClasses } from "../../core/components/AutoField/FieldLabel";
+export { UsePuckStoreContext } from "../../core/lib/use-puck";

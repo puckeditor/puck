@@ -1,4 +1,5 @@
-import { inject, toRefs, reactive, type Ref, type InjectionKey } from "vue";
+import { inject, reactive, type InjectionKey } from "vue";
+import { DEFAULT_PUCK_CONTEXT } from "../shim";
 
 /**
  * The per-component Puck context, made available to bridged Vue components via
@@ -17,41 +18,40 @@ export type VuePuckContext = {
   renderDropZone?: unknown;
 };
 
-/** The reactive shape returned by `usePuck()` — a ref per context field. */
-export type UsePuckReturn = {
-  isEditing: Ref<boolean>;
-  metadata: Ref<Record<string, any>>;
-  id: Ref<string | undefined>;
-  renderDropZone: Ref<unknown>;
-};
-
 export const PUCK_INJECTION_KEY: InjectionKey<VuePuckContext> =
   Symbol("puck-vue-context");
 
-const defaultContext = (): VuePuckContext => ({
-  isEditing: false,
-  metadata: {},
-});
-
 /**
  * Access the current component's Puck context from within a bridged Vue
- * component. Returns reactive refs (Vue composable convention), so you can
- * destructure and keep reactivity:
+ * component. Returns the reactive context object itself, so property reads are
+ * reactive both in templates and via `toRefs` destructuring:
  *
  * ```vue
  * <script setup>
  * import { usePuck } from "@puckeditor/vue";
- * const { isEditing, metadata } = usePuck();
+ * const puck = usePuck();                       // puck.isEditing in template
+ * const { isEditing } = toRefs(usePuck());      // or destructure with toRefs
  * </script>
  * <template>
- *   <span v-if="isEditing">Editing…</span>
+ *   <span v-if="puck.isEditing">Editing…</span>
  * </template>
  * ```
  *
  * To drive the editor imperatively, use the `getPuck` accessor exposed by
- * `<Puck>` (via a template ref or its `@ready` event) instead.
+ * `<Puck>` (via its `@ready` event) instead.
  */
-export const usePuck = (): UsePuckReturn => {
+export const usePuck = (): VuePuckContext => {
   const ctx = inject(PUCK_INJECTION_KEY, null);
-  return toRefs(ctx ?? reactive(defaultContext())) as UsePuckReturn;
+
+  if (!ctx) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "[@puckeditor/vue] usePuck() was called outside a component rendered " +
+          "by Puck; returning a default context (isEditing: false)."
+      );
+    }
+    return reactive({ ...DEFAULT_PUCK_CONTEXT }) as VuePuckContext;
+  }
+
+  return ctx;
 };

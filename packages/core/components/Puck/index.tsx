@@ -44,6 +44,7 @@ import { useRegisterPermissionsSlice } from "../../store/slices/permissions";
 import {
   UsePuckStoreContext,
   useRegisterUsePuckStore,
+  type PuckApi,
 } from "../../lib/use-puck";
 import { walkAppState } from "../../lib/data/walk-app-state";
 import { PrivateAppState } from "../../types/Internal";
@@ -55,7 +56,7 @@ import { Layout } from "./components/Layout";
 import { useSafeId } from "../../lib/use-safe-id";
 import { normalizeIframeConfig } from "../../lib/style-config";
 
-type PuckProps<
+export type PuckProps<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 > = {
@@ -89,6 +90,11 @@ type PuckProps<
   initialHistory?: InitialHistory;
   metadata?: Metadata;
   height?: CSSProperties["height"];
+  /**
+   * Fired once when the editor is ready, with the imperative API accessor
+   * (the same accessor `useGetPuck` returns).
+   */
+  onReady?: (getPuck: () => PuckApi<UserConfig>) => void;
   _experimentalFullScreenCanvas?: boolean;
   _experimentalVirtualization?: boolean;
 };
@@ -126,6 +132,7 @@ function PuckProvider<
     metadata,
     onAction,
     fieldTransforms,
+    onReady,
     _experimentalFullScreenCanvas,
     _experimentalVirtualization,
   } = usePropsContext();
@@ -329,6 +336,17 @@ function PuckProvider<
   useRegisterPermissionsSlice(appStore, permissions);
 
   const uPuckStore = useRegisterUsePuckStore(appStore);
+
+  const onReadyRef = useRef(onReady);
+
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+
+  // Fire the one-shot ready callback with the imperative API accessor.
+  useEffect(() => {
+    onReadyRef.current?.(uPuckStore.getState);
+  }, []);
 
   useEffect(() => {
     const { resolveAndCommitData } = appStore.getState();

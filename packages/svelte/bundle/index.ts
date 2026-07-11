@@ -28,8 +28,15 @@ export {
 // Cross-layer internals: consumed by the source layer (svelte/*.svelte), which
 // can't reach into the shim directly. Exposed here because the single-entry
 // bundle can't have a second JS entry without duplicating Preact.
-export { createEditorHost, createRenderHost } from "@puckeditor/framework-shim";
-export { fieldLabelClasses } from "../src/field-label-classes";
+export {
+  createEditorHost,
+  createRenderHost,
+  mapDropZoneProps,
+  DEFAULT_PUCK_CONTEXT,
+  fieldLabelClasses,
+  fieldLabelLockIconSvg,
+} from "../src/shim";
+export { registerBridge } from "../src/adapter";
 
 export type {
   SvelteConfig,

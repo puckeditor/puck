@@ -1,4 +1,5 @@
 import { getContext } from "svelte";
+import { mapDropZoneProps, DEFAULT_PUCK_CONTEXT } from "../dist/index.js";
 
 /**
  * Svelte context keys shared between `Bridge.svelte` and the components/outlets
@@ -24,17 +25,7 @@ export const OUTLET_CONTEXT = Symbol("puck:outlet");
  * `onready` callback instead.
  */
 export function getPuck() {
-  return getContext(PUCK_CONTEXT) ?? { isEditing: false, metadata: {} };
+  return getContext(PUCK_CONTEXT) ?? DEFAULT_PUCK_CONTEXT;
 }
 
-/**
- * Map an outlet's props to core `DropZoneProps`: Svelte's `class` → React's
- * `className`; everything else (allow, disallow, zone, minEmptyHeight,
- * collisionAxis, style, …) passes through.
- */
-export function mapDropZoneProps(props) {
-  const { class: className, ...rest } = props;
-  const dzProps = { ...rest };
-  if (className != null) dzProps.className = className;
-  return dzProps;
-}
+export { mapDropZoneProps };

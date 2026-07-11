@@ -1,19 +1,14 @@
 <script setup lang="ts">
-import { createApp } from "vue";
 import { useRouter } from "vue-router";
-import { Puck } from "@puckeditor/vue";
+import { Puck, type PuckApi } from "@puckeditor/vue";
 import "@puckeditor/vue/puck.css";
 import { config } from "../puck/config";
 import { loadData, saveData } from "../puck/data";
-import { pinia } from "../store";
 
 const router = useRouter();
 
-// An unmounted app instance carrying shared plugins (Pinia). Its context is
-// threaded into every bridged Vue component so CounterBadge can read the store.
-const bridgeApp = createApp({});
-bridgeApp.use(pinia);
-
+// No `app` prop needed: bridged components inherit this app's context (Pinia,
+// router, …) by default, so CounterBadge can read the store directly.
 const initialData = loadData();
 
 function onChange(data: unknown) {
@@ -25,7 +20,7 @@ function onPublish(data: unknown) {
   router.push("/");
 }
 
-function onReady(getPuck: () => unknown) {
+function onReady(getPuck: () => PuckApi) {
   // The imperative PuckApi accessor.
   (window as any).__getPuck = getPuck;
 }
@@ -36,7 +31,6 @@ function onReady(getPuck: () => unknown) {
     <Puck
       :config="config"
       :data="initialData"
-      :app="bridgeApp"
       header-title="Puck + Vue demo"
       @change="onChange"
       @publish="onPublish"

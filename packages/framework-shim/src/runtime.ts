@@ -18,10 +18,11 @@ import {
   useRef,
   useMemo,
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
 } from "preact/hooks";
-import { createPortal, forwardRef, memo } from "preact/compat";
+import { createPortal, forwardRef, memo, Suspense } from "preact/compat";
 
 export {
   h,
@@ -30,10 +31,12 @@ export {
   createPortal,
   forwardRef,
   memo,
+  Suspense,
   useState,
   useRef,
   useMemo,
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
 };

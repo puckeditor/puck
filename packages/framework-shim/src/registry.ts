@@ -55,6 +55,20 @@ export const createSlotRegistry = (
   unregister: (uid) => setMounts((prev) => prev.filter((m) => m.uid !== uid)),
 });
 
+/**
+ * Map a framework outlet's attrs/props to core `DropZoneProps`: the
+ * framework's `class` → React's `className`; everything else (allow,
+ * disallow, zone, minEmptyHeight, collisionAxis, style, …) passes through.
+ */
+export const mapDropZoneProps = (
+  attrs: Record<string, any>
+): Record<string, any> => {
+  const { class: className, ...rest } = attrs;
+  const dzProps: Record<string, any> = { ...rest };
+  if (className != null) dzProps.className = className;
+  return dzProps;
+};
+
 /** Reserved thunk keys for non-field slots. */
 export const RENDER_DROPZONE_KEY = "__puck_render_dropzone";
 export const CHILDREN_KEY = "__puck_children";

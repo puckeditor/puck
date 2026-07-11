@@ -12,7 +12,8 @@
    * A thin shell over the shared `createEditorHost`: it renders one host `<div>`,
    * translates Svelte props/callbacks into host calls, and lets the shared host
    * own the Preact render into that div. `data` is initial-only (matches React
-   * `<Puck>`); a `config` identity change is a documented full remount.
+   * `<Puck>`); a `config` identity change is a documented full remount;
+   * `context` is read once at setup.
    */
   let {
     config,
@@ -21,6 +22,7 @@
     permissions,
     viewports,
     iframe,
+    dnd,
     initialHistory,
     metadata,
     headerTitle,
@@ -28,12 +30,15 @@
     height,
     overrides,
     plugins,
+    fieldTransforms,
     fieldTypes,
     context = null,
     onchange,
     onpublish,
     onaction,
     onready,
+    _experimentalFullScreenCanvas,
+    _experimentalVirtualization,
   } = $props();
 
   let hostEl;
@@ -48,6 +53,16 @@
     transformFieldTypes: (ft) => transformFieldTypes(ft, { context }),
   });
 
+  // Stable wrappers reading the live prop bindings at call time, so a swapped
+  // callback prop (e.g. a new `onchange`) is picked up without any host
+  // update — the host holds these identities forever.
+  const callbacks = {
+    onChange: (d) => onchange?.(d),
+    onPublish: (d) => onpublish?.(d),
+    onAction: (a, s, p) => onaction?.(a, s, p),
+    onReady: (g) => onready?.(g),
+  };
+
   const collect = () => ({
     config,
     data,
@@ -55,6 +70,7 @@
     permissions,
     viewports,
     iframe,
+    dnd,
     initialHistory,
     metadata,
     headerTitle,
@@ -62,11 +78,11 @@
     height,
     overrides,
     plugins,
+    fieldTransforms,
     fieldTypes,
-    onChange: onchange,
-    onPublish: onpublish,
-    onAction: onaction,
-    onReady: onready,
+    _experimentalFullScreenCanvas,
+    _experimentalVirtualization,
+    ...callbacks,
   });
 
   onMount(() => {
@@ -74,21 +90,24 @@
     mounted = true;
   });
 
-  // Passthrough props: reconcile in place (editor state survives). `data` is
-  // initial-only and `config` identity is handled separately, so collect() is
-  // untracked to avoid re-firing on those.
+  // Passthrough props: reconcile in place (editor state survives). `data`/`ui`
+  // are initial-only and `config` identity is handled separately, so collect()
+  // is untracked to avoid re-firing on those.
   $effect(() => {
-    ui;
     permissions;
     viewports;
     iframe;
+    dnd;
     metadata;
     headerTitle;
     headerPath;
     height;
     plugins;
     overrides;
+    fieldTransforms;
     fieldTypes;
+    _experimentalFullScreenCanvas;
+    _experimentalVirtualization;
     if (mounted) untrack(() => host.update(collect()));
   });
 

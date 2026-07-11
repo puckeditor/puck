@@ -66,18 +66,21 @@ import { config } from "./puck.config";
 
 ## Exports
 
-- `Puck`, `Render` — Vue host components.
-- `usePuck()` — per-component Puck context composable.
+- `Puck`, `Render` — Vue host components. `<Puck>` also emits `update:data`, so `v-model:data` works for persistence.
+- `usePuck()` — per-component Puck context composable (reactive `{ isEditing, metadata, id, renderDropZone }`).
+- `usePuckApi(selector?)` — reactive editor-state subscription (the Vue equivalent of React's selector-based `usePuck`), e.g. `usePuckApi((api) => api.selectedItem)`.
 - `FieldLabel` — Vue field label with native styling.
 - `transformConfig`, `transformFieldTypes` — lower-level config transforms.
 - `defineVueComponent`, `defineVueField` — escape hatches for mixed React/Vue configs.
+- `VueSlot` — the prop type of node-valued fields (slots, richtext, contentEditable text), rendered with `<component :is>`.
 - All framework-agnostic `@puckeditor/core` types and utilities (`Config`, `Field`, `Data`, `walkTree`, `migrate`, `resolveAllData`, …).
 
 ## Features
 
-- Vue components for components, slots (`<component :is>`), and custom fields.
+- Vue components for components, slots (`<component :is>`), rich text and inline-editable text fields, and custom fields.
+- Custom fields support `v-model` (`defineModel()`) as well as the `onChange` prop.
 - Vue-local state survives field edits (components patch in place, never remount).
-- Share Pinia / plugins / global components via the `app` prop.
+- Pinia / plugins / app-level provides reach bridged components automatically (the hosting app's context is inherited; pass the `app` prop to substitute a different one).
 - `<style scoped>` styles work in the editor iframe automatically.
 
 See the [Using with Vue guide](https://puckeditor.com/docs/integrating-puck/using-with-vue)
@@ -85,8 +88,9 @@ for full documentation.
 
 ## Not yet supported
 
-- Rich text fields (`type: "richtext"`) from Vue.
 - Vue versions of advanced `overrides` / `plugins` (passed through as Preact components).
+- Server-side rendering of `<Render>` (mounts client-side; the server emits an empty div).
+- Rich text / inline-editable fields nested inside `object`/`array` fields (top-level fields only).
 
 ## License
 

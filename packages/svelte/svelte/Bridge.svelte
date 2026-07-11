@@ -39,15 +39,16 @@
     for (const [key, value] of userContext) setContext(key, value);
   }
 
-  // Hand the adapter in-place patchers over our reactive state. Runs once (in an
-  // effect so Svelte doesn't warn about reading the `connect` prop at init); the
-  // adapter's `flushSync()` after mount forces this to run before it returns, so
-  // the patchers are ready in time.
-  $effect.pre(() => {
-    connect({
-      patchProps: (next) => patch(props, next),
-      patchPuck: (next) => patch(puck, next),
-    });
+  // Hand the adapter in-place patchers over our reactive state, synchronously
+  // during init: `mount()` runs the component body before returning, so the
+  // patchers are connected by the time the adapter's mount call returns — no
+  // flush needed, and no reliance on effect timing (`flushSync` is forbidden
+  // inside effects on some Svelte 5.x versions, which would silently drop
+  // every patch and freeze the component on its initial props).
+  // svelte-ignore state_referenced_locally
+  connect({
+    patchProps: (next) => patch(props, next),
+    patchPuck: (next) => patch(puck, next),
   });
 </script>
 

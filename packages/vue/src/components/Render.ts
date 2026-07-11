@@ -1,5 +1,6 @@
 import {
   defineComponent,
+  getCurrentInstance,
   h as vueH,
   onMounted,
   onBeforeUnmount,
@@ -7,8 +8,9 @@ import {
   type PropType,
   type App,
 } from "vue";
-import { createRenderHost, type RenderProps } from "@puckeditor/framework-shim";
+import { createRenderHost, type RenderProps } from "../shim";
 import { transformConfig } from "../transform-config";
+import type { Data, Metadata } from "../core";
 import type { VueConfig } from "../types";
 
 /**
@@ -22,14 +24,16 @@ export const Render = defineComponent({
   name: "PuckRender",
   props: {
     config: { type: Object as PropType<VueConfig>, required: true },
-    data: { type: Object as PropType<Record<string, any>>, required: true },
+    data: { type: Object as PropType<Partial<Data>>, required: true },
     metadata: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<Metadata>,
       default: undefined,
     },
     /**
-     * An (unmounted) Vue app instance whose context (plugins / provides) is
-     * threaded into every bridged Vue component mount.
+     * Override the Vue app context threaded into every bridged Vue component
+     * mount. Defaults to the context of the app rendering `<Render>`; pass an
+     * (unmounted) `createApp(...)` instance to substitute a different one.
+     * Read once at setup.
      */
     app: { type: Object as PropType<App>, default: undefined },
   },
@@ -39,7 +43,9 @@ export const Render = defineComponent({
       hostEl = (el as HTMLElement) ?? null;
     };
 
-    const appContext = (props.app as any)?._context ?? null;
+    const instance = getCurrentInstance();
+    const appContext =
+      (props.app as any)?._context ?? instance?.appContext ?? null;
 
     const host = createRenderHost({
       transformConfig: (config) => transformConfig(config, { appContext }),
@@ -55,12 +61,12 @@ export const Render = defineComponent({
       if (hostEl) host.mount(hostEl, collectProps());
     });
 
-    // config / metadata by identity; data deeply (published data usually swaps
-    // by reference, but deep-watch keeps in-place edits correct too).
-    watch(() => props.config, () => host.update(collectProps()));
-    watch(() => props.metadata, () => host.update(collectProps()), {
-      deep: true,
-    });
+    // config / metadata by identity; data deeply — Vue users commonly hold
+    // published data in a reactive() and edit it in place, so identity alone
+    // would miss updates. (Deep-watching a large published document is
+    // O(tree) per flush; pass a plain swapped-by-reference object if that
+    // ever matters.)
+    watch(() => [props.config, props.metadata], () => host.update(collectProps()));
     watch(() => props.data, () => host.update(collectProps()), { deep: true });
 
     onBeforeUnmount(() => host.unmount());

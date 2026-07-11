@@ -8,6 +8,18 @@ import { useAppStore } from "../../store";
 
 const getClassName = getClassNameFactory("Input", styles);
 
+/**
+ * The class-name contract of `<FieldLabel>`, used by the component below and
+ * by framework interop layers (e.g. @puckeditor/vue, @puckeditor/svelte) that
+ * re-implement the markup natively.
+ */
+export const fieldLabelClasses = {
+  root: (readOnly?: boolean) => getClassName({ readOnly }),
+  label: getClassName("label"),
+  labelIcon: getClassName("labelIcon"),
+  disabledIcon: getClassName("disabledIcon"),
+};
+
 export const FieldLabel = ({
   children,
   icon,
@@ -26,12 +38,16 @@ export const FieldLabel = ({
   const El = el;
   return (
     <El className={className}>
-      <div className={getClassName("label")}>
-        {icon ? <div className={getClassName("labelIcon")}>{icon}</div> : <></>}
+      <div className={fieldLabelClasses.label}>
+        {icon ? (
+          <div className={fieldLabelClasses.labelIcon}>{icon}</div>
+        ) : (
+          <></>
+        )}
         {label}
 
         {readOnly && (
-          <div className={getClassName("disabledIcon")} title="Read-only">
+          <div className={fieldLabelClasses.disabledIcon} title="Read-only">
             <Lock size="12" />
           </div>
         )}
@@ -71,7 +87,7 @@ export const FieldLabelInternal = ({
     <Wrapper
       label={label}
       icon={icon}
-      className={getClassName({ readOnly })}
+      className={fieldLabelClasses.root(readOnly)}
       readOnly={readOnly}
       el={el}
     >

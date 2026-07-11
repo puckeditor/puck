@@ -27,11 +27,14 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "svelte": "./svelte/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./svelte/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "svelte": "./svelte/index.js",
+      "svelte": {
+        "types": "./svelte/index.d.ts",
+        "default": "./svelte/index.js"
+      },
+      "types": "./svelte/index.d.ts",
       "import": "./dist/index.js"
     },
     "./puck.css": "./dist/index.css",
@@ -40,13 +43,18 @@
     "./package.json": "./package.json"
   },
   "license": "MIT",
+  "sideEffects": [
+    "**/*.css",
+    "./svelte/index.js"
+  ],
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup && node ../tsup-config/make-no-external-css.mjs",
-    "smoke": "node scripts/smoke/index.mjs",
+    "check-types": "tsc -p scripts/type-test/tsconfig.json",
+    "smoke": "node scripts/smoke/index.mjs && node scripts/smoke/ssr-import.mjs && yarn check-types",
     "prepare": "yarn build"
   },
   "files": [

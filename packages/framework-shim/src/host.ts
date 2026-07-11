@@ -1,38 +1,30 @@
-import { h, render as preactRender, Fragment } from "./runtime";
+import { h, render as preactRender } from "./runtime";
 import { Puck as CorePuck, Render as CoreRender } from "./core";
-import { ReadyBridge } from "./ready-bridge";
+import type { PuckProps, PuckApi } from "./core";
 
 /**
  * The framework-agnostic controllers behind each framework's `<Puck>` /
  * `<Render>` shells. They own the imperative Preact render calls into a host
- * `<div>`: vnode building, `overrides.puck` + `fieldTypes` composition, the
- * ready bridge, and config-identity remount. The framework shell owns only its
+ * `<div>`: vnode building, `fieldTypes` composition into overrides, and
+ * config-identity remount. The framework shell owns only its
  * reactivity/lifecycle (Vue `watch`/`onMounted`, Svelte `$effect`/`onMount`)
  * and translating its props/events into these calls.
  */
 
-export type EditorProps = {
+/**
+ * Everything core's `<Puck>` accepts (typed via core's `PuckProps`, so a new
+ * core prop is available here without touching the shim), except:
+ *  - `config` is the *framework* config (transformed by the host);
+ *  - `children` (Preact composition) is not part of the framework surface;
+ *  - `fieldTypes` maps framework components onto `overrides.fieldTypes`.
+ *
+ * `overrides`/`plugins` remain the advanced Preact-based passthroughs.
+ */
+export type EditorProps = Omit<PuckProps, "config" | "children"> & {
+  /** The framework config ({ components, root, ... } with framework renders). */
   config: any;
-  data: any;
-  ui?: any;
-  permissions?: any;
-  viewports?: any;
-  iframe?: any;
-  initialHistory?: any;
-  metadata?: any;
-  headerTitle?: any;
-  headerPath?: any;
-  height?: any;
-  /** Advanced: Preact-based overrides, passed through to core. */
-  overrides?: any;
-  /** Advanced: Preact-based plugins, passed through to core. */
-  plugins?: any;
   /** Framework components that replace built-in field UIs, keyed by field type. */
-  fieldTypes?: any;
-  onChange?: (data: any) => void;
-  onPublish?: (data: any) => void;
-  onAction?: (action: any, appState: any, prevAppState: any) => void;
-  onReady?: (getPuck: any) => void;
+  fieldTypes?: Record<string, any>;
 };
 
 export type EditorHostDeps = {
@@ -60,32 +52,19 @@ export const createEditorHost = (deps: EditorHostDeps) => {
   let props: EditorProps | null = null;
   let transformed: any = null;
 
-  const latest: Pick<
-    EditorProps,
-    "onChange" | "onPublish" | "onAction" | "onReady"
-  > = {};
-  const onChange = (data: any) => latest.onChange?.(data);
-  const onPublish = (data: any) => latest.onPublish?.(data);
+  const onChange = (data: any) => props?.onChange?.(data);
+  const onPublish = (data: any) => props?.onPublish?.(data);
   const onAction = (action: any, appState: any, prev: any) =>
-    latest.onAction?.(action, appState, prev);
-  const onReady = (getPuck: any) => latest.onReady?.(getPuck);
+    props?.onAction?.(action, appState, prev);
+  const onReady = (getPuck: () => PuckApi) => props?.onReady?.(getPuck);
 
-  const syncCallbacks = () => {
-    latest.onChange = props?.onChange;
-    latest.onPublish = props?.onPublish;
-    latest.onAction = props?.onAction;
-    latest.onReady = props?.onReady;
-  };
-
-  // Inject the ready bridge via `overrides.puck`, which receives the default
-  // editor layout as `children` — so we augment (not replace) the editor and
-  // stay inside the Puck store context. Composes with a user override.
+  // Compose framework `fieldTypes` into `overrides.fieldTypes` (user-supplied
+  // Preact overrides win on conflict).
   const buildOverrides = () => {
     const userOverrides = { ...(props?.overrides ?? {}) } as Record<
       string,
       any
     >;
-    const userPuck = userOverrides.puck;
 
     if (props?.fieldTypes) {
       userOverrides.fieldTypes = {
@@ -94,37 +73,36 @@ export const createEditorHost = (deps: EditorHostDeps) => {
       };
     }
 
-    return {
-      ...userOverrides,
-      puck: ({ children }: { children: any }) =>
-        h(
-          Fragment,
-          null,
-          userPuck ? userPuck({ children }) : children,
-          h(ReadyBridge as any, { onReady })
-        ),
-    };
+    return userOverrides;
   };
 
-  const buildVnode = () =>
-    h(CorePuck as any, {
+  const buildVnode = () => {
+    const {
+      config: _config,
+      data,
+      overrides: _overrides,
+      fieldTypes: _fieldTypes,
+      onChange: _onChange,
+      onPublish: _onPublish,
+      onAction: _onAction,
+      onReady: _onReady,
+      ...passthrough
+    } = props!;
+
+    return h(CorePuck as any, {
+      // ui, permissions, viewports, iframe, dnd, fieldTransforms,
+      // initialHistory, metadata, headerTitle, headerPath, height, plugins,
+      // experimental flags, and any future core prop.
+      ...passthrough,
       config: transformed,
-      data: props!.data, // initial-only; core ignores later values
-      ui: props!.ui,
-      permissions: props!.permissions,
-      viewports: props!.viewports,
-      iframe: props!.iframe,
-      initialHistory: props!.initialHistory,
-      metadata: props!.metadata,
-      headerTitle: props!.headerTitle,
-      headerPath: props!.headerPath,
-      height: props!.height,
-      plugins: props!.plugins,
+      data, // initial-only; core ignores later values
       overrides: buildOverrides(),
       onChange,
       onPublish,
       onAction,
+      onReady,
     });
+  };
 
   const render = () => {
     if (hostEl) preactRender(buildVnode(), hostEl);
@@ -134,20 +112,17 @@ export const createEditorHost = (deps: EditorHostDeps) => {
     mount(el: HTMLElement, initialProps: EditorProps) {
       hostEl = el;
       props = initialProps;
-      syncCallbacks();
       transformed = deps.transformConfig(props.config);
       render();
     },
     /** Passthrough prop change: reconcile in place, editor state survives. */
     update(nextProps: EditorProps) {
       props = nextProps;
-      syncCallbacks();
       render();
     },
     /** `config` identity change ⇒ documented full remount. */
     updateConfig(nextProps: EditorProps) {
       props = nextProps;
-      syncCallbacks();
       if (hostEl) preactRender(null, hostEl);
       transformed = deps.transformConfig(props.config);
       render();

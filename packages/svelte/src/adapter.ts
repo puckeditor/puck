@@ -1,7 +1,4 @@
 import { mount, unmount, flushSync } from "svelte";
-// The ONE `.svelte` import in the compiled layer, kept external (see
-// tsup config): the host app's vite-plugin-svelte compiles it.
-import Bridge from "../svelte/Bridge.svelte";
 import {
   patchProps,
   nextUid,
@@ -11,12 +8,27 @@ import {
   type Split,
   type SlotRegistry,
   type MountedInstance,
-} from "@puckeditor/framework-shim";
+} from "./shim";
 
 /** Patch callbacks Bridge.svelte hands back through its `connect` prop. */
 type Patchers = {
   patchProps: (next: Record<string, any>) => void;
   patchPuck: (next: Record<string, any>) => void;
+};
+
+/**
+ * `Bridge.svelte`, registered by the source layer (`svelte/index.js`) at
+ * import time. The compiled layer must never import `.svelte` files itself:
+ * its module graph is evaluated in plain node by server-side consumers of the
+ * framework-agnostic utilities (migrate, resolveAllData, …), where a `.svelte`
+ * import throws `ERR_UNKNOWN_FILE_EXTENSION`. Anything that can mount
+ * components (`<Puck>`/`<Render>`) lives in the source layer, so the bridge is
+ * always registered before it's needed.
+ */
+let Bridge: any = null;
+
+export const registerBridge = (component: unknown) => {
+  Bridge = component;
 };
 
 /**
@@ -50,12 +62,29 @@ const makeOutletApi = (registry: SlotRegistry) => {
 };
 
 /**
+ * A live connection to a mounted Bridge. `Bridge.svelte` connects its patchers
+ * synchronously during `mount()`; if a patch ever arrives before then (it
+ * shouldn't), it's queued and applied on connect rather than silently dropped —
+ * a dropped patch freezes the component on its initial props.
+ */
+type Connection = {
+  patchers: Patchers | null;
+  pendingProps: Record<string, any> | null;
+  pendingPuck: Record<string, any> | null;
+};
+
+/**
  * The Svelte `FrameworkAdapter`: the only Svelte-bound bridging the shared shim
  * needs. It mounts `Bridge.svelte` (which owns all runes reactivity) with static
- * props; `Bridge` hands back in-place patchers via `connect`, so `patch()` is
- * just a call. `flushSync()` after `mount` forces Svelte's effects (incl. outlet
- * `onMount` registration) to run synchronously inside the shim's Preact
- * layout-effect, so slot outlets land pre-paint — matching Vue's timing.
+ * props; `Bridge` hands back in-place patchers via `connect` synchronously
+ * during `mount()`, so `patch()` is just a call.
+ *
+ * After mount, `flushSync()` runs Svelte's effects (incl. `<PuckSlot>`'s
+ * registration) synchronously inside the shim's Preact layout-effect, so slot
+ * outlets land pre-paint — matching Vue's timing. Some Svelte 5.x versions
+ * forbid `flushSync` inside an outer effect (`flush_sync_in_effect`); in that
+ * case effects flush on the following microtask instead, which is still
+ * pre-paint — so the call is best-effort.
  *
  * `userContext` (a Map, the analogue of Vue's `app` prop) is threaded into every
  * bridged component via `setContext`.
@@ -66,8 +95,19 @@ export const makeSvelteAdapter = (
   const mountBridge = (
     el: HTMLElement,
     props: Record<string, any>
-  ): { instance: any; patchers: Patchers | null } => {
-    let patchers: Patchers | null = null;
+  ): { instance: any; conn: Connection } => {
+    if (!Bridge) {
+      throw new Error(
+        "@puckeditor/svelte: Bridge.svelte is not registered. Import the " +
+          "package via its Svelte entry (the `svelte` export condition) — " +
+          "e.g. `import { Puck } from \"@puckeditor/svelte\"` in a Svelte app."
+      );
+    }
+    const conn: Connection = {
+      patchers: null,
+      pendingProps: null,
+      pendingPuck: null,
+    };
     const instance = mount(Bridge, {
       target: el,
       props: {
@@ -75,13 +115,35 @@ export const makeSvelteAdapter = (
         userContext,
         patch: patchProps,
         connect: (p: Patchers) => {
-          patchers = p;
+          conn.patchers = p;
+          if (conn.pendingProps) p.patchProps(conn.pendingProps);
+          if (conn.pendingPuck) p.patchPuck(conn.pendingPuck);
+          conn.pendingProps = null;
+          conn.pendingPuck = null;
         },
       },
     });
-    // Force onMount/effects (outlet registration) to run now, pre-paint.
-    flushSync();
-    return { instance, patchers };
+    // Best-effort pre-paint effect flush (see docblock).
+    try {
+      flushSync();
+    } catch {
+      /* flush_sync_in_effect: effects run on the next microtask instead */
+    }
+    return { instance, conn };
+  };
+
+  const patchThrough = (
+    conn: Connection,
+    props: Record<string, any>,
+    puck: Record<string, any> | null
+  ) => {
+    if (conn.patchers) {
+      conn.patchers.patchProps(props);
+      if (puck) conn.patchers.patchPuck(puck);
+    } else {
+      conn.pendingProps = props;
+      if (puck) conn.pendingPuck = puck;
+    }
   };
 
   return {
@@ -89,7 +151,7 @@ export const makeSvelteAdapter = (
     // (<PuckSlot>), so nothing is injected into props.
 
     mountComponent: ({ el, comp, split, registry }): MountedInstance => {
-      const { instance, patchers } = mountBridge(el, {
+      const { instance, conn } = mountBridge(el, {
         comp,
         initialProps: split.props,
         initialPuck: split.puck,
@@ -97,24 +159,28 @@ export const makeSvelteAdapter = (
         provideContext: true,
       });
       return {
-        patch: (next: Split) => {
-          patchers?.patchProps(next.props);
-          patchers?.patchPuck(next.puck as Record<string, any>);
-        },
+        patch: (next: Split) =>
+          patchThrough(conn, next.props, next.puck as Record<string, any>),
         unmount: () => unmount(instance),
       };
     },
 
-    mountField: ({ el, comp, props, registry }): MountedInstance => {
-      const { instance, patchers } = mountBridge(el, {
+    mountField: ({ el, comp, props, registry, storeApi }): MountedInstance => {
+      const { instance, conn } = mountBridge(el, {
         comp,
         initialProps: props,
-        initialPuck: undefined,
+        // Minimal puck context for field UIs: fields only render inside
+        // <Puck>, and `storeApi` powers `puckApi()` from custom fields.
+        initialPuck: {
+          isEditing: true,
+          metadata: {},
+          ...(storeApi ? { storeApi } : {}),
+        },
         outlet: makeOutletApi(registry),
-        provideContext: false,
+        provideContext: true,
       });
       return {
-        patch: (next: Record<string, any>) => patchers?.patchProps(next),
+        patch: (next: Record<string, any>) => patchThrough(conn, next, null),
         unmount: () => unmount(instance),
       };
     },

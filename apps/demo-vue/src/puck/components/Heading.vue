@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { Component } from "vue";
+import type { VueSlot } from "@puckeditor/vue";
 
-// `title` is a contentEditable text field. Core swaps its value for an inline
-// editor element in the editor (a plain string in <Render>), so the bridge
-// passes it as an outlet — render it with `<component :is>`, like a slot.
-defineProps<{ title?: string | Component }>();
+// `title` is a contentEditable text field — node-valued, so the bridge passes
+// it as an outlet component. Render it with `<component :is>`, like a slot.
+defineProps<{ title?: VueSlot }>();
 </script>
 
 <template>

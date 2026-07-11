@@ -43,7 +43,8 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup && node ../tsup-config/make-no-external-css.mjs",
-    "smoke": "node scripts/smoke/index.cjs",
+    "check-types": "tsc -p scripts/type-test/tsconfig.json",
+    "smoke": "node scripts/smoke/index.cjs && yarn check-types",
     "prepare": "yarn build"
   },
   "files": [

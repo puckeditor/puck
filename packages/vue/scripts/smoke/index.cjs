@@ -11,7 +11,7 @@ const w = dom.window;
 const Vue = require("vue");
 const { defineComponent, h, reactive, createApp, nextTick } = Vue;
 const puck = require("../../dist/index.js");
-const { Render, Puck, usePuck, FieldLabel, transformConfig } = puck;
+const { Render, Puck, usePuck, usePuckApi, FieldLabel, transformConfig } = puck;
 
 let passed = 0;
 let failed = 0;
@@ -62,13 +62,13 @@ async function testPatchAndStatePersistence() {
     setup() {
       mountCount++;
       const localState = `local#${mountCount}`;
-      // usePuck() returns refs (Vue composable convention); destructure at the
-      // top of setup so `isEditing` auto-unwraps when read in the render.
-      const { isEditing } = usePuck();
-      return { localState, isEditing };
+      // usePuck() returns the reactive context object; property reads off it
+      // (in templates or render fns) stay reactive.
+      const puck = usePuck();
+      return { localState, puck };
     },
     render() {
-      return h("div", { class: "card" }, `label=${this.label} state=${this.localState} editing=${this.isEditing}`);
+      return h("div", { class: "card" }, `label=${this.label} state=${this.localState} editing=${this.puck.isEditing}`);
     },
   });
   const config = { components: { Card: { fields: { label: { type: "text" } }, render: Card } } };
@@ -264,6 +264,115 @@ async function testCustomVueField() {
   }
   const title = readyApi ? readyApi().appState.data.content[0].props.title : null;
   check("Custom field: onChange flows back to Puck data", title === "Changed via Vue field", `title=${title}`);
+
+  // The preview must keep rendering the (updated) prop — guards against
+  // transformed props being clobbered on selection-triggered re-renders.
+  check(
+    "Custom field: editor preview renders the updated prop",
+    (el.textContent || "").includes("Changed via Vue field"),
+    el.querySelector(".card")?.textContent
+  );
+}
+
+async function testFieldVModel() {
+  // The Vue adapter adds `modelValue` / `update:modelValue` to field props, so
+  // field components can use the idiomatic v-model contract instead of the
+  // React-style `onChange` prop.
+  const VModelField = defineComponent({
+    name: "VModelField",
+    props: ["modelValue", "field"],
+    emits: ["update:modelValue"],
+    setup(props, { emit }) {
+      return () =>
+        h("input", {
+          class: "vmodel-field-input",
+          value: props.modelValue,
+          onInput: (e) => emit("update:modelValue", e.target.value),
+        });
+    },
+  });
+  const Card = defineComponent({ name: "Card", props: { title: { type: String, default: "" } }, render() { return h("div", { class: "card" }, this.title); } });
+  const config = {
+    components: {
+      Card: {
+        fields: { title: { type: "custom", label: "Title", render: VModelField } },
+        render: Card,
+      },
+    },
+  };
+  const data = { root: {}, content: [{ type: "Card", props: { id: "c1", title: "Start" } }] };
+  let readyApi = null;
+  const { el } = mountApp(() => h(Puck, { config, data, iframe: { enabled: false }, onReady: (gp) => { readyApi = gp; } }));
+  await tick(300);
+  if (readyApi) readyApi().dispatch({ type: "setUi", ui: { itemSelector: { index: 0 } } });
+  await tick(300);
+  const input = el.querySelector(".vmodel-field-input");
+  check("v-model field: renders with modelValue", !!input && input.value === "Start", input && input.value);
+  if (input) {
+    input.value = "Via v-model";
+    input.dispatchEvent(new w.Event("input", { bubbles: true }));
+    await tick(200);
+  }
+  const title = readyApi ? readyApi().appState.data.content[0].props.title : null;
+  check("v-model field: update:modelValue flows back to Puck data", title === "Via v-model", `title=${title}`);
+}
+
+async function testUsePuckApi() {
+  const Status = defineComponent({
+    name: "Status",
+    setup() {
+      const selected = usePuckApi((api) => api.selectedItem);
+      return { selected };
+    },
+    render() {
+      return h("div", { class: "status" }, `selected=${this.selected ? this.selected.props.id : "none"}`);
+    },
+  });
+  const config = { components: { Status: { fields: {}, render: Status } } };
+  const data = { root: {}, content: [{ type: "Status", props: { id: "s1" } }] };
+  let readyApi = null;
+  const { el } = mountApp(() => h(Puck, { config, data, iframe: { enabled: false }, onReady: (gp) => { readyApi = gp; } }));
+  await tick(300);
+  check("usePuckApi: initial selection empty", el.textContent.includes("selected=none"), el.textContent);
+  if (readyApi) readyApi().dispatch({ type: "setUi", ui: { itemSelector: { index: 0 } } });
+  await tick(300);
+  check("usePuckApi: selector updates reactively on dispatch", el.textContent.includes("selected=s1"), el.textContent);
+}
+
+async function testRichText() {
+  // richtext fields are node-valued in BOTH editor and <Render> (core replaces
+  // the value with a rendered element), so they ride the outlet protocol like
+  // contentEditable text. The interactive tiptap editor is exercised in
+  // apps/demo-vue; jsdom covers <Render> + the readonly editor path.
+  const RichBody = defineComponent({
+    name: "RichBody",
+    props: { body: { type: [String, Object, Function], default: undefined } },
+    render() {
+      return h("article", { class: "rb" }, this.body ? [h(this.body)] : []);
+    },
+  });
+  const data = {
+    root: {},
+    content: [{ type: "RB", props: { id: "rb1", body: "<p>Rich hello</p>" } }],
+  };
+
+  const config = { components: { RB: { fields: { body: { type: "richtext" } }, render: RichBody } } };
+  const { el } = mountApp(() => h(Render, { config, data }));
+  await tick(400); // RichTextRender is lazy; give the import a beat
+  check("richtext: renders in <Render> via outlet", el.textContent.includes("Rich hello"), el.innerHTML.slice(0, 300));
+  check("richtext: no [object Object] leak in <Render>", !el.innerHTML.includes("[object Object]"));
+
+  const roConfig = { components: { RB: { fields: { body: { type: "richtext", contentEditable: false } }, render: RichBody } } };
+  let el2;
+  try {
+    ({ el: el2 } = mountApp(() => h(Puck, { config: roConfig, data, iframe: { enabled: false } })));
+  } catch (e) {
+    /* ignore */
+  }
+  await tick(400);
+  const html = el2 ? el2.innerHTML : "";
+  check("richtext: renders in editor via outlet (readonly)", el2 && el2.textContent.includes("Rich hello"), `len=${html.length}`);
+  check("richtext: no [object Object] leak in editor", !html.includes("[object Object]"));
 }
 
 async function testContentEditable() {
@@ -336,7 +445,10 @@ async function testContentEditable() {
   await testPuckEditorReady();
   await testPuckEditorSlot();
   await testCustomVueField();
+  await testFieldVModel();
+  await testUsePuckApi();
   await testContentEditable();
+  await testRichText();
 
   console.log("\n@puckeditor/vue bridge smoke tests\n");
   console.log(results.join("\n"));

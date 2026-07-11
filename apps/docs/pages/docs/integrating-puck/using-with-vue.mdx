@@ -91,28 +91,31 @@ framework-agnostic and works exactly as documented for
 
 ## `<Puck>` props and events
 
-`<Puck>` accepts `config`, `data`, and the passthrough props `ui`,
-`permissions`, `viewports`, `iframe`, `initialHistory`, `metadata`,
-`headerTitle`, `headerPath`, `height`, plus:
+`<Puck>` accepts `config`, `data`, and the passthrough props `permissions`,
+`viewports`, `iframe`, `dnd`, `metadata`, `headerTitle`, `headerPath`,
+`height`, `fieldTransforms`, plus the initial-only `ui` and `initialHistory`,
+and these events:
 
-| Event      | Payload                                                    |
-| ---------- | ---------------------------------------------------------- |
-| `@change`  | the current data (on every edit)                           |
-| `@publish` | the current data (on publish)                              |
-| `@ready`   | a `getPuck` accessor — call `getPuck()` for the `PuckApi`  |
+| Event          | Payload                                                        |
+| -------------- | -------------------------------------------------------------- |
+| `@change`      | the current data (on every edit)                               |
+| `@update:data` | the current data (alongside `@change`, for `v-model:data`)     |
+| `@publish`     | the current data (on publish)                                  |
+| `@action`      | `(action, appState, prevAppState)` on every dispatched action  |
+| `@ready`       | a `getPuck` accessor — call `getPuck()` for the `PuckApi`      |
 
 ```vue copy
 <Puck
   :config="config"
-  :data="data"
-  @change="onChange"
+  v-model:data="page"
   @publish="onPublish"
   @ready="(getPuck) => (myGetPuck = getPuck)"
 />
 ```
 
-As with React, `data` is **initial-only** — changing it after mount does not
-reset the editor. Changing `config` identity is a full remount.
+As with React, `data` is **initial-only** — inbound changes after mount do not
+reset the editor (`v-model:data` keeps your binding up to date outbound).
+Changing `config` identity is a full remount.
 
 ## Slots and DropZones
 
@@ -129,8 +132,8 @@ Columns: {
 
 ```vue copy filename="Columns.vue"
 <script setup lang="ts">
-import type { Component } from "vue";
-defineProps<{ items?: Component }>();
+import type { VueSlot } from "@puckeditor/vue";
+defineProps<{ items?: VueSlot }>();
 </script>
 
 <template>
@@ -143,11 +146,32 @@ defineProps<{ items?: Component }>();
 You can pass DropZone props as attributes, e.g.
 `<component :is="items" :allow="['Heading']" />`.
 
+The same pattern renders every *node-valued* field — `richtext` fields and
+`contentEditable` text fields also arrive as `VueSlot` outlet components
+(an inline editor in `<Puck>`, static content in `<Render>`):
+
+```vue copy
+<h1><component :is="title" /></h1>
+```
+
 ## Custom fields
 
 Set a field to `{ type: "custom", render: MyVueField }`. The field render props
-(`id`, `name`, `value`, `onChange`, `field`, `readOnly`) arrive as plain props;
-call `onChange` to update the value. Use the exported `FieldLabel` for a
+(`id`, `name`, `value`, `onChange`, `field`, `readOnly`) arrive as plain props,
+and the idiomatic `v-model` contract is also provided (`modelValue` +
+`update:modelValue`), so `defineModel()` just works:
+
+```vue copy filename="TextField.vue"
+<script setup lang="ts">
+const model = defineModel<string>();
+</script>
+
+<template>
+  <input v-model="model" />
+</template>
+```
+
+Alternatively call `onChange` directly. Use the exported `FieldLabel` for a
 native-looking label:
 
 ```vue copy filename="ColorField.vue"
@@ -181,10 +205,13 @@ To replace a built-in field UI globally, pass a `fieldTypes` map to `<Puck>`:
 
 ## Sharing Pinia, plugins and global components
 
-Bridged Vue components are mounted standalone, so they don't automatically share
-your app's Pinia stores, plugins, or globally-registered components. To share
-them, create an (unmounted) app instance carrying the plugins and pass it via
-the `app` prop — its context is threaded into every bridged mount:
+Bridged Vue components automatically inherit the app context of the app
+rendering `<Puck>` / `<Render>` — Pinia stores, plugins, app-level `provide`s
+and globally-registered components just work, with no setup.
+
+To substitute a *different* context (e.g. to isolate the editor preview from
+your app), create an unmounted app instance carrying the plugins and pass it
+via the `app` prop (read once at setup):
 
 ```ts copy
 import { createApp } from "vue";
@@ -196,16 +223,12 @@ bridgeApp.use(pinia);
 
 ```vue copy
 <Puck :config="config" :data="data" :app="bridgeApp" />
-<!-- and likewise: <Render :config="config" :data="data" :app="bridgeApp" /> -->
 ```
 
-Use the **same** Pinia instance in your main app and the bridge app so state is
-shared. Vue components can then read stores as usual.
+## The `usePuck` and `usePuckApi` composables
 
-## The `usePuck` composable
-
-Inside a bridged component, `usePuck()` returns the per-component Puck context
-(`isEditing`, `metadata`, `renderDropZone`, `id`):
+Inside a bridged component, `usePuck()` returns the reactive per-component Puck
+context (`isEditing`, `metadata`, `renderDropZone`, `id`):
 
 ```vue copy
 <script setup lang="ts">
@@ -218,8 +241,22 @@ const puck = usePuck();
 </template>
 ```
 
-For imperative editor control, use the `getPuck` accessor from `@ready` — it
-returns the same [`PuckApi`](/docs/api-reference/puck-api) as React's `usePuck`.
+To *reactively subscribe* to editor state — the equivalent of React's
+selector-based [`usePuck`](/docs/api-reference/puck-api) — use
+`usePuckApi(selector)` from a bridged component or custom field. It returns a
+ref that updates whenever the selected value changes:
+
+```vue copy
+<script setup lang="ts">
+import { usePuckApi } from "@puckeditor/vue";
+
+const selectedItem = usePuckApi((api) => api.selectedItem);
+const hasPast = usePuckApi((api) => api.history.hasPast);
+</script>
+```
+
+For one-shot imperative control, use the `getPuck` accessor from `@ready` — it
+returns the same [`PuckApi`](/docs/api-reference/puck-api).
 
 ## Mixed React/Vue configs
 
@@ -261,6 +298,9 @@ head styles into the preview.
 
 ## Limitations
 
-- **Rich text fields** (`type: "richtext"`) are not yet supported from Vue.
 - Advanced `overrides` / `plugins` are passed through as Preact components (for
   advanced users); Vue equivalents are not yet available.
+- `<Render>` mounts client-side (the server emits an empty div) — no SSR/SSG
+  output for published pages yet.
+- Rich text / `contentEditable` fields nested inside `object`/`array` fields
+  are not supported (top-level fields only).

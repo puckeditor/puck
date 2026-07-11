@@ -14,7 +14,7 @@ import {
   type FrameworkAdapter,
   type Split,
   type MountedInstance,
-} from "@puckeditor/framework-shim";
+} from "./shim";
 import type { VueComponent } from "./types";
 import { PUCK_INJECTION_KEY } from "./composables/use-puck";
 import { createOutlet } from "./bridge/outlet";
@@ -75,12 +75,21 @@ export const makeVueAdapter = (
     };
   },
 
-  mountField: ({ el, comp, props }): MountedInstance => {
-    const reactive = shallowReactive(props);
+  mountField: ({ el, comp, props, storeApi }): MountedInstance => {
+    const reactive = shallowReactive(withFieldVModel(props));
+
+    // Minimal puck context for field UIs: fields only render inside <Puck>,
+    // and `storeApi` powers `usePuckApi` from custom fields.
+    const fieldPuck = shallowReactive({
+      isEditing: true,
+      metadata: {},
+      ...(storeApi ? { storeApi } : {}),
+    });
 
     const Wrapper = defineComponent({
       name: "PuckVueFieldBridge",
       setup() {
+        provide(PUCK_INJECTION_KEY, fieldPuck as any);
         return () => vueH(comp as VueComponent as any, { ...reactive });
       },
     });
@@ -91,11 +100,25 @@ export const makeVueAdapter = (
 
     return {
       patch: (next: Record<string, any>) => {
-        patchProps(reactive, next);
+        patchProps(reactive, withFieldVModel(next));
       },
       unmount: () => {
         vueRender(null, el);
       },
     };
   },
+});
+
+/**
+ * Add the Vue-idiomatic `v-model` contract to a field's props: `modelValue`
+ * mirrors `value` and `update:modelValue` forwards to `onChange`, so a field
+ * component can use `defineModel()`. The original `value`/`onChange` stay for
+ * parity with core's contract.
+ */
+const withFieldVModel = (
+  props: Record<string, any>
+): Record<string, any> => ({
+  ...props,
+  modelValue: props.value,
+  "onUpdate:modelValue": props.onChange,
 });

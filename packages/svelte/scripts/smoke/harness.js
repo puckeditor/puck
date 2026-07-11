@@ -13,6 +13,10 @@ import Columns from "./fixtures/Columns.svelte";
 import TextControl from "./fixtures/TextControl.svelte";
 import RenderProbe from "./fixtures/RenderProbe.svelte";
 import EditableHeading from "./fixtures/EditableHeading.svelte";
+import StatusProbe from "./fixtures/StatusProbe.svelte";
+import RichBody from "./fixtures/RichBody.svelte";
+import MetadataProbe from "./fixtures/MetadataProbe.svelte";
+import MetaCard from "./fixtures/MetaCard.svelte";
 
 const tick = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
@@ -323,6 +327,132 @@ export async function run() {
     check(
       "contentEditable: no [object Object] leak in editor",
       !ehHtml.includes("[object Object]")
+    );
+  }
+
+  // --- puckApi: reactive editor-state subscription ---
+  {
+    const config = {
+      components: { Status: { fields: {}, render: StatusProbe } },
+    };
+    const data = {
+      root: {},
+      content: [{ type: "Status", props: { id: "s1" } }],
+    };
+    let readyApi = null;
+    const el = mountTop(Puck, {
+      config,
+      data,
+      iframe: { enabled: false },
+      onready: (getPuck) => {
+        readyApi = getPuck;
+      },
+    });
+    await tick(300);
+    check(
+      "puckApi: initial selection empty",
+      el.textContent.includes("selected=none"),
+      el.textContent
+    );
+    if (readyApi) {
+      readyApi().dispatch({ type: "setUi", ui: { itemSelector: { index: 0 } } });
+    }
+    await tick(300);
+    check(
+      "puckApi: selector updates reactively on dispatch",
+      el.textContent.includes("selected=s1"),
+      el.textContent
+    );
+  }
+
+  // --- puck-context patch propagation (metadata → getPuck() consumers) ---
+  {
+    const config = {
+      components: { MetaCard: { fields: {}, render: MetaCard } },
+    };
+    const data = {
+      root: {},
+      content: [{ type: "MetaCard", props: { id: "m1" } }],
+    };
+    let api = null;
+    const el = mountTop(MetadataProbe, {
+      config,
+      data,
+      register: (a) => {
+        api = a;
+      },
+    });
+    await tick(300);
+    check(
+      "puck context: initial metadata reaches getPuck()",
+      el.textContent.includes("tag=one"),
+      el.textContent
+    );
+    api.setMetadata({ tag: "two" });
+    await tick(300);
+    check(
+      "puck context: metadata patch propagates to getPuck() consumers",
+      el.textContent.includes("tag=two"),
+      el.textContent
+    );
+  }
+
+  // --- richtext field (node-valued in BOTH editor and <Render>) ---
+  {
+    const data = {
+      root: {},
+      content: [{ type: "RB", props: { id: "rb1", body: "<p>Rich hello</p>" } }],
+    };
+
+    const config = {
+      components: {
+        RB: { fields: { body: { type: "richtext" } }, render: RichBody },
+      },
+    };
+    const rel = mountTop(Render, { config, data });
+    await tick(400); // RichTextRender is lazy; give the import a beat
+    check(
+      "richtext: renders in <Render> via outlet",
+      rel.textContent.includes("Rich hello"),
+      rel.innerHTML.slice(0, 300)
+    );
+    check(
+      "richtext: no [object Object] leak in <Render>",
+      !rel.innerHTML.includes("[object Object]")
+    );
+
+    // Editor with contentEditable: false → static <RichTextRender> (the
+    // interactive tiptap editor is exercised in apps/demo-svelte, not jsdom).
+    const roConfig = {
+      components: {
+        RB: {
+          fields: { body: { type: "richtext", contentEditable: false } },
+          render: RichBody,
+        },
+      },
+    };
+    let eel;
+    let threw = null;
+    try {
+      eel = mountTop(Puck, { config: roConfig, data, iframe: { enabled: false } });
+    } catch (e) {
+      threw = e;
+    }
+    await tick(400);
+    const html = eel ? eel.innerHTML : "";
+    check(
+      "richtext: editor mounts without throwing (readonly)",
+      !threw,
+      threw && threw.message
+    );
+    check(
+      "richtext: renders in editor via outlet (readonly)",
+      eel && eel.textContent.includes("Rich hello"),
+      `len=${html.length}`
+    );
+    check(
+      "richtext: no [object Object] leak in editor",
+      !html.includes("[object Object]")
     );
   }
 

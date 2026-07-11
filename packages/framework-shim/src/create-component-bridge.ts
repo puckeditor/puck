@@ -4,8 +4,10 @@ import {
   useState,
   useLayoutEffect,
   useCallback,
+  useContext,
   Fragment,
 } from "./runtime";
+import { UsePuckStoreContext } from "./core";
 import { splitProps, type Split } from "./split-props";
 import {
   createSlotRegistry,
@@ -111,8 +113,14 @@ export const createComponentBridge = (
       hostRef.current = node;
     }, []);
 
+    // The editor's PuckApi store — present inside <Puck>, null in <Render>.
+    // Threaded into the puck context so framework reactive accessors (Vue
+    // usePuckApi, Svelte puckApi) can getState/subscribe.
+    const storeApi = useContext(UsePuckStoreContext as any);
+
     const buildSplit = (): Split => {
       const split = splitProps(props, slotPropNames);
+      if (storeApi) split.puck.storeApi = storeApi;
       adapter.decorateComponentSplit?.(split, {
         outlets,
         slotPropNames,

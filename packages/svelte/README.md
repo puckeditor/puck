@@ -72,26 +72,30 @@ Render published data with `<Render {config} {data} />`.
 
 - **`Puck`**, **`Render`** — the editor and the renderer. Svelte 5 callback props: `onchange`, `onpublish`, `onaction`, `onready`.
 - **`PuckSlot`** — render a `slot` field: `<PuckSlot name="content" />`.
+- **`PuckText`** — render a node-valued text field (contentEditable text/textarea/custom, or richtext) inline: `<PuckText name="title" />`.
 - **`PuckDropZone`** — an imperative DropZone: `<PuckDropZone zone="…" />`.
 - **`PuckChildren`** — the root DropZone (in a custom `root`) or the default UI inside a `fieldTypes` override.
 - **`FieldLabel`** — native-looking label markup for custom fields.
-- **`getPuck()`** — read the current component's Puck context (`{ isEditing, metadata, id }`).
+- **`getPuck()`** — read the current component's reactive Puck context (`{ isEditing, metadata, id }`).
+- **`puckApi(selector?)`** — reactive editor-state subscription (the Svelte equivalent of React's selector-based `usePuck`), e.g. `const selected = puckApi((api) => api.selectedItem)` then `selected.current`.
 - **`transformConfig`**, **`transformFieldTypes`**, **`defineSvelteComponent`**, **`defineSvelteField`** — lower-level helpers and per-component escape hatches for mixed configs.
-- All of `@puckeditor/core`'s framework-agnostic utilities (`walkTree`, `resolveAllData`, `migrate`, …) and types.
+- All of `@puckeditor/core`'s framework-agnostic utilities (`walkTree`, `resolveAllData`, `migrate`, …) and types. (Core's Preact-compiled components are also re-exported for advanced Preact-based `overrides`/`plugins` — they are not usable from Svelte templates.)
 - CSS: `@puckeditor/svelte/puck.css` and `@puckeditor/svelte/no-external.css` (self-hosted fonts).
 
 ## Features
 
 - **Svelte 5 components** as Puck `render` — plain props, `$state`, snippets.
 - **Patch, not remount** — editing fields updates props in place; component-local state survives.
-- **Slots** via `<PuckSlot>`, imperative DropZones via `<PuckDropZone>`.
+- **Slots** via `<PuckSlot>`, rich/inline text via `<PuckText>`, imperative DropZones via `<PuckDropZone>`.
 - **Custom fields** — props `{ id, name, value, onChange, field, readOnly }` (callback idiom).
-- **App context** — pass a `Map` as the `context` prop to `<Puck>`/`<Render>`; entries are `setContext`-ed into every bridged component (e.g. a runes store).
+- **App context** — pass a `Map` as the `context` prop to `<Puck>`/`<Render>`; entries are `setContext`-ed into every bridged component (e.g. a runes store). Read once at setup — later changes to the Map identity are ignored.
 - **Scoped styles** render in the editor's iframe (mirrored via AutoFrame).
 
 ## Not yet supported
 
-- Server-side rendering (client-only in v1).
+- Server-side rendering of `<Render>` (mounts client-side; the server emits an empty div — the compiled module itself is safe to import in node for `migrate`/`resolveAllData` etc.).
+- Svelte versions of advanced `overrides` / `plugins` (passed through as Preact components).
+- Rich text / inline-editable fields nested inside `object`/`array` fields (top-level fields only).
 
 ## License
 

@@ -27,12 +27,14 @@ export {
   defineVueComponent,
   defineVueField,
   usePuck,
+  usePuckApi,
 } from "../src";
 export type {
   VueConfig,
   VueComponentConfig,
   VueRootConfig,
   VueComponent,
+  VueSlot,
   VueField,
   VueFields,
   VueCustomField,

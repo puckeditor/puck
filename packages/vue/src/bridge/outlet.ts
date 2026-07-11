@@ -6,19 +6,11 @@ import {
   onUnmounted,
   watch,
 } from "vue";
-import { nextUid, type SlotRegistry } from "@puckeditor/framework-shim";
-
-/**
- * Map a Vue outlet's attrs to core `DropZoneProps`. Vue's `class` → React's
- * `className`; everything else (allow, disallow, zone, minEmptyHeight,
- * collisionAxis, style, …) passes through.
- */
-const mapAttrsToDzProps = (attrs: Record<string, any>): Record<string, any> => {
-  const { class: className, ...rest } = attrs;
-  const dzProps: Record<string, any> = { ...rest };
-  if (className != null) dzProps.className = className;
-  return dzProps;
-};
+import {
+  nextUid,
+  mapDropZoneProps,
+  type SlotRegistry,
+} from "../shim";
 
 /**
  * Create a Vue outlet component bound to a registry + thunk key. Rendered by
@@ -42,15 +34,16 @@ export const createOutlet = (registry: SlotRegistry, thunkKey: string) =>
             uid,
             thunkKey,
             el: elRef.value,
-            dzProps: mapAttrsToDzProps(attrs),
+            dzProps: mapDropZoneProps(attrs),
           });
         }
       });
 
+      // Shallow: dzProps are flat scalar-ish attrs (allow/disallow/zone/...);
+      // the spread getter re-runs whenever any attr changes.
       watch(
         () => ({ ...attrs }),
-        () => registry.update(uid, mapAttrsToDzProps(attrs)),
-        { deep: true }
+        () => registry.update(uid, mapDropZoneProps(attrs))
       );
 
       onUnmounted(() => registry.unregister(uid));

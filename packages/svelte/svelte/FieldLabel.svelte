@@ -1,7 +1,8 @@
 <script>
-  // Class names are resolved in the compiled layer (where core's CSS module is
-  // bundled and its hashes are known), so they line up with dist/index.css.
-  import { fieldLabelClasses } from "../dist/index.js";
+  // Class names + lock icon come from core (via the compiled layer, where
+  // core's CSS module is bundled and its hashes are known), so they line up
+  // with dist/index.css and never drift from core's FieldLabel.
+  import { fieldLabelClasses, fieldLabelLockIconSvg } from "../dist/index.js";
 
   /**
    * Svelte `FieldLabel` — markup/CSS parity with core's `FieldLabel`, for
@@ -21,19 +22,8 @@
     {label}
     {#if readOnly}
       <div class={fieldLabelClasses.disabledIcon} title="Read-only">
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -- static SVG constant from core -->
+        {@html fieldLabelLockIconSvg}
       </div>
     {/if}
   </div>
