@@ -7,9 +7,9 @@
 
 ### Bug Fixes
 
-* add engines field to core package.json ([5f5b18a](https://github.com/puckeditor/puck/commit/5f5b18aa6843957783d9e1dec0679056cbb6e2e5)), closes [/linear.app/puckeditor/issue/PUCK-452/add-engines-to-core-packagejson#agent-session-471689d1](https://github.com//linear.app/puckeditor/issue/PUCK-452/add-engines-to-core-packagejson/issues/agent-session-471689d1)
+* add engines field to core package.json ([5f5b18a](https://github.com/puckeditor/puck/commit/5f5b18aa6843957783d9e1dec0679056cbb6e2e5))
 * prevent unbounded cache growth in resolveAllData ([d8d77eb](https://github.com/puckeditor/puck/commit/d8d77eb5dc24e37c575f6267d9b7a1de059b0767))
-* run field transforms for fields without default props ([1a601e7](https://github.com/puckeditor/puck/commit/1a601e7048af8f5e72f76eb3d1b336965e36ffb5)), closes [/linear.app/puckeditor/issue/PUCK-316/field-transforms-not-called-if-no-default-props-are-set#agent-session-57b9b235](https://github.com//linear.app/puckeditor/issue/PUCK-316/field-transforms-not-called-if-no-default-props-are-set/issues/agent-session-57b9b235)
+* run field transforms for fields without default props ([1a601e7](https://github.com/puckeditor/puck/commit/1a601e7048af8f5e72f76eb3d1b336965e36ffb5))
 
 
 
