@@ -1,25 +1,21 @@
 .OutlineWrapper {
-  min-width: fit-content;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  min-width: 0;
 }
 
 .OutlineWrapper-collapseAll {
-  position: sticky;
-  z-index: 2;
-  top: 0;
-  inset-inline-end: 0;
-  width: fit-content;
-  margin-inline-start: auto;
-  padding-bottom: var(--puck-space-1);
   display: flex;
   align-items: center;
-  pointer-events: none;
+  margin-inline-start: auto;
 }
 
-.OutlineWrapper-collapseAll * {
-  pointer-events: auto;
-}
-
-.CollapseAll-icon {
-  height: var(--puck-icon-size-m);
-  width: var(--puck-icon-size-m);
+.OutlineWrapper-layers {
+  flex-grow: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--puck-space-2);
+  box-sizing: border-box;
 }

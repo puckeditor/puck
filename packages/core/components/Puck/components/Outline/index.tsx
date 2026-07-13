@@ -7,7 +7,8 @@ import { getClassNameFactory } from "../../../../lib";
 
 import { buildLayerTree, LayerTree } from "../../../LayerTree";
 
-import CollapseAll from "./collapse-all";
+import CollapseAll from "./components/collapse-all";
+import OutlineHeader from "./components/outline-header";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("OutlineWrapper", styles);
@@ -53,8 +54,12 @@ export const Outline = () => {
 
   return (
     <Wrapper>
-      <CollapseAll className={getClassName("collapseAll")} />
-      <LayerTree selectedId={selectedId} trees={trees} />
+      <OutlineHeader>
+        <CollapseAll className={getClassName("collapseAll")} />
+      </OutlineHeader>
+      <div className={getClassName("layers")}>
+        <LayerTree selectedId={selectedId} trees={trees} />
+      </div>
     </Wrapper>
   );
 };

@@ -1,5 +1,5 @@
 .LayerTreeRoot {
-  display: contents;
+  min-width: max-content;
 
   --_puck-iconbutton-color-bg-hover: transparent;
 

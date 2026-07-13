@@ -1,0 +1,17 @@
+.OutlineHeader {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--puck-space-2);
+  padding-block: var(--puck-space-3);
+  padding-inline: var(--puck-space-4);
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  box-sizing: border-box;
+}
+
+.OutlineHeader-title {
+  font-size: var(--puck-font-size-xs);
+  font-weight: var(--puck-font-weight-regular);
+  line-height: var(--puck-line-height-m);
+  margin: 0;
+}

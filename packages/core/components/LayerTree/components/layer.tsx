@@ -119,12 +119,21 @@ export const Layer = forwardRef(function Layer(
 
               dispatch({
                 type: "setUi",
-                ui: (previous) => ({
-                  itemExpanded: {
+                ui: (previous) => {
+                  const newItemExpanded = {
                     ...previous.itemExpanded,
-                    [node.itemId]: !previous.itemExpanded?.[node.itemId],
-                  },
-                }),
+                  };
+
+                  if (previous.itemExpanded?.[node.itemId]) {
+                    delete newItemExpanded[node.itemId];
+                  } else {
+                    newItemExpanded[node.itemId] = true;
+                  }
+
+                  return {
+                    itemExpanded: newItemExpanded,
+                  };
+                },
                 recordHistory: false,
               });
             }}

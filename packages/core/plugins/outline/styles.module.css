@@ -1,9 +1,8 @@
 .OutlinePlugin {
-  padding: var(--puck-space-4);
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   min-height: 0;
   min-width: 0;
-  overflow: auto;
-  box-sizing: border-box;
   position: relative;
 }

@@ -1,12 +1,10 @@
 import { forwardRef, ReactNode, SyntheticEvent, useState } from "react";
 import styles from "./IconButton.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
+import mergeClassNames from "../../lib/merge-class-names";
 import { Loader } from "../Loader";
 
 const getClassName = getClassNameFactory("IconButton", styles);
-
-const mergeClassNames = (...classNames: string[]) =>
-  [getClassName(), ...classNames].filter(Boolean).join(" ");
 
 export const IconButton = forwardRef<
   HTMLButtonElement & HTMLAnchorElement,
