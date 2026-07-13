@@ -14,7 +14,7 @@
   --_puck-outline-radius: var(--puck-outline-radius, var(--puck-radius-m));
   --_puck-outline-caret-size: var(
     --puck-outline-action-size,
-    var(--puck-icon-size-xs)
+    var(--puck-icon-size-s)
   );
   --_puck-outline-icon-size: var(
     --puck-outline-icon-size,
