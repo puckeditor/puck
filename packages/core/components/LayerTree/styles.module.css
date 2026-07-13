@@ -125,8 +125,9 @@
 
 .LayerActions {
   position: sticky;
-  inset-inline-end: 0;
+  inset-inline-end: calc(var(--puck-space-2) * -1);
   padding-inline-start: var(--puck-space-2);
+  padding-inline-end: var(--puck-space-2);
   display: flex;
   visibility: hidden;
   flex-shrink: 0;
