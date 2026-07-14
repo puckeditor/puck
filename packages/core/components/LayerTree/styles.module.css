@@ -46,6 +46,7 @@
     var(--puck-color-interactive-active)
   );
   --_puck-outline-drop-indicator-size: var(--puck-border-width-focus);
+  --_puck-outline-actions-color-bg: transparent;
   --_puck-outline-caret-slot: calc(
     var(--_puck-outline-caret-size) +
       var(--puck-iconbutton-space, var(--puck-space-1)) * 2
@@ -59,7 +60,7 @@
 .LayerTree {
   color: var(--_puck-outline-color-text);
   font-family: var(
-    --puck-ouline-font-family,
+    --puck-outline-font-family,
     var(--puck-font-family-monospaced)
   );
   font-size: var(--puck-outline-font-size, var(--puck-font-size-xxxs));

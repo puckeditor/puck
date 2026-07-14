@@ -40,7 +40,7 @@ CSS properties for theming the entire Puck user interface.
 | `--puck-color-focus-ring`                 | <Color>#3479be</Color>                                      | Keyboard focus outlines                             |
 | `--puck-color-selection-bg`               | <Color>color-mix(in srgb, #cfdff0 30%, transparent)</Color> | Slot, drop zone and selected overlay background     |
 | `--puck-color-selection-border`           | <Color>#abc7e5</Color>                                      | Selected and drop zone outline borders              |
-| `--puck-color-highlight`                  | <Color>#d89aba</Color>                                      | Outline layer icons and decorative accents          |
+| `--puck-color-highlight`                  | <Color>#d89aba</Color>                                      | Accent color scale step, not currently consumed     |
 | `--puck-color-bg-disabled`                | <Color>#ababab</Color>                                      | Disabled button background                          |
 | `--puck-color-text-disabled`              | <Color>#404040</Color>                                      | Disabled button text                                |
 | `--puck-color-overlay-backdrop`           | <Color>color-mix(in srgb, #000000 75%, transparent)</Color> | Modal backdrop                                      |
@@ -99,7 +99,7 @@ CSS properties for theming the entire Puck user interface.
 | Token                           | Default                                                                                                                              | Used for                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
 | `--puck-font-family`            | `Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol` | Default editor UI font family               |
-| `--puck-font-family-monospaced` | `ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace`                                   | Header path display font                    |
+| `--puck-font-family-monospaced` | `ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace`                                   | Header path display and outline font        |
 | `--puck-font-weight-regular`    | `400`                                                                                                                                | Default button font weight                  |
 | `--puck-font-weight-medium`     | `500`                                                                                                                                | Active fields, labels and action bar        |
 | `--puck-font-weight-semibold`   | `600`                                                                                                                                | Field labels, plugin bar items and headers  |
@@ -111,12 +111,12 @@ CSS properties for theming the entire Puck user interface.
 
 ## Icon Size
 
-| Token                 | Default | Used for                                      |
-| --------------------- | ------- | --------------------------------------------- |
-| `--puck-icon-size-xs` | `14px`  | Outline caret and row action icons            |
-| `--puck-icon-size-s`  | `16px`  | Action bar and inline control icons           |
-| `--puck-icon-size-m`  | `18px`  | Select, rich text menu and collapse-all icons |
-| `--puck-icon-size-l`  | `24px`  | Icon size scale step, not currently consumed  |
+| Token                 | Default | Used for                                                  |
+| --------------------- | ------- | --------------------------------------------------------- |
+| `--puck-icon-size-xs` | `14px`  | Outline layer and zone icons                              |
+| `--puck-icon-size-s`  | `16px`  | Action bar, inline control and outline caret/action icons |
+| `--puck-icon-size-m`  | `18px`  | Select, rich text menu and collapse-all icons             |
+| `--puck-icon-size-l`  | `24px`  | Icon size scale step, not currently consumed              |
 
 ## Functional
 
