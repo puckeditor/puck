@@ -56,26 +56,6 @@ export const LayerActions = ({
         index: node.index,
         zone: node.zoneCompound,
       });
-
-      dispatch({
-        type: "setUi",
-        ui: (prev) => {
-          const newItemExpanded = { ...prev.itemExpanded };
-
-          node.childZones.forEach((childZone) => {
-            childZone.items.forEach((childNode) => {
-              delete newItemExpanded[childNode.itemId];
-            });
-          });
-
-          delete newItemExpanded[node.itemId];
-
-          return {
-            ...prev,
-            itemExpanded: newItemExpanded,
-          };
-        },
-      });
     },
     [dispatch, outlineStore, node]
   );
