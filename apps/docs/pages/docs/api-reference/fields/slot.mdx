@@ -4,6 +4,7 @@ import {
   CodeBlockDrawer,
 } from "@/docs/components/Preview";
 import { usePuck } from "@/puck";
+import { Callout } from "nextra/components";
 
 # Slot
 
@@ -197,6 +198,11 @@ Slot data is provided to `render()` as a render function (or component). Provide
 
 Only allow specific components to be dragged into the slot. Overrides the [`allow` parameter](#allow) provided to the field.
 
+<Callout type="info">
+  Drag-and-drop in the outline does not respect this prop. Prefer the [`allow`
+  field parameter](#allow), which is enforced everywhere.
+</Callout>
+
 ```tsx copy {5}
 const config = {
   components: {
@@ -273,6 +279,11 @@ const config = {
 ### `disallow`
 
 Allow all but specific components to be dragged into the slot. Any items in `allow` will override `disallow`.
+
+<Callout type="info">
+  Drag-and-drop in the outline does not respect this prop. Prefer the
+  [`disallow` field parameter](#disallow), which is enforced everywhere.
+</Callout>
 
 ```tsx copy {5}
 const config = {
