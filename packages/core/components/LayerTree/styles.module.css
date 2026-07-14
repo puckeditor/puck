@@ -52,6 +52,10 @@
   );
 }
 
+.LayerTreeRoot > * .LayerTree {
+  margin-inline-start: var(--puck-outline-space-indent, var(--puck-space-3));
+}
+
 .LayerTree {
   color: var(--_puck-outline-color-text);
   font-family: var(--puck-font-family);
