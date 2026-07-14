@@ -9,10 +9,14 @@
   align-items: center;
   border: var(--_puck-outline-border-width) solid transparent;
   border-radius: var(--_puck-outline-radius);
-  cursor: grab;
+  cursor: pointer;
   display: flex;
   position: relative;
   transition: color var(--puck-duration-fast) var(--puck-ease-exit);
+}
+
+.Layer--isSortable > .Layer-inner {
+  cursor: grab;
 }
 
 .Layer-content {
@@ -28,7 +32,7 @@
   border: 0;
   border-radius: var(--_puck-outline-radius);
   color: inherit;
-  cursor: grab;
+  cursor: inherit;
   display: flex;
   flex: 1 1 auto;
   font: inherit;

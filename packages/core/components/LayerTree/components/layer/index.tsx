@@ -2,7 +2,7 @@ import { ChevronRight, LayoutGrid, Type } from "lucide-react";
 import { ForwardedRef, forwardRef, useCallback, useContext } from "react";
 
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
-import { ItemSelector } from "../../../../lib/data/get-item";
+import { getItem, ItemSelector } from "../../../../lib/data/get-item";
 import { useContextStore } from "../../../../lib/use-context-store";
 import { useAppStore } from "../../../../store";
 
@@ -48,6 +48,14 @@ export const Layer = forwardRef(function Layer(
     ZoneStoreContext,
     (s) => s.hoveringComponent === node.itemId
   );
+  const isDraggable = useAppStore((s) => {
+    const item = getItem(
+      { index: node.index, zone: node.zoneCompound },
+      s.state
+    );
+
+    return s.permissions.getPermissions({ item })?.drag;
+  });
   const {
     indicatorPosition,
     isDragSource,
@@ -87,6 +95,7 @@ export const Layer = forwardRef(function Layer(
         isExpanded: shouldBeExpanded,
         isHovering,
         isSelected,
+        isSortable: isDraggable,
       })}
       data-index={dataIndex}
       data-puck-layer-tree-id={node.itemId}
