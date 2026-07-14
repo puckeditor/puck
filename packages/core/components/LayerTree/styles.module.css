@@ -168,7 +168,6 @@
 
     border-color: var(--_puck-outline-color-border-hover);
     background: var(--_puck-outline-color-bg-hover);
-    color: var(--_puck-outline-color-text-hover);
     transition: none;
   }
 }
@@ -232,7 +231,7 @@
 }
 
 .Layer-icon {
-  color: var(--puck-outline-color-icon, var(--puck-color-highlight));
+  color: var(--puck-outline-color-icon, var(--puck-color-text-subtle));
   margin-top: var(--puck-space-1);
 }
 
