@@ -1,8 +1,11 @@
-import styles from "../styles.module.css";
-import getClassNameFactory from "../../../lib/get-class-name-factory";
-import { LayerZone } from "../types";
-import { EmptyZonePlaceholder } from "./empty-zone-placeholder";
-import { Layer } from "./layer";
+import getClassNameFactory from "../../../../lib/get-class-name-factory";
+
+import { LayerZone } from "../../types";
+
+import { EmptyZonePlaceholder } from "../empty-zone-placeholder";
+import { Layer } from "../layer";
+
+import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("LayerTree", styles);
 
@@ -17,7 +20,7 @@ export const StaticLayerTreeItems = ({
   tree: LayerZone;
 }) => {
   return (
-    <ul className={getClassName()}>
+    <ul className={getClassName({ nested: depth > 0 })}>
       {tree.items.length === 0 && (
         <EmptyZonePlaceholder zoneCompound={tree.zoneCompound} />
       )}

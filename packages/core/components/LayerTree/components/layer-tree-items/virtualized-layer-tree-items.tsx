@@ -1,14 +1,15 @@
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
 import { useCallback, useRef } from "react";
 
-import getClassNameFactory from "../../../lib/get-class-name-factory";
+import getClassNameFactory from "../../../../lib/get-class-name-factory";
 
-import { useOutlineDndStore } from "../lib/store";
-import { LayerZone } from "../types";
-import styles from "../styles.module.css";
+import { useOutlineDndStore } from "../../lib/store";
+import { LayerZone } from "../../types";
 
-import { EmptyZonePlaceholder } from "./empty-zone-placeholder";
-import { Layer } from "./layer";
+import { EmptyZonePlaceholder } from "../empty-zone-placeholder";
+import { Layer } from "../layer";
+
+import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("LayerTree", styles);
 
@@ -146,7 +147,7 @@ export const VirtualizedLayerTreeItems = ({
   }
 
   return (
-    <ul className={getClassName()} ref={listRef}>
+    <ul className={getClassName({ nested: depth > 0 })} ref={listRef}>
       {tree.items.length === 0 && (
         <EmptyZonePlaceholder zoneCompound={tree.zoneCompound} />
       )}

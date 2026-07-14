@@ -29,274 +29,41 @@
     --puck-outline-color-bg-hover,
     var(--puck-color-interactive-soft)
   );
+
   --_puck-outline-color-border-hover: var(
     --puck-outline-color-border-hover,
     var(--puck-color-interactive-subtle)
   );
+
   --_puck-outline-color-text-hover: var(
     --puck-outline-color-text-hover,
     var(--puck-color-interactive)
   );
-  --_puck-outline-zone-color-text: var(
-    --puck-outline-zone-color-text,
-    var(--puck-color-text-muted)
-  );
+
   --_puck-outline-color-drop-indicator: var(
     --puck-outline-color-drop-indicator,
     var(--puck-color-interactive-active)
   );
   --_puck-outline-drop-indicator-size: var(--puck-border-width-focus);
+
+  --_puck-outline-zone-color-text: var(
+    --puck-outline-zone-color-text,
+    var(--puck-color-text-muted)
+  );
+
   --_puck-outline-actions-color-bg: transparent;
+
+  /* The width of the (possibly hidden) caret button at the start of every
+     row; titles and helpers indent by the same amount so all text aligns */
   --_puck-outline-caret-slot: calc(
     var(--_puck-outline-caret-size) +
       var(--puck-iconbutton-space, var(--puck-space-1)) * 2
   );
-}
-
-.LayerTreeRoot > * .LayerTree {
-  margin-inline-start: var(--puck-outline-space-indent, var(--puck-space-3));
-}
-
-.LayerTree {
-  color: var(--_puck-outline-color-text);
-  font-family: var(
-    --puck-outline-font-family,
-    var(--puck-font-family-monospaced)
-  );
-  font-size: var(--puck-outline-font-size, var(--puck-font-size-xxxs));
-  margin: 0;
-  position: relative;
-  list-style: none;
-  padding: 0;
-}
-
-.LayerTree-zoneTitle {
-  color: var(--_puck-outline-zone-color-text);
-  font-size: var(
-    --puck-outline-zone-font-size,
-    calc(var(--puck-font-size-xxxs) * 0.9)
-  );
-}
-
-.LayerTree-helper {
-  color: var(--puck-outline-color-text-helper, var(--puck-color-text-subtle));
-}
-
-.Layer {
-  position: relative;
-  border: var(--_puck-outline-border-width) solid transparent;
-  border-radius: var(--_puck-outline-radius);
-}
-
-.Layer-inner {
-  align-items: center;
-  border: var(--_puck-outline-border-width) solid transparent;
-  border-radius: var(--_puck-outline-radius);
-  cursor: grab;
-  display: flex;
-  position: relative;
-  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
-}
-
-.Layer-content {
-  display: flex;
-  gap: var(--puck-space-4);
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.Layer-clickable {
-  align-items: center;
-  background: none;
-  border: 0;
-  border-radius: var(--_puck-outline-radius);
-  color: inherit;
-  cursor: grab;
-  display: flex;
-  flex: 1 1 auto;
-  font: inherit;
-  min-width: 0;
-  padding: 0;
-}
-
-.Layer-caret {
-  visibility: hidden;
-  display: flex;
-  flex-shrink: 0;
-}
-
-.Layer--containsZone > .Layer-inner > .Layer-content {
-  font-weight: var(--puck-font-weight-bold);
-}
-
-.Layer--containsZone > .Layer-inner > .Layer-caret {
-  visibility: visible;
-}
-
-.LayerActions {
-  position: sticky;
-  inset-inline-end: calc(var(--puck-space-2) * -1);
-  padding-inline-start: var(--puck-space-2);
-  padding-inline-end: var(--puck-space-2);
-  display: flex;
-  visibility: hidden;
-  flex-shrink: 0;
-  gap: var(--puck-space-1);
-  color: var(--_puck-outline-color-text);
-  background: var(--_puck-outline-actions-color-bg);
-}
-
-.LayerActions--visible {
-  visibility: visible;
-}
-
-.Layer-caret svg,
-.LayerActions svg {
-  height: var(--_puck-outline-caret-size);
-  width: var(--_puck-outline-caret-size);
-}
-
-.Layer-clickable:focus-visible {
-  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
-  outline-offset: var(--puck-border-width-focus);
-  position: relative;
-  z-index: 1;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .Layer:not(.Layer--isSelected) > .Layer-inner:hover {
-    --_puck-outline-actions-color-bg: var(--_puck-outline-color-bg-hover);
-
-    border-color: var(--_puck-outline-color-border-hover);
-    background: var(--_puck-outline-color-bg-hover);
-    transition: none;
-  }
-}
-
-.Layer--isSelected {
-  border-color: var(
-    --puck-outline-color-border-selected,
-    var(--puck-color-selection-border)
-  );
-}
-
-.Layer--isSelected > .Layer-inner {
-  --_puck-outline-actions-color-bg: var(--_puck-outline-color-bg-selected);
-
-  background: var(--_puck-outline-color-bg-selected);
-}
-
-.Layer--isExpanded > .Layer-inner > .Layer-caret svg {
-  transform: rotate(90deg);
-}
-
-.Layer-zones {
-  display: none;
-  margin-inline-start: var(--puck-outline-space-indent, var(--puck-space-3));
-}
-
-.Layer--isExpanded > .Layer-zones {
-  display: block;
-}
-
-.Layer-title {
-  margin: var(--puck-space-2) var(--puck-space-1);
-  cursor: pointer;
-}
-
-.LayerTree-zoneTitle,
-.LayerTree-helper {
-  padding-top: var(--puck-space-1);
-  padding-bottom: var(--puck-space-1);
-  /* Caret slot + the row title's inline margin + one border width: lines the label's text up with row titles at the same depth */
-  padding-inline-start: calc(
+  
+  /* Caret slot + the row title's inline margin + one border width: lines
+     zone titles and helpers up with row titles at the same depth */
+  --_puck-outline-label-indent: calc(
     var(--_puck-outline-caret-slot) + var(--puck-space-1) +
       var(--_puck-outline-border-width)
   );
-  /* We need this border to show a consistent drop preview in the title and nested zone */
-  border: var(--_puck-outline-border-width) solid transparent;
-}
-
-.Layer-title,
-.LayerTree-zoneTitle {
-  display: flex;
-  gap: var(--puck-space-2);
-  align-items: center;
-  overflow-x: hidden;
-}
-
-.Layer-name {
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.Layer-icon {
-  color: var(--puck-outline-color-icon, var(--puck-color-text-subtle));
-  margin-top: var(--puck-space-1);
-}
-
-.LayerTree-zoneIcon {
-  margin-top: var(--puck-space-1);
-}
-
-.Layer-icon svg,
-.LayerTree-zoneIcon svg {
-  height: var(--_puck-outline-icon-size);
-  width: var(--_puck-outline-icon-size);
-}
-
-/* Drag and drop */
-.Layer--isExpandCandidate > .Layer-inner {
-  border-color: var(--_puck-outline-color-border-hover);
-  background: var(--_puck-outline-color-bg-hover);
-}
-
-.Layer--indicatorBefore::before,
-.Layer--indicatorAfter::after,
-.LayerTree-zoneTitle[data-puck-drop-target]::after,
-.LayerTree-helper[data-puck-drop-target]::before {
-  background: var(--_puck-outline-color-drop-indicator);
-  border-radius: calc(var(--_puck-outline-drop-indicator-size) / 2);
-  content: "";
-  height: var(--_puck-outline-drop-indicator-size);
-  inset-inline: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: 1;
-}
-
-.Layer--indicatorBefore::before {
-  top: calc(-1 * var(--_puck-outline-drop-indicator-size));
-}
-
-.Layer--indicatorAfter::after {
-  bottom: calc(-1 * var(--_puck-outline-drop-indicator-size));
-}
-
-.Layer--isDragSource > .Layer-inner {
-  color: var(--puck-color-text-muted);
-  background: transparent;
-}
-
-.Layer--isDragSource > .Layer-zones {
-  opacity: 0.5;
-}
-
-.LayerTree-zoneTitle[data-puck-drop-target] {
-  color: var(--_puck-outline-color-text-hover);
-}
-
-.LayerTree-zoneTitle[data-puck-drop-target],
-.LayerTree-helper[data-puck-drop-target] {
-  position: relative;
-  overflow: visible;
-}
-
-.LayerTree-zoneTitle[data-puck-drop-target]::after {
-  bottom: 0;
-}
-
-.LayerTree-helper[data-puck-drop-target]::before {
-  top: 0;
 }

@@ -2,14 +2,15 @@ import { Copy, Trash } from "lucide-react";
 import { SyntheticEvent, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import getClassNameFactory from "../../../lib/get-class-name-factory";
-import { getItem } from "../../../lib/data/get-item";
-import { useAppStore } from "../../../store";
-import { IconButton } from "../../IconButton";
+import getClassNameFactory from "../../../../lib/get-class-name-factory";
+import { getItem } from "../../../../lib/data/get-item";
+import { useAppStore } from "../../../../store";
+import { IconButton } from "../../../IconButton";
 
-import { useOutlineDndStoreApi } from "../lib/store";
-import styles from "../styles.module.css";
-import { LayerNode } from "../types";
+import { useOutlineDndStoreApi } from "../../lib/store";
+import { LayerNode } from "../../types";
+
+import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("LayerActions", styles);
 

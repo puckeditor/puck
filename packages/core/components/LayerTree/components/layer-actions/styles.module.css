@@ -1,0 +1,25 @@
+/* Private --_puck-outline-* vars resolve on .LayerTreeRoot. */
+.LayerActions {
+  position: sticky;
+  /* Negative positioning to account for container padding */
+  inset-inline-end: calc(var(--puck-space-2) * -1);
+  padding-inline-start: var(--puck-space-2);
+  padding-inline-end: var(--puck-space-2);
+  display: flex;
+  visibility: hidden;
+  flex-shrink: 0;
+  gap: var(--puck-space-1);
+  color: var(--_puck-outline-color-text);
+  /* Set to the row's bg by the Layer hover/selected rules so the sticky
+     actions cover the text scrolling beneath them */
+  background: var(--_puck-outline-actions-color-bg);
+}
+
+.LayerActions--visible {
+  visibility: visible;
+}
+
+.LayerActions svg {
+  height: var(--_puck-outline-caret-size);
+  width: var(--_puck-outline-caret-size);
+}

@@ -1,10 +1,14 @@
 import { Layers } from "lucide-react";
-import styles from "../styles.module.css";
-import getClassNameFactory from "../../../lib/get-class-name-factory";
-import { LayerZone } from "../types";
-import { StaticLayerTreeItems } from "./static-layer-tree-items";
-import { VirtualizedLayerTreeItems } from "./virtualized-layer-tree-items";
-import useOutlineDropZone from "../lib/dnd/use-outline-drop-zone";
+import getClassNameFactory from "../../../../lib/get-class-name-factory";
+
+import useOutlineDropZone from "../../lib/dnd/use-outline-drop-zone";
+import { LayerZone } from "../../types";
+
+import { DropLine } from "../drop-line";
+import { StaticLayerTreeItems } from "../layer-tree-items";
+import { VirtualizedLayerTreeItems } from "../layer-tree-items";
+
+import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("LayerTree", styles);
 
@@ -33,6 +37,7 @@ const ZoneLabel = ({
         <Layers />
       </div>
       {label}
+      {isDropTarget && <DropLine edge="bottom" />}
     </div>
   );
 };

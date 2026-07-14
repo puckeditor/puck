@@ -1,21 +1,22 @@
 import { ChevronRight, LayoutGrid, Type } from "lucide-react";
 import { ForwardedRef, forwardRef, useCallback, useContext } from "react";
 
-import getClassNameFactory from "../../../lib/get-class-name-factory";
-import { ItemSelector } from "../../../lib/data/get-item";
-import { useContextStore } from "../../../lib/use-context-store";
-import { useAppStore } from "../../../store";
+import getClassNameFactory from "../../../../lib/get-class-name-factory";
+import { ItemSelector } from "../../../../lib/data/get-item";
+import { useContextStore } from "../../../../lib/use-context-store";
+import { useAppStore } from "../../../../store";
 
-import { ZoneStoreContext } from "../../DropZone/context";
-import { IconButton } from "../../IconButton";
+import { ZoneStoreContext } from "../../../DropZone/context";
+import { IconButton } from "../../../IconButton";
 
-import { useOutlineDndStoreApi } from "../lib/store";
-import { useOutlineRowDnd } from "../lib/dnd/use-outline-row-dnd";
-import styles from "../styles.module.css";
-import { LayerNode } from "../types";
+import { useOutlineDndStoreApi } from "../../lib/store";
+import { useOutlineRowDnd } from "../../lib/dnd/use-outline-row-dnd";
+import styles from "./styles.module.css";
+import { LayerNode } from "../../types";
 
-import { LayerActions } from "./layer-actions";
-import { LayerTreeZone } from "./layer-tree-zone";
+import { DropLine } from "../drop-line";
+import { LayerActions } from "../layer-actions";
+import { LayerTreeZone } from "../layer-tree-zone";
 
 const getClassName = getClassNameFactory("Layer", styles);
 
@@ -74,13 +75,13 @@ export const Layer = forwardRef(function Layer(
 
   const shouldBeExpanded = isExpanded || isTempExpanded;
 
+  const shouldShowIndicator = indicatorPosition !== null;
+
   return (
     <li
       ref={ref}
       className={getClassName({
         containsZone,
-        indicatorAfter: indicatorPosition === "after",
-        indicatorBefore: indicatorPosition === "before",
         isDragSource,
         isExpandCandidate,
         isExpanded: shouldBeExpanded,
@@ -90,6 +91,12 @@ export const Layer = forwardRef(function Layer(
       data-index={dataIndex}
       data-puck-layer-tree-id={node.itemId}
     >
+      {shouldShowIndicator && (
+        <DropLine
+          edge={indicatorPosition === "before" ? "top" : "bottom"}
+          outset
+        />
+      )}
       <div
         className={getClassName("inner")}
         ref={rowRef}

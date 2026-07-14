@@ -1,7 +1,10 @@
-import getClassNameFactory from "../../../lib/get-class-name-factory";
+import getClassNameFactory from "../../../../lib/get-class-name-factory";
 
-import useOutlineDropZone from "../lib/dnd/use-outline-drop-zone";
-import styles from "../styles.module.css";
+import useOutlineDropZone from "../../lib/dnd/use-outline-drop-zone";
+
+import { DropLine } from "../drop-line";
+
+import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("LayerTree", styles);
 
@@ -25,6 +28,7 @@ export const EmptyZonePlaceholder = ({
       ref={ref}
     >
       No items
+      {isDropTarget && <DropLine edge="top" />}
     </li>
   );
 };

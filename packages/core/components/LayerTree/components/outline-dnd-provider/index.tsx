@@ -2,16 +2,17 @@ import { PointerActivationConstraints } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
 import { PropsWithChildren, useContext, useMemo, useState } from "react";
 
-import { useAppStoreApi } from "../../../store";
-import { ZoneStoreContext } from "../../DropZone/context";
+import { useSensors } from "../../../../lib/dnd/use-sensors";
+
+import { useAppStoreApi } from "../../../../store";
+import { ZoneStoreContext } from "../../../DropZone/context";
 
 import {
   onOutlineBeforeDragStart,
   onOutlineDragEnd,
   onOutlineDragMove,
-} from "../lib/dnd/handlers";
-import { createOutlineDndStore, OutlineDndStoreContext } from "../lib/store";
-import { useSensors } from "../../../lib/dnd/use-sensors";
+} from "../../lib/dnd/handlers";
+import { createOutlineDndStore, OutlineDndStoreContext } from "../../lib/store";
 
 /**
  * The outline DnD context provider.
