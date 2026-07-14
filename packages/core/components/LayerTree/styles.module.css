@@ -58,8 +58,11 @@
 
 .LayerTree {
   color: var(--_puck-outline-color-text);
-  font-family: var(--puck-font-family);
-  font-size: var(--puck-outline-font-size, var(--puck-font-size-xxs));
+  font-family: var(
+    --puck-ouline-font-family,
+    var(--puck-font-family-monospaced)
+  );
+  font-size: var(--puck-outline-font-size, var(--puck-font-size-xxxs));
   margin: 0;
   position: relative;
   list-style: none;
