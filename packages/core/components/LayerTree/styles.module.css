@@ -71,8 +71,10 @@
 
 .LayerTree-zoneTitle {
   color: var(--_puck-outline-zone-color-text);
-  font-size: var(--puck-outline-zone-font-size, var(--puck-font-size-xxxs));
-  text-transform: uppercase;
+  font-size: var(
+    --puck-outline-zone-font-size,
+    calc(var(--puck-font-size-xxxs) * 0.9)
+  );
 }
 
 .LayerTree-helper {
@@ -120,6 +122,10 @@
   visibility: hidden;
   display: flex;
   flex-shrink: 0;
+}
+
+.Layer--containsZone > .Layer-inner > .Layer-content {
+  font-weight: var(--puck-font-weight-bold);
 }
 
 .Layer--containsZone > .Layer-inner > .Layer-caret {
@@ -261,11 +267,11 @@
 }
 
 .Layer--indicatorBefore::before {
-  top: calc(-1 * var(--puck-space-1));
+  top: calc(-1 * var(--_puck-outline-drop-indicator-size));
 }
 
 .Layer--indicatorAfter::after {
-  bottom: calc(-1 * var(--puck-space-1));
+  bottom: calc(-1 * var(--_puck-outline-drop-indicator-size));
 }
 
 .Layer--isDragSource > .Layer-inner {
