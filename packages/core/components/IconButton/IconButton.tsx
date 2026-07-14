@@ -1,7 +1,6 @@
 import { forwardRef, ReactNode, SyntheticEvent, useState } from "react";
 import styles from "./IconButton.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import mergeClassNames from "../../lib/merge-class-names";
 import { Loader } from "../Loader";
 
 const getClassName = getClassNameFactory("IconButton", styles);
@@ -20,7 +19,6 @@ export const IconButton = forwardRef<
     fullWidth?: boolean;
     title: string;
     suppressHydrationWarning?: boolean;
-    variant?: "primary" | "secondary";
   }
 >(
   (
@@ -44,20 +42,15 @@ export const IconButton = forwardRef<
 
     const ElementType = href ? "a" : "button";
 
-    const variant = rest.variant || "primary";
-
     return (
       <ElementType
         {...rest}
         ref={ref}
-        className={mergeClassNames(
-          getClassName({
-            active,
-            disabled,
-            fullWidth,
-          }),
-          getClassName(variant)
-        )}
+        className={getClassName({
+          active,
+          disabled,
+          fullWidth,
+        })}
         onClick={(e) => {
           if (!onClick) return;
 

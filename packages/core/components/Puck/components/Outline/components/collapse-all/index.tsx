@@ -38,7 +38,7 @@ function CollapseAll({ className }: CollapseAllProps) {
         className
       )}
     >
-      <IconButton title="Collapse all" variant="primary" onClick={collapseAll}>
+      <IconButton title="Collapse all" onClick={collapseAll}>
         <ChevronsDownUp className={getClassName("icon")} />
       </IconButton>
     </div>

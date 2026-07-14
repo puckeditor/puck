@@ -1,6 +1,8 @@
 .IconButton {
   align-items: center;
+  background: var(--puck-iconbutton-color-bg, transparent);
   border: none;
+  border-radius: var(--puck-iconbutton-radius, var(--puck-radius-m));
   color: var(--puck-iconbutton-color-icon, currentColor);
   display: flex;
   font-family: var(--puck-font-family);
@@ -8,31 +10,6 @@
   padding: var(--puck-iconbutton-space, var(--puck-space-1));
   transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
     color var(--puck-duration-fast) var(--puck-ease-exit);
-}
-
-.IconButton-primary {
-  background: var(
-    --_puck-iconbutton-primary-color-bg,
-    var(--puck-iconbutton-primary-color-bg, transparent)
-  );
-  border-radius: var(--puck-iconbutton-primary-radius, var(--puck-radius-m));
-}
-
-.IconButton-secondary {
-  border: var(
-      --puck-iconbutton-secondary-border-width,
-      var(--puck-border-width-regular)
-    )
-    solid
-    var(--puck-iconbutton-secondary-color-border, var(--puck-color-border));
-  background: var(
-    --puck-iconbutton-secondary-color-bg,
-    var(--puck-color-surface)
-  );
-  border-radius: var(
-    --puck-iconbutton-secondary-radius,
-    var(--puck-radius-round)
-  );
 }
 
 .IconButton--active {
