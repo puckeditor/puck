@@ -85,6 +85,8 @@ export const Layer = forwardRef(function Layer(
 
   const shouldShowIndicator = indicatorPosition !== null;
 
+  const shouldShowZoneTitles = node.childZones.length !== 1;
+
   return (
     <li
       ref={ref}
@@ -199,9 +201,13 @@ export const Layer = forwardRef(function Layer(
           <div key={childZone.zoneCompound} className={getClassName("zones")}>
             {/* NB: LayerTreeZone has a circular dependency with Layer, but it's safe because it's only used during rendering */}
             <LayerTreeZone
-              depth={depth + 1}
+              depth={shouldShowZoneTitles ? depth + 1 : depth}
               selectedId={selectedId}
-              tree={childZone}
+              tree={
+                shouldShowZoneTitles
+                  ? childZone
+                  : { ...childZone, label: undefined }
+              }
             />
           </div>
         ))}
