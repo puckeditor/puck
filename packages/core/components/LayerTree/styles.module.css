@@ -69,10 +69,6 @@
   padding: 0;
 }
 
-.LayerTree > .Layer + .Layer {
-  margin-top: var(--puck-space-1);
-}
-
 .LayerTree-zoneTitle {
   color: var(--_puck-outline-zone-color-text);
   font-size: var(--puck-outline-zone-font-size, var(--puck-font-size-xxxs));
