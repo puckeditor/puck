@@ -59,7 +59,7 @@
     var(--_puck-outline-caret-size) +
       var(--puck-iconbutton-space, var(--puck-space-1)) * 2
   );
-  
+
   /* Caret slot + the row title's inline margin + one border width: lines
      zone titles and helpers up with row titles at the same depth */
   --_puck-outline-label-indent: calc(

@@ -20,6 +20,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
   },
   "dictionary": {},
   "dispatch": [Function],
+  "dnd": undefined,
   "fieldTransforms": {},
   "fields": {
     "fields": {

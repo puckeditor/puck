@@ -4,7 +4,7 @@ import { PropsWithChildren, useContext, useMemo, useState } from "react";
 
 import { useSensors } from "../../../../lib/dnd/use-sensors";
 
-import { useAppStoreApi } from "../../../../store";
+import { useAppStore, useAppStoreApi } from "../../../../store";
 import { ZoneStoreContext } from "../../../DropZone/context";
 
 import {
@@ -13,6 +13,9 @@ import {
   onOutlineDragMove,
 } from "../../lib/dnd/handlers";
 import { createOutlineDndStore, OutlineDndStoreContext } from "../../lib/store";
+
+// Registering no sensors means no interaction can ever start a drag
+const NO_SENSORS: never[] = [];
 
 /**
  * The outline DnD context provider.
@@ -23,6 +26,10 @@ export const OutlineDndProvider = ({ children }: PropsWithChildren) => {
   const appStore = useAppStoreApi();
   const zoneStore = useContext(ZoneStoreContext);
   const [outlineDndStore] = useState(() => createOutlineDndStore());
+
+  const disableOutlineDrag = useAppStore(
+    (s) => s.dnd?.disableOutlineDrag ?? false
+  );
 
   // Rows act as their own drag handles, so mouse presses need a movement
   // threshold to tell clicks and drags apart
@@ -43,7 +50,7 @@ export const OutlineDndProvider = ({ children }: PropsWithChildren) => {
   return (
     <OutlineDndStoreContext.Provider value={outlineDndStore}>
       <DragDropProvider
-        sensors={sensors}
+        sensors={disableOutlineDrag ? NO_SENSORS : sensors}
         onBeforeDragStart={(event) => {
           onOutlineBeforeDragStart(event, dragContext);
         }}

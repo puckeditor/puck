@@ -40,6 +40,13 @@
   padding: 0;
 }
 
+/* With outline drag-and-drop disabled (attribute set on .LayerTreeRoot),
+   rows are click-to-select only */
+[data-puck-dnd-disabled] .Layer-inner,
+[data-puck-dnd-disabled] .Layer-clickable {
+  cursor: pointer;
+}
+
 .Layer-clickable:focus-visible {
   outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
   outline-offset: var(--puck-border-width-focus);

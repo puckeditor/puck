@@ -1,4 +1,5 @@
 import getClassNameFactory from "../../lib/get-class-name-factory";
+import { useAppStore } from "../../store";
 
 import { LayerTreeZone } from "./components/layer-tree-zone";
 import { OutlineDndProvider } from "./components/outline-dnd-provider";
@@ -20,9 +21,16 @@ export const LayerTree = ({
   selectedId: string | null;
   trees: LayerZone[];
 }) => {
+  const disableOutlineDrag = useAppStore(
+    (s) => s.dnd?.disableOutlineDrag ?? false
+  );
+
   return (
     <OutlineDndProvider>
-      <div className={getClassNameDragRoot()}>
+      <div
+        className={getClassNameDragRoot()}
+        data-puck-dnd-disabled={disableOutlineDrag || undefined}
+      >
         {trees.map((tree) => (
           <LayerTreeZone
             depth={0}
