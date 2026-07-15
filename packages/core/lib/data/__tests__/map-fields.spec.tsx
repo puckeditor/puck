@@ -1,4 +1,4 @@
-import { Config } from "../../../types";
+import { ComponentData, Config } from "../../../types";
 import { mapFields, Mappers } from "../map-fields";
 
 type Props = {
@@ -71,6 +71,47 @@ describe("mapFields", () => {
       { type: "Comp", props: { id: "abc", nested: {} } },
       mappers,
       config
+    );
+
+    expect(result.props.nested.title).toBe("mapped:nested.title:undefined");
+  });
+
+  it("walks only the given fields when fieldsToMap is provided", () => {
+    const result: ComponentData = mapFields(
+      { type: "Comp", props: { id: "abc", title: "Hello", plain: "World" } },
+      mappers,
+      config,
+      false,
+      true,
+      ["id", "title"]
+    );
+
+    expect(result.props.title).toBe("mapped:title:Hello");
+    expect("plain" in result.props).toBe(false);
+  });
+
+  it("defaults missing fields listed in fieldsToMap", () => {
+    const result: ComponentData = mapFields(
+      { type: "Comp", props: { id: "abc" } },
+      mappers,
+      config,
+      false,
+      true,
+      ["id", "title"]
+    );
+
+    // e.g. a prop that was just deleted still gets its transform run
+    expect(result.props.title).toBe("mapped:title:undefined");
+  });
+
+  it("defaults missing subfields of object values listed in fieldsToMap", () => {
+    const result: ComponentData = mapFields(
+      { type: "Comp", props: { id: "abc", nested: {} } },
+      mappers,
+      config,
+      false,
+      true,
+      ["nested"]
     );
 
     expect(result.props.nested.title).toBe("mapped:nested.title:undefined");
