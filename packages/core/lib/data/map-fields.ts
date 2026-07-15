@@ -44,6 +44,7 @@ type WalkObjectOpts = {
   config: Config;
   recurseSlots?: boolean;
   ownedFields?: boolean;
+  keysToWalk?: string[];
 };
 
 const isPromise = <T = unknown>(v: any): v is Promise<T> =>
@@ -160,13 +161,11 @@ const walkObject = ({
   config,
   recurseSlots,
   ownedFields,
+  keysToWalk: providedKeys,
 }: WalkObjectOpts): Record<string, any> => {
-  const keys = Object.keys(value);
+  const keys = providedKeys ?? Object.keys(value);
 
-  // Include fields that have a mapper but no value, so their transforms still
-  // run (e.g. a contentEditable text field without a default prop). Slots are
-  // defaulted separately via defaultSlots.
-  if (ownedFields) {
+  if (!providedKeys && ownedFields) {
     for (const fieldName in fields) {
       const fieldType = fields[fieldName].type;
 
@@ -213,7 +212,8 @@ export function mapFields<T extends ComponentData | RootData>(
   mappers: Mappers<MapFn>,
   config: Config,
   recurseSlots?: boolean,
-  shouldDefaultSlots?: boolean
+  shouldDefaultSlots?: boolean,
+  fieldsToMap?: string[]
 ): T;
 
 export function mapFields<T extends ComponentData | RootData>(
@@ -221,15 +221,29 @@ export function mapFields<T extends ComponentData | RootData>(
   mappers: Mappers<PromiseMapFn>,
   config: Config,
   recurseSlots?: boolean,
-  shouldDefaultSlots?: boolean
+  shouldDefaultSlots?: boolean,
+  fieldsToMap?: string[]
 ): Promise<T>;
 
+/**
+ * Walks and transforms the fields of a component or root item.
+ *
+ * @param item The component or root item to transform.
+ * @param mappers The mapping functions to apply to each field type.
+ * @param config The puck config for the item.
+ * @param recurseSlots Whether to recurse into slot fields.
+ * @param shouldDefaultSlots Whether to default missing slot fields.
+ * @param fieldsToMap Limit the walk to these top-level fields.
+ *                    When omitted, all props and field definitions are walked.
+ * @returns The transformed item.
+ */
 export function mapFields(
   item: any,
   mappers: Mappers,
   config: Config,
   recurseSlots: boolean = false,
-  shouldDefaultSlots: boolean = true
+  shouldDefaultSlots: boolean = true,
+  fieldsToMap?: string[]
 ): any {
   const itemType = "type" in item ? item.type : "root";
 
@@ -247,6 +261,7 @@ export function mapFields(
     config,
     recurseSlots,
     ownedFields: true,
+    keysToWalk: fieldsToMap,
   });
 
   if (isPromise(newProps)) {
