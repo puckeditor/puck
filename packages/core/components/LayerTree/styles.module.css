@@ -42,7 +42,7 @@
 
   --_puck-outline-color-drop-indicator: var(
     --puck-outline-color-drop-indicator,
-    var(--puck-color-interactive-active)
+    var(--puck-color-insertion-indicator)
   );
   --_puck-outline-drop-indicator-size: var(--puck-border-width-focus);
 

@@ -34,6 +34,7 @@
       transparent
     );
     --puck-color-selection-border: var(--puck-color-azure-08);
+    --puck-color-insertion-indicator: var(--puck-color-azure-06);
     --puck-color-highlight: var(--puck-color-rose-07);
     --puck-color-bg-disabled: var(--puck-color-grey-07);
     --puck-color-text-disabled: var(--puck-color-grey-03);
