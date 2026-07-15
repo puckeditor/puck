@@ -16,6 +16,6 @@
   flex-grow: 1;
   min-height: 0;
   overflow: auto;
-  padding: var(--puck-space-2);
+  padding: var(--puck-space-1);
   box-sizing: border-box;
 }

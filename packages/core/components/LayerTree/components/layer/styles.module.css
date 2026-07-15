@@ -78,7 +78,7 @@
   gap: var(--puck-space-2);
   align-items: center;
   overflow-x: hidden;
-  margin: var(--puck-space-2) var(--puck-space-1);
+  margin: var(--puck-space-1);
   cursor: pointer;
 }
 
@@ -100,7 +100,7 @@
 
 .Layer-zones {
   display: none;
-  margin-inline-start: var(--puck-outline-space-indent, var(--puck-space-3));
+  margin-inline-start: var(--puck-outline-space-indent, var(--puck-space-4));
 }
 
 .Layer--isExpanded > .Layer-zones {

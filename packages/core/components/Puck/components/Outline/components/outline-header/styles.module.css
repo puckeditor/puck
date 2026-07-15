@@ -10,6 +10,7 @@
 }
 
 .OutlineHeader-title {
+  color: var(--puck-color-text-secondary);
   font-size: var(--puck-font-size-xs);
   font-weight: var(--puck-font-weight-regular);
   line-height: var(--puck-line-height-m);

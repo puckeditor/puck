@@ -25,20 +25,23 @@ export const LayerTree = ({
     (s) => s.dnd?.disableOutlineDrag ?? false
   );
 
+  const hasItems = trees.length > 0 && trees[0].items.length > 0;
+
   return (
     <OutlineDndProvider>
       <div
         className={getClassNameDragRoot()}
         data-puck-dnd-disabled={disableOutlineDrag || undefined}
       >
-        {trees.map((tree) => (
-          <LayerTreeZone
-            depth={0}
-            key={tree.zoneCompound}
-            selectedId={selectedId}
-            tree={tree}
-          />
-        ))}
+        {hasItems &&
+          trees.map((tree) => (
+            <LayerTreeZone
+              depth={0}
+              key={tree.zoneCompound}
+              selectedId={selectedId}
+              tree={tree}
+            />
+          ))}
       </div>
     </OutlineDndProvider>
   );

@@ -3,7 +3,7 @@
   color: var(--_puck-outline-color-text);
   font-family: var(
     --puck-outline-font-family,
-    var(--puck-font-family-monospaced)
+    var(--puck-font-family)
   );
   font-size: var(--puck-outline-font-size, var(--puck-font-size-xxxs));
   margin: 0;
