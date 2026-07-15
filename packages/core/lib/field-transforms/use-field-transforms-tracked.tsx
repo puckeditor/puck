@@ -16,6 +16,7 @@ export function useFieldTransformsTracked<
   readOnly?: T["readOnly"],
   forceReadOnly?: boolean
 ): T["props"] {
+  const prevMappers = useRef<Mappers>(null);
   const prevProps = useRef<Record<string, any>>(null);
   const prevResult = useRef<Record<string, any>>(item.props);
 
@@ -25,43 +26,57 @@ export function useFieldTransformsTracked<
   );
 
   const transformedProps = useMemo(() => {
-    // Filter to changed fields only (shallow comparison)
-    const changedProps: Record<string, any> = {};
-
     const componentConfig =
       item.type === "root" ? config.root : config.components?.[item.type];
 
+    const componentFields = componentConfig?.fields ?? {};
+
+    // Transformed props depend on mappers, so a mappers change
+    // invalidates all of them (e.g when readOnly changes)
+    const fullRemap = prevMappers.current !== mappers;
+
+    let changedFields: string[] | undefined;
     let changeIncludesSlot = false;
 
-    for (const fieldName in item.props) {
-      const fieldType = componentConfig?.fields?.[fieldName]?.type;
-
-      if (
-        !prevProps.current ||
-        item.props[fieldName] !== prevProps.current[fieldName]
-      ) {
-        changedProps[fieldName] = item.props[fieldName];
-
-        if (fieldType === "slot") {
+    if (!prevProps.current || fullRemap) {
+      for (const fieldName in item.props) {
+        if (componentFields[fieldName]?.type === "slot") {
           changeIncludesSlot = true;
+        }
+      }
+    } else {
+      changedFields = ["id"]; // Always include ID
+
+      const allFieldNames = new Set([
+        ...Object.keys(item.props),
+        ...Object.keys(prevProps.current),
+      ]);
+
+      for (const fieldName of allFieldNames) {
+        if (item.props[fieldName] !== prevProps.current[fieldName]) {
+          changedFields.push(fieldName);
+
+          if (componentFields[fieldName]?.type === "slot") {
+            changeIncludesSlot = true;
+          }
         }
       }
     }
 
-    // Always include ID
-    changedProps.id = item.props.id;
-
-    prevProps.current = item.props;
-
     const mapped = mapFields(
-      { ...item, props: changedProps },
+      item,
       mappers,
       config,
       false,
-      changeIncludesSlot
+      changeIncludesSlot,
+      changedFields
     ).props;
 
-    prevResult.current = { ...prevResult.current, ...mapped };
+    prevProps.current = item.props;
+    prevMappers.current = mappers;
+    prevResult.current = changedFields
+      ? { ...prevResult.current, ...mapped }
+      : mapped;
 
     return prevResult.current;
   }, [config, item, mappers]);
