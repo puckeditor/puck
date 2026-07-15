@@ -2,6 +2,16 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.22.2](https://github.com/measuredco/puck/compare/v0.22.1...v0.22.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* don't drop transformed fields on updates ([df6b444](https://github.com/measuredco/puck/commit/df6b4442e1e5f491e8ecf3d929f4037a0dc0061d))
+
+
+
+
 ## [0.22.1](https://github.com/puckeditor/puck/compare/v0.22.0...v0.22.1) (2026-07-13)
 
 
