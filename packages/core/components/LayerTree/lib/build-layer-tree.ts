@@ -46,6 +46,7 @@ const buildLayerNode = ({
   zoneCompound,
   zones,
   zonesByParent,
+  componentFallbackLabel,
 }: {
   config: Config;
   itemId: string;
@@ -54,9 +55,11 @@ const buildLayerNode = ({
   zoneCompound: string;
   zones: ZoneIndex;
   zonesByParent: Record<string, string[]>;
+  componentFallbackLabel?: string;
 }): LayerNode => {
   const nodeData = nodes[itemId];
-  const componentType = nodeData?.data.type?.toString() || "Component";
+  const componentType =
+    nodeData?.data.type?.toString() ?? componentFallbackLabel;
   const label = config.components[componentType]?.label ?? componentType;
   const childZoneCompounds = zonesByParent[itemId] || [];
 
@@ -91,6 +94,8 @@ export interface BuildLayerTreeProps {
   zones: ZoneIndex;
   /** The object mapping parent IDs to their child zone compounds */
   zonesByParent?: Record<string, string[]>;
+  /** The fallback label for the component */
+  componentFallbackLabel?: string;
 }
 
 /**
@@ -103,6 +108,7 @@ export const buildLayerTree = ({
   zoneCompound,
   zones,
   zonesByParent = getZonesByParent(zones),
+  componentFallbackLabel,
 }: BuildLayerTreeProps): LayerZone => {
   const contentIds = zones[zoneCompound]?.contentIds ?? [];
 

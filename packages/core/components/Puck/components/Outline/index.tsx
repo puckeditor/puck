@@ -2,8 +2,9 @@ import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppStore } from "../../../../store";
-import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
 import { getClassNameFactory } from "../../../../lib";
+import { findZonesForArea } from "../../../../lib/data/find-zones-for-area";
+import { useMessage } from "../../../../lib/use-message";
 
 import { buildLayerTree, LayerTree } from "../../../LayerTree";
 
