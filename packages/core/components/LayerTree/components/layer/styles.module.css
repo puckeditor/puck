@@ -1,0 +1,150 @@
+/* Private --_puck-outline-* vars resolve on .LayerTreeRoot. */
+.Layer {
+  position: relative;
+  border: var(--_puck-outline-border-width) solid transparent;
+  border-radius: var(--_puck-outline-radius);
+}
+
+.Layer-inner {
+  align-items: center;
+  border: var(--_puck-outline-border-width) solid transparent;
+  border-radius: var(--_puck-outline-radius);
+  cursor: pointer;
+  display: flex;
+  position: relative;
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
+}
+
+.Layer--isSortable > .Layer-inner {
+  cursor: grab;
+}
+
+.Layer-content {
+  display: flex;
+  gap: var(--puck-space-4);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.Layer-clickable {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--_puck-outline-radius);
+  color: inherit;
+  cursor: inherit;
+  display: flex;
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  padding: 0;
+}
+
+/* With outline drag-and-drop disabled (attribute set on .LayerTreeRoot),
+   rows are click-to-select only */
+[data-puck-dnd-disabled] .Layer-inner,
+[data-puck-dnd-disabled] .Layer-clickable {
+  cursor: pointer;
+}
+
+.Layer-clickable:focus-visible {
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
+  position: relative;
+  z-index: 1;
+}
+
+.Layer-caret {
+  visibility: hidden;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.Layer-caret svg {
+  height: var(--_puck-outline-caret-size);
+  width: var(--_puck-outline-caret-size);
+}
+
+.Layer--containsZone > .Layer-inner > .Layer-content {
+  font-weight: var(--puck-font-weight-bold);
+}
+
+.Layer--containsZone > .Layer-inner > .Layer-caret {
+  visibility: visible;
+}
+
+.Layer-title {
+  display: flex;
+  gap: var(--puck-space-2);
+  align-items: center;
+  overflow-x: hidden;
+  margin: var(--puck-space-1);
+  cursor: pointer;
+}
+
+.Layer-name {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Layer-icon {
+  color: var(--puck-outline-color-icon, var(--puck-color-text-subtle));
+  margin-top: var(--puck-space-1);
+}
+
+.Layer-icon svg {
+  height: var(--_puck-outline-icon-size);
+  width: var(--_puck-outline-icon-size);
+}
+
+.Layer-zones {
+  display: none;
+  margin-inline-start: var(--puck-outline-space-indent, var(--puck-space-4));
+}
+
+.Layer--isExpanded > .Layer-zones {
+  display: block;
+}
+
+.Layer--isExpanded > .Layer-inner > .Layer-caret svg {
+  transform: rotate(90deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Layer:not(.Layer--isSelected) > .Layer-inner:hover {
+    --_puck-outline-actions-color-bg: var(--_puck-outline-color-bg-hover);
+
+    border-color: var(--_puck-outline-color-border-hover);
+    background: var(--_puck-outline-color-bg-hover);
+    transition: none;
+  }
+}
+
+.Layer--isSelected {
+  border-color: var(
+    --puck-outline-color-border-selected,
+    var(--puck-color-selection-border)
+  );
+}
+
+.Layer--isSelected > .Layer-inner {
+  --_puck-outline-actions-color-bg: var(--_puck-outline-color-bg-selected);
+
+  background: var(--_puck-outline-color-bg-selected);
+}
+
+/* Drag and drop */
+.Layer--isExpandCandidate > .Layer-inner {
+  border-color: var(--_puck-outline-color-border-hover);
+  background: var(--_puck-outline-color-bg-hover);
+}
+
+.Layer--isDragSource > .Layer-inner {
+  color: var(--puck-color-text-muted);
+  background: transparent;
+}
+
+.Layer--isDragSource > .Layer-zones {
+  opacity: 0.5;
+}

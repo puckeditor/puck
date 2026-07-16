@@ -2655,12 +2655,12 @@
   resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.14.2.tgz#6ccbc1342a52f1175b9e1d9aef67e2cf0ab6d4f0"
   integrity sha512-RZHdBj9ZF4n40Rp4jS052EHHjBWf96P9oNdXPfhQTovCuWY9iQn3Gq+gOTJSgBO9A/JBuPfMOWsSX/lIU9Pc/A==
 
-"@puckeditor/cloud-client@^0.7.0":
+"@puckeditor/cloud-client@^0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@puckeditor/cloud-client/-/cloud-client-0.7.0.tgz#0d8e12d2ad287eb8c771a85522972186464f824b"
   integrity sha512-9y5AKtn9IlYG9X/+MqNwKckgIq2/Mq8p+/MSI+f4mOrgIg8BcBLfphOqTZWwoFEK6yxJkXA179utBCICw6dnKQ==
 
-"@puckeditor/plugin-ai@^0.7.0":
+"@puckeditor/plugin-ai@^0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@puckeditor/plugin-ai/-/plugin-ai-0.7.0.tgz#02f55c444748cc813481d21934d7f964773add0f"
   integrity sha512-TS6e59EwYs7+Ssn8My3XkuAkxYxIlcW/GC9wfJwNOTJh27itSl1oszJYvD+50T8/GVQl4MgkPyc8qYMaqw8R4w==

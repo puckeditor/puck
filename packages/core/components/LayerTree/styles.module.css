@@ -1,133 +1,69 @@
-.LayerTree {
-  color: var(--puck-outline-color-text, var(--puck-color-text-secondary));
-  font-family: var(--puck-font-family);
-  font-size: var(--puck-outline-font-size, var(--puck-font-size-xxs));
-  margin: 0;
-  position: relative;
-  list-style: none;
-  padding: 0;
-}
+.LayerTreeRoot {
+  min-width: max-content;
 
-.LayerTree-zoneTitle {
-  color: var(--puck-outline-zone-color-text, var(--puck-color-text-muted));
-  font-size: var(--puck-outline-zone-font-size, var(--puck-font-size-xxxs));
-  text-transform: uppercase;
-}
+  --_puck-iconbutton-color-bg-hover: transparent;
 
-.LayerTree-helper {
-  text-align: center;
-  color: var(--puck-color-text-subtle);
-  margin: var(--puck-space-2) var(--puck-space-1);
-}
-
-.Layer {
-  position: relative;
-  border: var(--puck-outline-border-width, var(--puck-border-width-regular))
-    solid transparent;
-  border-radius: var(--puck-outline-radius, var(--puck-radius-m));
-}
-
-.Layer-inner {
-  border: var(--puck-outline-border-width, var(--puck-border-width-regular))
-    solid transparent;
-  border-radius: var(--puck-outline-radius, var(--puck-radius-m));
-  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
-}
-
-.Layer--containsZone > .Layer-inner {
-  padding-inline-start: 0;
-}
-
-.Layer-clickable {
-  align-items: center;
-  background: none;
-  border: 0;
-  border-radius: var(--puck-outline-radius, var(--puck-radius-m));
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  font: inherit;
-  padding-inline-start: var(--puck-space-3);
-  padding-inline-end: var(--puck-space-1);
-  width: 100%;
-}
-
-.Layer-clickable:focus-visible {
-  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
-  outline-offset: var(--puck-border-width-focus);
-  position: relative;
-  z-index: 1;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .Layer:not(.Layer--isSelected) > .Layer-inner:hover {
-    border-color: var(
-      --puck-outline-color-border-hover,
-      var(--puck-color-interactive-subtle)
-    );
-    background: var(
-      --puck-outline-color-bg-hover,
-      var(--puck-color-interactive-soft)
-    );
-    color: var(--puck-outline-color-text-hover, var(--puck-color-interactive));
-    transition: none;
-  }
-}
-
-.Layer--isSelected {
-  border-color: var(
-    --puck-outline-color-border-selected,
-    var(--puck-color-selection-border)
+  --_puck-outline-color-text: var(
+    --puck-outline-color-text,
+    var(--puck-color-text-secondary)
   );
-}
+  --_puck-outline-border-width: var(
+    --puck-outline-border-width,
+    var(--puck-border-width-regular)
+  );
+  --_puck-outline-radius: var(--puck-outline-radius, var(--puck-radius-m));
+  --_puck-outline-caret-size: var(
+    --puck-outline-action-size,
+    var(--puck-icon-size-s)
+  );
+  --_puck-outline-icon-size: var(
+    --puck-outline-icon-size,
+    var(--puck-icon-size-xs)
+  );
 
-.Layer--isSelected > .Layer-inner {
-  background: var(
+  --_puck-outline-color-bg-selected: var(
     --puck-outline-color-bg-selected,
     var(--puck-color-interactive-subtle)
   );
-}
+  --_puck-outline-color-bg-hover: var(
+    --puck-outline-color-bg-hover,
+    var(--puck-color-interactive-soft)
+  );
 
-.Layer--isSelected > .Layer-inner > .Layer-clickable > .Layer-chevron,
-.Layer--childIsSelected > .Layer-inner > .Layer-clickable > .Layer-chevron {
-  transform: scaleY(-1);
-}
+  --_puck-outline-color-border-hover: var(
+    --puck-outline-color-border-hover,
+    var(--puck-color-interactive-subtle)
+  );
 
-.Layer-zones {
-  display: none;
-  margin-inline-start: var(--puck-space-3);
-}
+  --_puck-outline-color-text-hover: var(
+    --puck-outline-color-text-hover,
+    var(--puck-color-interactive)
+  );
 
-.Layer--isSelected > .Layer-zones,
-.Layer--childIsSelected > .Layer-zones {
-  display: block;
-}
+  --_puck-outline-color-drop-indicator: var(
+    --puck-outline-color-drop-indicator,
+    var(--puck-color-insertion-indicator)
+  );
+  --_puck-outline-drop-indicator-size: var(--puck-border-width-focus);
 
-.Layer-zones > .LayerTree {
-  margin-inline-start: var(--puck-space-3);
-}
+  --_puck-outline-zone-color-text: var(
+    --puck-outline-zone-color-text,
+    var(--puck-color-text-muted)
+  );
 
-.Layer-title,
-.LayerTree-zoneTitle {
-  display: flex;
-  gap: var(--puck-space-2);
-  align-items: center;
-  margin: var(--puck-space-2) var(--puck-space-1);
-  overflow-x: hidden;
-}
+  --_puck-outline-actions-color-bg: transparent;
 
-.Layer-name {
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+  /* The width of the (possibly hidden) caret button at the start of every
+     row; titles and helpers indent by the same amount so all text aligns */
+  --_puck-outline-caret-slot: calc(
+    var(--_puck-outline-caret-size) +
+      var(--puck-iconbutton-space, var(--puck-space-1)) * 2
+  );
 
-.Layer-icon {
-  color: var(--puck-outline-color-icon, var(--puck-color-highlight));
-  margin-top: var(--puck-space-1);
-}
-
-.Layer-zoneIcon {
-  color: var(--puck-outline-zone-color-text, var(--puck-color-text-muted));
-  margin-top: var(--puck-space-1);
+  /* Caret slot + the row title's inline margin + one border width: lines
+     zone titles and helpers up with row titles at the same depth */
+  --_puck-outline-label-indent: calc(
+    var(--_puck-outline-caret-slot) + var(--puck-space-1) +
+      var(--_puck-outline-border-width)
+  );
 }

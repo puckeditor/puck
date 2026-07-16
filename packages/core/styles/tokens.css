@@ -34,6 +34,7 @@
       transparent
     );
     --puck-color-selection-border: var(--puck-color-azure-08);
+    --puck-color-insertion-indicator: var(--puck-color-azure-06);
     --puck-color-highlight: var(--puck-color-rose-07);
     --puck-color-bg-disabled: var(--puck-color-grey-07);
     --puck-color-text-disabled: var(--puck-color-grey-03);
@@ -102,6 +103,7 @@
    * Icon sizing
    */
 
+    --puck-icon-size-xs: 14px;
     --puck-icon-size-s: 16px;
     --puck-icon-size-m: 18px;
     --puck-icon-size-l: 24px;
