@@ -54,6 +54,10 @@ const fieldTransforms = {
 const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 ```
 
+<Callout type="info">
+  Transforms are rendered as React components, so you can use [hooks](https://react.dev/reference/rules/rules-of-hooks) (like `useState` or `useEffect`) within them.
+</Callout>
+
 ## Define new fields
 
 As with [field type overrides](/docs/extending-puck/ui-overrides#introducing-new-field-types), field transforms let you define your own field types:
