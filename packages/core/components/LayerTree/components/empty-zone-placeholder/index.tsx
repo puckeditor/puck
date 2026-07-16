@@ -1,4 +1,5 @@
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
+import { useMessage } from "../../../../lib/use-message";
 
 import useOutlineDropZone from "../../lib/dnd/use-outline-drop-zone";
 
@@ -21,13 +22,15 @@ export const EmptyZonePlaceholder = ({
     zoneCompound,
   });
 
+  const noItemsMsg = useMessage("outline-empty");
+
   return (
     <li
       className={getClassName("helper")}
       data-puck-drop-target={isDropTarget || undefined}
       ref={ref}
     >
-      No items
+      {noItemsMsg}
       {isDropTarget && <DropLine edge="top" />}
     </li>
   );

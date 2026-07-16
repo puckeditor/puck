@@ -17,6 +17,7 @@ import { LayerNode } from "../../types";
 import { DropLine } from "../drop-line";
 import { LayerActions } from "../layer-actions";
 import { LayerTreeZone } from "../layer-tree-zone";
+import { useMessage } from "../../../../lib/use-message";
 
 const getClassName = getClassNameFactory("Layer", styles);
 
@@ -71,6 +72,9 @@ export const Layer = forwardRef(function Layer(
 
   const zoneStore = useContext(ZoneStoreContext);
   const outlineStore = useOutlineDndStoreApi();
+
+  const collapseMsg = useMessage("outline-item-collapse");
+  const expandMsg = useMessage("outline-item-expand");
 
   const containsZone = node.childZones.length > 0;
 
@@ -155,7 +159,7 @@ export const Layer = forwardRef(function Layer(
                 recordHistory: false,
               });
             }}
-            title={isExpanded ? "Collapse" : "Expand"}
+            title={isExpanded ? collapseMsg : expandMsg}
             type="button"
           >
             <ChevronRight />

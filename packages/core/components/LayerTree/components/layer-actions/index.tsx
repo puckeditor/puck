@@ -11,6 +11,7 @@ import { useOutlineDndStoreApi } from "../../lib/store";
 import { LayerNode } from "../../types";
 
 import styles from "./styles.module.css";
+import { useMessage } from "../../../../lib/use-message";
 
 const getClassName = getClassNameFactory("LayerActions", styles);
 
@@ -41,6 +42,9 @@ export const LayerActions = ({
       };
     })
   );
+
+  const duplicateMsg = useMessage("outline-item-duplicate");
+  const deleteMsg = useMessage("outline-item-delete");
 
   const deleteItem = useCallback(
     (e: SyntheticEvent<Element>) => {
@@ -85,12 +89,12 @@ export const LayerActions = ({
   return (
     <div className={getClassName({ visible })}>
       {permissions.duplicate && (
-        <IconButton onClick={duplicateItem} title="Duplicate" type="button">
+        <IconButton onClick={duplicateItem} title={duplicateMsg} type="button">
           <Copy />
         </IconButton>
       )}
       {permissions.delete && (
-        <IconButton onClick={deleteItem} title="Delete" type="button">
+        <IconButton onClick={deleteItem} title={deleteMsg} type="button">
           <Trash />
         </IconButton>
       )}

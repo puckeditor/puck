@@ -2,11 +2,13 @@ import { ChevronsDownUp } from "lucide-react";
 
 import getClassNameFactory from "../../../../../../lib/get-class-name-factory";
 import mergeClassNames from "../../../../../../lib/merge-class-names";
+import { useMessage } from "../../../../../../lib/use-message";
+
+import { useAppStore } from "../../../../../../store";
 
 import { IconButton } from "../../../../../IconButton";
 
 import styles from "./styles.module.css";
-import { useAppStore } from "../../../../../../store";
 
 export interface CollapseAllProps {
   className?: string;
@@ -27,6 +29,8 @@ function CollapseAll({ className }: CollapseAllProps) {
   );
   const dispatch = useAppStore((s) => s.dispatch);
 
+  const collapseAllMsg = useMessage("outline-header-collapseall");
+
   const collapseAll = () => {
     dispatch({ type: "setUi", ui: { itemExpanded: {} } });
   };
@@ -38,7 +42,7 @@ function CollapseAll({ className }: CollapseAllProps) {
         className
       )}
     >
-      <IconButton title="Collapse all" onClick={collapseAll}>
+      <IconButton title={collapseAllMsg} onClick={collapseAll}>
         <ChevronsDownUp className={getClassName("icon")} />
       </IconButton>
     </div>

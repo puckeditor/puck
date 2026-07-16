@@ -22,8 +22,12 @@ export const defaultDictionary = {
   "label-component": "Component",
   // Outline
   "outline-empty": "No items",
-  "outline-collapse": "Collapse",
-  "outline-expand": "Expand",
+  "outline-item-collapse": "Collapse",
+  "outline-item-expand": "Expand",
+  "outline-header-title": "Outline",
+  "outline-header-collapseall": "Collapse all",
+  "outline-item-duplicate": "Duplicate",
+  "outline-item-delete": "Delete",
   // Drawer (component list)
   "drawer-category-collapse": "Collapse {title}",
   "drawer-category-expand": "Expand {title}",

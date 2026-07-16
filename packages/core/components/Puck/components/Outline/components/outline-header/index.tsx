@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import { getClassNameFactory } from "../../../../../../lib";
+import { useMessage } from "../../../../../../lib/use-message";
 
 import styles from "./styles.module.css";
 
@@ -15,11 +16,13 @@ export interface OutlineHeaderProps {
  */
 const OutlineHeader = ({
   children,
-  title = "Outline",
+  title,
 }: PropsWithChildren<OutlineHeaderProps>) => {
+  const outlineHeaderMsg = useMessage("outline-header-title");
+
   return (
     <div className={getClassName()}>
-      <div className={getClassName("title")}>{title}</div>
+      <div className={getClassName("title")}>{outlineHeaderMsg ?? title}</div>
       {children}
     </div>
   );
