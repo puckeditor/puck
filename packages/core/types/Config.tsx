@@ -4,7 +4,7 @@ import { ComponentData, ComponentMetadata, RootData } from "./Data";
 
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
 import { AppState } from "./AppState";
-import { DefaultComponentProps, DefaultRootFieldProps } from "./Props";
+import { DefaultComponentProps, WithDefaultRootFieldProps } from "./Props";
 import { Permissions } from "./API";
 import { DropZoneProps } from "../components/DropZone/types";
 import {
@@ -233,7 +233,7 @@ export type ExtractConfigParams<UserConfig extends ConfigInternal> =
   >
     ? {
         props: PropsOrParams;
-        rootProps: RootProps & DefaultRootFieldProps;
+        rootProps: WithDefaultRootFieldProps<RootProps>;
         categoryNames: CategoryName;
         field: UserField extends { type: string } ? UserField : Field;
       }
