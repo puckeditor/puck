@@ -4,9 +4,9 @@
 
 ## New to Puck?
 
-Read [What is Puck?](https://puckeditor.com/docs) and the [Getting Started guide](https://puckeditor.com/docs/getting-started) first. 
+Read [What is Puck?](https://puckeditor.com/docs) and the [Getting Started guide](https://puckeditor.com/docs/getting-started) first.
 
-In short, Puck has three main pieces: 
+In short, Puck has three main pieces:
 
 - A [config](https://puckeditor.com/docs/api-reference/configuration/config) object that defines which components can be used to build pages.
 - The [`<Puck>`](https://puckeditor.com/docs/api-reference/components/puck) component that renders the editor and exports [pages as JSON](https://puckeditor.com/docs/api-reference/data-model/data).
