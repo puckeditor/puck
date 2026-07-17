@@ -6,7 +6,13 @@ import { createAiPlugin } from "@puckeditor/plugin-ai";
 
 import config from "../../../puck.config";
 
-const aiPlugin = createAiPlugin();
+const aiPlugin = createAiPlugin({
+  // Allow users to switch between design and assembly mode.
+  // Read more: https://puckeditor.com/docs/ai/design-mode
+  designMode: {
+    visible: true,
+  },
+});
 
 export function Client({ path, data }: { path: string; data: Partial<Data> }) {
   return (

@@ -6,6 +6,11 @@ import { puckHandler } from "@puckeditor/cloud-client";
 
 const options: PuckCloudOptions = {
   ai: {
+    designMode: {
+      // Allow AI to generate new components using "design mode"
+      // Learn more: https://puckeditor.com/docs/ai/design-mode
+      allowed: true,
+    },
     // Replace with your business context
     context: "We are Google. You create Google landing pages.",
   },
