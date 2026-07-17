@@ -12,28 +12,28 @@
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.3.3.tgz#90749bde8b89cd41764224f5aac29cd4138f75ff"
   integrity sha512-rE0Pygv0sEZ4vBWHlAgJLGDU7Pm8xoO6p3wsEceb7GYAjScrOHpEo8KK/eVkAcnSM+slAEtXjA2JpdjLp4fJQQ==
 
-"@ai-sdk/gateway@3.0.123":
-  version "3.0.123"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-3.0.123.tgz#6ffebf1bd916087d3f171b3f1ee627f7e8bfcf5a"
-  integrity sha512-rL+3Sp9crOlfE7MwguFPS30qVp6HFcr9na0KYMb4CcQdxAIjBJec3EEdCjc94UyRVZWLmgQ6Yr605FmPlFIi0w==
+"@ai-sdk/gateway@3.0.152":
+  version "3.0.152"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-3.0.152.tgz#fe6bc052c2015d909d419c700371255372326b82"
+  integrity sha512-IM9D6if0CXsNkiyyIqoaD3/80gZVpCI3/tKpsq1N+vNa2O1ZeUfJmaUcIr92qqPO1G8u5YHah+0EayhIkk3ACA==
   dependencies:
-    "@ai-sdk/provider" "3.0.10"
-    "@ai-sdk/provider-utils" "4.0.27"
+    "@ai-sdk/provider" "3.0.14"
+    "@ai-sdk/provider-utils" "4.0.39"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/provider-utils@4.0.27":
-  version "4.0.27"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-4.0.27.tgz#d2183685768626bcf1c968b7d73ea2b974da59b9"
-  integrity sha512-ubkAJ+xODouwtmN1tYlvTPphH1hPOBfZaEQe8U7skGvFAnIRs9PPpsq57bC2+Ky/MB4yzhd6YOsxTAx9sGpazw==
+"@ai-sdk/provider-utils@4.0.39":
+  version "4.0.39"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-4.0.39.tgz#920f0109ace2e1baec6f5478043f8b9f5772ba6d"
+  integrity sha512-XPR6o7561RYUkfYlLYouWsvm6Gv2tYIQy5pttGRkvML98u138ClPThn5yiQg5rMQutTtZLB+GUC8qFFCzDKQQQ==
   dependencies:
-    "@ai-sdk/provider" "3.0.10"
+    "@ai-sdk/provider" "3.0.14"
     "@standard-schema/spec" "^1.1.0"
     eventsource-parser "^3.0.8"
 
-"@ai-sdk/provider@3.0.10":
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-3.0.10.tgz#abfb6776f699951f9b8ac20cf1d42a3fc7d79752"
-  integrity sha512-Q3BZ27qfpYqnCYGvE3vt+Qi6LGOF9R5Nmzn+9JoM1lCRsD9mYaIhfJLkSunN48nfGXJ6n+XNV0J/XVpqGQl7Dw==
+"@ai-sdk/provider@3.0.14":
+  version "3.0.14"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-3.0.14.tgz#5893a90e0b5355ec6a5c148f06bd7f08355c1a6f"
+  integrity sha512-5X1k57JBJ4H7H1QjX7CnJYAB1I19r/trVZTMcSms7/kLNZ8RaU4Nt2agcwZzv82Hfx6Q7/TOLU7agAKeFfc8cA==
   dependencies:
     json-schema "^0.4.0"
 
@@ -435,10 +435,15 @@
     "@babel/plugin-transform-modules-commonjs" "^7.27.1"
     "@babel/plugin-transform-typescript" "^7.28.5"
 
-"@babel/runtime@^7.11.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.20.13":
+"@babel/runtime@^7.11.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3":
   version "7.29.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.2.tgz#9a6e2d05f4b6692e1801cd4fb176ad823930ed5e"
   integrity sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==
+
+"@babel/runtime@^7.20.13":
+  version "7.29.7"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.7.tgz#12022450c45a4da6d8d8287b18a4ff2ddb23f768"
+  integrity sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==
 
 "@babel/template@^7.28.6", "@babel/template@^7.3.3":
   version "7.28.6"
@@ -4348,13 +4353,13 @@ aggregate-error@^3.0.0:
     indent-string "^4.0.0"
 
 ai@^6.0.61:
-  version "6.0.195"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-6.0.195.tgz#b971c71f079b90a4ee23189ca8f1de1ddcbba37f"
-  integrity sha512-IYZpuVz0boWbpIQYyinfWFrvQ1N0dG+EVB63it45B2YAU/MxxCnwz4zBswjYnPtHnJBedpMPNrwVbeczbl2GKg==
+  version "6.0.229"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-6.0.229.tgz#44741d6d25ab2f01adb5034a0c92407230b2eda7"
+  integrity sha512-bDi36L2RdEFMS7z2WIhBr7fpQhMkjzd6mgRKgtlmBSs2zZwUI22s6ZBOak/XN/LpKiJnS7SrlVqKDcqqvzTW8A==
   dependencies:
-    "@ai-sdk/gateway" "3.0.123"
-    "@ai-sdk/provider" "3.0.10"
-    "@ai-sdk/provider-utils" "4.0.27"
+    "@ai-sdk/gateway" "3.0.152"
+    "@ai-sdk/provider" "3.0.14"
+    "@ai-sdk/provider-utils" "4.0.39"
     "@opentelemetry/api" "^1.9.0"
 
 ajv@^6.14.0:
@@ -14556,9 +14561,9 @@ use-sidecar@^1.1.3:
     tslib "^2.0.0"
 
 use-stick-to-bottom@^1.1.1:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/use-stick-to-bottom/-/use-stick-to-bottom-1.1.4.tgz#2d7a7c1875d3185a04f5c8660924124ac6c36a90"
-  integrity sha512-2w/lydkrwhWMv1vCaEhYbzMDhgbwIodHpAHPV0/xKJErRkbjDEUe1EWmvr6Fwb+qhiERjc1EWgAEZaSaF69CpA==
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/use-stick-to-bottom/-/use-stick-to-bottom-1.1.6.tgz#c35e7f9bcb1ee3da0c059c448fb9a61bdf01fe6b"
+  integrity sha512-z3Up8jYQGTkUCsGBnwg6/wj70KgXoW5Kz1AAc1j8MtQuYMBo6ZsdhrIXoegxa7gaMMilgQYyTohTrt3p94jHog==
 
 use-sync-external-store@^1.4.0, use-sync-external-store@^1.5.0, use-sync-external-store@^1.6.0:
   version "1.6.0"
