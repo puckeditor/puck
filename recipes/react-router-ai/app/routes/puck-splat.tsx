@@ -1,12 +1,15 @@
+import { useMemo } from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import type { Data } from "@puckeditor/core";
-import { Puck, Render } from "@puckeditor/core";
-import { createAiPlugin } from "@puckeditor/plugin-ai";
+import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";
+import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 
 import type { Route } from "./+types/puck-splat";
 import { config } from "../../puck.config";
 import { resolvePuckPath } from "~/lib/resolve-puck-path.server";
 import { getPage, savePage } from "~/lib/pages.server";
+import { PuckRender } from "~/components/puck-render";
+
 import editorStyles from "@puckeditor/core/puck.css?url";
 import pluginStyles from "@puckeditor/plugin-ai/styles.css?url";
 
@@ -57,19 +60,35 @@ export async function action({ params, request }: Route.ActionArgs) {
   await savePage(path, body.data);
 }
 
-const aiPlugin = createAiPlugin();
+const aiPlugin = createAiPlugin({
+  // Allow users to switch between design and assembly mode.
+  // Read more: https://puckeditor.com/docs/ai/design-mode
+  designMode: {
+    visible: true,
+  },
+  // Select design mode by default.
+  defaultMode: "design",
+});
+
+// Place the ai plugin in the first position in the side nav.
+const plugins = [aiPlugin, blocksPlugin(), outlinePlugin()];
 
 function Editor() {
   const loaderData = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
+
+  const configWithDesignedComponents = useMemo(
+    () => withDynamicConfig(config, loaderData.data),
+    [config, loaderData.data]
+  );
 
   return (
     <>
       <link rel="stylesheet" href={editorStyles} id="puck-css" />
       <link rel="stylesheet" href={pluginStyles} id="puck-plugin-ai-css" />
       <Puck
-        plugins={[aiPlugin]}
-        config={config}
+        plugins={plugins}
+        config={configWithDesignedComponents}
         data={loaderData.data}
         onPublish={async (data) => {
           await fetcher.submit(
@@ -94,7 +113,7 @@ export default function PuckSplatRoute({ loaderData }: Route.ComponentProps) {
       {loaderData.isEditorRoute ? (
         <Editor />
       ) : (
-        <Render config={config} data={loaderData.data} />
+        <PuckRender data={loaderData.data} />
       )}
     </div>
   );
