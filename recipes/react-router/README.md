@@ -1,55 +1,71 @@
-# `react-router` recipe
+# Puck + React Router recipe
 
-[Puck](https://puckeditor.com) is the visual editor for React. This app wires Puck into **React Router v7** (framework mode) so you can visually edit _any_ route — just add `/edit` to the URL — and serves the published pages from the same route.
+[Puck](https://puckeditor.com) is the open-source visual editor for React. Register the UI components you need in the [config object](https://puckeditor.com/docs/integrating-puck/component-configuration), and Puck makes them available inside a drag-and-drop page builder. This recipe connects Puck to [React Router](https://reactrouter.com) in framework mode, so you can use the editor to create or edit pages for any route in this app.
 
-> **New to Puck?** Read [What is Puck?](https://puckeditor.com/docs) and the [Getting Started guide](https://puckeditor.com/docs/getting-started) first. In short, Puck has three pieces: a [**config**](https://puckeditor.com/docs/api-reference/configuration/config) that describes your components, the [**`<Puck>`**](https://puckeditor.com/docs/api-reference/components/puck) editor, and [**`<Render>`**](https://puckeditor.com/docs/api-reference/components/render) for displaying a saved page. This app connects those three to React Router and a database.
+## New to Puck?
 
-## What this app demonstrates
+Read [What is Puck?](https://puckeditor.com/docs) and the [Getting Started guide](https://puckeditor.com/docs/getting-started) first.
 
-- React Router v7 (framework mode) integration
-- Editing any route by appending `/edit` (even routes that don't exist yet)
-- A single [splat route](https://reactrouter.com/start/framework/routing#splats) that both renders published pages and hosts the editor
-- A JSON file standing in for a database
+In short, Puck has three main pieces:
 
-## Getting started
+- A [config](https://puckeditor.com/docs/api-reference/configuration/config) object that defines which components can be used to build pages.
+- The [`<Puck>`](https://puckeditor.com/docs/api-reference/components/puck) component that renders the editor and exports the [page as JSON](https://puckeditor.com/docs/api-reference/data-model/data).
+- The [`<Render>`](https://puckeditor.com/docs/api-reference/components/render) component that renders the exported JSON as a page.
 
-Start the dev server:
+## Run the recipe
+
+### 1. Start the development server
+
+Run:
 
 ```sh
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to see the home page, then add `/edit` to edit it: [http://localhost:5173/edit](http://localhost:5173/edit).
+Once the server is running, navigate to [http://localhost:5173](http://localhost:5173) to view the home page, or [http://localhost:5173/edit](http://localhost:5173/edit) to edit it with Puck.
 
-This works for **any route, even ones that don't exist yet**:
+### 2. Create a page
 
-1. Visit [http://localhost:5173/hello/world](http://localhost:5173/hello/world) — you'll get a 404.
-2. Add `/edit` ([http://localhost:5173/hello/world/edit](http://localhost:5173/hello/world/edit)) to open the editor for that path.
-3. Build a page, press **Publish**, then visit the original URL to see it live.
+Navigate to [http://localhost:5173/edit](http://localhost:5173/edit), open the `Blocks` tab in the left sidebar and build your page by dragging components onto the canvas.
 
-> This app was scaffolded with `create-puck-app`. To create another, run `npx create-puck-app my-app`.
+### 3. Publish the page
+
+Once your page is ready, select **Publish** in the header to save the result, then navigate to [http://localhost:5173](http://localhost:5173) to view the published page.
+
+You can also create a page at any path by navigating to `/your/path/edit` and publishing it. The route `/your/path` will render the page.
 
 ## How it works
 
-The table below maps each key file to what it does and the relevant Puck docs. **To add your own components, start with `puck.config.tsx`.**
+When a URL ends in `/edit`, `resolvePuckPath` (`app/lib/resolve-puck-path.server.ts`) returns the path of the page being edited. The loader in `app/routes/puck-splat.tsx` loads the saved page, or starts with an empty page if the path is new.
 
-| File | Responsibility |
-| --- | --- |
-| `puck.config.tsx` | The [Puck config](https://puckeditor.com/docs/api-reference/configuration/config): the [components](https://puckeditor.com/docs/api-reference/configuration/component-config) users can drop onto a page, their [fields](https://puckeditor.com/docs/api-reference/fields/text), default props, and how each renders. |
-| `app/routes.ts` | Registers the routes: the home page and a catch-all [splat route](https://reactrouter.com/start/framework/routing#splats) (`*`) that handles every other path. |
-| `app/routes/puck-splat.tsx` | **The heart of the app.** Its [`loader`](https://reactrouter.com/start/framework/route-module#loader) reads the page's [`Data`](https://puckeditor.com/docs/api-reference/data-model/data) (or a 404), its [`action`](https://reactrouter.com/start/framework/route-module#action) saves published pages, and the component renders either the [`<Puck>`](https://puckeditor.com/docs/api-reference/components/puck) editor (on `/edit`) or [`<Render>`](https://puckeditor.com/docs/api-reference/components/render) (for visitors). |
-| `app/lib/resolve-puck-path.server.ts` | Detects whether a URL ends in `/edit` and returns the underlying page path. This is what lets you edit any URL by appending `/edit`. |
-| `app/routes/_index.tsx` | Renders the home page (`/`) with `<Render>`. |
-| `app/components/puck-render.tsx` | Thin wrapper around [`<Render>`](https://puckeditor.com/docs/api-reference/components/render). |
-| `app/lib/pages.server.ts` | Reads and writes page `Data` in `database.json`. |
+Selecting **Publish** sends the page data to the action in `app/routes/puck-splat.tsx`. The action writes the JSON to `database.json`. The route then loads the same data and renders it with [`<Render>`](https://puckeditor.com/docs/api-reference/components/render).
 
-## Adapting this app for production
+The table below shows the files that implement this flow.
 
-- ⚠️ **Add authentication.** The `/edit` routes are **public** out of the box. Protect the [`action`](https://reactrouter.com/start/framework/route-module#action) (which saves pages) in `app/routes/puck-splat.tsx`. **Without this, anyone can edit and publish your pages.**
-- **Connect a real database.** Replace the `database.json` reads and writes in `app/lib/pages.server.ts`.
-- **Build your components.** Extend `puck.config.tsx` — see [Component Configuration](https://puckeditor.com/docs/integrating-puck/component-configuration).
+| File                                  | Purpose                                                                                                   |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `puck.config.tsx`                     | Defines the components, fields, and default props available to Puck. Add your own components here.        |
+| `app/routes.ts`                       | Registers the home page and catch-all page route.                                                         |
+| `app/routes/puck-splat.tsx`           | Loads and saves page data, then renders the editor or published page.                                     |
+| `app/routes/_index.tsx`               | Loads and renders the home page.                                                                          |
+| `app/lib/resolve-puck-path.server.ts` | Maps an `/edit` URL to the path of the page being edited.                                                 |
+| `app/lib/pages.server.ts`             | Reads and writes page data in `database.json`. Replace this with your own data fetching and saving logic. |
+| `app/components/puck-render.tsx`      | Renders saved page data with `<Render>`.                                                                  |
+| `database.json`                       | Acts as a local database. Replace this with your own database solution.                                   |
+
+## Before deploying to production
+
+Before deploying this recipe, make sure to:
+
+- **Protect the editor and publishing.** The `/edit` routes and publish action are public by default. Add authentication and authorization so only trusted users can edit or publish pages.
+- **Add your component library.** Replace the example `HeadingBlock` in `puck.config.tsx` with the components and fields your users need.
+- **Use a real database.** Replace `database.json` and the functions in `app/lib/pages.server.ts`. Local files are not reliable across server instances or serverless deployments.
+- **Choose a deployment strategy.** This recipe uses server-side rendering, loaders, and actions. Deploy it to a React Router-compatible server runtime.
 
 ## Learn more
 
-- [Puck documentation](https://puckeditor.com/docs) · [Integrating Puck](https://puckeditor.com/docs/integrating-puck/component-configuration)
-- [Puck on GitHub](https://github.com/puckeditor/puck) · [Discord](https://discord.gg/D9e4E3MQVZ)
+- [Puck documentation](https://puckeditor.com/docs)
+- [Getting started with Puck](https://puckeditor.com/docs/getting-started)
+- [Integrating Puck](https://puckeditor.com/docs/integrating-puck/component-configuration)
+- [React Router framework mode](https://reactrouter.com/start/framework/installation)
+- [Puck Discord](https://discord.gg/D9e4E3MQVZ)
