@@ -21,7 +21,7 @@ type NestedDroppablePluginOptions = {
       area: string | null;
       zone: string | null;
     },
-    manager: DragDropManager
+    manager: DragDropManager,
   ) => void;
 };
 
@@ -67,17 +67,17 @@ const BUFFER = 6;
 
 const getPointerCollisions = (
   position: GlobalPosition,
-  manager: DragDropManager
+  manager: DragDropManager,
 ) => {
   const candidates: Droppable[] = [];
 
   let elements = position.target.ownerDocument.elementsFromPoint(
     position.x,
-    position.y
+    position.y,
   );
 
   const previewFrame = elements.find((el) =>
-    el.getAttribute("data-puck-preview")
+    el.getAttribute("data-puck-preview"),
   );
 
   // Restrict to drawer element if pointer is over drawer. This is necessary if
@@ -150,7 +150,7 @@ const getPointerCollisions = (
 
 export const findDeepestCandidate = (
   position: GlobalPosition,
-  manager: DragDropManager
+  manager: DragDropManager,
 ) => {
   const candidates = getPointerCollisions(position, manager);
 
@@ -160,7 +160,7 @@ export const findDeepestCandidate = (
     const draggable = manager.dragOperation.source;
 
     const draggedCandidateIndex = sortedCandidates.findIndex(
-      (candidate) => candidate.id === draggable?.id
+      (candidate) => candidate.id === draggable?.id,
     );
 
     const draggedCandidateId = draggable?.id;
@@ -175,8 +175,7 @@ export const findDeepestCandidate = (
     // Remove any descendants
     filteredCandidates = filteredCandidates.filter((candidate) => {
       const candidateData = candidate.data as
-        | ComponentDndData
-        | DropZoneDndData;
+        ComponentDndData | DropZoneDndData;
 
       if (draggedCandidateId && draggedCandidateIndex > -1) {
         if (candidateData.path.indexOf(draggedCandidateId) > -1) {
@@ -215,13 +214,40 @@ export const findDeepestCandidate = (
     if (!primaryCandidate) return { zone: null, area: null };
 
     const primaryCandidateData = primaryCandidate.data as
-      | ComponentDndData
-      | DropZoneDndData;
+      ComponentDndData | DropZoneDndData;
     const primaryCandidateIsComponent =
       "containsActiveZone" in primaryCandidateData;
-    const zone = getZoneId(primaryCandidate);
+    let zone = getZoneId(primaryCandidate);
+
+    // containsActiveZone freezes zone targeting to keep the interior
+    // stable, but freezing the edge band makes it impossible to drop a
+    // container next to another container. Allow escape to the parent
+    // zone near the component's edges.
+    if (
+      zone === null &&
+      primaryCandidateIsComponent &&
+      (primaryCandidateData as ComponentDndData).containsActiveZone
+    ) {
+      const rect = primaryCandidate.element?.getBoundingClientRect();
+
+      if (rect) {
+        const margin = Math.min(BUFFER * 2, rect.width / 4, rect.height / 4);
+
+        const nearEdge =
+          position.frame.x < rect.left + margin ||
+          position.frame.x > rect.right - margin ||
+          position.frame.y < rect.top + margin ||
+          position.frame.y > rect.bottom - margin;
+
+        if (nearEdge) {
+          zone = (primaryCandidateData as ComponentDndData).zone;
+        }
+      }
+    }
+
+    // Frozen zone highlights the host, resolved zone follows its area.
     const area =
-      primaryCandidateIsComponent && primaryCandidateData.containsActiveZone
+      zone === null && primaryCandidateIsComponent
         ? filteredCandidates[0].id
         : filteredCandidates[0]?.data.areaId;
 
@@ -236,7 +262,7 @@ export const findDeepestCandidate = (
 
 export const createNestedDroppablePlugin = (
   { onChange }: NestedDroppablePluginOptions,
-  id: string
+  id: string,
 ): any =>
   class NestedDroppablePlugin extends Plugin<DragDropManager, {}> {
     constructor(manager: DragDropManager, options?: {}) {
@@ -261,7 +287,7 @@ export const createNestedDroppablePlugin = (
 
           const elements = document.elementsFromPoint(
             position.global.x,
-            position.global.y
+            position.global.y,
           );
 
           const overEl = elements.some((el) => el.id === id);
