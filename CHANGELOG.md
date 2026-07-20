@@ -2,6 +2,26 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.23.0](https://github.com/puckeditor/puck/compare/v0.22.0...v0.23.0) (2026-07-20)
+
+
+### Bug Fixes
+
+* add engines field to core package.json ([5f5b18a](https://github.com/puckeditor/puck/commit/5f5b18aa6843957783d9e1dec0679056cbb6e2e5)), closes [/linear.app/puckeditor/issue/PUCK-452/add-engines-to-core-packagejson#agent-session-471689d1](https://github.com//linear.app/puckeditor/issue/PUCK-452/add-engines-to-core-packagejson/issues/agent-session-471689d1)
+* don't drop last fields when updating config ([4bf6887](https://github.com/puckeditor/puck/commit/4bf6887d6ef08964c520a172a8db20da5329d1d5))
+* don't drop transformed fields on updates ([9bf3e00](https://github.com/puckeditor/puck/commit/9bf3e00a1cca9b8d496806b3ca265c003a264f66))
+* prevent unbounded cache growth in resolveAllData ([d8d77eb](https://github.com/puckeditor/puck/commit/d8d77eb5dc24e37c575f6267d9b7a1de059b0767))
+* run field transforms for fields without default props ([1a601e7](https://github.com/puckeditor/puck/commit/1a601e7048af8f5e72f76eb3d1b336965e36ffb5)), closes [/linear.app/puckeditor/issue/PUCK-316/field-transforms-not-called-if-no-default-props-are-set#agent-session-57b9b235](https://github.com//linear.app/puckeditor/issue/PUCK-316/field-transforms-not-called-if-no-default-props-are-set/issues/agent-session-57b9b235)
+
+
+### Features
+
+* add dictionary ([65790c8](https://github.com/puckeditor/puck/commit/65790c826cfdb51364da14ae9a7d96d43548edae))
+* add draggable outline and streamline UI ([db035ce](https://github.com/puckeditor/puck/commit/db035ce57a94425da9d0e82d3f1c06ecabd4c350))
+
+
+
+
 ## [0.22.1](https://github.com/puckeditor/puck/compare/v0.22.0...v0.22.1) (2026-07-13)
 
 
