@@ -1,6 +1,7 @@
 import { useAppStoreApi } from "../store";
+
 import { ItemSelector } from "./data/get-item";
-import { getSelectorForId } from "./get-selector-for-id";
+import { resolveAndReplaceData } from "./data/resolve-and-replace-data";
 import { rootDroppableId } from "./root-droppable-id";
 
 /**
@@ -30,21 +31,5 @@ export const moveComponent = async (
   const componentData = appStore.getState().state.indexes.nodes[id]?.data;
   if (!componentData) return;
 
-  const resolveComponentData = appStore.getState().resolveComponentData;
-  const resolvedData = await resolveComponentData(componentData, "move");
-
-  // Use latest position, in case it has moved
-  const latestItemSelector = getSelectorForId(
-    appStore.getState().state,
-    componentData.props.id
-  );
-  if (!latestItemSelector) return;
-
-  if (resolvedData.didChange)
-    dispatch({
-      type: "replace",
-      data: resolvedData.node,
-      destinationIndex: latestItemSelector.index,
-      destinationZone: latestItemSelector.zone ?? rootDroppableId,
-    });
+  await resolveAndReplaceData(componentData, appStore.getState, "move");
 };

@@ -1,11 +1,20 @@
 import { InsertAction } from "../reducer";
 import { insertAction } from "../reducer/actions/insert";
 import { useAppStoreApi } from "../store";
+
 import { generateId } from "./generate-id";
 import { getItem } from "./data/get-item";
-import { getSelectorForId } from "./get-selector-for-id";
+import { resolveAndReplaceData } from "./data/resolve-and-replace-data";
 
-// Makes testing easier without mocks
+/**
+ * Inserts a new component of the specified type into the specified zone at the specified index, and resolves its data.
+ *
+ * @param componentType - The type of the component to insert.
+ * @param zone - The zone in which to insert the component.
+ * @param index - The index at which to insert the component within the zone.
+ * @param appStore - The app store API to use for dispatching actions and getting state.
+ * @returns A promise that resolves when the component has been inserted and its data has been resolved.
+ */
 export const insertComponent = async (
   componentType: string,
   zone: string,
@@ -47,19 +56,5 @@ export const insertComponent = async (
   const itemData = getItem(itemSelector, insertedState);
   if (!itemData) return;
 
-  // Run any resolvers
-  const resolveComponentData = getState().resolveComponentData;
-  const resolved = await resolveComponentData(itemData, "insert");
-  if (!resolved.didChange) return;
-
-  // Use latest position, in case it has moved
-  const latestItemSelector = getSelectorForId(getState().state, id);
-  if (!latestItemSelector) return;
-
-  dispatch({
-    type: "replace",
-    destinationZone: latestItemSelector.zone,
-    destinationIndex: latestItemSelector.index,
-    data: resolved.node,
-  });
+  await resolveAndReplaceData(itemData, getState, "insert");
 };
