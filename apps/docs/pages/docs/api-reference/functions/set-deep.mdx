@@ -8,6 +8,8 @@ A convenience utility for setting the value of a key deep within an object.
 
 Useful when implementing [field transforms](/docs/api-reference/field-transforms).
 
+This function only duplicates the objects and arrays along the path to the key being set, leaving the rest of the input object or array unchanged.
+
 ```tsx
 import { setDeep } from "@puckeditor/core";
 
