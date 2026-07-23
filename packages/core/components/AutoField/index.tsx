@@ -1,5 +1,5 @@
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Field, FieldProps } from "../../types";
+import { Field, FieldProps, UiState } from "../../types";
 
 import styles from "./styles.module.css";
 import {
@@ -25,6 +25,7 @@ import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
 import { getDeep } from "../../lib/data/get-deep";
+import { setDeep } from "../../lib/data/set-deep";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
@@ -106,6 +107,29 @@ function AutoFieldInternal<
     }
   });
 
+  const fieldStore = useFieldStoreApi();
+
+  const onChange = useMemo(() => {
+    // Custom fields read their value from the field store, which is only
+    // updated after an async round-trip through the app store. For a
+    // controlled input this means it re-renders a tick later with a stale
+    // value, resetting the caret to the end on every keystroke (#1642).
+    // Synchronously mirror the new value into the field store so the value
+    // is up-to-date on the same render. Built-in fields don't need this as
+    // they track their value locally via useLocalValue.
+    if (field.type !== "custom") {
+      return props.onChange;
+    }
+
+    return (value: any, uiState?: Partial<UiState>) => {
+      props.onChange?.(value, uiState);
+
+      fieldStore.setState(
+        setDeep(fieldStore.getState(), props.name ?? resolvedId, value)
+      );
+    };
+  }, [field.type, props.onChange, props.name, resolvedId, fieldStore]);
+
   const mergedProps = useMemo(
     () => ({
       ...props,
@@ -115,8 +139,9 @@ function AutoFieldInternal<
       Label,
       id: resolvedId,
       value: fieldValue,
+      onChange,
     }),
-    [props, field, label, labelIcon, Label, resolvedId, fieldValue]
+    [props, field, label, labelIcon, Label, resolvedId, fieldValue, onChange]
   );
 
   const onFocus = useCallback(
