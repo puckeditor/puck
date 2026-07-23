@@ -39,14 +39,16 @@ const Item = ({
   const richtextProps = useRichtextProps(Component.fields, props);
 
   return (
-    <Component.render
-      {...props}
-      {...richtextProps}
-      puck={{
-        ...props.puck,
-        metadata: metadata || {},
-      }}
-    />
+    <span style={item.hidden ? { display: "none" } : undefined}>
+      <Component.render
+        {...props}
+        {...richtextProps}
+        puck={{
+          ...props.puck,
+          metadata: metadata || {},
+        }}
+      />
+    </span>
   );
 };
 

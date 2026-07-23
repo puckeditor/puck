@@ -79,6 +79,16 @@ export type UnregisterZoneAction = {
   zone: string;
 };
 
+/**
+ * Toggles the `hidden` flag on a component. When true, the component is not visible 
+ * in the rendered output but remains in the document structure.
+ */
+export type SetVisibilityAction = {
+  type: "setVisibility";
+  id: string;
+  hidden: boolean;
+};
+
 export type PuckAction = { recordHistory?: boolean } & (
   | ReorderAction
   | InsertAction
@@ -92,4 +102,5 @@ export type PuckAction = { recordHistory?: boolean } & (
   | SetUiAction
   | RegisterZoneAction
   | UnregisterZoneAction
+  | SetVisibilityAction
 );

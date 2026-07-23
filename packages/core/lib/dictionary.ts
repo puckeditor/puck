@@ -28,6 +28,8 @@ export const defaultDictionary = {
   "outline-header-collapseall": "Collapse all",
   "outline-item-duplicate": "Duplicate",
   "outline-item-delete": "Delete",
+  "outline-item-hide": "Hide",
+  "outline-item-show": "Show",
   // Drawer (component list)
   "drawer-category-collapse": "Collapse {title}",
   "drawer-category-expand": "Expand {title}",
