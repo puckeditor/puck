@@ -87,7 +87,7 @@ describe("Puck", () => {
   const componentBRender = jest.fn(() => null);
   const rootRender = jest.fn(() => null);
 
-  const config: Config = {
+  const config: Config<{}> = {
     root: {
       render: ({ children }) => {
         rootRender();
@@ -147,6 +147,24 @@ describe("Puck", () => {
     const { appStore } = getInternal();
 
     expect(appStore.getState()).toMatchSnapshot();
+  });
+
+  it("creates a new store every time it is mounted", async () => {
+    const { container } = render(
+      <>
+        <Puck config={config} data={{}} iframe={{ enabled: false }} />
+        <Puck config={config} data={{}} iframe={{ enabled: false }} />
+      </>
+    );
+
+    await flush();
+
+    const ids = Array.from(container.querySelectorAll("div.Puck"))
+      .map((el) => el.id)
+      .filter(Boolean);
+
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2);
   });
 
   it("applies min-content height to a plugin selected on mount", async () => {
