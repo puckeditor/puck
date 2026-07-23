@@ -1,5 +1,5 @@
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Field, FieldProps } from "../../types";
+import { Field, FieldProps, UiState } from "../../types";
 
 import styles from "./styles.module.css";
 import {
@@ -25,6 +25,7 @@ import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
 import { getDeep } from "../../lib/data/get-deep";
+import { setDeep } from "../../lib/data/set-deep";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
@@ -78,6 +79,7 @@ function AutoFieldInternal<
   const field = props.field as Field<ValueType>;
   const label = field.label;
   const labelIcon = field.labelIcon;
+  const fieldStore = useFieldStoreApi();
 
   const defaultId = useSafeId();
   const resolvedId = id || defaultId;
@@ -106,6 +108,22 @@ function AutoFieldInternal<
     }
   });
 
+  const shouldSyncLocalValue =
+    field.type === "custom" || !!overrides.fieldTypes?.[field.type];
+
+  const onChange = useCallback(
+    (value: any, uiState?: Partial<UiState>) => {
+      if (shouldSyncLocalValue) {
+        fieldStore.setState(
+          setDeep(fieldStore.getState(), props.name ?? resolvedId, value)
+        );
+      }
+
+      props.onChange(value, uiState);
+    },
+    [fieldStore, props.name, props.onChange, resolvedId, shouldSyncLocalValue]
+  );
+
   const mergedProps = useMemo(
     () => ({
       ...props,
@@ -115,8 +133,9 @@ function AutoFieldInternal<
       Label,
       id: resolvedId,
       value: fieldValue,
+      onChange,
     }),
-    [props, field, label, labelIcon, Label, resolvedId, fieldValue]
+    [props, field, label, labelIcon, Label, resolvedId, fieldValue, onChange]
   );
 
   const onFocus = useCallback(
