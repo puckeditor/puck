@@ -827,7 +827,7 @@ export const DraggableComponent = ({
                     </>
                   )}
 
-                  {permissions.edit !== false && (
+                  {permissions.edit && (
                     <ActionBar.Action
                       onClick={onToggleVisibility}
                       label={isHidden ? showLabel : hideLabel}
