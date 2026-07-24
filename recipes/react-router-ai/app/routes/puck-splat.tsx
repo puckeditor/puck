@@ -57,7 +57,13 @@ export async function action({ params, request }: Route.ActionArgs) {
   await savePage(path, body.data);
 }
 
-const aiPlugin = createAiPlugin();
+const aiPlugin = createAiPlugin({
+  // Allow users to switch between design and assembly mode.
+  // Read more: https://puckeditor.com/docs/ai/design-mode
+  designMode: {
+    visible: true,
+  },
+});
 
 function Editor() {
   const loaderData = useLoaderData<typeof loader>();

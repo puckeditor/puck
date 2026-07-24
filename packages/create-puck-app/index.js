@@ -66,11 +66,18 @@ program
     Explicitly tell the CLI to bootstrap the application using Yarn
   `
   )
+  .option(
+    "--ai",
+    `
+
+    Add Puck AI to the editor (requires a Puck Cloud account)
+  `
+  )
   .action(async (_appName, options) => {
-    const beforeQuestions = [];
+    const questions = [];
 
     if (!_appName) {
-      beforeQuestions.push({
+      questions.push({
         type: "input",
         name: "appName",
         message: "What is the name of your app?",
@@ -78,26 +85,27 @@ program
       });
     }
 
-    const questions = [
-      ...beforeQuestions,
-      {
-        type: "list",
-        name: "recipe",
-        message: "Which recipe would you like to use?",
-        required: true,
-        default: "next",
-        choices: [
-          {
-            name: "Next.js",
-            value: "next",
-          },
-          {
-            name: "React Router",
-            value: "react-router",
-          },
-        ],
-      },
-      {
+    questions.push({
+      type: "list",
+      name: "recipe",
+      message: "Which recipe would you like to use?",
+      required: true,
+      default: "next",
+      choices: [
+        {
+          name: "Next.js",
+          value: "next",
+        },
+        {
+          name: "React Router",
+          value: "react-router",
+        },
+      ],
+    });
+
+    // If the user didn't specify the --ai flag, ask them if they want to add Puck AI to the editor.
+    if (!options.ai) {
+      questions.push({
         type: "confirm",
         name: "puckAi",
         message: `Puck AI (beta) lets you generate pages using your own components. Learn more: ${ansiColors.cyan}https://puckeditor.com/docs/ai/overview${ansiColors.reset}
@@ -105,8 +113,8 @@ program
   Add Puck AI to the editor? (Requires a Puck Cloud account)`,
         required: true,
         default: true,
-      },
-    ];
+      });
+    }
 
     const answers = await inquirer.prompt(questions);
 
@@ -120,7 +128,7 @@ program
     }
 
     const recipe = answers.recipe;
-    const usesPuckAi = answers.puckAi;
+    const usesPuckAi = answers.puckAi || !!options.ai;
 
     // Copy template files to the new directory
     const recipeName = `${recipe}${usesPuckAi ? "-ai" : ""}`;

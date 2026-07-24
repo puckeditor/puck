@@ -1,57 +1,100 @@
-# `react-router-ai` recipe
+# Puck AI + React Router recipe
 
-The `react-router-ai` recipe showcases one of the most powerful ways to combine Puck and [Puck AI](https://puckeditor.com/docs/ai/overview): providing an authoring tool with AI page generation capabilities for any route in your React Router app.
+[Puck](https://puckeditor.com) is the open-source visual editor for React. Register the UI components you need in the [config object](https://puckeditor.com/docs/integrating-puck/component-configuration), and Puck makes them available inside a drag-and-drop page builder.
 
-## Demonstrates
+[Puck AI](https://puckeditor.com/docs/ai/overview) builds on the same principles to generate UI at scale. It can assemble registered components or create new ones using your [rules](https://puckeditor.com/docs/ai/ai-configuration), [external data](https://puckeditor.com/docs/ai/tools), and [brand context](https://puckeditor.com/docs/ai/business-context). You can use it as a [copilot inside the editor](https://puckeditor.com/docs/ai/getting-started#setup-the-ai-plugin) or programmatically through [headless APIs](https://puckeditor.com/docs/ai/headless-generation).
 
-- Puck AI integration for generating pages with AI
-- React Router v7 (framework) implementation
-- JSON database implementation
-- Splat route to use puck for any route on the platform
+This recipe connects Puck and Puck AI to [React Router](https://reactrouter.com) in framework mode, so you can use the copilot to create, edit, or generate pages for any route in this app.
 
-## Usage
+## New to Puck?
 
-Run the generator and select `React Router` when prompted
+Read [What is Puck?](https://puckeditor.com/docs) and the [Getting Started guide](https://puckeditor.com/docs/getting-started) first.
 
-```
-npx create-puck-app my-app
+In short, Puck has three main pieces:
 
-? Which recipe would you like to use?
-❯ React Router
-```
+- A [config](https://puckeditor.com/docs/api-reference/configuration/config) object that defines which components can be used to build pages.
+- The [`<Puck>`](https://puckeditor.com/docs/api-reference/components/puck) component that renders the editor and exports the [page as JSON](https://puckeditor.com/docs/api-reference/data-model/data).
+- The [`<Render>`](https://puckeditor.com/docs/api-reference/components/render) component that renders the exported JSON as a page.
 
-Confirm you want to use Puck AI
+## Puck AI modes
 
-```
-? Would you like to use Puck AI? (Y/n) Y
-```
+Puck AI can build pages in two ways:
 
-Start the server
+- **Assembly mode** builds pages from the components already registered with Puck.
+- **Design mode** can generate new components when needed and reuse existing ones. Generated components are saved in the page data and can be managed in the `Blocks` tab.
 
-```
-cd my-app
-yarn dev
-```
+Users can switch between Assembly and Design modes from the copilot. You can decide whether the Design mode switch is visible using [`designMode.visible`](https://puckeditor.com/docs/api-reference/ai/ai-plugin/create-ai-plugin#designmode) in `createAiPlugin` (`app/routes/puck-splat.tsx`).
 
-### Set up Puck AI
+To control whether Design mode is allowed at all, use [`ai.designMode.allowed`](https://puckeditor.com/docs/api-reference/ai/cloud-client/puck-handler#aidesignmode) in `puckHandler` (`app/routes/api.puck.ts`). Setting `allowed` to `false` blocks Design mode requests from the client, even if the switch is visible.
 
-Create a [Puck account](https://cloud.puckeditor.com) and [obtain an API key](https://cloud.puckeditor.com/api-keys).
+## Run the recipe
 
-Create a `.env.local` file in the root of your project and add your API key:
+### 1. Add a Puck API key
 
-```
+Puck AI connects to [Puck Cloud](https://cloud.puckeditor.com). Start by creating an account, [generating an API key](https://cloud.puckeditor.com/api-keys), and adding it to an `.env.local` file:
+
+```sh
 PUCK_API_KEY=your-api-key
 ```
 
-Navigate to the homepage at https://localhost:3000. To edit the homepage, access the Puck editor at https://localhost:3000/edit, and select the AI button in the left navigation bar to generate content for the page using Puck AI.
+### 2. Start the development server
 
-You can do this for any route on the application, **even if the page doesn't exist**. For example, visit https://localhost:3000/hello/world and you'll receive a 404. You can author and publish a page by visiting https://localhost:3000/hello/world/edit. After publishing, go back to the original URL to see your page.
+Run:
 
-## Using this recipe
+```sh
+npm run dev
+```
 
-To adopt this recipe, you will need to:
+Once the server is running, navigate to [http://localhost:5173](http://localhost:5173) to view the home page, or [http://localhost:5173/edit](http://localhost:5173/edit) to edit it with Puck.
 
-- **IMPORTANT** Add authentication to `/edit` routes. This can be done by modifying the [route module action](https://reactrouter.com/start/framework/route-module#action) in the splat route `/app/routes/puck-splat.tsx`. **If you don't do this, Puck will be completely public.**
-- Integrate your database into the functions in `/lib/pages.server.ts`
-- Implement a custom puck configuration in `/app/puck.config.tsx`
-- Add business context for the AI generation in `/app/routes/api.puck.ts`
+### 3. Create a page with Puck AI
+
+Navigate to [http://localhost:5173/edit](http://localhost:5173/edit), click the **AI** button in the left sidebar, enable Design mode, enter a prompt, and press Enter.
+
+### 4. Publish the page
+
+Once your page is ready, select **Publish** in the header to save the result, then navigate to [http://localhost:5173](http://localhost:5173) to view the published page.
+
+You can also create a page at any path by navigating to `/your/path/edit` and publishing it. The route `/your/path` will render the page.
+
+## How it works
+
+When a URL ends in `/edit`, `resolvePuckPath` (`app/lib/resolve-puck-path.server.ts`) returns the path of the page being edited. The loader in `app/routes/puck-splat.tsx` loads the saved page, or starts with an empty page if the path is new.
+
+When using the copilot, the AI plugin sends prompts to the `/api/puck` endpoint (`app/routes/api.puck.ts`). `puckHandler` adds your server-side settings and API key, then forwards the request to the Puck Cloud and streams the response back to the plugin in your browser.
+
+Selecting **Publish** sends the page data to the action in `app/routes/puck-splat.tsx`. The action writes the JSON to `database.json`. The route then loads the same data and renders it with [`<Render>`](https://puckeditor.com/docs/api-reference/components/render).
+
+The table below shows the files that implement this flow.
+
+| File                                  | Purpose                                                                                                              |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `puck.config.tsx`                     | Defines the components, fields, and default props available to Puck and Assembly mode. Add your own components here. |
+| `app/routes.ts`                       | Registers the home page, Puck AI API, and catch-all page route.                                                      |
+| `app/routes/puck-splat.tsx`           | Loads and saves page data, then renders the editor or published page.                                                |
+| `app/routes/api.puck.ts`              | Sends requests to the Puck Cloud and configures AI generation.                                                       |
+| `app/routes/_index.tsx`               | Loads and renders the home page.                                                                                     |
+| `app/lib/resolve-puck-path.server.ts` | Maps an `/edit` URL to the path of the page being edited.                                                            |
+| `app/lib/pages.server.ts`             | Reads and writes page data in `database.json`. Replace this with your own data fetching and saving logic.            |
+| `app/components/puck-render.tsx`      | Renders saved page data with `<Render>`.                                                                             |
+| `database.json`                       | Acts as a local database. Replace this with your own database solution.                                              |
+
+## Before deploying to production
+
+Before deploying this recipe, make sure to:
+
+- **Protect the editor and APIs.** The `/edit` routes, publish action, and `/api/puck` route are public by default. Add authentication, authorization, and rate limits to protect page data and AI usage.
+- **Add your component library.** Replace the example `HeadingBlock` in `puck.config.tsx` with the components and fields your users need.
+- **Set your business context.** Replace the example Google context in `app/routes/api.puck.ts` with clear information about your product, audience, and content rules.
+- **Use a real database.** Replace `database.json` and the functions in `app/lib/pages.server.ts`. Local files are not reliable across server instances or serverless deployments.
+- **Choose a deployment strategy.** This recipe uses server-side rendering, loaders, and actions. Deploy it to a React Router-compatible server runtime.
+
+## Learn more
+
+- [Puck documentation](https://puckeditor.com/docs)
+- [Getting started with Puck](https://puckeditor.com/docs/getting-started)
+- [Integrating Puck](https://puckeditor.com/docs/integrating-puck/component-configuration)
+- [Puck AI documentation](https://puckeditor.com/docs/ai/overview)
+- [Getting started with Puck AI](https://puckeditor.com/docs/ai/getting-started)
+- [React Router framework mode](https://reactrouter.com/start/framework/installation)
+- [Puck Discord](https://discord.gg/D9e4E3MQVZ)
