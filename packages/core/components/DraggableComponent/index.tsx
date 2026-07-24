@@ -15,7 +15,7 @@ import {
 import styles from "./styles.module.css";
 import "./styles.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Copy, CornerLeftUp, Trash } from "lucide-react";
+import { Copy, CornerLeftUp, Eye, EyeOff, Trash } from "lucide-react";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { Loader } from "../Loader";
 import { ActionBar } from "../ActionBar";
@@ -125,6 +125,11 @@ export const DraggableComponent = ({
   );
   const _experimentalFullScreenCanvas = useAppStore(
     (s) => s._experimentalFullScreenCanvas
+  );
+  // Hidden components stay in the DOM but are visually hidden with display:none.
+  // They remain interactive in the Outline only.
+  const isHidden = useAppStore(
+    useShallow((s) => s.state.indexes.nodes[id]?.data.hidden)
   );
   const overrides = useAppStore((s) => s.overrides);
   const dispatch = useAppStore((s) => s.dispatch);
@@ -376,11 +381,11 @@ export const DraggableComponent = ({
   const unregisterNode = useAppStore((s) => s.nodes.unregisterNode);
 
   const hideOverlay = useCallback(() => {
-    setIsVisible(false);
+    setOverlayVisible(false);
   }, []);
 
   const showOverlay = useCallback(() => {
-    setIsVisible(true);
+    setOverlayVisible(true);
   }, []);
 
   const nodeHandleRef = useRef<NodeHandle>({
@@ -492,12 +497,29 @@ export const DraggableComponent = ({
     });
   }, [index, zoneCompound]);
 
+  const onToggleVisibility = useCallback(() => {
+    dispatch({
+      type: "setVisibility",
+      id,
+      hidden: !isHidden,
+    });
+  }, [dispatch, id, isHidden]);
+
   const [hover, setHover] = useState(false);
 
   const indicativeHover = useContextStore(
     ZoneStoreContext,
     (s) => s.hoveringComponent === id
   );
+
+  useEffect(() => {
+    if (!ref.current) return
+
+    const el = ref.current as HTMLElement;
+
+    el.style.display = isHidden ? 'none' : 'block';
+
+  }, [ref.current, isHidden])
 
   useEffect(() => {
     if (!ref.current) {
@@ -553,7 +575,7 @@ export const DraggableComponent = ({
     inDroppableZone,
   ]);
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
   const [dragFinished, setDragFinished] = useState(true);
   const [_, startTransition] = useTransition();
 
@@ -561,10 +583,10 @@ export const DraggableComponent = ({
     startTransition(() => {
       if (hover || indicativeHover || isSelected) {
         scheduleSync();
-        setIsVisible(true);
+        setOverlayVisible(true);
         setThisWasDragging(false);
       } else {
-        setIsVisible(false);
+        setOverlayVisible(false);
       }
     });
   }, [hover, indicativeHover, isSelected, iframe]);
@@ -711,6 +733,8 @@ export const DraggableComponent = ({
   const selectParentLabel = useMessage("action-selectparent");
   const duplicateLabel = useMessage("action-duplicate");
   const deleteLabel = useMessage("action-delete");
+  const showLabel = useMessage("outline-item-show");
+  const hideLabel = useMessage("outline-item-hide");
 
   const parentAction = useMemo(
     () =>
@@ -748,12 +772,12 @@ export const DraggableComponent = ({
     s.currentRichText?.inlineComponentId === id ? s.currentRichText : null
   );
 
-  const hasNormalActions = permissions.duplicate || permissions.delete;
+  const hasNormalActions = permissions.duplicate || permissions.delete || permissions.edit;
 
   return (
     <DropZoneProvider value={nextContextValue}>
       {dragFinished &&
-        isVisible &&
+        overlayVisible &&
         createPortal(
           <div
             className={getClassName({
@@ -801,6 +825,19 @@ export const DraggableComponent = ({
                       />
                       {hasNormalActions && <ActionBar.Separator />}
                     </>
+                  )}
+
+                  {permissions.edit && (
+                    <ActionBar.Action
+                      onClick={onToggleVisibility}
+                      label={isHidden ? showLabel : hideLabel}
+                    >
+                      {isHidden ? (
+                        <EyeOff className={getClassName("actionsAction")} />
+                      ) : (
+                        <Eye className={getClassName("actionsAction")} />
+                      )}
+                    </ActionBar.Action>
                   )}
 
                   {permissions.duplicate && (

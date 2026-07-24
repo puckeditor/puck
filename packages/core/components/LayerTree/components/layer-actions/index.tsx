@@ -1,4 +1,4 @@
-import { Copy, Trash } from "lucide-react";
+import { Copy, Eye, EyeOff, Trash } from "lucide-react";
 import { SyntheticEvent, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -39,10 +39,13 @@ export const LayerActions = ({
       return {
         delete: itemPermissions.delete,
         duplicate: itemPermissions.duplicate,
+        edit: itemPermissions.edit,
       };
     })
   );
 
+  const hideMsg = useMessage("outline-item-hide");
+  const showMsg = useMessage("outline-item-show");
   const duplicateMsg = useMessage("outline-item-duplicate");
   const deleteMsg = useMessage("outline-item-delete");
 
@@ -82,12 +85,41 @@ export const LayerActions = ({
     [dispatch, outlineStore, node.index, node.zoneCompound]
   );
 
-  if (!permissions.delete && !permissions.duplicate) {
+  const toggleVisibility = useCallback(
+    (e: SyntheticEvent<Element>) => {
+      // Don't select the component
+      e.stopPropagation();
+
+      if (outlineStore.getState().status !== "idle") {
+        return;
+      }
+
+      dispatch({
+        type: "setVisibility",
+        id: node.itemId,
+        hidden: !node.hidden,
+      });
+    },
+    [dispatch, outlineStore, node.itemId, node.hidden]
+  );
+
+  if (!permissions.delete && !permissions.duplicate && !permissions.edit) {
     return null;
   }
 
   return (
     <div className={getClassName({ visible })}>
+      {permissions.edit && (
+        <span style={{ visibility: node.hidden ? 'visible' : 'unset' }}>
+          <IconButton
+            onClick={toggleVisibility}
+            title={node.hidden ? showMsg : hideMsg}
+            type="button"
+          >
+            {node.hidden ? <EyeOff /> : <Eye />}
+          </IconButton>
+        </span>
+      )}
       {permissions.duplicate && (
         <IconButton onClick={duplicateItem} title={duplicateMsg} type="button">
           <Copy />
