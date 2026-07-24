@@ -1,0 +1,140 @@
+import { ConfigPreview } from "@/docs/components/Preview";
+
+# Image
+
+Upload or link to an image, with an optional upload handler. Extends [Base](base).
+
+The field provides both a URL text input and a file upload dropzone. Users can paste a third-party image URL directly, or upload a file which will prepopulate the URL via the `onUpload` callback. The stored value is always a plain URL string, matching `<img src={url} />` usage.
+
+```tsx {5-9} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        heroImage: {
+          type: "image",
+          onUpload: async (file) => {
+            // Upload to your backend, S3, Cloudinary, etc.
+            const url = URL.createObjectURL(file);
+            return url;
+          },
+        },
+      },
+      render: ({ heroImage }) => {
+        return heroImage ? (
+          <img src={heroImage} alt="" style={{ maxWidth: "100%" }} />
+        ) : (
+          <p>No image selected</p>
+        );
+      },
+    },
+  },
+};
+```
+
+## Params
+
+| Param                           | Example                                  | Type     | Status   |
+| ------------------------------- | ---------------------------------------- | -------- | -------- |
+| [`type`](#type)                 | `type: "image"`                          | "image"  | Required |
+| [`onUpload()`](#onuploadfile)   | `onUpload: async (file) => "https://…"`  | Function | Required |
+| [`placeholder`](#placeholder)   | `placeholder: "Paste image URL…"`        | String   | -        |
+| [`validate()`](#validatefile)   | `validate: (file) => null`               | Function | -        |
+
+## Required params
+
+### `type`
+
+The type of the field. Must be `"image"` for Image fields.
+
+```tsx {6} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        heroImage: {
+          type: "image",
+          onUpload: async (file) => "https://example.com/image.png",
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `onUpload(file)`
+
+A function that receives a [File](https://developer.mozilla.org/en-US/docs/Web/API/File) object and returns a Promise resolving to the URL string of the uploaded image. The returned URL is written to the URL input field.
+
+This is where you integrate your own upload backend (S3, Cloudinary, custom API, etc.).
+
+```tsx {7-12} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        heroImage: {
+          type: "image",
+          onUpload: async (file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            const res = await fetch("/api/upload", { method: "POST", body: formData });
+            const { url } = await res.json();
+            return url;
+          },
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+## Optional params
+
+### `placeholder`
+
+The placeholder text for the URL input when no image is set. Defaults to `"Paste image URL..."`.
+
+```tsx {8} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        heroImage: {
+          type: "image",
+          onUpload: async (file) => "https://example.com/image.png",
+          placeholder: "Enter hero image URL",
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `validate(file)`
+
+A function that receives a [File](https://developer.mozilla.org/en-US/docs/Web/API/File) object and returns an error message string, or `null` if the file is valid. Called before `onUpload`. This only applies to file uploads, not manually entered URLs.
+
+```tsx {8-12} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        heroImage: {
+          type: "image",
+          onUpload: async (file) => "https://example.com/image.png",
+          validate: (file) => {
+            if (!file.type.startsWith("image/")) return "Must be an image";
+            if (file.size > 5_000_000) return "Max 5MB";
+            return null;
+          },
+        },
+      },
+      // ...
+    },
+  },
+};
+```
