@@ -42,7 +42,7 @@
   },
   "resolutions": {
     "yaml": ">=2.8.3",
-    "tar": "7.5.16",
+    "tar": "7.5.19",
     "form-data": "4.0.6",
     "tmp": "0.2.7",
     "lerna/js-yaml": "4.2.0"
