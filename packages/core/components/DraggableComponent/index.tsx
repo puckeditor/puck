@@ -513,13 +513,12 @@ export const DraggableComponent = ({
   );
 
   useEffect(() => {
-    if (!ref.current) return
+    if (!ref.current) return;
 
     const el = ref.current as HTMLElement;
 
-    el.style.display = isHidden ? 'none' : 'block';
-
-  }, [ref.current, isHidden])
+    el.style.display = isHidden ? "none" : "block";
+  }, [ref.current, isHidden]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -772,7 +771,8 @@ export const DraggableComponent = ({
     s.currentRichText?.inlineComponentId === id ? s.currentRichText : null
   );
 
-  const hasNormalActions = permissions.duplicate || permissions.delete || permissions.edit;
+  const hasNormalActions =
+    permissions.duplicate || permissions.delete || permissions.edit;
 
   return (
     <DropZoneProvider value={nextContextValue}>

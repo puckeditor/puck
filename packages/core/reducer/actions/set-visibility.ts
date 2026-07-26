@@ -18,17 +18,13 @@ export function setVisibilityAction<UserData extends Data>(
 ): PrivateAppState<UserData> {
   const { id, hidden } = action;
 
-  return walkAppState<UserData>(
-    state,
-    appStore.config,
-    (content) => {
-      return content.map((item) => {
-        if (item.props.id === id) {
-          // Immutable update: spread existing item and set hidden
-          return { ...item, hidden };
-        }
-        return item;
-      });
-    }
-  );
+  return walkAppState<UserData>(state, appStore.config, (content) => {
+    return content.map((item) => {
+      if (item.props.id === id) {
+        // Immutable update: spread existing item and set hidden
+        return { ...item, hidden };
+      }
+      return item;
+    });
+  });
 }

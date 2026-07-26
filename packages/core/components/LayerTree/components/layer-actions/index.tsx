@@ -110,7 +110,7 @@ export const LayerActions = ({
   return (
     <div className={getClassName({ visible })}>
       {permissions.edit && (
-        <span style={{ visibility: node.hidden ? 'visible' : 'unset' }}>
+        <span style={{ visibility: node.hidden ? "visible" : "unset" }}>
           <IconButton
             onClick={toggleVisibility}
             title={node.hidden ? showMsg : hideMsg}

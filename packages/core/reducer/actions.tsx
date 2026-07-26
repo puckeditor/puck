@@ -80,7 +80,7 @@ export type UnregisterZoneAction = {
 };
 
 /**
- * Toggles the `hidden` flag on a component. When true, the component is not visible 
+ * Toggles the `hidden` flag on a component. When true, the component is not visible
  * in the rendered output but remains in the document structure.
  */
 export type SetVisibilityAction = {
