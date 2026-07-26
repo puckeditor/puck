@@ -4,6 +4,8 @@ import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Heading } from "../Heading";
 import { Loader } from "../Loader";
 import { Breadcrumbs } from "../Breadcrumbs";
+import { InlineLabelEdit } from "../InlineLabelEdit";
+import { useAppStore } from "../../store";
 
 const getClassName = getClassNameFactory("SidebarSection", styles);
 
@@ -22,15 +24,20 @@ export const SidebarSection = ({
   noBorderTop?: boolean;
   isLoading?: boolean | null;
 }) => {
+  const selectedItem = useAppStore((s) => s.selectedItem);
   return (
     <div className={getClassName({ noBorderTop })} style={{ background }}>
       <div className={getClassName("title")}>
         <div className={getClassName("breadcrumbs")}>
           {showBreadcrumbs && <Breadcrumbs />}
           <div className={getClassName("heading")}>
-            <Heading rank="2" size="xs">
-              {title}
-            </Heading>
+            <InlineLabelEdit componentId={selectedItem?.props.id}>
+              {({ label }) => (
+                <Heading rank="2" size="xs">
+                  {label}
+                </Heading>
+              )}
+            </InlineLabelEdit>
           </div>
         </div>
       </div>
