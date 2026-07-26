@@ -10,7 +10,7 @@ import { PuckNodeData } from "../../types/Internal";
  * 3. `type.toString()` — raw component type string as fallback
  */
 export const getComponentLabel = (
-  item: Pick<ComponentData, '__puck' | 'type'>,
+  item: Pick<ComponentData, "__puck" | "type">,
   config: Config,
   fallback?: string
 ): string => {
