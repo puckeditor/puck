@@ -183,18 +183,19 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   const currentPlugin = useAppStore((s) => s.state.ui.plugin?.current);
   const appStoreApi = useAppStoreApi();
 
-  const [mobilePanelHeightMode, setMobilePanelHeightMode] = useState<
-    "toggle" | "min-content"
-  >("toggle");
-
   const hasLegacySideBarPlugin = useMemo(
     () => !!plugins?.find((p) => p.name === "legacy-side-bar"),
     [plugins]
   );
 
   const pluginItems = useMemo(() => {
-    const details: Record<string, MenuItem & { render: () => ReactElement }> =
-      {};
+    const details: Record<
+      string,
+      MenuItem & {
+        render: () => ReactElement;
+        mobilePanelHeight: "toggle" | "min-content";
+      }
+    > = {};
 
     const defaultPlugins: PluginInternal[] = [blocksPlugin(), outlinePlugin()];
 
@@ -223,8 +224,6 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
           label: plugin.label ?? plugin.name,
           icon: plugin.icon ?? <ToyBrick />,
           onClick: () => {
-            setMobilePanelHeightMode(plugin.mobilePanelHeight ?? "toggle");
-
             if (plugin.name === currentPlugin) {
               if (leftSideBarVisible) {
                 setUi({ leftSideBarVisible: false });
@@ -242,6 +241,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
           },
           isActive: leftSideBarVisible && currentPlugin === plugin.name,
           render: plugin.render,
+          mobilePanelHeight: plugin.mobilePanelHeight ?? "toggle",
           mobileOnly: hasLegacySideBarPlugin || plugin.mobileOnly,
           desktopOnly: plugin.name === "legacy-side-bar" || plugin.desktopOnly,
         };
@@ -250,6 +250,10 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
     return details;
   }, [plugins, currentPlugin, appStoreApi, leftSideBarVisible]);
+
+  const activePlugin = currentPlugin ?? Object.keys(pluginItems)[0];
+  const mobilePanelHeightMode =
+    pluginItems[activePlugin]?.mobilePanelHeight ?? "toggle";
 
   useEffect(() => {
     if (!currentPlugin) {
