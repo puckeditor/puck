@@ -2,6 +2,16 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.22.3](https://github.com/measuredco/puck/compare/v0.22.2...v0.22.3) (2026-07-28)
+
+
+### Bug Fixes
+
+* respect plugin mobilePanelHeight on first load ([daac70e](https://github.com/measuredco/puck/commit/daac70efefce80ac7a50d9f4d88179952fce0316))
+
+
+
+
 ## [0.22.2](https://github.com/measuredco/puck/compare/v0.22.1...v0.22.2) (2026-07-15)
 
 
