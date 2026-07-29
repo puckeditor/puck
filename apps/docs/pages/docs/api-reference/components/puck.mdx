@@ -143,6 +143,7 @@ Configure drag-and-drop behavior.
 | ------------------------------------------- | -------------------------- | ------- | ------ |
 | [`disableAutoScroll`](#disableautoscroll)   | `disableAutoScroll: true`  | boolean | -      |
 | [`disableOutlineDrag`](#disableoutlinedrag) | `disableOutlineDrag: true` | boolean | -      |
+| [`enableDragHandle`](#enabledraghandle)     | `enableDragHandle: true`   | boolean | -      |
 
 ##### `disableAutoScroll`
 
@@ -151,6 +152,14 @@ Disable auto-scroll when the user drags an item near the edge of the preview are
 ##### `disableOutlineDrag`
 
 Disable drag-and-drop in the [outline](/docs/api-reference/components/puck-outline). Items can still be selected and expanded.
+
+##### `enableDragHandle`
+
+Show a drag handle in the component action bar. Dragging from the handle starts immediately, without the short press-and-hold delay required when dragging from the component itself.
+
+The component body remains draggable, so the handle adds a second place to start a drag rather than restricting drags to itself. The handle is hidden when the user doesn't have the `drag` [permission](/docs/api-reference/permissions).
+
+To change where the handle renders, use the [`dragHandle`](/docs/api-reference/overrides/action-bar#draghandle) prop of the [`actionBar` override](/docs/api-reference/overrides/action-bar).
 
 ### `fieldTransforms`
 

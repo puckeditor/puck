@@ -23,12 +23,19 @@ const overrides = {
 | Prop                            | Example          | Type      |
 | ------------------------------- | ---------------- | --------- |
 | [`children`](#children)         | `<div />`        | ReactNode |
+| [`dragHandle`](#dragHandle)     | `<div />`        | ReactNode |
 | [`label`](#label)               | `"HeadingBlock"` | String    |
 | [`parentAction`](#parentAction) | `<div />`        | ReactNode |
 
 ### `children`
 
 A fragment containing the default [actions](/docs/api-reference/components/action-bar-action). This should normally be rendered inside an [`<ActionBar.Group>`](/docs/api-reference/components/action-bar-group).
+
+### `dragHandle`
+
+A pre-wired [`<ActionBar.DragHandle>`](/docs/api-reference/components/action-bar-drag-handle) to drag the current component.
+
+`undefined` unless [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is set, or if the user doesn't have the `drag` [permission](/docs/api-reference/permissions).
 
 ### `label`
 
