@@ -12,19 +12,19 @@
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.3.3.tgz#90749bde8b89cd41764224f5aac29cd4138f75ff"
   integrity sha512-rE0Pygv0sEZ4vBWHlAgJLGDU7Pm8xoO6p3wsEceb7GYAjScrOHpEo8KK/eVkAcnSM+slAEtXjA2JpdjLp4fJQQ==
 
-"@ai-sdk/gateway@3.0.152":
-  version "3.0.152"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-3.0.152.tgz#fe6bc052c2015d909d419c700371255372326b82"
-  integrity sha512-IM9D6if0CXsNkiyyIqoaD3/80gZVpCI3/tKpsq1N+vNa2O1ZeUfJmaUcIr92qqPO1G8u5YHah+0EayhIkk3ACA==
+"@ai-sdk/gateway@3.0.159":
+  version "3.0.159"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-3.0.159.tgz#badbf1eb04ffe7e23972b6df772a43d035c66a04"
+  integrity sha512-BJ1SMVpD2Qie/OVmQho1b1wb8rcGYC38p2D20MyP0+zUGBlXJOMfq1zP97+tl1oyT1u/A84R+oaYrUT18dIdWg==
   dependencies:
     "@ai-sdk/provider" "3.0.14"
-    "@ai-sdk/provider-utils" "4.0.39"
+    "@ai-sdk/provider-utils" "4.0.40"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/provider-utils@4.0.39":
-  version "4.0.39"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-4.0.39.tgz#920f0109ace2e1baec6f5478043f8b9f5772ba6d"
-  integrity sha512-XPR6o7561RYUkfYlLYouWsvm6Gv2tYIQy5pttGRkvML98u138ClPThn5yiQg5rMQutTtZLB+GUC8qFFCzDKQQQ==
+"@ai-sdk/provider-utils@4.0.40":
+  version "4.0.40"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-4.0.40.tgz#5daa46e0cc8d876887994e335fca7f14eca53fd3"
+  integrity sha512-OL5IrpUm9Y8Dwy+w/vvFwPotS6m52O9W0op2oXgXdCROMJIBalBI0oro6OIBYkPxvm5Xg02GSkoQN25RlR0bnw==
   dependencies:
     "@ai-sdk/provider" "3.0.14"
     "@standard-schema/spec" "^1.1.0"
@@ -2660,22 +2660,26 @@
   resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.14.2.tgz#6ccbc1342a52f1175b9e1d9aef67e2cf0ab6d4f0"
   integrity sha512-RZHdBj9ZF4n40Rp4jS052EHHjBWf96P9oNdXPfhQTovCuWY9iQn3Gq+gOTJSgBO9A/JBuPfMOWsSX/lIU9Pc/A==
 
-"@puckeditor/cloud-client@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@puckeditor/cloud-client/-/cloud-client-0.7.0.tgz#0d8e12d2ad287eb8c771a85522972186464f824b"
-  integrity sha512-9y5AKtn9IlYG9X/+MqNwKckgIq2/Mq8p+/MSI+f4mOrgIg8BcBLfphOqTZWwoFEK6yxJkXA179utBCICw6dnKQ==
+"@puckeditor/cloud-client@^0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@puckeditor/cloud-client/-/cloud-client-0.8.0.tgz#12949bb9c06b9c1ef21b70b3a15c2575939365fb"
+  integrity sha512-cyh6CoWWlmw3zte1ySYdn/e1v2OuXJr2Vp5nX9E+iIhl5dc7A1UXg0p0kIE1cjc4teMYE1zJgOdD0Xvcp6z27Q==
 
-"@puckeditor/plugin-ai@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@puckeditor/plugin-ai/-/plugin-ai-0.7.0.tgz#02f55c444748cc813481d21934d7f964773add0f"
-  integrity sha512-TS6e59EwYs7+Ssn8My3XkuAkxYxIlcW/GC9wfJwNOTJh27itSl1oszJYvD+50T8/GVQl4MgkPyc8qYMaqw8R4w==
+"@puckeditor/plugin-ai@^0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@puckeditor/plugin-ai/-/plugin-ai-0.8.0.tgz#81bf6a1ee3276adf133b6fdd4146b47f22f20614"
+  integrity sha512-5xvEA8TvczHYj6UQufhBd0KV2MVvAWgkMAMfva9O5J6jMMTfzbBJyjgJQfFQchqppWtsNIgXcYpezBLTwoxD0g==
   dependencies:
-    ai "^6.0.61"
+    ai "^6.0.228"
+    domhandler "^6.0.1"
+    domutils "^4.0.2"
     html2canvas-pro "^1.5.13"
+    htmlparser2 "^12.0.0"
     qler "^0.6.2"
     react-markdown "^10.1.0"
     react-textarea-autosize "^8.5.9"
     ulid "^3.0.1"
+    use-debounce "^9.0.4"
     use-stick-to-bottom "^1.1.1"
 
 "@puppeteer/browsers@2.13.2":
@@ -4352,14 +4356,14 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-ai@^6.0.61:
-  version "6.0.229"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-6.0.229.tgz#44741d6d25ab2f01adb5034a0c92407230b2eda7"
-  integrity sha512-bDi36L2RdEFMS7z2WIhBr7fpQhMkjzd6mgRKgtlmBSs2zZwUI22s6ZBOak/XN/LpKiJnS7SrlVqKDcqqvzTW8A==
+ai@^6.0.228:
+  version "6.0.237"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-6.0.237.tgz#d8cf5083ffac7281dafc466ef4a525c302076e4e"
+  integrity sha512-TdiKxGoYrKQyaN6fkk1WRxA+XSQ8nO3LZo/QVnJsME54bMuddXqzJ4KrJozF5/czHfJ5BmgHJ4mJmGqRZHX3Hw==
   dependencies:
-    "@ai-sdk/gateway" "3.0.152"
+    "@ai-sdk/gateway" "3.0.159"
     "@ai-sdk/provider" "3.0.14"
-    "@ai-sdk/provider-utils" "4.0.39"
+    "@ai-sdk/provider-utils" "4.0.40"
     "@opentelemetry/api" "^1.9.0"
 
 ajv@^6.14.0:
@@ -6269,12 +6273,42 @@ dom-accessibility-api@^0.6.3:
   resolved "https://registry.yarnpkg.com/dom-accessibility-api/-/dom-accessibility-api-0.6.3.tgz#993e925cc1d73f2c662e7d75dd5a5445259a8fd8"
   integrity sha512-7ZgogeTnjuHbo+ct10G9Ffp0mif17idi0IyWNVA/wcwcm7NPOD/WEHVP3n7n3MhXqxoIYm8d6MuZohYWIZ4T3w==
 
+dom-serializer@^3.0.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-3.1.1.tgz#54be70ee4fcc2da010f488165e62294798dc57d3"
+  integrity sha512-4MEa38/QexBob6gFNwu+EGdWvhJ1OKuNwdYY3Y3NyeWDQfnGeDYQUDfIRzWu5B5gsv03so2Uxd28YC6zrsx3Lw==
+  dependencies:
+    domelementtype "^3.0.0"
+    domhandler "^6.0.0"
+    entities "^8.0.0"
+
+domelementtype@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-3.0.0.tgz#e6c0a24bd39ca5eb7ea67a98d2f699497d7bcc55"
+  integrity sha512-umCQid3jKbDmVjx8jGaW7uUykm4DEUeyV21hPxNMo2nV955DhUThwqyOIDtreepP31hl84X7G5U9ZfsWvIB3Pg==
+
+domhandler@^6.0.0, domhandler@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-6.0.1.tgz#75f351a03a6e10c35e08418f9cf0d287e00797cf"
+  integrity sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==
+  dependencies:
+    domelementtype "^3.0.0"
+
 dompurify@^3.3.1:
   version "3.4.11"
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.11.tgz#29c8ba496475f279ef4015784068452fb14a0680"
   integrity sha512-zhlUV12GsaRzMsf9q5M254YhA4+VuF0fG+QFqu6aYpoGlKtz+w8//jBcGVYBgQkR5GHjUomejY84AV+/uPbWdw==
   optionalDependencies:
     "@types/trusted-types" "^2.0.7"
+
+domutils@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/domutils/-/domutils-4.0.2.tgz#0c1ac1fdbe8f554a60a6f5eb143ee85630327c94"
+  integrity sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==
+  dependencies:
+    dom-serializer "^3.0.0"
+    domelementtype "^3.0.0"
+    domhandler "^6.0.0"
 
 dot-prop@^5.1.0:
   version "5.3.0"
@@ -6384,6 +6418,11 @@ entities@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-7.0.1.tgz#26e8a88889db63417dcb9a1e79a3f1bc92b5976b"
   integrity sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==
+
+entities@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-8.0.0.tgz#c1df5fe3602429747fa233d0dd26f142f0ce4743"
+  integrity sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA==
 
 env-paths@^2.2.0, env-paths@^2.2.1:
   version "2.2.1"
@@ -8095,6 +8134,16 @@ html2canvas-pro@^1.5.13:
   dependencies:
     css-line-break "^2.1.0"
     text-segmentation "^1.0.3"
+
+htmlparser2@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-12.0.0.tgz#6a679d0f57c525990f9cbad8a585b320ecc6d198"
+  integrity sha512-Tz7u1i95/g2x2jz81+x0FBVhBhY5aRTvD3tXXdFaljuNdzDLJ8UGNRrTcj2cgQvAg3iW/h77Fz15nLW0L0CrZw==
+  dependencies:
+    domelementtype "^3.0.0"
+    domhandler "^6.0.0"
+    domutils "^4.0.2"
+    entities "^8.0.0"
 
 http-cache-semantics@^4.1.1:
   version "4.2.0"
