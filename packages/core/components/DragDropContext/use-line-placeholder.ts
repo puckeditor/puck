@@ -57,15 +57,21 @@ export const useLinePlaceholder = (
   const appStore = useAppStoreApi();
   const scrollCleanup = useRef<(() => void) | null>(null);
 
-  const setActive = useCallback((active: boolean) => {
-    const entryEl = getFrame()?.querySelector("[data-puck-entry]");
+  const setActive = useCallback(
+    (active: boolean) => {
+      const entryEl = getFrame()?.querySelector("[data-puck-entry]");
 
-    if (active) {
-      entryEl?.setAttribute("data-puck-line-drag", "true");
-    } else {
-      entryEl?.removeAttribute("data-puck-line-drag");
-    }
-  }, []);
+      if (active) {
+        entryEl?.setAttribute("data-puck-line-drag", "true");
+      } else {
+        entryEl?.removeAttribute("data-puck-line-drag");
+      }
+
+      // Keep staticDrag in sync with the line placeholder.
+      zoneStore.setState({ staticDrag: active });
+    },
+    [zoneStore]
+  );
 
   const getTargetIndexForZone = useCallback(
     (zone: string, manager: DragDropManager) => {
