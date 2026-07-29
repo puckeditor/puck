@@ -80,6 +80,15 @@
   opacity: var(--puck-actionbar-opacity-action-disabled, 0.54);
 }
 
+.ActionBarAction--grab {
+  cursor: grab;
+  touch-action: none;
+}
+
+.ActionBarAction--grab:active {
+  cursor: grabbing;
+}
+
 .ActionBarAction svg {
   max-width: none !important; /* Explicit definition to prevent some SVG style pollution */
 }

@@ -101,7 +101,7 @@
 .DraggableComponent-actions {
   position: absolute;
   width: auto;
-  cursor: grab;
+  cursor: default;
   display: flex;
   box-sizing: border-box;
   transform-origin: right top;

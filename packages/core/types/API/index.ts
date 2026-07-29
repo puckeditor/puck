@@ -25,6 +25,7 @@ export type IframeConfig = {
 export type DndConfig = {
   disableAutoScroll?: boolean;
   disableOutlineDrag?: boolean;
+  enableDragHandle?: boolean;
 };
 
 export type OnAction<UserData extends Data = Data> = (

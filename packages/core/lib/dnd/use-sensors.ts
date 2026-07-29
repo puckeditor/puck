@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PointerSensor } from "@dnd-kit/react";
 import { PointerActivationConstraints } from "@dnd-kit/dom";
+import type { PointerSensorOptions } from "@dnd-kit/dom";
 import { isElement } from "@dnd-kit/dom/utilities";
 import type { ActivationConstraint } from "@dnd-kit/abstract";
 
@@ -22,10 +23,13 @@ export const useSensors = (
     other = otherDefault,
     mouse,
     touch = touchDefault,
+    activatorElements,
   }: {
     mouse?: ActivationConstraints;
     touch?: ActivationConstraints;
     other?: ActivationConstraints;
+    // Elements that can start a drag. Defaults to the handle, or the element.
+    activatorElements?: PointerSensorOptions["activatorElements"];
   } = {
     touch: touchDefault,
     other: otherDefault,
@@ -33,6 +37,7 @@ export const useSensors = (
 ) => {
   const [sensors] = useState(() => [
     PointerSensor.configure({
+      activatorElements,
       activationConstraints(event, source) {
         const { pointerType, target } = event;
 
