@@ -30,6 +30,7 @@ export type Overrides<UserConfig extends Config = Config> = OverridesGeneric<{
     label?: string;
     children: ReactNode;
     parentAction: ReactNode;
+    dragHandle?: ReactNode;
   }>;
   headerActions: RenderFunc<{ children: ReactNode }>;
   preview: RenderFunc;

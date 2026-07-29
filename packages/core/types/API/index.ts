@@ -27,6 +27,7 @@ export type DndBehavior = "auto" | "fluid" | "static";
 export type DndConfig = {
   disableAutoScroll?: boolean;
   disableOutlineDrag?: boolean;
+  enableDragHandle?: boolean;
   /**
    * - `auto` (default): fluid drags within a slot, switching to a static
    *   line placeholder when dragging between slots or inserting a new item
