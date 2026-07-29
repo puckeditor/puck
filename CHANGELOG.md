@@ -2,6 +2,16 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.22.4](https://github.com/measuredco/puck/compare/v0.22.3...v0.22.4) (2026-07-29)
+
+
+### Bug Fixes
+
+* use latest @puckeditor/plugin-ai and @puckeditor/cloud-client in recipes ([fb9392d](https://github.com/measuredco/puck/commit/fb9392deb4f896a990992454449d6722651d1eb9))
+
+
+
+
 ## [0.22.3](https://github.com/measuredco/puck/compare/v0.22.2...v0.22.3) (2026-07-28)
 
 
