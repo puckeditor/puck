@@ -22,9 +22,12 @@
 
 /* Placeholder */
 [data-dnd-placeholder] {
-  background: var(--puck-color-azure-06, #6499cf) !important;
+  background: var(
+    --puck-slot-component-color-placeholder,
+    var(--puck-color-azure-06)
+  ) !important;
   border: none !important;
-  color: #00000000 !important;
+  color: transparent !important;
   opacity: 0.3 !important;
   outline: none !important;
   transition: none !important;
@@ -38,8 +41,15 @@
 
 [data-dnd-dragging][data-puck-component] {
   pointer-events: none !important;
-  outline: 2px var(--puck-color-azure-09, #cfdff0) solid !important;
-  outline-offset: -2px !important;
+  outline: var(
+      --puck-slot-component-border-width,
+      var(--puck-border-width-focus)
+    )
+    var(--puck-slot-component-color-border-dragging, var(--puck-color-azure-09))
+    solid !important;
+  outline-offset: calc(
+    var(--puck-slot-component-border-width, var(--puck-border-width-focus)) * -1
+  ) !important;
 }
 
 /*

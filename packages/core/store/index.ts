@@ -2,6 +2,7 @@
 
 import {
   Config,
+  DndConfig,
   IframeConfig,
   Overrides,
   AppState,
@@ -36,6 +37,7 @@ import { toRoot } from "../lib/data/to-root";
 import { generateId } from "../lib/generate-id";
 import { defaultAppState } from "./default-app-state";
 import { FieldTransforms } from "../types/API/FieldTransforms";
+import type { Dictionary } from "../lib/dictionary";
 import type { Editor } from "@tiptap/react";
 
 export { defaultAppState };
@@ -88,6 +90,8 @@ export type AppStore<
   getComponentConfig: (type?: string) => ComponentConfig | null | undefined;
   onAction?: (action: PuckAction, newState: AppState, state: AppState) => void;
   metadata: Metadata;
+  dictionary: Dictionary;
+  dnd?: DndConfig;
   fields: FieldsSlice;
   history: HistorySlice;
   nodes: NodesSlice;
@@ -128,6 +132,8 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
       _experimentalFullScreenCanvas: false,
       _experimentalVirtualization: false,
       metadata: {},
+      dictionary: {},
+      dnd: {},
       fieldTransforms: {},
       ...initialAppStore,
       fields: createFieldsSlice(set, get),

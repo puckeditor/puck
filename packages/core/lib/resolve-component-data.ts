@@ -12,9 +12,11 @@ import { toComponent } from "./data/to-component";
 import { getChanged } from "./get-changed";
 import { deepEqual } from "fast-equals";
 
-export const cache: {
+export type ResolveDataCache = {
   lastChange: Record<string, any>;
-} = { lastChange: {} };
+};
+
+export const cache: ResolveDataCache = { lastChange: {} };
 
 export const resolveComponentData = async <
   T extends ComponentData | RootDataWithProps
@@ -26,7 +28,8 @@ export const resolveComponentData = async <
   onResolveEnd?: (item: T) => void,
   trigger: ResolveDataTrigger = "replace",
   parent: ComponentData | null = null,
-  root: RootData = { props: {} }
+  root: RootData = { props: {} },
+  cacheStore: ResolveDataCache = cache
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -46,7 +49,7 @@ export const resolveComponentData = async <
       item: oldItem = null,
       resolved = {},
       parentId: oldParentId = null,
-    } = cache.lastChange[id] || {};
+    } = cacheStore.lastChange[id] || {};
     // Skip inserted nodes for "move" trigger
     // This is done this way to mitigate race conditions on insertion
     const isRootOrInserted = oldParentId === null;
@@ -107,7 +110,8 @@ export const resolveComponentData = async <
                   onResolveEnd,
                   trigger,
                   itemAsComponentData,
-                  root
+                  root,
+                  cacheStore
                 )
               ).node
           )
@@ -121,7 +125,7 @@ export const resolveComponentData = async <
     onResolveEnd(resolvedItem);
   }
 
-  cache.lastChange[id] = {
+  cacheStore.lastChange[id] = {
     item: item,
     resolved: itemWithResolvedChildren,
     parentId: parent?.props.id,

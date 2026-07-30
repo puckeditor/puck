@@ -11,6 +11,7 @@ const menu = {
   "data-migration": {},
   styling: {},
   viewports: {},
+  localization: {},
   "feature-toggling": {},
 };
 

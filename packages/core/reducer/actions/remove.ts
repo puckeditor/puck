@@ -13,18 +13,15 @@ export const removeAction = <UserData extends Data>(
 ) => {
   const item = getItem({ index: action.index, zone: action.zone }, state)!;
 
-  // Gather related
-  const nodesToDelete = Object.entries(state.indexes.nodes).reduce<string[]>(
-    (acc, [nodeId, nodeData]) => {
-      const pathIds = nodeData.path.map((p) => p.split(":")[0]);
-      if (pathIds.includes(item.props.id)) {
-        return [...acc, nodeId];
-      }
+  const nodesToDelete = new Set<string>([item.props.id]);
 
-      return acc;
-    },
-    [item.props.id]
-  );
+  // Gather related
+  Object.entries(state.indexes.nodes).forEach(([nodeId, nodeData]) => {
+    const pathIds = nodeData.path.map((p) => p.split(":")[0]);
+    if (pathIds.includes(item.props.id)) {
+      nodesToDelete.add(nodeId);
+    }
+  });
 
   const newState = walkAppState<UserData>(
     state,
@@ -41,7 +38,7 @@ export const removeAction = <UserData extends Data>(
   Object.keys(newState.data.zones || {}).forEach((zoneCompound) => {
     const parentId = zoneCompound.split(":")[0];
 
-    if (nodesToDelete.includes(parentId) && newState.data.zones) {
+    if (nodesToDelete.has(parentId) && newState.data.zones) {
       delete newState.data.zones[zoneCompound];
     }
   });
@@ -49,14 +46,19 @@ export const removeAction = <UserData extends Data>(
   Object.keys(newState.indexes.zones).forEach((zoneCompound) => {
     const parentId = zoneCompound.split(":")[0];
 
-    if (nodesToDelete.includes(parentId)) {
+    if (nodesToDelete.has(parentId)) {
       delete newState.indexes.zones[zoneCompound];
     }
   });
 
+  const newItemExpanded = { ...newState.ui.itemExpanded };
+
   nodesToDelete.forEach((id) => {
     delete newState.indexes.nodes[id];
+    delete newItemExpanded[id];
   });
+
+  newState.ui = { ...newState.ui, itemExpanded: newItemExpanded };
 
   return newState;
 };

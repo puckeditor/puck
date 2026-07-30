@@ -1,5 +1,5 @@
 .Header {
-  background-color: white;
+  background-color: var(--puck-color-surface);
   position: sticky;
   top: 0;
   z-index: 2;
@@ -11,25 +11,25 @@
   margin-inline-start: auto;
   margin-inline-end: auto;
   max-width: 1280px;
-  padding: 24px 16px;
+  padding: var(--puck-space-5) var(--puck-space-4);
 }
 
 @media (min-width: 768px) {
   .Header-inner {
-    padding: 24px;
+    padding: var(--puck-space-5);
   }
 }
 
 .Header-logo {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: var(--puck-font-weight-heavy);
   letter-spacing: 1.4;
   opacity: 0.8;
 }
 
 .Header-items {
   display: flex;
-  gap: 24px;
+  gap: var(--puck-space-5);
   margin-inline-start: auto;
 }
 
@@ -37,4 +37,14 @@
   .Header-items {
     gap: 32px;
   }
+}
+
+.HeaderItem {
+  text-decoration: none;
+  color: var(--puck-color-grey-06);
+}
+
+.HeaderItem--isActive {
+  color: var(--puck-color-text-muted);
+  font-weight: 600;
 }

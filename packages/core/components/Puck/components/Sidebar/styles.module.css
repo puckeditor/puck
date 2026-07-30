@@ -1,5 +1,6 @@
 .Sidebar {
-  border-block-start: 1px solid var(--puck-color-grey-09);
+  border-block-start: var(--puck-border-width-regular) solid
+    var(--puck-color-border);
   position: relative;
   display: none;
   flex-direction: column;
@@ -11,26 +12,39 @@
 }
 
 .Sidebar--left {
-  background: var(--puck-color-grey-12);
+  --_puck-sidebar-section-color-bg: var(
+    --puck-sidebar-left-color-bg,
+    var(--puck-color-surface)
+  );
+  background: var(
+    --puck-sidebar-left-color-bg,
+    var(--puck-color-surface-subtle)
+  );
   grid-area: left;
 }
 
 @media (min-width: 766px) {
   .Sidebar--left {
     border-block-start: 0;
-    border-inline-end: 1px solid var(--puck-color-grey-09);
+    border-inline-end: var(--puck-border-width-regular) solid
+      var(--puck-color-border);
   }
 }
 
 .Sidebar--right {
-  background: var(--puck-color-white);
+  --_puck-sidebar-section-color-bg: var(
+    --puck-sidebar-right-color-bg,
+    var(--puck-color-surface)
+  );
+  background: var(--puck-sidebar-right-color-bg, var(--puck-color-surface));
   grid-area: right;
 }
 
 @media (min-width: 766px) {
   .Sidebar--right {
     border-block-start: 0;
-    border-inline-start: 1px solid var(--puck-color-grey-09);
+    border-inline-start: var(--puck-border-width-regular) solid
+      var(--puck-color-border);
   }
 }
 

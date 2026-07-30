@@ -12,6 +12,7 @@ import { usePropsContext } from "../..";
 import styles from "./styles.module.css";
 import { useInjectUiCss } from "../../../../lib/use-inject-css";
 import { useAppStore, useAppStoreApi } from "../../../../store";
+import { useMessage } from "../../../../lib/use-message";
 import { DefaultOverride } from "../../../DefaultOverride";
 import { monitorHotkeys, useMonitorHotkeys } from "../../../../lib/use-hotkey";
 import { getFrame } from "../../../../lib/get-frame";
@@ -41,15 +42,16 @@ const useBrowserLayoutEffect =
   typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 const FieldSideBar = () => {
+  const pageLabel = useMessage("label-page");
   const title = useAppStore((s) =>
     s.selectedItem
       ? s.config.components[s.selectedItem.type]?.["label"] ??
         s.selectedItem.type.toString()
-      : s.config.root?.label || "Page"
+      : s.config.root?.label
   );
 
   return (
-    <SidebarSection noBorderTop showBreadcrumbs title={title}>
+    <SidebarSection noBorderTop showBreadcrumbs title={title || pageLabel}>
       <Fields />
     </SidebarSection>
   );
@@ -172,31 +174,40 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   const layoutOptions: Record<string, any> = {};
 
   if (leftWidth) {
-    layoutOptions["--puck-user-left-side-bar-width"] = `${leftWidth}px`;
+    layoutOptions["--puck-user-sidebar-left-width"] = `${leftWidth}px`;
   }
 
   if (rightWidth) {
-    layoutOptions["--puck-user-right-side-bar-width"] = `${rightWidth}px`;
+    layoutOptions["--puck-user-sidebar-right-width"] = `${rightWidth}px`;
   }
 
   const setUi = useAppStore((s) => s.setUi);
   const currentPlugin = useAppStore((s) => s.state.ui.plugin?.current);
   const appStoreApi = useAppStoreApi();
 
-  const [mobilePanelHeightMode, setMobilePanelHeightMode] = useState<
-    "toggle" | "min-content"
-  >("toggle");
-
   const hasLegacySideBarPlugin = useMemo(
     () => !!plugins?.find((p) => p.name === "legacy-side-bar"),
     [plugins]
   );
 
-  const pluginItems = useMemo(() => {
-    const details: Record<string, MenuItem & { render: () => ReactElement }> =
-      {};
+  // Localized labels for the built-in plugin tabs, passed into their factories.
+  const blocksLabel = useMessage("plugin-blocks");
+  const outlineLabel = useMessage("plugin-outline");
+  const fieldsLabel = useMessage("plugin-fields");
 
-    const defaultPlugins: PluginInternal[] = [blocksPlugin(), outlinePlugin()];
+  const pluginItems = useMemo(() => {
+    const details: Record<
+      string,
+      MenuItem & {
+        render: () => ReactElement;
+        mobilePanelHeight: "toggle" | "min-content";
+      }
+    > = {};
+
+    const defaultPlugins: PluginInternal[] = [
+      blocksPlugin({ label: blocksLabel }),
+      outlinePlugin({ label: outlineLabel }),
+    ];
 
     const isLegacy = (plugin: PluginInternal) =>
       plugin.name === "legacy-side-bar" ? -1 : 0;
@@ -209,7 +220,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
     ].sort((a, b) => isLegacy(a) - isLegacy(b));
 
     if (!plugins?.some((p) => p.name === "fields")) {
-      combinedPlugins.push(fieldsPlugin());
+      combinedPlugins.push(fieldsPlugin({ label: fieldsLabel }));
     }
 
     combinedPlugins?.forEach((plugin) => {
@@ -223,8 +234,6 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
           label: plugin.label ?? plugin.name,
           icon: plugin.icon ?? <ToyBrick />,
           onClick: () => {
-            setMobilePanelHeightMode(plugin.mobilePanelHeight ?? "toggle");
-
             if (plugin.name === currentPlugin) {
               if (leftSideBarVisible) {
                 setUi({ leftSideBarVisible: false });
@@ -242,6 +251,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
           },
           isActive: leftSideBarVisible && currentPlugin === plugin.name,
           render: plugin.render,
+          mobilePanelHeight: plugin.mobilePanelHeight ?? "toggle",
           mobileOnly: hasLegacySideBarPlugin || plugin.mobileOnly,
           desktopOnly: plugin.name === "legacy-side-bar" || plugin.desktopOnly,
         };
@@ -249,7 +259,19 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
     });
 
     return details;
-  }, [plugins, currentPlugin, appStoreApi, leftSideBarVisible]);
+  }, [
+    plugins,
+    currentPlugin,
+    appStoreApi,
+    leftSideBarVisible,
+    blocksLabel,
+    outlineLabel,
+    fieldsLabel,
+  ]);
+
+  const activePlugin = currentPlugin ?? Object.keys(pluginItems)[0];
+  const mobilePanelHeightMode =
+    pluginItems[activePlugin]?.mobilePanelHeight ?? "toggle";
 
   useEffect(() => {
     if (!currentPlugin) {
@@ -265,6 +287,10 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   const mobilePanelExpanded = useAppStore(
     (s) => s.state.ui.mobilePanelExpanded ?? false
   );
+
+  // Title follows the icon/action: collapse when expanded, expand otherwise.
+  const maximizeLabel = useMessage("layout-maximize");
+  const minimizeLabel = useMessage("layout-minimize");
 
   return (
     <div
@@ -306,7 +332,11 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                         mobilePanelHeightMode === "toggle" && (
                           <IconButton
                             type="button"
-                            title="maximize"
+                            title={
+                              mobilePanelExpanded
+                                ? minimizeLabel
+                                : maximizeLabel
+                            }
                             onClick={() => {
                               setUi({
                                 mobilePanelExpanded: !mobilePanelExpanded,

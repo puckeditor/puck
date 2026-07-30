@@ -22,6 +22,11 @@ export type IframeConfig = {
   syncHostStyles?: boolean;
 };
 
+export type DndConfig = {
+  disableAutoScroll?: boolean;
+  disableOutlineDrag?: boolean;
+};
+
 export type OnAction<UserData extends Data = Data> = (
   action: PuckAction,
   appState: AppState<UserData>,

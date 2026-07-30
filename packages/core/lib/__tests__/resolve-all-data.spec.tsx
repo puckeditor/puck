@@ -1,5 +1,6 @@
 import { ComponentData, Config, Data, RootData } from "../../types";
 import { resolveAllData } from "../resolve-all-data";
+import { cache } from "../resolve-component-data";
 
 const item4 = {
   type: "ComponentWithResolveProps",
@@ -363,5 +364,15 @@ describe("resolve-data", () => {
       item1_2.props.id
     );
     expect(receivedParentById[item1_2_1.props.id]?.props.prop).toBe("Resolved");
+  });
+
+  it("should not write to the shared module-level cache", async () => {
+    cache.lastChange = {};
+
+    await resolveAllData(data, config);
+
+    // Entries should live in a local cache that is garbage collected once
+    // resolveAllData returns, not accumulate in the shared cache.
+    expect(cache.lastChange).toEqual({});
   });
 });

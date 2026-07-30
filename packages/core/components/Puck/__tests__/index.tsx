@@ -1,5 +1,5 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { Config } from "../../../types";
+import { Config, Plugin } from "../../../types";
 import "@testing-library/jest-dom";
 import {
   PUCK_STYLE_ID_ATTRIBUTE,
@@ -149,6 +149,40 @@ describe("Puck", () => {
     expect(appStore.getState()).toMatchSnapshot();
   });
 
+  it("applies min-content height to a plugin selected on mount", async () => {
+    const previousMatchMedia = window.matchMedia;
+
+    window.matchMedia = jest.fn((query: string) => ({
+      ...previousMatchMedia(query),
+      matches: true,
+    }));
+
+    const plugin: Plugin = {
+      name: "custom",
+      render: () => <div>Custom plugin</div>,
+      mobilePanelHeight: "min-content",
+    };
+
+    try {
+      render(
+        <Puck
+          config={config}
+          data={{}}
+          iframe={{ enabled: false }}
+          plugins={[plugin]}
+          ui={{ plugin: { current: "custom" } }}
+        />
+      );
+
+      await flush();
+
+      expect(screen.getByText("Custom plugin")).toBeInTheDocument();
+      expect(screen.queryByTitle("maximize")).not.toBeInTheDocument();
+    } finally {
+      window.matchMedia = previousMatchMedia;
+    }
+  });
+
   it("should index slots on mount", async () => {
     render(
       <Puck
@@ -273,5 +307,27 @@ describe("Puck", () => {
     expect(interactionStyle?.getAttribute(PUCK_STYLE_SOURCE_ATTRIBUTE)).toBe(
       PUCK_STYLE_SOURCE_VALUE
     );
+  });
+
+  it("exposes the preview mode on the canvas entry element", async () => {
+    render(<Puck config={config} data={{}} iframe={{ enabled: false }} />);
+
+    await flush();
+
+    const entry = document.querySelector("[data-puck-entry]");
+
+    expect(entry?.getAttribute("data-puck-preview-mode")).toBe("edit");
+
+    const { appStore } = getInternal();
+
+    act(() => {
+      appStore
+        .getState()
+        .dispatch({ type: "setUi", ui: { previewMode: "interactive" } });
+    });
+
+    await flush();
+
+    expect(entry?.getAttribute("data-puck-preview-mode")).toBe("interactive");
   });
 });

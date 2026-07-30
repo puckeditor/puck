@@ -1,0 +1,15 @@
+/* Private --_puck-outline-* vars resolve on .LayerTreeRoot. */
+.LayerTree-helper {
+  color: var(--puck-outline-color-text-helper, var(--puck-color-text-subtle));
+  padding-top: var(--puck-space-1);
+  padding-bottom: var(--puck-space-1);
+  padding-inline-start: var(--_puck-outline-label-indent);
+  /* We need this border to show a consistent drop preview in the title and nested zone */
+  border: var(--_puck-outline-border-width) solid transparent;
+}
+
+/* Drag and drop: hosts a DropLine while targeted */
+.LayerTree-helper[data-puck-drop-target] {
+  position: relative;
+  overflow: visible;
+}

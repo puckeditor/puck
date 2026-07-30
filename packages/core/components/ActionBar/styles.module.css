@@ -3,26 +3,26 @@
   cursor: default;
   display: flex;
   width: auto;
-  padding: 4px;
-  padding-inline-start: 0;
-  padding-inline-end: 0;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  border-radius: 8px;
-  background: var(--puck-color-grey-01);
-  color: var(--puck-color-white);
+  padding-top: var(--puck-actionbar-space-y, var(--puck-space-1));
+  padding-bottom: var(--puck-actionbar-space-y, var(--puck-space-1));
+  padding-inline-start: var(--puck-actionbar-space-x, 0);
+  padding-inline-end: var(--puck-actionbar-space-x, 0);
+  border-radius: var(--puck-actionbar-radius, var(--puck-radius-l));
+  background: var(--puck-actionbar-color-bg, var(--puck-color-surface-inverse));
+  color: var(--puck-color-text-inverse);
   font-family: var(--puck-font-family);
   min-height: 26px;
 }
 
 .ActionBar-label {
-  color: var(--puck-color-grey-08);
-  font-size: var(--puck-font-size-xxxs);
-  font-weight: 500;
-  padding-inline-start: 8px;
-  padding-inline-end: 8px;
-  margin-inline-start: 4px;
-  margin-inline-end: 4px;
+  color: var(--puck-actionbar-color-text, var(--puck-color-text-inverse));
+  font-size: var(--puck-actionbar-font-size, var(--puck-font-size-xxxs));
+  opacity: var(--puck-actionbar-opacity-text, var(--puck-opacity-text-inverse));
+  font-weight: var(--puck-font-weight-medium);
+  padding-inline-start: var(--puck-space-2);
+  padding-inline-end: var(--puck-space-2);
+  margin-inline-start: var(--puck-space-1);
+  margin-inline-end: var(--puck-space-1);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -32,16 +32,17 @@
 }
 
 .ActionBar-label + .ActionBarAction {
-  margin-inline-start: -4px;
+  margin-inline-start: calc(var(--puck-space-1) * -1);
 }
 
 .ActionBar-group {
   align-items: center;
-  border-inline-start: 0.5px solid var(--puck-color-grey-05); /* Fractional value required due to scaling */
+  border-inline-start: var(--puck-border-width-hairline) solid
+    var(--puck-actionbar-color-separator, var(--puck-color-border-inverse)); /* Fractional value required due to scaling */
   display: flex;
   height: 100%;
-  padding-inline-start: 4px;
-  padding-inline-end: 4px;
+  padding-inline-start: var(--puck-space-1);
+  padding-inline-end: var(--puck-space-1);
 }
 
 .ActionBar-group:first-of-type {
@@ -55,22 +56,28 @@
 .ActionBarAction {
   background: transparent;
   border: none;
-  color: var(--puck-color-grey-08);
+  color: var(--puck-actionbar-color-text, var(--puck-color-text-inverse));
   cursor: pointer;
-  padding: 6px;
-  margin-inline-start: 4px;
-  margin-inline-end: 4px;
-  border-radius: 4px;
+  padding: var(--puck-actionbar-action-space, 6px);
+  margin-inline-start: var(--puck-space-1);
+  margin-inline-end: var(--puck-space-1);
+  border-radius: var(--puck-radius-m);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 50ms ease-in;
+  opacity: var(--puck-actionbar-opacity-text, var(--puck-opacity-text-inverse));
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit),
+    opacity var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .ActionBarAction--disabled {
   cursor: auto;
-  color: var(--puck-color-grey-06);
+  color: var(
+    --puck-actionbar-color-action-disabled,
+    var(--puck-color-text-inverse)
+  );
+  opacity: var(--puck-actionbar-opacity-action-disabled, 0.54);
 }
 
 .ActionBarAction svg {
@@ -78,20 +85,28 @@
 }
 
 .ActionBarAction:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: -2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ActionBarAction:hover:not(.ActionBarAction--disabled) {
-    color: var(--puck-color-azure-06);
+    color: var(
+      --puck-actionbar-color-action-hover,
+      var(--puck-color-interactive-inverse-hover)
+    );
+    opacity: 1;
     transition: none;
   }
 }
 
 .ActionBarAction:active:not(.ActionBarAction--disabled),
 .ActionBarAction--active {
-  color: var(--puck-color-azure-07);
+  color: var(
+    --puck-actionbar-color-action-active,
+    var(--puck-color-interactive-inverse-active)
+  );
+  opacity: 1;
   transition: none;
 }
 
@@ -100,8 +115,13 @@
 }
 
 .ActionBar-separator {
-  background: var(--puck-color-grey-05);
-  margin-inline: 4px;
-  width: 0.5px; /* Fractional value required due to scaling */
+  background: var(
+    --puck-actionbar-color-separator,
+    var(--puck-color-border-inverse)
+  );
+  margin-inline: var(--puck-space-1);
+  width: var(
+    --puck-border-width-hairline
+  ); /* Fractional value required due to scaling */
   height: 100%;
 }

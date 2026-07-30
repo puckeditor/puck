@@ -1,9 +1,11 @@
 import { Code as CodeIcon } from "lucide-react";
 import { Control } from "../components/Control";
+import { useMessage } from "../../../lib/use-message";
 import { useControlContext } from "../lib/use-control-context";
 
 export function InlineCode() {
   const { editor, editorState } = useControlContext();
+  const inlineCodeLabel = useMessage("field-richtext-code-inline");
 
   return (
     <Control
@@ -14,7 +16,7 @@ export function InlineCode() {
       }}
       disabled={!editorState?.canInlineCode}
       active={editorState?.isInlineCode}
-      title="Inline code"
+      title={inlineCodeLabel}
     />
   );
 }

@@ -1,20 +1,20 @@
 .FieldsPlugin {
-  background: white;
+  background: var(--puck-color-surface);
   height: 100%;
   overflow-y: auto;
 }
 
 .FieldsPlugin-header {
-  border-bottom: 1px solid var(--puck-color-grey-09);
-  font-weight: 600;
-  padding-bottom: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 8px;
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  font-weight: var(--puck-font-weight-semibold);
+  padding-bottom: var(--puck-space-2);
+  padding-left: var(--puck-space-4);
+  padding-right: var(--puck-space-4);
+  padding-top: var(--puck-space-2);
 }
 
 @media (min-width: 638px) {
   .FieldsPlugin-header {
-    padding: 16px;
+    padding: var(--puck-space-4);
   }
 }

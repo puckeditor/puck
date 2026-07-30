@@ -1,38 +1,112 @@
-# `next` recipe
+# Puck + Next.js recipe
 
-The `next` recipe showcases one of the most powerful ways to implement Puck using to provide an authoring tool for any route in your Next app.
+[Puck](https://puckeditor.com) is the open-source visual editor for React.
 
-## Demonstrates
+This recipe connects Puck to the [Next.js App Router](https://nextjs.org/docs/app), so you can create and edit pages for any route in this app.
 
-- Next.js App Router implementation
-- JSON database implementation with HTTP API
-- Catch-all routes to use puck for any route on the platform
-- Incremental static regeneration (ISR) for all Puck pages
+## Core concepts
 
-## Usage
+If you're new to Puck, this section introduces the core concepts you need to know.
 
-Run the generator and enter `next` when prompted
+### Puck
 
+The Puck visual editor has three main parts: a config, the editor, and the renderer.
+
+#### Config
+
+The [config](https://puckeditor.com/docs/integrating-puck/component-configuration) registers the components users can use to build pages in the editor and the fields they can edit.
+
+```tsx
+const config = {
+  components: {
+    HeadingBlock: {
+      fields: {
+        title: { type: "text" },
+      },
+      render: ({ title }) => <h1>{title}</h1>,
+    },
+  },
+};
 ```
-npx create-puck-app my-app
+
+#### The editor
+
+The [`<Puck>`](https://puckeditor.com/docs/api-reference/components/puck) component renders the editor. It uses a config, exports [pages as JSON](https://puckeditor.com/docs/api-reference/data-model/data), and accepts initial page data for editing existing pages.
+
+```tsx
+<Puck
+  config={config} // The components available to the editor
+  data={data} // The page JSON to edit
+  onPublish={(data) => {
+    // Save data to your database
+  }}
+/>
 ```
 
-Start the server
+#### The renderer
 
+The [`<Render>`](https://puckeditor.com/docs/api-reference/components/render) component renders pages. It expects the page JSON and the config used to create that page.
+
+```tsx
+<Render
+  config={config} // The components used to create the page
+  data={data} // The page JSON to render
+/>
 ```
-yarn dev
+
+## Run the recipe
+
+### 1. Start the development server
+
+Run:
+
+```sh
+npm run dev
 ```
 
-Navigate to the homepage at https://localhost:3000. To edit the homepage, access the Puck editor at https://localhost:3000/edit.
+Once the server is running, navigate to [http://localhost:3000](http://localhost:3000) to view the home page, or [http://localhost:3000/edit](http://localhost:3000/edit) to edit it with Puck.
 
-You can do this for any route on the application, **even if the page doesn't exist**. For example, visit https://localhost:3000/hello/world and you'll receive a 404. You can author and publish a page by visiting https://localhost:3000/hello/world/edit. After publishing, go back to the original URL to see your page.
+### 2. Create a page
 
-## Using this recipe
+Navigate to [http://localhost:3000/edit](http://localhost:3000/edit), open the `Blocks` tab in the left sidebar and build your page by dragging components onto the canvas.
 
-To adopt this recipe you will need to:
+### 3. Publish the page
 
-- **IMPORTANT** Add authentication to `/edit` routes. This can be done by modifying the example API routes in `/app/puck/api/route.ts` and server component in `/app/puck/[...puckPath]/page.tsx`. **If you don't do this, Puck will be completely public.**
-- Integrate your database into the API calls in `/app/puck/api/route.ts`
-- Implement a custom puck configuration in `puck.config.tsx`
+Once your page is ready, select **Publish** in the header to save the result, then navigate to [http://localhost:3000](http://localhost:3000) to view the published page.
 
-By default, this recipe will generate static pages by setting `dynamic` to [`force-static`](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#dynamic) in the `/app/[...puckPath]/page.tsx`. This will strip headers and cookies. If you need dynamic pages, you can delete this.
+You can also create a page at any path by navigating to `/your/path/edit` and publishing it. The route `/your/path` will render the page.
+
+## How it works
+
+When a URL ends in `/edit`, [`proxy.ts`](https://nextjs.org/docs/app/api-reference/file-conventions/proxy) sends the request to the Puck editor route (`app/puck/[...puckPath]/page.tsx`). The editor loads the saved page, or starts with an empty page if the path is new.
+
+Selecting **Publish** sends the page data to the `/puck/api` endpoint (`app/puck/api/route.ts`). The handler writes the JSON to `database.json` and clears the Next.js cache for that page. The catch-all route (`app/[...puckPath]/page.tsx`) then loads the same data and renders it with [`<Render>`](https://puckeditor.com/docs/api-reference/components/render).
+
+The table below shows the files that implement this flow.
+
+| File                                | Purpose                                                                                            |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `puck.config.tsx`                   | Defines the components, fields, and default props available to Puck. Add your own components here. |
+| `app/puck/[...puckPath]/page.tsx`   | Loads page data for the editor.                                                                    |
+| `app/puck/[...puckPath]/client.tsx` | Renders the editor and publishes changes.                                                          |
+| `app/[...puckPath]/page.tsx`        | Loads and renders published pages.                                                                 |
+| `app/puck/api/route.ts`             | Saves published pages.                                                                             |
+| `proxy.ts`                          | Routes URLs ending in `/edit` to `/puck/[...puckPath]/page.tsx`.                                   |
+| `lib/get-page.ts`                   | Reads page data from `database.json`. Replace this with your own data fetching logic.              |
+| `database.json`                     | Acts as a local database. Replace this with your own database solution.                            |
+
+## Before deploying to production
+
+Before deploying this recipe, make sure to:
+
+- **Protect the editor and API.** The `/edit` routes and `/puck/api` endpoint are public by default. Add authentication and authorization so only trusted users can edit or publish pages.
+- **Add your component library.** Replace the example `HeadingBlock` in `puck.config.tsx` with the components and fields your users need.
+- **Use a real database.** Replace `database.json` in `lib/get-page.ts` and `app/puck/api/route.ts`. Local files are not reliable across server instances or serverless deployments.
+- **Choose a rendering strategy.** `app/[...puckPath]/page.tsx` uses `force-static`. Remove it if a page needs request-time data such as headers, cookies, or user sessions.
+
+## Learn more
+
+- [Puck documentation](https://puckeditor.com/docs)
+- [Getting started with Puck](https://puckeditor.com/docs/getting-started)
+- [Integrating Puck](https://puckeditor.com/docs/integrating-puck/component-configuration)
+- [Puck Discord](https://discord.gg/D9e4E3MQVZ)

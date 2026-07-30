@@ -1,6 +1,6 @@
 import { DropZoneEditPure, DropZonePure } from "../../../DropZone";
 import { rootDroppableId } from "../../../../lib/root-droppable-id";
-import { RefObject, useCallback, useEffect, useRef, useMemo } from "react";
+import { RefObject, useEffect, useRef, useMemo, memo } from "react";
 import { useAppStore } from "../../../../store";
 import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
 import styles from "./styles.module.css";
@@ -68,6 +68,44 @@ const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
   }, [status]);
 };
 
+const usePreviewModeAttribute = (ref: RefObject<HTMLIFrameElement | null>) => {
+  const previewMode = useAppStore((s) => s.state.ui.previewMode);
+  const status = useAppStore((s) => s.status);
+  const iframeEnabled = useAppStore((s) => s.iframe.enabled);
+
+  // Expose the current preview mode on the canvas entry so CSS can hide
+  // editor-only styles (e.g. overlay portal outlines) while interactive.
+  useEffect(() => {
+    const entry = iframeEnabled
+      ? ref.current?.contentDocument?.querySelector("[data-puck-entry]")
+      : ref.current;
+
+    entry?.setAttribute("data-puck-preview-mode", previewMode);
+  }, [previewMode, status, iframeEnabled]);
+};
+
+const Page = memo(({ config, ...pageProps }: { config: any } & PageProps) => {
+  const propsWithSlots = useSlots(
+    config,
+    { type: "root", props: pageProps },
+    DropZoneEditPure
+  );
+
+  const richtextProps = useRichtextProps(config.root?.fields ?? {}, pageProps);
+
+  return config.root?.render ? (
+    config.root?.render({
+      id: "puck-root",
+      ...propsWithSlots,
+      ...richtextProps,
+    })
+  ) : (
+    <>{propsWithSlots.children}</>
+  );
+});
+
+Page.displayName = "Page";
+
 export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const dispatch = useAppStore((s) => s.dispatch);
   const root = useAppStore((s) => s.state.data.root);
@@ -80,34 +118,6 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
     s.state.ui.previewMode === "edit" ? null : s.state.data
   );
 
-  const Page = useCallback<React.FC<PageProps>>(
-    (pageProps) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const propsWithSlots = useSlots(
-        config,
-        { type: "root", props: pageProps },
-        DropZoneEditPure
-      );
-
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const richtextProps = useRichtextProps(
-        config.root?.fields ?? {},
-        pageProps
-      );
-
-      return config.root?.render ? (
-        config.root?.render({
-          id: "puck-root",
-          ...propsWithSlots,
-          ...richtextProps,
-        })
-      ) : (
-        <>{propsWithSlots.children}</>
-      );
-    },
-    [config]
-  );
-
   const Frame = useMemo(() => overrides.iframe, [overrides]);
 
   // DEPRECATED
@@ -116,10 +126,12 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const ref = useRef<HTMLIFrameElement>(null);
 
   useBubbleIframeEvents(ref);
+  usePreviewModeAttribute(ref);
 
   const inner = !renderData ? (
     <Page
       {...rootProps}
+      config={config}
       puck={{
         renderDropZone: DropZonePure,
         isEditing: true,

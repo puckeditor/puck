@@ -12,12 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  AutoScroller,
-  defaultPreset,
-  DragDropManager,
-  PointerActivationConstraints,
-} from "@dnd-kit/dom";
+import { AutoScroller, defaultPreset, DragDropManager } from "@dnd-kit/dom";
 import { DragDropEventHandlers } from "@dnd-kit/abstract";
 import { DropZoneProvider } from "../DropZone";
 import type { Draggable, Droppable } from "@dnd-kit/dom";
@@ -39,11 +34,13 @@ import { collisionStore } from "../../lib/dnd/collision/dynamic/store";
 import { generateId } from "../../lib/generate-id";
 import { createStore } from "zustand";
 import { getDeepDir } from "../../lib/get-deep-dir";
+import {
+  getCollisionPosition,
+  getInsertIndex,
+} from "../../lib/dnd/get-insert-index";
 import { useSensors } from "../../lib/dnd/use-sensors";
-import { useSafeId } from "../../lib/use-safe-id";
 import { getFrame } from "../../lib/get-frame";
 import { effect } from "@dnd-kit/state";
-import { scrollIntoView } from "../../lib/scroll-into-view";
 
 const DEBUG = false;
 
@@ -460,26 +457,18 @@ const DragDropContextClient = ({
             const targetData = target.data as ComponentDndData;
 
             targetZone = targetData.zone;
-            targetIndex = targetData.index;
 
             const collisionData = manager.collisionObserver.collisions[0]?.data;
 
-            const dir = getDeepDir(target.element);
-
-            const collisionPosition =
-              collisionData?.direction === "up" ||
-              (dir === "ltr" && collisionData?.direction === "left") ||
-              (dir === "rtl" && collisionData?.direction === "right")
-                ? "before"
-                : "after";
-
-            if (targetIndex >= sourceIndex && sourceZone === targetZone) {
-              targetIndex = targetIndex - 1;
-            }
-
-            if (collisionPosition === "after") {
-              targetIndex = targetIndex + 1;
-            }
+            targetIndex = getInsertIndex({
+              position: getCollisionPosition(
+                collisionData?.direction,
+                getDeepDir(target.element)
+              ),
+              sourceIndex,
+              targetIndex: targetData.index,
+              isSameZone: sourceZone === targetZone,
+            });
           } else {
             targetZone = target.id.toString();
             targetIndex = 0;

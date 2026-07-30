@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Layers } from "lucide-react";
 import { Outline } from "../../components/Puck/components/Outline";
 import { Plugin } from "../../types";
@@ -6,13 +7,20 @@ import { getClassNameFactory } from "../../lib";
 
 const getClassName = getClassNameFactory("OutlinePlugin", styles);
 
-export const outlinePlugin: () => Plugin = () => ({
+export type OutlinePluginProps = {
+  label?: string;
+  icon?: ReactNode;
+};
+
+export const outlinePlugin: (props?: OutlinePluginProps) => Plugin = (
+  props = {}
+) => ({
   name: "outline",
-  label: "Outline",
+  label: props.label ?? "Outline",
   render: () => (
     <div className={getClassName()}>
       <Outline />
     </div>
   ),
-  icon: <Layers />,
+  icon: props.icon ?? <Layers />,
 });
