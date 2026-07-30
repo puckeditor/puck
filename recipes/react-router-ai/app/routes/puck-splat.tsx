@@ -6,6 +6,7 @@ import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 
 import type { Route } from "./+types/puck-splat";
 import { config } from "../../puck.config";
+import type { UserData } from "../../puck.config";
 import { resolvePuckPath } from "~/lib/resolve-puck-path.server";
 import { getPage, savePage } from "~/lib/pages.server";
 import { PuckRender } from "~/components/puck-render";
@@ -92,9 +93,7 @@ function Editor() {
         data={loaderData.data}
         onPublish={async (data) => {
           await fetcher.submit(
-            {
-              data,
-            },
+            { data: data as UserData },
             {
               action: "",
               method: "post",
