@@ -19,7 +19,7 @@ const aiPlugin = createAiPlugin({
 // Place the ai plugin in the first position in the side nav.
 const plugins = [aiPlugin, blocksPlugin(), outlinePlugin()];
 
-export function Client({ path, data }: { path: string; data: Partial<Data> }) {
+export function Client({ path, data }: { path: string; data: Data }) {
   const configWithDesignedComponents = withDynamicConfig(config, data);
 
   return (

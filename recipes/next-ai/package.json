@@ -9,8 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@puckeditor/core": "*",
     "@puckeditor/cloud-client": "^0",
+    "@puckeditor/core": "*",
     "@puckeditor/plugin-ai": "^0",
     "classnames": "^2.3.2",
     "next": "^16.2.5",
