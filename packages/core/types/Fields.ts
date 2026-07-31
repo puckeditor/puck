@@ -83,11 +83,9 @@ export interface ArrayField<
 > extends BaseField {
   type: "array";
   arrayFields: {
-    [SubPropName in keyof Props[0]]: Field<
-      Props[0][SubPropName],
-      UserField,
-      AvailableComponents
-    >;
+    [SubPropName in keyof Props[0]]: [UserField] extends [{ type: PropertyKey }]
+      ? Field<Props[0][SubPropName], UserField, AvailableComponents> | UserField
+      : Field<Props[0][SubPropName], UserField, AvailableComponents>;
   };
   defaultItemProps?: Props[0] | ((index: number) => Props[0]);
   getItemSummary?: (item: Props[0], index?: number) => ReactNode;
@@ -102,11 +100,9 @@ export interface ObjectField<
 > extends BaseField {
   type: "object";
   objectFields: {
-    [SubPropName in keyof Props]: Field<
-      Props[SubPropName],
-      UserField,
-      AvailableComponents
-    >;
+    [SubPropName in keyof Props]: [UserField] extends [{ type: PropertyKey }]
+      ? Field<Props[SubPropName], UserField, AvailableComponents> | UserField
+      : Field<Props[SubPropName], UserField, AvailableComponents>;
   };
 }
 
