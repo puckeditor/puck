@@ -264,7 +264,7 @@ describe("resolve-data", () => {
       return { props: { ...props, prop: "Resolved" } };
     });
 
-    const config: Config = {
+    const config: Config<{}> = {
       components: {
         ComponentWithResolveProps: {
           fields: { slot: { type: "slot" } },

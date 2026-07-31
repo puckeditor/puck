@@ -3,6 +3,7 @@ import React from "react";
 import { ComponentConfig } from "@/core";
 import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
+import { Components } from "../../types";
 
 import styles from "./styles.module.css";
 
@@ -13,7 +14,10 @@ export type SpaceProps = {
   size: string;
 };
 
-export const Space: ComponentConfig<SpaceProps> = {
+export const Space: ComponentConfig<{
+  props: SpaceProps;
+  availableComponents: keyof Components;
+}> = {
   label: "Space",
   fields: {
     size: {

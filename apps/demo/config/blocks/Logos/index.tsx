@@ -4,6 +4,7 @@ import { ComponentConfig } from "@/core";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
+import { Components } from "../../types";
 
 const getClassName = getClassNameFactory("Logos", styles);
 
@@ -14,7 +15,10 @@ export type LogosProps = {
   }[];
 };
 
-export const Logos: ComponentConfig<LogosProps> = {
+export const Logos: ComponentConfig<{
+  props: LogosProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     logos: {
       type: "array",
