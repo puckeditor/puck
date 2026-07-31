@@ -1,14 +1,13 @@
 import { DefaultRootProps, RootConfig } from "@/core";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
+import { Fields } from "./types";
 
 export type RootProps = DefaultRootProps;
 
 export const Root: RootConfig<{
   props: RootProps;
-  fields: {
-    userField: { type: "userField"; option: boolean };
-  };
+  fields: Fields;
 }> = {
   defaultProps: {
     title: "My Page",

@@ -1,5 +1,6 @@
 import { ObjectField, RichtextField, SlotField } from "@/core/types";
 import { HeroProps } from "./Hero";
+import { Components, UserField } from "../../types";
 
 export const heroRenderFields = {
   description: {
@@ -10,7 +11,7 @@ export const heroRenderFields = {
     objectFields: {
       content: {
         type: "slot",
-      } satisfies SlotField,
+      } satisfies SlotField<keyof Components>,
     },
-  } satisfies ObjectField<HeroProps["image"]>,
+  } satisfies ObjectField<HeroProps["image"], UserField, keyof Components>,
 };

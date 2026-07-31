@@ -8,7 +8,10 @@ export const TemplateInternal: ComponentConfig<{
   props: TemplateProps;
   availableComponents: keyof Components;
 }> = {
-  fields: templateRenderFields as ComponentConfig<TemplateProps>["fields"],
+  fields: templateRenderFields as ComponentConfig<{
+    props: TemplateProps;
+    availableComponents: keyof Components;
+  }>["fields"],
   render: TemplateComponent,
 };
 

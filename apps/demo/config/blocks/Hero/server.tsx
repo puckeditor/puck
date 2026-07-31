@@ -8,6 +8,9 @@ export const Hero: ComponentConfig<{
   props: HeroProps;
   availableComponents: keyof Components;
 }> = {
-  fields: heroRenderFields as ComponentConfig<HeroProps>["fields"],
+  fields: heroRenderFields as ComponentConfig<{
+    props: HeroProps;
+    availableComponents: keyof Components;
+  }>["fields"],
   render: HeroComponent,
 };

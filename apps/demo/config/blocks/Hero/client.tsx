@@ -6,17 +6,12 @@ import { AutoField, FieldLabel, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
-import { Components } from "../../types";
+import { Components, Fields } from "../../types";
 
 export const Hero: ComponentConfig<{
   props: HeroProps;
   availableComponents: keyof Components;
-  fields: {
-    userField: {
-      type: "userField";
-      option: boolean;
-    };
-  };
+  fields: Fields;
 }> = {
   fields: {
     quote: {

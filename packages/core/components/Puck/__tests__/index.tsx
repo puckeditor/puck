@@ -66,7 +66,7 @@ describe("Puck", () => {
   const componentBRender = jest.fn(() => null);
   const rootRender = jest.fn(() => null);
 
-  const config: Config = {
+  const config: Config<{}> = {
     root: {
       render: ({ children }) => {
         rootRender();
