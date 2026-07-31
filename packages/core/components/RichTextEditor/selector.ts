@@ -5,7 +5,7 @@ export const defaultEditorState = (
   readOnly: boolean
 ) => {
   const editor = ctx.editor;
-  if (!editor) return {};
+  if (!editor || editor.isDestroyed) return {};
 
   const canChain = () => editor.can().chain();
 

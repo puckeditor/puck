@@ -8,6 +8,12 @@ import {
 import { RichTextRenderFallback } from "../components/RenderFallback";
 import { mapDeep } from "./mapDeep";
 
+const RichTextRender = lazy(() =>
+  import("../components/Render").then((m) => ({
+    default: m.RichTextRender,
+  }))
+);
+
 type RichtextPath = {
   path: string[];
   field: RichtextField;
@@ -59,12 +65,6 @@ export function useRichtextProps(
 
   const richtextProps = useMemo(() => {
     if (!richtextKeys?.length) return {};
-
-    const RichTextRender = lazy(() =>
-      import("../components/Render").then((m) => ({
-        default: m.RichTextRender,
-      }))
-    );
 
     let result = { ...props };
 

@@ -2,6 +2,89 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.22.4](https://github.com/measuredco/puck/compare/v0.22.3...v0.22.4) (2026-07-29)
+
+
+### Bug Fixes
+
+* use latest @puckeditor/plugin-ai and @puckeditor/cloud-client in recipes ([fb9392d](https://github.com/measuredco/puck/commit/fb9392deb4f896a990992454449d6722651d1eb9))
+
+
+
+
+## [0.22.3](https://github.com/measuredco/puck/compare/v0.22.2...v0.22.3) (2026-07-28)
+
+
+### Bug Fixes
+
+* respect plugin mobilePanelHeight on first load ([daac70e](https://github.com/measuredco/puck/commit/daac70efefce80ac7a50d9f4d88179952fce0316))
+
+
+
+
+## [0.22.2](https://github.com/measuredco/puck/compare/v0.22.1...v0.22.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* don't drop transformed fields on updates ([df6b444](https://github.com/measuredco/puck/commit/df6b4442e1e5f491e8ecf3d929f4037a0dc0061d))
+
+
+
+
+## [0.22.1](https://github.com/puckeditor/puck/compare/v0.22.0...v0.22.1) (2026-07-13)
+
+
+### Bug Fixes
+
+* add engines field to core package.json ([5f5b18a](https://github.com/puckeditor/puck/commit/5f5b18aa6843957783d9e1dec0679056cbb6e2e5))
+* prevent unbounded cache growth in resolveAllData ([d8d77eb](https://github.com/puckeditor/puck/commit/d8d77eb5dc24e37c575f6267d9b7a1de059b0767))
+* run field transforms for fields without default props ([1a601e7](https://github.com/puckeditor/puck/commit/1a601e7048af8f5e72f76eb3d1b336965e36ffb5))
+
+
+
+
+## [0.22.0](https://github.com/puckeditor/puck/compare/v0.21.3...v0.22.0) (2026-06-24)
+
+
+### Bug Fixes
+
+* capture first change in inline richtext field ([208b221](https://github.com/puckeditor/puck/commit/208b22140c0fcf85447ef9da2e838872aced0a77))
+* don't lazy load the rich text render on every re-render ([497aedf](https://github.com/puckeditor/puck/commit/497aedfec5a0cd362ad9f19f2c03904d787c83ef))
+* show overlay portal outline only in edit mode ([31c3d21](https://github.com/puckeditor/puck/commit/31c3d217a3c4ad36bf77d8889c56ac9a538e36c1))
+* use aria-expanded for accessible name in component category buttons ([f949417](https://github.com/puckeditor/puck/commit/f9494176c8c936faec6fc6d5ecbf7d5c5dce33fa))
+
+### Features
+
+* add iframe.syncHostStyles prop for controlling style sync ([1496ae3](https://github.com/puckeditor/puck/commit/1496ae34e48e2b3e92d2fe8461f98a2615b345d2))
+* add theming support with CSS variables ([d4c8bcf](https://github.com/puckeditor/puck/commit/d4c8bcf2dce09cc174ab405cf1d5cd39239a7c99))
+* expose root to resolveData API ([caeacf9](https://github.com/puckeditor/puck/commit/caeacf979cced77c476066bff23b819eb5333fdb))
+* load CSS dynamically if missing ([3c1f5e4](https://github.com/puckeditor/puck/commit/3c1f5e4fbf487de57a0c60eb12bd4a30703b665e))
+* remove remix recipe from create-puck-app ([d2c2761](https://github.com/puckeditor/puck/commit/d2c2761ed2c32a19eb8f28f89efa5b0b65802536))
+
+
+
+
+## [0.21.3](https://github.com/puckeditor/puck/compare/v0.21.2...v0.21.3) (2026-06-08)
+
+
+### Bug Fixes
+
+* don't crash if tiptap is destroyed ([4d9aaa2](https://github.com/puckeditor/puck/commit/4d9aaa21d6063e815de80846e855c74f8d8f7632))
+* don't crash richtext field when string is empty ([e35c030](https://github.com/puckeditor/puck/commit/e35c030cb416be7e9d4d466e150213a53d9cee3f))
+* don't select parent on quick drag ([64479ab](https://github.com/puckeditor/puck/commit/64479ab8b5e0848ac24d66d1c5a488cf7e8a58e7))
+* ignore next-env.d.ts in Next.js recipes ([95c7d25](https://github.com/puckeditor/puck/commit/95c7d25751fcf34c4a2f21aeba9817b03f541565))
+* prevent canvas loader from blocking pointer events when hidden ([7f423c5](https://github.com/puckeditor/puck/commit/7f423c5f4a371c478bb9e99948fef482318b63ee))
+* record history when moving a component to a different position ([c66507a](https://github.com/puckeditor/puck/commit/c66507a17aee09d299f7ff559ab4e0558dddf61a))
+* render empty string instead of literal when contentEditable fields receive nullish values ([737caf4](https://github.com/puckeditor/puck/commit/737caf4827c0db8441968c7bbbba7b8cb0a48e79))
+* stop action bar from flashing in bottom on insertion ([0f13f4b](https://github.com/puckeditor/puck/commit/0f13f4b4e9d32ac4f41ebcd50cb5d5ba239450f3))
+* unwrap propName in walkFields for nested slots ([f83fd09](https://github.com/puckeditor/puck/commit/f83fd092fb21fe9eb29faa4506abab33765c7e8e))
+* use aria-label for accessible name in IconButton ([71238a6](https://github.com/puckeditor/puck/commit/71238a6bc2512034cba2c33b69372667eb9049ab))
+* use stable ID when rendering RichText on server ([29d13dd](https://github.com/puckeditor/puck/commit/29d13ddee90b46058361e460a9daaa6875ffae7a))
+
+
+
+
 ## [0.21.2](https://github.com/puckeditor/puck/compare/v0.21.1...v0.21.2) (2026-04-01)
 
 

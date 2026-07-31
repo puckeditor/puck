@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 import { ReactNode, useMemo } from "react";
 import { Lock } from "lucide-react";
 import { useAppStore } from "../../store";
+import { useMessage } from "../../lib/use-message";
 
 const getClassName = getClassNameFactory("Input", styles);
 
@@ -24,6 +25,8 @@ export const FieldLabel = ({
   className?: string;
 }) => {
   const El = el;
+  const readOnlyLabel = useMessage("field-readonly");
+
   return (
     <El className={className}>
       <div className={getClassName("label")}>
@@ -31,7 +34,7 @@ export const FieldLabel = ({
         {label}
 
         {readOnly && (
-          <div className={getClassName("disabledIcon")} title="Read-only">
+          <div className={getClassName("disabledIcon")} title={readOnlyLabel}>
             <Lock size="12" />
           </div>
         )}

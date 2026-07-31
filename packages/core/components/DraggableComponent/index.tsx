@@ -26,6 +26,7 @@ import { dropZoneContext, DropZoneProvider } from "../DropZone";
 import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
 import { DragAxis } from "../../types";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
+import { Feedback } from "@dnd-kit/dom";
 import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
 import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
@@ -36,6 +37,7 @@ import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
 import { LoadedRichTextMenu } from "../RichTextMenu";
 import type { NodeHandle } from "../../store/slices/nodes";
 import { assignRefs } from "../../lib/assign-refs";
+import { useMessage } from "../../lib/use-message";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -211,7 +213,10 @@ export const DraggableComponent = ({
       duration: 200,
       easing: "cubic-bezier(0.2, 0, 0, 1)",
     },
-    feedback: "clone",
+    plugins: (defaults) => [
+      ...defaults,
+      Feedback.configure({ feedback: "clone" }),
+    ],
   });
 
   useEffect(() => {
@@ -675,6 +680,12 @@ export const DraggableComponent = ({
     [zoom]
   );
 
+  const actionBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    syncActionsPosition(actionBarRef.current);
+  }, [actionBarRef.current, syncActionsPosition]);
+
   useEffect(() => {
     if (userDragAxis) {
       setDragAxis(userDragAxis);
@@ -697,15 +708,19 @@ export const DraggableComponent = ({
     setDragAxis(autoDragAxis);
   }, [ref, userDragAxis, autoDragAxis]);
 
+  const selectParentLabel = useMessage("action-selectparent");
+  const duplicateLabel = useMessage("action-duplicate");
+  const deleteLabel = useMessage("action-delete");
+
   const parentAction = useMemo(
     () =>
       ctx?.areaId &&
       ctx?.areaId !== "root" && (
-        <ActionBar.Action onClick={onSelectParent} label="Select parent">
+        <ActionBar.Action onClick={onSelectParent} label={selectParentLabel}>
           <CornerLeftUp size={16} />
         </ActionBar.Action>
       ),
-    [ctx?.areaId]
+    [ctx?.areaId, selectParentLabel]
   );
 
   const nextContextValue = useMemo<DropZoneContext>(
@@ -770,7 +785,7 @@ export const DraggableComponent = ({
                   paddingLeft: actionsSide,
                   paddingRight: actionsSide,
                 }}
-                ref={syncActionsPosition}
+                ref={actionBarRef}
               >
                 <CustomActionBar
                   parentAction={parentAction}
@@ -789,13 +804,16 @@ export const DraggableComponent = ({
                   )}
 
                   {permissions.duplicate && (
-                    <ActionBar.Action onClick={onDuplicate} label="Duplicate">
-                      <Copy size={16} />
+                    <ActionBar.Action
+                      onClick={onDuplicate}
+                      label={duplicateLabel}
+                    >
+                      <Copy className={getClassName("actionsAction")} />
                     </ActionBar.Action>
                   )}
                   {permissions.delete && (
-                    <ActionBar.Action onClick={onDelete} label="Delete">
-                      <Trash size={16} />
+                    <ActionBar.Action onClick={onDelete} label={deleteLabel}>
+                      <Trash className={getClassName("actionsAction")} />
                     </ActionBar.Action>
                   )}
                 </CustomActionBar>

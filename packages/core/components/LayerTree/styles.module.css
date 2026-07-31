@@ -1,119 +1,69 @@
-.LayerTree {
-  color: var(--puck-color-grey-03);
-  font-family: var(--puck-font-family);
-  font-size: var(--puck-font-size-xxs);
-  margin: 0;
-  position: relative;
-  list-style: none;
-  padding: 0;
-}
+.LayerTreeRoot {
+  min-width: max-content;
 
-.LayerTree-zoneTitle {
-  color: var(--puck-color-grey-05);
-  font-size: var(--puck-font-size-xxxs);
-  text-transform: uppercase;
-}
+  --_puck-iconbutton-color-bg-hover: transparent;
 
-.LayerTree-helper {
-  text-align: center;
-  color: var(--puck-color-grey-07);
-  margin: 8px 4px;
-}
+  --_puck-outline-color-text: var(
+    --puck-outline-color-text,
+    var(--puck-color-text-secondary)
+  );
+  --_puck-outline-border-width: var(
+    --puck-outline-border-width,
+    var(--puck-border-width-regular)
+  );
+  --_puck-outline-radius: var(--puck-outline-radius, var(--puck-radius-m));
+  --_puck-outline-caret-size: var(
+    --puck-outline-action-size,
+    var(--puck-icon-size-s)
+  );
+  --_puck-outline-icon-size: var(
+    --puck-outline-icon-size,
+    var(--puck-icon-size-xs)
+  );
 
-.Layer {
-  position: relative;
-  border: 1px solid transparent;
-  border-radius: 4px;
-}
+  --_puck-outline-color-bg-selected: var(
+    --puck-outline-color-bg-selected,
+    var(--puck-color-interactive-subtle)
+  );
+  --_puck-outline-color-bg-hover: var(
+    --puck-outline-color-bg-hover,
+    var(--puck-color-interactive-soft)
+  );
 
-.Layer-inner {
-  border: 1px solid transparent;
-  border-radius: 4px;
-  transition: color 50ms ease-in;
-}
+  --_puck-outline-color-border-hover: var(
+    --puck-outline-color-border-hover,
+    var(--puck-color-interactive-subtle)
+  );
 
-.Layer--containsZone > .Layer-inner {
-  padding-inline-start: 0;
-}
+  --_puck-outline-color-text-hover: var(
+    --puck-outline-color-text-hover,
+    var(--puck-color-interactive)
+  );
 
-.Layer-clickable {
-  align-items: center;
-  background: none;
-  border: 0;
-  border-radius: 4px;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  font: inherit;
-  padding-inline-start: 12px;
-  padding-inline-end: 4px;
-  width: 100%;
-}
+  --_puck-outline-color-drop-indicator: var(
+    --puck-outline-color-drop-indicator,
+    var(--puck-color-insertion-indicator)
+  );
+  --_puck-outline-drop-indicator-size: var(--puck-border-width-focus);
 
-.Layer-clickable:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
-  position: relative;
-  z-index: 1;
-}
+  --_puck-outline-zone-color-text: var(
+    --puck-outline-zone-color-text,
+    var(--puck-color-text-muted)
+  );
 
-@media (hover: hover) and (pointer: fine) {
-  .Layer:not(.Layer--isSelected) > .Layer-inner:hover {
-    border-color: var(--puck-color-azure-10);
-    background: var(--puck-color-azure-11);
-    color: var(--puck-color-azure-04);
-    transition: none;
-  }
-}
+  --_puck-outline-actions-color-bg: transparent;
 
-.Layer--isSelected {
-  border-color: var(--puck-color-azure-08);
-}
+  /* The width of the (possibly hidden) caret button at the start of every
+     row; titles and helpers indent by the same amount so all text aligns */
+  --_puck-outline-caret-slot: calc(
+    var(--_puck-outline-caret-size) +
+      var(--puck-iconbutton-space, var(--puck-space-1)) * 2
+  );
 
-.Layer--isSelected > .Layer-inner {
-  background: var(--puck-color-azure-10);
-}
-
-.Layer--isSelected > .Layer-inner > .Layer-clickable > .Layer-chevron,
-.Layer--childIsSelected > .Layer-inner > .Layer-clickable > .Layer-chevron {
-  transform: scaleY(-1);
-}
-
-.Layer-zones {
-  display: none;
-  margin-inline-start: 12px;
-}
-
-.Layer--isSelected > .Layer-zones,
-.Layer--childIsSelected > .Layer-zones {
-  display: block;
-}
-
-.Layer-zones > .LayerTree {
-  margin-inline-start: 12px;
-}
-
-.Layer-title,
-.LayerTree-zoneTitle {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin: 8px 4px;
-  overflow-x: hidden;
-}
-
-.Layer-name {
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.Layer-icon {
-  color: var(--puck-color-rose-07);
-  margin-top: 4px;
-}
-
-.Layer-zoneIcon {
-  color: var(--puck-color-grey-08);
-  margin-top: 4px;
+  /* Caret slot + the row title's inline margin + one border width: lines
+     zone titles and helpers up with row titles at the same depth */
+  --_puck-outline-label-indent: calc(
+    var(--_puck-outline-caret-slot) + var(--puck-space-1) +
+      var(--_puck-outline-border-width)
+  );
 }

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useAppStore, useAppStoreApi } from "../store";
+import { useMessage } from "./use-message";
 import { ItemSelector } from "./data/get-item";
 
 export type Breadcrumb = {
@@ -14,6 +15,9 @@ export const useBreadcrumbs = (renderCount?: number) => {
   const path = useAppStore((s) => s.state.indexes.nodes[selectedId]?.path);
   const appStore = useAppStoreApi();
 
+  const pageLabel = useMessage("label-page");
+  const componentLabel = useMessage("label-component");
+
   return useMemo<Breadcrumb[]>(() => {
     const breadcrumbs =
       path?.map((zoneCompound) => {
@@ -21,7 +25,7 @@ export const useBreadcrumbs = (renderCount?: number) => {
 
         if (componentId === "root") {
           return {
-            label: config?.root?.label || "Page",
+            label: config?.root?.label || pageLabel,
             selector: null,
           };
         }
@@ -34,7 +38,7 @@ export const useBreadcrumbs = (renderCount?: number) => {
 
         const label = node
           ? config.components[node.data.type]?.label ?? node.data.type
-          : "Component";
+          : componentLabel;
 
         return {
           label,
@@ -52,5 +56,5 @@ export const useBreadcrumbs = (renderCount?: number) => {
     }
 
     return breadcrumbs;
-  }, [path, renderCount]);
+  }, [path, renderCount, pageLabel, componentLabel]);
 };

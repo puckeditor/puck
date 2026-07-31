@@ -1,13 +1,19 @@
 {
   "name": "eslint-config-custom",
   "version": "0.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
   "license": "MIT",
   "dependencies": {
-    "eslint-config-next": "^13.4.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-react": "7.28.0",
+    "eslint-config-next": "^16.0.0",
+    "eslint-config-prettier": "^10.1.0",
     "eslint-config-turbo": "^2.3.3"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
   },
   "publishConfig": {
     "access": "public"

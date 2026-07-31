@@ -19,6 +19,12 @@ export type Permissions = {
 export type IframeConfig = {
   enabled?: boolean;
   waitForStyles?: boolean;
+  syncHostStyles?: boolean;
+};
+
+export type DndConfig = {
+  disableAutoScroll?: boolean;
+  disableOutlineDrag?: boolean;
 };
 
 export type OnAction<UserData extends Data = Data> = (

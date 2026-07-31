@@ -33,6 +33,7 @@ import {
 } from "../../types";
 
 import { useDroppable, UseDroppableInput } from "@dnd-kit/react";
+import { isComponentAllowed } from "../../lib/data/is-component-allowed";
 import { DrawerItemInner } from "../Drawer";
 import { pointerIntersection } from "@dnd-kit/collision";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
@@ -47,6 +48,7 @@ import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
+import { useMessage } from "../../lib/use-message";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
@@ -180,7 +182,12 @@ const DropZoneChild = ({
     (s) => s.selectedItem?.props.id === componentId || false
   );
 
-  let label = componentConfig?.label ?? item?.type.toString() ?? "Component";
+  const componentLabel = useMessage("label-component");
+  const noConfigMessage = useMessage("canvas-noconfig", {
+    type: item?.type?.toString() ?? "",
+  });
+
+  let label = componentConfig?.label ?? item?.type.toString() ?? componentLabel;
 
   const defaultsProps = useMemo(
     () => ({
@@ -231,7 +238,7 @@ const DropZoneChild = ({
     ? componentConfig.render
     : () => (
         <div style={{ padding: 48, textAlign: "center" }}>
-          No configuration for {item.type}
+          {noConfigMessage}
         </div>
       );
 
@@ -377,30 +384,8 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
     const ref = useRef<HTMLDivElement | null>(null);
 
     const acceptsTarget = useCallback(
-      (componentType: string | null | undefined) => {
-        if (!componentType) {
-          return true;
-        }
-
-        if (disallow) {
-          const defaultedAllow = allow || [];
-
-          // remove any explicitly allowed items from disallow
-          const filteredDisallow = (disallow || []).filter(
-            (item) => defaultedAllow.indexOf(item) === -1
-          );
-
-          if (filteredDisallow.indexOf(componentType) !== -1) {
-            return false;
-          }
-        } else if (allow) {
-          if (allow.indexOf(componentType) === -1) {
-            return false;
-          }
-        }
-
-        return true;
-      },
+      (componentType: string | null | undefined) =>
+        isComponentAllowed(componentType, { allow, disallow }),
       [allow, disallow]
     );
 
@@ -515,7 +500,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
         style={
           {
             ...style,
-            "--min-empty-height": minEmptyHeight,
+            "--puck-slot-min-empty-height": minEmptyHeight,
             backgroundColor: RENDER_DEBUG
               ? getRandomColor()
               : style?.backgroundColor,

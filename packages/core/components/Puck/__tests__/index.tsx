@@ -1,6 +1,14 @@
-import { act, render, screen } from "@testing-library/react";
-import { Config } from "../../../types";
+import { act, cleanup, render, screen } from "@testing-library/react";
+import { Config, Plugin } from "../../../types";
 import "@testing-library/jest-dom";
+import {
+  PUCK_STYLE_ID_ATTRIBUTE,
+  PUCK_STYLE_IDS,
+  PUCK_STYLE_SOURCE_ATTRIBUTE,
+  PUCK_STYLE_SOURCE_VALUE,
+  useInjectIframeCss,
+} from "../../../lib/use-inject-css";
+import { shouldMirrorStyleElement } from "../../AutoFrame";
 
 jest.mock("../styles.module.css");
 jest.mock("@dnd-kit/react");
@@ -18,6 +26,19 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: jest.fn(),
   }),
 });
+
+const originalConsoleError = console.error;
+const consoleErrorSpy = jest
+  .spyOn(console, "error")
+  .mockImplementation((...args: unknown[]) => {
+    if (
+      args.some((arg) => String(arg).includes("Could not parse CSS stylesheet"))
+    ) {
+      return;
+    }
+
+    originalConsoleError(...(args as Parameters<typeof console.error>));
+  });
 
 jest.mock("@dnd-kit/react", () => {
   const original = jest.requireActual("@dnd-kit/react");
@@ -90,9 +111,20 @@ describe("Puck", () => {
   };
 
   afterEach(() => {
+    cleanup();
     rootRender.mockClear();
     componentARender.mockClear();
     componentBRender.mockClear();
+    document
+      .querySelectorAll(
+        `[${PUCK_STYLE_SOURCE_ATTRIBUTE}="${PUCK_STYLE_SOURCE_VALUE}"]`
+      )
+      .forEach((el) => el.remove());
+    document.querySelectorAll("[data-test-style]").forEach((el) => el.remove());
+  });
+
+  afterAll(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   // flush any queued state updates
@@ -115,6 +147,40 @@ describe("Puck", () => {
     const { appStore } = getInternal();
 
     expect(appStore.getState()).toMatchSnapshot();
+  });
+
+  it("applies min-content height to a plugin selected on mount", async () => {
+    const previousMatchMedia = window.matchMedia;
+
+    window.matchMedia = jest.fn((query: string) => ({
+      ...previousMatchMedia(query),
+      matches: true,
+    }));
+
+    const plugin: Plugin = {
+      name: "custom",
+      render: () => <div>Custom plugin</div>,
+      mobilePanelHeight: "min-content",
+    };
+
+    try {
+      render(
+        <Puck
+          config={config}
+          data={{}}
+          iframe={{ enabled: false }}
+          plugins={[plugin]}
+          ui={{ plugin: { current: "custom" } }}
+        />
+      );
+
+      await flush();
+
+      expect(screen.getByText("Custom plugin")).toBeInTheDocument();
+      expect(screen.queryByTitle("maximize")).not.toBeInTheDocument();
+    } finally {
+      window.matchMedia = previousMatchMedia;
+    }
   });
 
   it("should index slots on mount", async () => {
@@ -178,5 +244,90 @@ describe("Puck", () => {
         },
       }
     `);
+  });
+
+  it("injects the default ui styles once per document", async () => {
+    const { unmount } = render(
+      <>
+        <Puck config={config} data={{}} iframe={{ enabled: false }} />
+        <Puck config={config} data={{}} iframe={{ enabled: false }} />
+      </>
+    );
+
+    await flush();
+
+    expect(
+      document.head.querySelectorAll(
+        `[${PUCK_STYLE_ID_ATTRIBUTE}="${PUCK_STYLE_IDS.uiDefault}"]`
+      )
+    ).toHaveLength(1);
+
+    unmount();
+    await flush();
+
+    expect(
+      document.head.querySelectorAll(
+        `[${PUCK_STYLE_ID_ATTRIBUTE}="${PUCK_STYLE_IDS.uiDefault}"]`
+      )
+    ).toHaveLength(0);
+  });
+
+  it("marks puck-owned styles as non-mirrorable", () => {
+    const hostStyle = document.createElement("style");
+    hostStyle.textContent = ".external-sync-target { background: tomato; }";
+
+    const puckStyle = document.createElement("style");
+    puckStyle.textContent = ".puck-ui { color: black; }";
+    puckStyle.setAttribute(
+      PUCK_STYLE_SOURCE_ATTRIBUTE,
+      PUCK_STYLE_SOURCE_VALUE
+    );
+
+    expect(shouldMirrorStyleElement(hostStyle)).toBe(true);
+    expect(shouldMirrorStyleElement(puckStyle)).toBe(false);
+  });
+
+  it("injects iframe interaction styles into a target document", async () => {
+    const targetDocument = document.implementation.createHTMLDocument("iframe");
+
+    const InjectIframeStyles = () => {
+      useInjectIframeCss(targetDocument);
+
+      return null;
+    };
+
+    render(<InjectIframeStyles />);
+    await flush();
+
+    const interactionStyle = targetDocument.head.querySelector(
+      `[${PUCK_STYLE_ID_ATTRIBUTE}="${PUCK_STYLE_IDS.iframeInteractions}"]`
+    );
+
+    expect(interactionStyle).not.toBeNull();
+    expect(interactionStyle?.getAttribute(PUCK_STYLE_SOURCE_ATTRIBUTE)).toBe(
+      PUCK_STYLE_SOURCE_VALUE
+    );
+  });
+
+  it("exposes the preview mode on the canvas entry element", async () => {
+    render(<Puck config={config} data={{}} iframe={{ enabled: false }} />);
+
+    await flush();
+
+    const entry = document.querySelector("[data-puck-entry]");
+
+    expect(entry?.getAttribute("data-puck-preview-mode")).toBe("edit");
+
+    const { appStore } = getInternal();
+
+    act(() => {
+      appStore
+        .getState()
+        .dispatch({ type: "setUi", ui: { previewMode: "interactive" } });
+    });
+
+    await flush();
+
+    expect(entry?.getAttribute("data-puck-preview-mode")).toBe("interactive");
   });
 });

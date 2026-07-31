@@ -5,10 +5,14 @@
 }
 
 .RichTextMenu--form {
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  padding: 6px 6px;
-  background-color: var(--puck-color-grey-12);
+  border-top-left-radius: var(--puck-field-radius, var(--puck-radius-m));
+  border-top-right-radius: var(--puck-field-radius, var(--puck-radius-m));
+  padding: var(--puck-field-richtext-menu-space-y, 6px)
+    var(--puck-field-richtext-menu-space-x, 6px);
+  background-color: var(
+    --puck-field-richtext-menu-color-bg,
+    var(--puck-color-surface-subtle)
+  );
   position: relative;
   scrollbar-width: none;
   overflow-x: auto;
@@ -33,15 +37,20 @@
 }
 
 .RichTextMenu--inline .RichTextMenu-group {
-  color: var(--puck-color-grey-08);
+  color: var(--puck-color-text-inverse);
   gap: 0px;
   flex-wrap: nowrap;
 }
 
 .RichTextMenu-group + .RichTextMenu-group {
-  border-left: 1px solid var(--puck-color-grey-10);
+  border-left: var(--puck-border-width-regular) solid
+    var(
+      --puck-field-richtext-menu-color-separator,
+      var(--puck-color-border-muted)
+    );
 }
 
 .RichTextMenu--inline .RichTextMenu-group + .RichTextMenu-group {
-  border-left: 0.5px solid var(--puck-color-grey-05); /* Match actionbar separator */
+  border-left: var(--puck-border-width-hairline) solid
+    var(--puck-color-border-inverse);
 }

@@ -1,0 +1,86 @@
+---
+title: Slot
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck } from "@/puck";
+import { Color } from "@/docs/components/Color";
+
+# Slot
+
+Use the following CSS properties for theming slots (drop zones) and the components dragged within them.
+
+```css showLineNumbers
+.Container {
+  --puck-slot-color-bg: #fff2ee;
+  --puck-slot-color-border: #f6ab3b;
+}
+```
+
+<PuckPreview
+  label="Nested components example"
+  config={{
+    components: {
+      Example: {
+        fields: {
+          content: {
+            type: "slot",
+          },
+        },
+        render: ({ content: Content }) => {
+          return (
+            <div style={{ padding: 32 }}>
+              <Content />
+            </div>
+          );
+        },
+      },
+      Card: {
+        render: () => {
+          return (
+            <div
+              style={{
+                background: "white",
+                border: "1px solid black",
+                borderRadius: 4,
+                padding: 16,
+              }}
+            >
+              Hello, world
+            </div>
+          );
+        },
+      },
+    },
+  }}
+  data={{
+  }}
+>
+
+  <div
+    style={{
+      "--puck-slot-color-bg": "#fff2ee",
+      "--puck-slot-color-border": "#f6823b",
+    }}
+  ><div style={{display:"grid", gridTemplateColumns: "1fr 2fr", gap: 8}}>
+  <Puck.Components />
+    <Puck.Preview />
+  </div></div>
+</PuckPreview>
+
+## CSS properties
+
+Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-reference/theming/global). See [computed values](/docs/api-reference/theming/computed-values#slot) for the values they resolve to.
+
+| Token                                         | Default                              | Description                           |
+| --------------------------------------------- | ------------------------------------ | ------------------------------------- |
+| `--puck-slot-color-bg`                        | `var(--puck-color-selection-bg)`     | Drop zone background when active      |
+| `--puck-slot-color-border`                    | `var(--puck-color-selection-border)` | Drop zone outline color               |
+| `--puck-slot-border-width`                    | `var(--puck-border-width-focus)`     | Drop zone outline width               |
+| `--puck-slot-border-style`                    | `dashed`                             | Drop zone outline style               |
+| `--puck-slot-component-color-overlay`         | `var(--puck-color-selection-bg)`     | Component overlay background on hover |
+| `--puck-slot-component-color-overlay-border`  | `var(--puck-color-selection-border)` | Component overlay outline             |
+| `--puck-slot-component-border-width`          | `var(--puck-border-width-focus)`     | Component overlay outline width       |
+| `--puck-slot-component-color-border-selected` | `var(--puck-color-selection-border)` | Selected component overlay outline    |
+| `--puck-slot-component-color-placeholder`     | <Color>#6499cf</Color>               | Drag placeholder background           |
+| `--puck-slot-component-color-border-dragging` | <Color>#cfdff0</Color>               | Outline while dragging component      |

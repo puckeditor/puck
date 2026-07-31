@@ -1,0 +1,21 @@
+.OutlineWrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.OutlineWrapper-collapseAll {
+  display: flex;
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.OutlineWrapper-layers {
+  flex-grow: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--puck-space-1);
+  box-sizing: border-box;
+}

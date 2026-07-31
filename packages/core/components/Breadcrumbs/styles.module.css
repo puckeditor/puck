@@ -1,40 +1,40 @@
 .Breadcrumbs {
   align-items: center;
   display: flex;
-  gap: 4px;
+  gap: var(--puck-space-1);
 }
 
 .Breadcrumbs-breadcrumbLabel {
   background: none;
   border: 0;
-  border-radius: 2px;
-  color: var(--puck-color-azure-04);
+  border-radius: var(--puck-radius-xs);
+  color: var(--puck-color-interactive);
   cursor: pointer;
   font: inherit;
   flex-shrink: 0;
   padding: 0;
-  transition: color 50ms ease-in;
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .Breadcrumbs-breadcrumbLabel:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Breadcrumbs-breadcrumbLabel:hover {
-    color: var(--puck-color-azure-03);
+    color: var(--puck-color-interactive-hover);
     transition: none;
   }
 }
 
 .Breadcrumbs-breadcrumbLabel:active {
-  color: var(--puck-color-azure-02);
+  color: var(--puck-color-interactive-active);
   transition: none;
 }
 
 .Breadcrumbs-breadcrumb {
   align-items: center;
   display: flex;
-  gap: 4px;
+  gap: var(--puck-space-1);
 }

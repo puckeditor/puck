@@ -1,28 +1,21 @@
 import { useState } from "react";
 import { PointerSensor } from "@dnd-kit/react";
+import { PointerActivationConstraints } from "@dnd-kit/dom";
 import { isElement } from "@dnd-kit/dom/utilities";
-import { type Distance } from "@dnd-kit/geometry";
+import type { ActivationConstraint } from "@dnd-kit/abstract";
 
-export interface DelayConstraint {
-  value: number;
-  tolerance: Distance;
-}
+const { Delay, Distance } = PointerActivationConstraints;
 
-export interface DistanceConstraint {
-  value: Distance;
-  tolerance?: Distance;
-}
+export type ActivationConstraints = ActivationConstraint<PointerEvent>[];
 
-export interface ActivationConstraints {
-  distance?: DistanceConstraint;
-  delay?: DelayConstraint;
-}
+const touchDefault: ActivationConstraints = [
+  new Delay({ value: 200, tolerance: 10 }),
+];
 
-const touchDefault = { delay: { value: 200, tolerance: 10 } };
-const otherDefault = {
-  delay: { value: 200, tolerance: 10 },
-  distance: { value: 5 },
-};
+const otherDefault: ActivationConstraints = [
+  new Delay({ value: 200, tolerance: 10 }),
+  new Distance({ value: 5 }),
+];
 
 export const useSensors = (
   {

@@ -29,6 +29,10 @@ export function RichTextRender({
     }
 
     if (typeof content === "string") {
+      if (!content) {
+        return { type: "doc", content: [] };
+      }
+
       const isHtml = /<\/?[a-z][\s\S]*>/i.test(content);
 
       if (isHtml) {

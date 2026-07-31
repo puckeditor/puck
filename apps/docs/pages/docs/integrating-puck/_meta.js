@@ -9,7 +9,9 @@ const menu = {
   "external-data-sources": {},
   "server-components": {},
   "data-migration": {},
+  styling: {},
   viewports: {},
+  localization: {},
   "feature-toggling": {},
 };
 

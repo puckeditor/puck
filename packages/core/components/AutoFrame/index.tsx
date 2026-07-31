@@ -8,20 +8,31 @@ import {
 } from "react";
 import hash from "object-hash";
 import { createPortal } from "react-dom";
+import {
+  isPuckStyleElement,
+  useInjectIframeCss,
+} from "../../lib/use-inject-css";
 
 const styleSelector = 'style, link[rel="stylesheet"]';
+const mirroredStyleAttribute = "data-puck-style-mirror";
+
+export const shouldMirrorStyleElement = (style: HTMLElement) => {
+  if (!style.matches(styleSelector) || isPuckStyleElement(style)) {
+    return false;
+  }
+
+  if (style.tagName === "STYLE") {
+    return !!style.innerHTML.trim();
+  }
+
+  return true;
+};
 
 const collectStyles = (doc: Document) => {
   const collected: HTMLElement[] = [];
 
   doc.querySelectorAll(styleSelector).forEach((style) => {
-    if (style.tagName === "STYLE") {
-      const hasContent = !!style.innerHTML.trim();
-
-      if (hasContent) {
-        collected.push(style as HTMLElement);
-      }
-    } else {
+    if (shouldMirrorStyleElement(style as HTMLElement)) {
       collected.push(style as HTMLElement);
     }
   });
@@ -70,12 +81,16 @@ const CopyHostStyles = ({
   children,
   debug = false,
   onStylesLoaded = () => null,
+  syncHostStyles = true,
 }: {
   children: ReactNode;
   debug?: boolean;
   onStylesLoaded?: () => void;
+  syncHostStyles?: boolean;
 }) => {
   const { document: doc, window: win } = useFrame();
+
+  useInjectIframeCss(doc);
 
   useEffect(() => {
     if (!win || !doc) {
@@ -84,6 +99,24 @@ const CopyHostStyles = ({
 
     let elements: { original: HTMLElement; mirror: HTMLElement }[] = [];
     const hashes: Record<string, boolean> = {};
+
+    const removeAllMirrors = () => {
+      elements.forEach(({ mirror }) => {
+        mirror.remove();
+      });
+
+      elements = [];
+
+      Array.from(
+        doc.head.querySelectorAll(`[${mirroredStyleAttribute}="true"]`)
+      ).forEach((mirror) => {
+        mirror.remove();
+      });
+
+      Object.keys(hashes).forEach((key) => {
+        delete hashes[key];
+      });
+    };
 
     const lookupEl = (el: HTMLElement) =>
       elements.findIndex((elementMap) => elementMap.original === el);
@@ -127,6 +160,8 @@ const CopyHostStyles = ({
       } else {
         mirror = el.cloneNode(true) as HTMLStyleElement;
       }
+
+      mirror.setAttribute(mirroredStyleAttribute, "true");
 
       return mirror;
     };
@@ -201,7 +236,7 @@ const CopyHostStyles = ({
                   ? node.parentElement
                   : (node as HTMLElement);
 
-              if (el && el.matches(styleSelector)) {
+              if (el && shouldMirrorStyleElement(el)) {
                 defer(() => addEl(el));
               }
             }
@@ -217,7 +252,7 @@ const CopyHostStyles = ({
                   ? node.parentElement
                   : (node as HTMLElement);
 
-              if (el && el.matches(styleSelector)) {
+              if (el && el.matches(styleSelector) && !isPuckStyleElement(el)) {
                 defer(() => removeEl(el));
               }
             }
@@ -225,6 +260,15 @@ const CopyHostStyles = ({
         }
       });
     });
+
+    if (!syncHostStyles) {
+      onStylesLoaded();
+
+      return () => {
+        observer.disconnect();
+        removeAllMirrors();
+      };
+    }
 
     const parentDocument = win!.parent.document;
 
@@ -275,7 +319,13 @@ const CopyHostStyles = ({
           }
         };
         mirror.onerror = () => {
-          console.warn(`AutoFrame couldn't load a stylesheet`);
+          const href =
+            mirror instanceof HTMLLinkElement ? mirror.href : undefined;
+          console.warn(
+            `AutoFrame couldn't load a stylesheet${href ? `: ${href}` : ""}. ` +
+              `This can happen if the parent document's stylesheet is blocked by the iframe's CSP, ` +
+              `returns a non-2xx status, or fails to reach the network.`
+          );
           stylesLoaded = stylesLoaded + 1;
 
           if (stylesLoaded >= filtered.length) {
@@ -284,8 +334,12 @@ const CopyHostStyles = ({
         };
       });
 
-      // Reset HTML (inside the promise) so in case running twice (i.e. for React Strict mode)
-      doc.head.innerHTML = "";
+      // Remove previously mirrored styles in case running twice (i.e. for React Strict mode)
+      doc.head
+        .querySelectorAll(`[${mirroredStyleAttribute}="true"]`)
+        .forEach((el) => {
+          el.remove();
+        });
 
       // Inject initial values in bulk
       doc.head.append(...filtered);
@@ -312,8 +366,9 @@ const CopyHostStyles = ({
 
     return () => {
       observer.disconnect();
+      removeAllMirrors();
     };
-  }, []);
+  }, [syncHostStyles]);
 
   return <>{children}</>;
 };
@@ -326,6 +381,7 @@ export type AutoFrameProps = {
   onReady?: () => void;
   onNotReady?: () => void;
   frameRef: RefObject<HTMLIFrameElement | null>;
+  syncHostStyles?: boolean;
 };
 
 type AutoFrameContext = {
@@ -345,12 +401,19 @@ function AutoFrame({
   onReady = () => {},
   onNotReady = () => {},
   frameRef,
+  syncHostStyles = true,
   ...props
 }: AutoFrameProps) {
   const [loaded, setLoaded] = useState(false);
   const [ctx, setCtx] = useState<AutoFrameContext>({});
   const [mountTarget, setMountTarget] = useState<HTMLElement | null>();
   const [stylesLoaded, setStylesLoaded] = useState(false);
+
+  useEffect(() => {
+    if (loaded) {
+      setStylesLoaded(!syncHostStyles);
+    }
+  }, [loaded, syncHostStyles]);
 
   useEffect(() => {
     if (frameRef.current) {
@@ -390,6 +453,7 @@ function AutoFrame({
           <CopyHostStyles
             debug={debug}
             onStylesLoaded={() => setStylesLoaded(true)}
+            syncHostStyles={syncHostStyles}
           >
             {createPortal(children, mountTarget)}
           </CopyHostStyles>

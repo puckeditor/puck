@@ -81,6 +81,7 @@ type ComponentConfigInternal<
       metadata: ComponentMetadata;
       trigger: ResolveDataTrigger;
       parent: ComponentData | null;
+      root: RootData;
     }
   ) =>
     | Promise<WithPartialProps<DataShape, FieldProps>>

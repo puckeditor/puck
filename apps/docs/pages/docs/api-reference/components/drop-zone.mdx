@@ -73,6 +73,12 @@ const config = {
 
 Only allow specific components to be dragged into the DropZone:
 
+<Callout type="info">
+  Drag-and-drop in the outline does not respect this prop. Prefer the [`allow`
+  parameter on the slot field](/docs/api-reference/fields/slot#allow), which is
+  enforced everywhere.
+</Callout>
+
 ```tsx copy {7}
 const config = {
   components: {
@@ -145,6 +151,13 @@ const config = {
 ### `disallow`
 
 Allow all but specific components to be dragged into the DropZone. Any items in `allow` will override `disallow`.
+
+<Callout type="info">
+  Drag-and-drop in the outline does not respect this prop. Prefer the
+  [`disallow` parameter on the slot
+  field](/docs/api-reference/fields/slot#disallow), which is enforced
+  everywhere.
+</Callout>
 
 ```tsx copy {7}
 const config = {

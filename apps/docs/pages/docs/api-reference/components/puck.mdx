@@ -29,6 +29,7 @@ export function Editor() {
 | ----------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
 | [`config`](#config)                                               | `config: { components: {} }`                       | [Config](/docs/api-reference/configuration/config)                       | Required     |
 | [`data`](#data)                                                   | `data: {}`                                         | [Data](/docs/api-reference/data-model/data)                              | Required     |
+| [`dictionary`](#dictionary)                                       | `dictionary: { "header-publish": "Publicar" }`     | [Dictionary](/docs/api-reference/dictionary)                             | -            |
 | [`dnd`](#dnd)                                                     | `dnd: {}`                                          | [DndConfig](#dnd-params)                                                 | -            |
 | [`children`](#children)                                           | `children: <Puck.Preview />`                       | ReactNode                                                                | -            |
 | [`fieldTransforms`](#fieldtransforms)                             | `fieldTransforms: {text: () => <div />}`           | [FieldTransforms](/docs/api-reference/field-transforms)                  | -            |
@@ -117,19 +118,39 @@ export function Editor() {
 }
 ```
 
+### `dictionary`
+
+Override Puck's default UI strings, or add your own. See the [`Dictionary` docs](/docs/api-reference/dictionary) for a full list of supported messages.
+
+```tsx {4} copy
+export function Editor() {
+  return (
+    <Puck
+      dictionary={{ "header-publish": "Save" }}
+      // ...
+    />
+  );
+}
+```
+
 ### `dnd`
 
 Configure drag-and-drop behavior.
 
 #### dnd params
 
-| Param                                     | Example                   | Type    | Status |
-| ----------------------------------------- | ------------------------- | ------- | ------ |
-| [`disableAutoScroll`](#disableautoscroll) | `disableAutoScroll: true` | boolean | -      |
+| Param                                       | Example                    | Type    | Status |
+| ------------------------------------------- | -------------------------- | ------- | ------ |
+| [`disableAutoScroll`](#disableautoscroll)   | `disableAutoScroll: true`  | boolean | -      |
+| [`disableOutlineDrag`](#disableoutlinedrag) | `disableOutlineDrag: true` | boolean | -      |
 
 ##### `disableAutoScroll`
 
 Disable auto-scroll when the user drags an item near the edge of the preview area.
+
+##### `disableOutlineDrag`
+
+Disable drag-and-drop in the [outline](/docs/api-reference/components/puck-outline). Items can still be selected and expanded.
 
 ### `fieldTransforms`
 
@@ -210,10 +231,11 @@ export function Editor() {
 
 #### iframe params
 
-| Param                           | Example                | Type    | Status |
-| ------------------------------- | ---------------------- | ------- | ------ |
-| [`enabled`](#enabled)           | `enabled: false`       | boolean | -      |
-| [`waitForStyles`](#deferrender) | `waitForStyles: false` | boolean | -      |
+| Param                               | Example                 | Type    | Status |
+| ----------------------------------- | ----------------------- | ------- | ------ |
+| [`enabled`](#enabled)               | `enabled: false`        | boolean | -      |
+| [`waitForStyles`](#waitforstyles)   | `waitForStyles: false`  | boolean | -      |
+| [`syncHostStyles`](#synchoststyles) | `syncHostStyles: false` | boolean | -      |
 
 ##### `enabled`
 
@@ -224,6 +246,12 @@ Disabling iframes will also disable [viewports](#viewports).
 ##### `waitForStyles`
 
 Defer rendering of the Puck preview until the iframe styles have loaded, showing a spinner. Defaults to `true`.
+
+##### `syncHostStyles`
+
+Mirror host `style` and stylesheet tags into the preview iframe. Defaults to `true`.
+
+Set `syncHostStyles: false` to fully isolate the iframe from host styles and host `html` / `body` attributes while still keeping Puck's iframe interaction styles active.
 
 ### `initialHistory`
 
