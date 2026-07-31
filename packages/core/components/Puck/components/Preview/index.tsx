@@ -1,25 +1,13 @@
-import { useShallow } from "zustand/react/shallow";
-import { RefObject, useEffect, useRef, useMemo, memo } from "react";
+import { RefObject, useEffect, useRef, useMemo } from "react";
 
-import { rootDroppableId } from "../../../../lib/root-droppable-id";
 import { useAppStore } from "../../../../store";
 import { getClassNameFactory } from "../../../../lib";
-import {
-  ComponentData,
-  RootData,
-  DefaultRootRenderProps,
-} from "../../../../types";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
-import { useFieldTransformsTracked } from "../../../../lib/field-transforms/use-field-transforms-tracked";
-import { getSlotTransform } from "../../../../lib/field-transforms/default-transforms/slot-transform";
-import { expandNode } from "../../../../lib/data/flatten-node";
-import { toComponent } from "../../../../lib/data/to-component";
 
-import { DropZoneEditPure, DropZonePure } from "../../../DropZone";
 import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
 import { Render } from "../../../Render";
-import { useRichtextProps } from "../../../RichTextEditor/lib/use-richtext-props";
 
+import EditorPage from "./components/editor-page";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
@@ -93,42 +81,8 @@ const usePreviewModeAttribute = (ref: RefObject<HTMLIFrameElement | null>) => {
   }, [previewMode, status, iframeEnabled]);
 };
 
-const slotFieldTransforms = getSlotTransform(DropZoneEditPure);
-
-type PageProps = DefaultRootRenderProps & { config: any };
-
-const Page = memo(({ config, ...pageProps }: PageProps) => {
-  const rootAsComponent = toComponent({ props: pageProps });
-
-  // Get the props with stable slot render functions
-  // (tracked only sees `null` for slot props across calls, so prev always === next)
-  const propsWithSlots = useFieldTransformsTracked(
-    config,
-    rootAsComponent,
-    slotFieldTransforms
-  );
-
-  const richtextProps = useRichtextProps(config.root?.fields ?? {}, pageProps);
-
-  return config.root?.render ? (
-    config.root?.render({
-      ...propsWithSlots,
-      ...richtextProps,
-      id: "puck-root",
-    })
-  ) : (
-    <>{propsWithSlots.children}</>
-  );
-});
-
-Page.displayName = "Page";
-
 export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const dispatch = useAppStore((s) => s.dispatch);
-  // All the props, slot props are defaulted to null
-  const flatRootProps = useAppStore(
-    useShallow((s) => s.state.indexes.nodes.root?.flatData.props)
-  );
   const config = useAppStore((s) => s.config);
   const setStatus = useAppStore((s) => s.setStatus);
   const iframe = useAppStore((s) => s.iframe);
@@ -140,34 +94,13 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
 
   const Frame = useMemo(() => overrides.iframe, [overrides]);
 
-  // Root as object with slots still defaulted to null
-  const expandedRootAsComponent = useMemo(() => {
-    const rootAsComponent = toComponent({
-      props: flatRootProps ?? {},
-    } as RootData);
-
-    return expandNode(rootAsComponent) as ComponentData;
-  }, [flatRootProps]);
-
   const ref = useRef<HTMLIFrameElement>(null);
 
   useBubbleIframeEvents(ref);
   usePreviewModeAttribute(ref);
 
   const inner = !renderData ? (
-    <Page
-      {...expandedRootAsComponent.props}
-      config={config}
-      puck={{
-        renderDropZone: DropZonePure,
-        isEditing: true,
-        dragRef: null,
-        metadata,
-      }}
-      editMode={true} // DEPRECATED
-    >
-      <DropZonePure zone={rootDroppableId} />
-    </Page>
+    <EditorPage />
   ) : (
     <Render data={renderData} config={config} metadata={metadata} />
   );
