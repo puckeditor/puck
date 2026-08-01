@@ -85,7 +85,7 @@ const runtimeCssPlugin: Plugin = {
       async () => {
         if (!cachedContents) {
           const [defaultStyles, interactionStyles] = await Promise.all([
-            readBundledCss("bundle/index.ts"),
+            readBundledCss("bundle/no-external.ts"),
             readBundledCss("bundle/iframe-styles.ts"),
           ]);
 
