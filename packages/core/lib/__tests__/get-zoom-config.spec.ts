@@ -32,7 +32,11 @@ describe("getZoomConfig", () => {
 
   // Regression guard: auto-height viewports keep the existing auto-zoom-to-fit-width behaviour.
   it("auto-fits the width for an auto-height viewport wider than the frame", () => {
-    const { zoom, autoZoom, rootHeight } = getZoomConfig(vp(1600, "auto"), frame, 1);
+    const { zoom, autoZoom, rootHeight } = getZoomConfig(
+      vp(1600, "auto"),
+      frame,
+      1
+    );
     expect(zoom).toBeCloseTo(0.5); // 800 / 1600
     expect(autoZoom).toBeCloseTo(0.5);
     expect(rootHeight).toBeCloseTo(1200); // viewportHeight(600) / zoom(0.5)
