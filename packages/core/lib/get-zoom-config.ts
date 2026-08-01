@@ -15,6 +15,15 @@ export const getZoomConfig = (
   const viewportHeight =
     uiViewport.height === "auto" ? frameHeight : uiViewport.height;
 
+  // #883: When an explicit (non-"auto") height is set alongside the width, both dimensions have
+  // concrete target values (e.g. 1920×1080). Render the preview at its ACTUAL size and let the
+  // canvas scroll on both axes, instead of auto-fitting the width to the frame while the height
+  // overflows — the inconsistent mix reported in the issue. This is the reporter's preferred
+  // "Option A": explicit width + height → 1:1, both scrollable.
+  if (uiViewport.height !== "auto") {
+    return { autoZoom: 1, zoom: 1, rootHeight: viewportHeight };
+  }
+
   let rootHeight = 0;
   let autoZoom = 1;
 
