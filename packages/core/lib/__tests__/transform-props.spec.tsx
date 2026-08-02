@@ -116,7 +116,7 @@ describe("transformProps method", () => {
           ],
           root: {
             props: {
-              // @ts-ignore - ignore this for testing purposes
+              // @ts-expect-error - ignore this for testing purposes
               content: [
                 {
                   type: "HeadingBlock",
