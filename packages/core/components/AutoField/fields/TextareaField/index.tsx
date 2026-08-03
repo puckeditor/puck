@@ -16,7 +16,9 @@ export const TextareaField = ({
   labelIcon,
   Label,
 }: FieldPropsInternal) => {
-  const [localValue, onChangeLocal] = useLocalValue(name, onChange);
+  const [localValue, onChangeLocal] = useLocalValue(name, onChange, {
+    fallback: "",
+  });
 
   return (
     <Label
@@ -29,7 +31,7 @@ export const TextareaField = ({
         className={getClassName("input")}
         autoComplete="off"
         name={name}
-        value={typeof localValue === "undefined" ? "" : localValue}
+        value={localValue}
         onChange={(e) => onChangeLocal(e.currentTarget.value)}
         readOnly={readOnly}
         tabIndex={readOnly ? -1 : undefined}
