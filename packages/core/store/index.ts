@@ -21,7 +21,7 @@ import { createReducer, PuckAction } from "../reducer";
 import { getItem } from "../lib/data/get-item";
 import { defaultViewports } from "../components/ViewportControls/default-viewports";
 import { Viewports } from "../types";
-import { create, StoreApi, useStore } from "zustand";
+import { create, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { createContext, useContext } from "react";
 import { createHistorySlice, type HistorySlice } from "./slices/history";
@@ -105,8 +105,6 @@ export type AppStore<
     id: string;
   } | null;
 };
-
-export type AppStoreApi = StoreApi<AppStore>;
 
 const defaultPageFields: Record<string, Field> = {
   title: { type: "text" },
@@ -357,14 +355,31 @@ export const createAppStore = (initialAppStore?: Partial<AppStore>) =>
     }))
   );
 
-export const appStoreContext = createContext(createAppStore());
+// Derived from createAppStore so it keeps the zustand middleware augmentations
+// (e.g. subscribeWithSelector's two-argument subscribe overload).
+export type AppStoreApi = ReturnType<typeof createAppStore>;
+
+export const appStoreContext = createContext<AppStoreApi | null>(null);
+
+// Fallback store used only when a component reads the store outside of a <Puck> provider (e.g. <Render> for SSR).
+// Created lazily instead of at module scope so that importing @puckeditor/core has no side effects that might
+// be unsupported in edge runtimes
+let defaultAppStore: AppStoreApi | null = null;
+
+const getDefaultAppStore = (): AppStoreApi => {
+  if (!defaultAppStore) {
+    defaultAppStore = createAppStore();
+  }
+
+  return defaultAppStore;
+};
 
 export function useAppStore<T>(selector: (state: AppStore) => T) {
-  const context = useContext(appStoreContext);
+  const context = useContext(appStoreContext) ?? getDefaultAppStore();
 
   return useStore(context, selector);
 }
 
 export function useAppStoreApi() {
-  return useContext(appStoreContext);
+  return useContext(appStoreContext) ?? getDefaultAppStore();
 }

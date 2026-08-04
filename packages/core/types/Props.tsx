@@ -13,6 +13,14 @@ export type DefaultRootFieldProps = {
   title?: string;
 };
 
+/**
+ * Merge the default root field props into user-provided root props, letting
+ * the user's props take precedence. Using a plain intersection would turn an
+ * overridden `title` (e.g. `number`) into `never` (`number & string`).
+ */
+export type WithDefaultRootFieldProps<RootProps> = RootProps &
+  Omit<DefaultRootFieldProps, keyof RootProps>;
+
 export type DefaultRootRenderProps<
   Props extends DefaultComponentProps = DefaultRootFieldProps
 > = WithPuckProps<WithChildren<Props>>;

@@ -1,19 +1,16 @@
-import { DropZoneEditPure, DropZonePure } from "../../../DropZone";
-import { rootDroppableId } from "../../../../lib/root-droppable-id";
-import { RefObject, useEffect, useRef, useMemo, memo } from "react";
+import { RefObject, useEffect, useRef, useMemo } from "react";
+
 import { useAppStore } from "../../../../store";
-import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
-import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
-import { DefaultRootRenderProps } from "../../../../types";
-import { Render } from "../../../Render";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
-import { useSlots } from "../../../../lib/use-slots";
-import { useRichtextProps } from "../../../RichTextEditor/lib/use-richtext-props";
+
+import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
+import { Render } from "../../../Render";
+
+import EditorPage from "./components/editor-page";
+import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
-
-type PageProps = DefaultRootRenderProps;
 
 const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
   const status = useAppStore((s) => s.status);
@@ -84,31 +81,8 @@ const usePreviewModeAttribute = (ref: RefObject<HTMLIFrameElement | null>) => {
   }, [previewMode, status, iframeEnabled]);
 };
 
-const Page = memo(({ config, ...pageProps }: { config: any } & PageProps) => {
-  const propsWithSlots = useSlots(
-    config,
-    { type: "root", props: pageProps },
-    DropZoneEditPure
-  );
-
-  const richtextProps = useRichtextProps(config.root?.fields ?? {}, pageProps);
-
-  return config.root?.render ? (
-    config.root?.render({
-      id: "puck-root",
-      ...propsWithSlots,
-      ...richtextProps,
-    })
-  ) : (
-    <>{propsWithSlots.children}</>
-  );
-});
-
-Page.displayName = "Page";
-
 export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const dispatch = useAppStore((s) => s.dispatch);
-  const root = useAppStore((s) => s.state.data.root);
   const config = useAppStore((s) => s.config);
   const setStatus = useAppStore((s) => s.setStatus);
   const iframe = useAppStore((s) => s.iframe);
@@ -120,28 +94,13 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
 
   const Frame = useMemo(() => overrides.iframe, [overrides]);
 
-  // DEPRECATED
-  const rootProps = root.props || root;
-
   const ref = useRef<HTMLIFrameElement>(null);
 
   useBubbleIframeEvents(ref);
   usePreviewModeAttribute(ref);
 
   const inner = !renderData ? (
-    <Page
-      {...rootProps}
-      config={config}
-      puck={{
-        renderDropZone: DropZonePure,
-        isEditing: true,
-        dragRef: null,
-        metadata,
-      }}
-      editMode={true} // DEPRECATED
-    >
-      <DropZonePure zone={rootDroppableId} />
-    </Page>
+    <EditorPage />
   ) : (
     <Render data={renderData} config={config} metadata={metadata} />
   );
