@@ -2,23 +2,56 @@ import type { DragDropManager } from "@dnd-kit/dom";
 import { useCallback, useEffect, useRef } from "react";
 import type { StoreApi } from "zustand";
 import { getFrame } from "../../lib/get-frame";
-import { getFramePointer, getNearestGapIndex } from "../../lib/dnd/nearest-gap";
+import { getNearestGapIndex } from "../../lib/dnd/nearest-gap";
+import { getFramePointer } from "../../lib/dnd/frame-pointer";
+import { getZoneContentIds } from "../../lib/get-zone-content-ids";
+import { getZoneSelector } from "../../lib/dom-selectors";
 import { useAppStoreApi } from "../../store";
 import type { ZoneStore } from "../DropZone/context";
 
-const getTargetIndex = (
-  zoneEl: Element,
-  manager: DragDropManager,
-  contentIds: string[]
-) =>
-  getNearestGapIndex(
-    zoneEl,
-    getFramePointer(zoneEl, manager.dragOperation.position.current),
-    contentIds
-  );
+export type UseLinePlaceholderApi = {
+  /**
+   * Gets the closest target index for a given drop zone based on the cursor position.
+   *
+   * @param zone The ID of the drop zone to get the target index for.
+   * @param manager The drag drop manager instance from dnd-kit.
+   * @returns The index of the nearest gap within the zone, or null if not applicable.
+   */
+  getTargetIndex: (zone: string, manager: DragDropManager) => number | null;
+  /**
+   * Sets the active state of the line placeholder in the editor.
+   *
+   * @param active True if the line placeholder should be active. False otherwise.
+   */
+  setActive: (active: boolean) => void;
+  /**
+   * Tracks scroll events and updates the line placeholder position during drag operations.
+   *
+   * This is needed because dragging while scrolling happens with a fixed cursor position.
+   * If not used, the line placeholder could be positioned incorrectly.
+   *
+   * @param manager The drag drop manager instance from dnd-kit.
+   */
+  startScrollTracking: (manager: DragDropManager) => void;
+  /**
+   * Stops updating the line placeholder position during drag operations.
+   */
+  stopScrollTracking: () => void;
+  /**
+   * Updates the line placeholder position based on the current cursor position.
+   *
+   * @param manager The drag drop manager instance from dnd-kit.
+   */
+  update: (manager: DragDropManager) => void;
+};
 
-/** Owns the DOM state, pointer tracking and scroll handling for line drags. */
-export const useLinePlaceholder = (zoneStore: StoreApi<ZoneStore>) => {
+/**
+ * A hook to manage the line placeholder for drop zones during drag operations.
+ *
+ * @param zoneStore The Zustand store for managing dnd.
+ * @returns An object with methods to manage the line placeholder.
+ */
+export const useLinePlaceholder = (zoneStore: StoreApi<ZoneStore>): UseLinePlaceholderApi => {
   const appStore = useAppStoreApi();
   const scrollCleanup = useRef<(() => void) | null>(null);
 
@@ -34,23 +67,25 @@ export const useLinePlaceholder = (zoneStore: StoreApi<ZoneStore>) => {
 
   const getTargetIndexForZone = useCallback(
     (zone: string, manager: DragDropManager) => {
-      const zoneEl = getFrame()?.querySelector(
-        `[data-puck-dropzone="${zone}"]`
-      );
+      const zoneEl = getFrame()?.querySelector(getZoneSelector(zone));
 
       if (!zoneEl) return null;
 
-      return getTargetIndex(
+      const pointerPosition = getFramePointer(
         zoneEl,
-        manager,
-        appStore.getState().state.indexes.zones[zone]?.contentIds ?? []
+        manager.dragOperation.position.current
       );
+
+      const zoneContentIds = getZoneContentIds(appStore.getState().state, zone);
+
+      return getNearestGapIndex(zoneEl, pointerPosition, zoneContentIds);
     },
     [appStore]
   );
 
   const update = useCallback(
     (manager: DragDropManager) => {
+      // Find the first zone with a line placeholder
       const { previewIndex = {} } = zoneStore.getState();
       const linePreview = Object.values(previewIndex).find(
         (preview) => preview?.linePlaceholder
@@ -58,8 +93,10 @@ export const useLinePlaceholder = (zoneStore: StoreApi<ZoneStore>) => {
 
       if (!linePreview) return;
 
+      // Find the zone element for the line placeholder
+      // and check if the pointer is inside it.
       const zoneEl = getFrame()?.querySelector(
-        `[data-puck-dropzone="${linePreview.zone}"]`
+        getZoneSelector(linePreview.zone)
       );
 
       if (!zoneEl) return;
@@ -77,11 +114,11 @@ export const useLinePlaceholder = (zoneStore: StoreApi<ZoneStore>) => {
 
       if (!insideZone) return;
 
+      // Get the placeholder index for the current pointer position and update it
       const nearestIndex = getNearestGapIndex(
         zoneEl,
         pointer,
-        appStore.getState().state.indexes.zones[linePreview.zone]?.contentIds ??
-          []
+        getZoneContentIds(appStore.getState().state, linePreview.zone)
       );
 
       if (nearestIndex !== null && nearestIndex !== linePreview.index) {

@@ -1,4 +1,4 @@
-import { resolveDndMode, resolveOriginPreviewIndex } from "../resolve-dnd-mode";
+import { resolveDndMode } from "../resolve-dnd-mode";
 
 describe("resolveDndMode", () => {
   it("uses fluid mode within a slot for auto behavior", () => {
@@ -26,21 +26,5 @@ describe("resolveDndMode", () => {
       "static"
     );
     expect(resolveDndMode("static", { isNewComponent: true })).toBe("static");
-  });
-});
-
-describe("resolveOriginPreviewIndex", () => {
-  it("pins static previews to the initial rendered index", () => {
-    expect(
-      resolveOriginPreviewIndex(0, { index: 2, linePlaceholder: true })
-    ).toBe(0);
-  });
-
-  it("pins fluid previews to their latest rendered index", () => {
-    expect(resolveOriginPreviewIndex(0, { index: 2 })).toBe(2);
-  });
-
-  it("falls back to the initial index without a preview", () => {
-    expect(resolveOriginPreviewIndex(1)).toBe(1);
   });
 });

@@ -26,7 +26,7 @@ import { dropZoneContext, DropZoneProvider } from "../DropZone";
 import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
 import { DragAxis } from "../../types";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
-import { Feedback, type DropAnimationFunction } from "@dnd-kit/dom";
+import { Feedback } from "@dnd-kit/dom";
 import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
 import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
@@ -34,7 +34,7 @@ import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
-import { runDropAnimation } from "../../lib/dnd/drop-animation";
+import { useDropAnimation } from "../DragDropContext/use-drop-animation";
 import { LoadedRichTextMenu } from "../RichTextMenu";
 import type { NodeHandle } from "../../store/slices/nodes";
 import { assignRefs } from "../../lib/assign-refs";
@@ -192,27 +192,7 @@ export const DraggableComponent = ({
   // The default drop animation targets the source placeholder. Line drags and
   // drawer insertion previews instead commit immediately and glide a visual
   // copy to the item's final rendered position.
-  const dropAnimation: DropAnimationFunction = useCallback(
-    (context) => {
-      const preview = Object.values(
-        zoneStore.getState().previewIndex ?? {}
-      ).find((preview) => preview?.props.id === id && !preview.ghost);
-
-      return runDropAnimation(
-        context,
-        preview?.linePlaceholder || preview?.type === "insert"
-          ? {
-              itemId: preview.type === "move" ? id : undefined,
-              targetZone: preview.zone,
-              getExpectedOrder: () =>
-                appStore.getState().state.indexes.zones[preview.zone]
-                  ?.contentIds ?? [],
-            }
-          : undefined
-      );
-    },
-    [zoneStore, appStore, id]
-  );
+  const dropAnimation = useDropAnimation(zoneStore, id);
 
   const {
     ref: sortableRef,

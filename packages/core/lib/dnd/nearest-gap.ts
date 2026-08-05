@@ -1,54 +1,24 @@
+import { getDistanceToSegment } from "../math";
+import { getItemEdgeAccessors, resolveZoneFlow } from "./resolve-flow";
+
 type Point = { x: number; y: number };
 
 type GapCandidate = {
   index: number;
-  // A line segment describing the gap
+  // A line segment describing the gap, ordered so x1 <= x2 and y1 <= y2.
   x1: number;
   y1: number;
   x2: number;
   y2: number;
 };
 
-const distanceToSegment = (point: Point, gap: GapCandidate) => {
-  const x = Math.max(gap.x1, Math.min(gap.x2, point.x));
-  const y = Math.max(gap.y1, Math.min(gap.y2, point.y));
-
-  return Math.hypot(point.x - x, point.y - y);
-};
-
 /**
- * Maps a drag position from top-window coordinates (as tracked by dnd-kit's
- * sensors) into the coordinate space of the element's frame, accounting for
- * the canvas iframe scale.
- */
-export const getFramePointer = (targetEl: Element, position: Point): Point => {
-  const frameEl = document.querySelector(
-    "iframe#preview-frame"
-  ) as HTMLIFrameElement | null;
-
-  if (!frameEl || targetEl.ownerDocument !== frameEl.contentDocument) {
-    return position;
-  }
-
-  const rect = frameEl.getBoundingClientRect();
-  const scale = rect.width / (frameEl.contentWindow?.innerWidth || 1);
-
-  return {
-    x: (position.x - rect.left) / scale,
-    y: (position.y - rect.top) / scale,
-  };
-};
-
-/**
- * Returns the insertion index whose gap is nearest to the pointer, using the
- * same geometry as the line placeholder indicator. This is more predictable
- * than directional midpoint collisions for cross-zone drags, where items
- * don't move out of the way and the drag shape's size is unrelated to the
- * target zone's items.
+ * Returns the insertion index in the content ids whose gap is nearest the pointer in the screen.
  *
- * Rendered items are mapped to their real content indices via `contentIds`:
- * virtualized zones only render a window of their content, so DOM positions
- * can't be used as indices directly.
+ * @param zoneEl The dropzone element in the DOM. This contains the items.
+ * @param pointer The pointer position in viewport coordinates.
+ * @param contentIds The content ids of all items in the zone, in order.
+ * @returns The index of the nearest gap, or null if no gaps exist (i.e., the zone is not on screen).
  */
 export const getNearestGapIndex = (
   zoneEl: Element,
@@ -59,87 +29,85 @@ export const getNearestGapIndex = (
 
   if (!win) return null;
 
+  const indexById = new Map(contentIds.map((id, index) => [id, index]));
+
+  // Get the rendered items in order of their content index, excluding the flying drag element and any placeholder clones.
+  // Rendered items are mapped back to their real content indices via `contentIds`, because
+  // virtualized zones only render a window of their content, so DOM order can't be used as the index directly.
   const rendered = Array.from(
     zoneEl.querySelectorAll(
       ":scope > [data-puck-component]:not([data-dnd-dragging]):not([data-dnd-placeholder])"
     )
   )
     .map((el) => ({
-      index: contentIds.indexOf(el.getAttribute("data-puck-component") ?? ""),
-      rect: el.getBoundingClientRect(),
+      index: indexById.get(el.getAttribute("data-puck-component") ?? "") ?? -1,
+      el,
     }))
     .filter((item) => item.index !== -1)
-    .sort((a, b) => a.index - b.index);
+    .sort((a, b) => a.index - b.index)
+    .map(({ index, el }) => ({ index, rect: el.getBoundingClientRect() }));
 
+  // No rendered items means the first position is the only option, so return 0.
   if (rendered.length === 0) return 0;
 
-  const style = win.getComputedStyle(zoneEl);
-  const horizontalFlow =
-    style.display === "grid" ||
-    (style.display === "flex" && style.flexDirection.startsWith("row"));
+  const zoneFlow = resolveZoneFlow(zoneEl, win);
+
+  const { horizontal, reversed, start, end } = getItemEdgeAccessors(zoneFlow);
+
+  // A gap is a line perpendicular to the main axis at `main`, spanning the
+  // full cross-axis extent of the closest item (neighbor).
+  const getGapAt = (
+    index: number,
+    main: number,
+    cross: DOMRect
+  ): GapCandidate =>
+    horizontal
+      ? { index, x1: main, x2: main, y1: cross.top, y2: cross.bottom }
+      : { index, x1: cross.left, x2: cross.right, y1: main, y2: main };
 
   const candidates: GapCandidate[] = [];
 
-  const edgeCandidate = (
+  const createEdgeCandidate = (
     index: number,
     rect: DOMRect,
     side: "before" | "after"
   ) => {
-    if (horizontalFlow) {
-      const x = side === "before" ? rect.left : rect.right;
+    const main = side === "before" ? start(rect) : end(rect);
 
-      candidates.push({ index, x1: x, x2: x, y1: rect.top, y2: rect.bottom });
-    } else {
-      const y = side === "before" ? rect.top : rect.bottom;
-
-      candidates.push({ index, y1: y, y2: y, x1: rect.left, x2: rect.right });
-    }
+    return getGapAt(index, main, rect);
   };
 
+  // Generate a list of all drop candidates.
   for (let i = 0; i <= rendered.length; i++) {
     const prev = rendered[i - 1];
     const next = rendered[i];
 
     if (!next) {
-      // After the last rendered item
-      edgeCandidate(prev.index + 1, prev.rect, "after");
+      // After the last rendered item. Get the end of the previous item as the drop position.
+      candidates.push(createEdgeCandidate(prev.index + 1, prev.rect, "after"));
     } else if (!prev) {
-      // Before the first rendered item
-      edgeCandidate(next.index, next.rect, "before");
+      // Before the first rendered item. Get the start of the next item as the drop position.
+      candidates.push(createEdgeCandidate(next.index, next.rect, "before"));
     } else if (next.index - prev.index > 1) {
-      // The items between these two are virtualized out: expose both edges
-      // as separate insertion points
-      edgeCandidate(prev.index + 1, prev.rect, "after");
-      edgeCandidate(next.index, next.rect, "before");
-    } else if (horizontalFlow) {
-      const wraps = prev.rect.right > next.rect.left;
-
-      if (wraps) {
-        // Row wraps expose both the end of the previous row and the start
-        // of the next as the same index
-        edgeCandidate(next.index, next.rect, "before");
-        edgeCandidate(next.index, prev.rect, "after");
-      } else {
-        const x = (prev.rect.right + next.rect.left) / 2;
-
-        candidates.push({
-          index: next.index,
-          x1: x,
-          x2: x,
-          y1: next.rect.top,
-          y2: next.rect.bottom,
-        });
-      }
+      // The items between these two are virtualized out: expose both edges as
+      // separate drop positions.
+      candidates.push(createEdgeCandidate(prev.index + 1, prev.rect, "after"));
+      candidates.push(createEdgeCandidate(next.index, next.rect, "before"));
+    } else if (
+      horizontal &&
+      (reversed
+        ? end(prev.rect) < start(next.rect)
+        : end(prev.rect) > start(next.rect))
+    ) {
+      // The row wraps between these items: expose the end of the previous row
+      // and the start of the next as the same drop position (they share the same index).
+      candidates.push(createEdgeCandidate(next.index, next.rect, "before"));
+      candidates.push(createEdgeCandidate(next.index, prev.rect, "after"));
     } else {
-      const y = (prev.rect.bottom + next.rect.top) / 2;
+      // Adjacent items: expose midpoint of the gap between them as the drop position.
+      const mid = (end(prev.rect) + start(next.rect)) / 2;
 
-      candidates.push({
-        index: next.index,
-        y1: y,
-        y2: y,
-        x1: next.rect.left,
-        x2: next.rect.right,
-      });
+      candidates.push(getGapAt(next.index, mid, next.rect));
     }
   }
 
@@ -147,7 +115,7 @@ export const getNearestGapIndex = (
   let nearestDistance = Infinity;
 
   for (const candidate of candidates) {
-    const distance = distanceToSegment(pointer, candidate);
+    const distance = getDistanceToSegment(pointer, candidate);
 
     if (distance < nearestDistance) {
       nearestDistance = distance;

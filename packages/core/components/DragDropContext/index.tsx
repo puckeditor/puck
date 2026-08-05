@@ -26,10 +26,9 @@ import {
 } from "../DropZone/context";
 import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
 import { prepareCommitFlip } from "../../lib/dnd/flip-commit";
-import {
-  resolveDndMode,
-  resolveOriginPreviewIndex,
-} from "../../lib/dnd/resolve-dnd-mode";
+import { resolveDndMode } from "../../lib/dnd/resolve-dnd-mode";
+import { getZoneContentIds } from "../../lib/get-zone-content-ids";
+import { getComponentSelector } from "../../lib/dom-selectors";
 import { insertComponent } from "../../lib/insert-component";
 import { moveComponent } from "../../lib/move-component";
 import { useDebouncedCallback } from "use-debounce";
@@ -168,7 +167,7 @@ const DragDropContextClient = ({
           }
         } else {
           const frame = getFrame();
-          const el = frame?.querySelector(`[data-puck-component="${id}"]`);
+          const el = frame?.querySelector(getComponentSelector(id));
           el?.scrollIntoView({ behavior: "smooth" });
         }
       },
@@ -396,8 +395,10 @@ const DragDropContextClient = ({
                       : undefined,
                   targetZone: thisPreview.zone,
                   getExpectedOrder: () =>
-                    appStore.getState().state.indexes.zones[thisPreview.zone]
-                      ?.contentIds ?? [],
+                    getZoneContentIds(
+                      appStore.getState().state,
+                      thisPreview.zone
+                    ),
                 })
               : null;
 
@@ -534,11 +535,13 @@ const DragDropContextClient = ({
 
             const collisionData = manager.collisionObserver.collisions[0]?.data;
 
+            const position = getCollisionPosition(
+              collisionData?.direction,
+              getDeepDir(target.element)
+            );
+
             targetIndex = getInsertIndex({
-              position: getCollisionPosition(
-                collisionData?.direction,
-                getDeepDir(target.element)
-              ),
+              position,
               sourceIndex,
               targetIndex: targetData.index,
               isSameZone: sourceZone === targetZone,
@@ -563,16 +566,16 @@ const DragDropContextClient = ({
           }
 
           if (dragMode.current === "new") {
-            const useLinePlaceholder =
+            const isLinePlaceholder =
               resolveDndMode(behavior, { isNewComponent: true }) === "static";
 
-            if (useLinePlaceholder) {
+            if (isLinePlaceholder) {
               targetIndex =
                 getLinePlaceholderTargetIndex(targetZone, manager) ??
                 targetIndex;
             }
 
-            setLinePlaceholderActive(useLinePlaceholder);
+            setLinePlaceholderActive(isLinePlaceholder);
 
             zoneStore.setState({
               previewIndex: {
@@ -585,7 +588,7 @@ const DragDropContextClient = ({
                   props: {
                     id: source.id.toString(),
                   },
-                  linePlaceholder: useLinePlaceholder,
+                  linePlaceholder: isLinePlaceholder,
                 },
               },
             });
@@ -605,18 +608,18 @@ const DragDropContextClient = ({
             if (item) {
               const originZone = initialSelector.current.zone;
               const isReparenting = originZone !== targetZone;
-              const useLinePlaceholder =
+              const isLinePlaceholder =
                 resolveDndMode(behavior, {
                   isDraggingBetweenSlots: isReparenting,
                 }) === "static";
 
-              if (useLinePlaceholder) {
+              if (isLinePlaceholder) {
                 targetIndex =
                   getLinePlaceholderTargetIndex(targetZone, manager) ??
                   targetIndex;
               }
 
-              setLinePlaceholderActive(useLinePlaceholder);
+              setLinePlaceholderActive(isLinePlaceholder);
 
               const previewIndex: Record<string, Preview> = {
                 [targetZone]: {
@@ -626,20 +629,23 @@ const DragDropContextClient = ({
                   zone: targetZone,
                   props: item.props,
                   element: source.element,
-                  linePlaceholder: useLinePlaceholder,
+                  linePlaceholder: isLinePlaceholder,
                 },
               };
 
-              if (useLinePlaceholder && isReparenting) {
-                // Pin the item at its rendered position in the original zone.
-                // Fluid previews render at their latest index, while static
-                // previews leave the item at its initial index.
+              // If line, pin the item as a ghost at its currently rendered position in the original zone.
+              if (isLinePlaceholder && isReparenting) {
                 const originPreview =
                   zoneStore.getState().previewIndex[originZone];
-                const originIndex = resolveOriginPreviewIndex(
-                  initialSelector.current.index,
-                  originPreview
-                );
+
+                // Assume we were in static mode. Preview didn't move the item.
+                let originIndex = initialSelector.current.index;
+
+                // Current preview isn't line placeholder. We were in fluid mode.
+                // Preview moved the item to its latest index. Pin the ghost preview there.
+                if (originPreview && !originPreview.linePlaceholder) {
+                  originIndex = originPreview.index;
+                }
 
                 previewIndex[originZone] = {
                   componentType: sourceData.componentType,
@@ -661,10 +667,12 @@ const DragDropContextClient = ({
           });
         }}
         onDragStart={(event, manager) => {
-          // Scrolling moves the content under a stationary pointer without
-          // firing drag events, which would leave the line placeholder
-          // drifting with the page; recompute it on scroll.
-          startLinePlaceholderScrollTracking(manager);
+          if (behavior !== "fluid") {
+            // Scrolling moves the content under a stationary pointer without
+            // firing drag events, which would leave the line placeholder
+            // drifting with the page; recompute it on scroll.
+            startLinePlaceholderScrollTracking(manager);
+          }
 
           const { source } = event.operation;
 
@@ -680,9 +688,9 @@ const DragDropContextClient = ({
             const item = getItem(sourceSelector, appStore.getState().state);
 
             if (item) {
-              const useLinePlaceholder = resolveDndMode(behavior) === "static";
+              const showLinePlaceholder = resolveDndMode(behavior) === "static";
 
-              setLinePlaceholderActive(useLinePlaceholder);
+              setLinePlaceholderActive(showLinePlaceholder);
 
               zoneStore.setState({
                 previewIndex: {
@@ -693,7 +701,7 @@ const DragDropContextClient = ({
                     zone: sourceData.zone,
                     props: item.props,
                     element: source.element,
-                    linePlaceholder: useLinePlaceholder,
+                    linePlaceholder: showLinePlaceholder,
                   },
                 },
               });
@@ -735,8 +743,8 @@ const DragDropContextClient = ({
           }
 
           const entryEl = getFrame()?.querySelector("[data-puck-entry]");
-          setLinePlaceholderActive(false);
           entryEl?.setAttribute("data-puck-dragging", "true");
+          setLinePlaceholderActive(false);
         }}
       >
         <ZoneStoreProvider store={zoneStore}>

@@ -20,14 +20,3 @@ export const resolveDndMode = (
 
   return behavior;
 };
-
-export const resolveOriginPreviewIndex = (
-  initialIndex: number,
-  preview?: { index: number; linePlaceholder?: boolean } | null
-) => {
-  if (!preview || preview.linePlaceholder) {
-    return initialIndex;
-  }
-
-  return preview.index;
-};

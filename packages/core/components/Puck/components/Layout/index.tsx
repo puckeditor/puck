@@ -76,11 +76,12 @@ const PluginTab = ({
 export const Layout = ({ children }: { children?: ReactNode }) => {
   const {
     iframe: _iframe,
-    dnd,
     initialHistory: _initialHistory,
     plugins,
     height,
   } = usePropsContext();
+
+  const dnd = useAppStore((s) => s.dnd);
 
   const iframe: IframeConfig = useMemo(
     () => normalizeIframeConfig(_iframe),

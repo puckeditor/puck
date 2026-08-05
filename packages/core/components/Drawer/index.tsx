@@ -5,7 +5,6 @@ import {
   ReactElement,
   ReactNode,
   Ref,
-  useCallback,
   useContext,
   useMemo,
   useState,
@@ -14,10 +13,9 @@ import { generateId } from "../../lib/generate-id";
 import { useDragListener } from "../DragDropContext";
 import { useSafeId } from "../../lib/use-safe-id";
 import { useDraggable, useDroppable } from "@dnd-kit/react";
-import { Feedback, type DropAnimationFunction } from "@dnd-kit/dom";
+import { Feedback } from "@dnd-kit/dom";
 import { ZoneStoreContext } from "../DropZone/context";
-import { useAppStoreApi } from "../../store";
-import { runDropAnimation } from "../../lib/dnd/drop-animation";
+import { useDropAnimation } from "../DragDropContext/use-drop-animation";
 
 const getClassName = getClassNameFactory("Drawer", styles);
 const getClassNameItem = getClassNameFactory("DrawerItem", styles);
@@ -85,28 +83,7 @@ const DrawerItemDraggable = ({
   isDragDisabled?: boolean;
 }) => {
   const zoneStore = useContext(ZoneStoreContext);
-  const appStore = useAppStoreApi();
-
-  const dropAnimation: DropAnimationFunction = useCallback(
-    (context) => {
-      const preview = Object.values(
-        zoneStore.getState().previewIndex ?? {}
-      ).find((preview) => preview?.type === "insert");
-
-      return runDropAnimation(
-        context,
-        preview
-          ? {
-              targetZone: preview.zone,
-              getExpectedOrder: () =>
-                appStore.getState().state.indexes.zones[preview.zone]
-                  ?.contentIds ?? [],
-            }
-          : undefined
-      );
-    },
-    [appStore, zoneStore]
-  );
+  const dropAnimation = useDropAnimation(zoneStore);
 
   const { ref } = useDraggable({
     id,

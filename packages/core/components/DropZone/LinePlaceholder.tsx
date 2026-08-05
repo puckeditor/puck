@@ -1,40 +1,43 @@
 import { CSSProperties, RefObject, useLayoutEffect, useState } from "react";
+
 import { getClassNameFactory } from "../../lib";
-import type { DragAxis } from "../../types";
+import { clamp } from "../../lib/math";
+import {
+  getItemEdgeAccessors,
+  resolveZoneFlow,
+} from "../../lib/dnd/resolve-flow";
+import { getComponentSelector } from "../../lib/dom-selectors";
+
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("DropZone", styles);
-const LINE_PLACEHOLDER_SIZE = 4;
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.max(min, Math.min(max, value));
+const LINE_SIZE = "var(--puck-border-width-focus, 2px)";
 
 /**
- * A thin line rendered at the insertion point during static drags.
- * Positioned from neighboring item rects so it never affects zone layout.
+ * Renders the line preview
  */
 export const LinePlaceholder = ({
   zoneRef,
   contentIds,
   index,
-  dragAxis,
 }: {
   zoneRef: RefObject<HTMLDivElement | null>;
   contentIds: string[];
   index: number;
-  dragAxis: DragAxis;
 }) => {
   const [style, setStyle] = useState<CSSProperties>();
 
   useLayoutEffect(() => {
     const zoneEl = zoneRef.current;
+    const win = zoneEl?.ownerDocument.defaultView;
 
-    if (!zoneEl) return;
+    if (!zoneEl || !win) return;
 
-    const win = zoneEl.ownerDocument.defaultView;
     const styleOf = (el?: Element | null) =>
-      el && win ? win.getComputedStyle(el) : undefined;
+      el ? win.getComputedStyle(el) : undefined;
     const px = (value?: string) => parseFloat(value ?? "") || 0;
+
     const getItem = (itemIndex: number) => {
       const id = contentIds[itemIndex];
 
@@ -43,9 +46,7 @@ export const LinePlaceholder = ({
       // Exclude the flying drag element: in same-zone line drags the item's
       // in-flow position is represented by its placeholder clone.
       const el = zoneEl.querySelector(
-        `:scope > [data-puck-component="${CSS.escape(
-          id
-        )}"]:not([data-dnd-dragging])`
+        `:scope > ${getComponentSelector(id)}:not([data-dnd-dragging])`
       );
 
       if (!el) return undefined;
@@ -54,78 +55,106 @@ export const LinePlaceholder = ({
     };
 
     const zoneRect = zoneEl.getBoundingClientRect();
-    const zoneStyle = styleOf(zoneEl);
+    const zoneStyle = win.getComputedStyle(zoneEl);
     const prev = getItem(index - 1);
     const next = getItem(index);
     const closest = next ?? prev;
-    const size = LINE_PLACEHOLDER_SIZE;
 
-    if (dragAxis === "y") {
-      const rowGap = px(zoneStyle?.rowGap);
+    const zoneFlow = resolveZoneFlow(zoneEl, win, zoneStyle);
 
-      // Vertical flows insert between rows. At the edges, respect the zone
-      // gap or sibling margin; in empty zones, start after the zone padding.
-      const y = next
-        ? prev && prev.rect.bottom <= next.rect.top
-          ? (prev.rect.bottom + next.rect.top) / 2
-          : next.rect.top -
-            Math.max(px(styleOf(next.el)?.marginTop), rowGap) / 2
-        : prev
-        ? prev.rect.bottom +
-          Math.max(px(styleOf(prev.el)?.marginBottom), rowGap) / 2
-        : zoneRect.top + px(zoneStyle?.paddingTop);
+    const { horizontal, reversed, forward, start, end, isBefore } =
+      getItemEdgeAccessors(zoneFlow);
 
-      setStyle({
-        left:
-          (closest?.rect.left ?? zoneRect.left + px(zoneStyle?.paddingLeft)) -
-          zoneRect.left +
-          zoneEl.scrollLeft,
-        width:
-          closest?.rect.width ??
-          zoneRect.width -
-            px(zoneStyle?.paddingLeft) -
-            px(zoneStyle?.paddingRight),
-        top: clamp(
-          y - zoneRect.top + zoneEl.scrollTop - size / 2,
-          0,
-          zoneEl.scrollHeight - size
-        ),
-        height: size,
-      });
+    const gap = px(horizontal ? zoneStyle.columnGap : zoneStyle.rowGap);
+    const marginOf = (
+      el: Element | null | undefined,
+      edge: "start" | "end"
+    ) => {
+      const side =
+        (edge === "start") === !reversed
+          ? horizontal
+            ? "marginLeft"
+            : "marginTop"
+          : horizontal
+          ? "marginRight"
+          : "marginBottom";
+
+      return px(styleOf(el)?.[side]);
+    };
+
+    // The caret's position along the main axis, in viewport coordinates.
+    let main: number;
+
+    if (next) {
+      if (prev && isBefore(end(prev.rect), start(next.rect))) {
+        // Between two items: the centre of the gap.
+        main = (end(prev.rect) + start(next.rect)) / 2;
+      } else {
+        // Before `next`: back off half the sibling margin or zone gap.
+        main =
+          start(next.rect) -
+          forward * (Math.max(marginOf(next.el, "start"), gap) / 2);
+      }
+    } else if (prev) {
+      // After the last item.
+      main =
+        end(prev.rect) +
+        forward * (Math.max(marginOf(prev.el, "end"), gap) / 2);
     } else {
-      const columnGap = px(zoneStyle?.columnGap);
+      // Empty zone: start after the zone's leading padding.
+      main = horizontal
+        ? reversed
+          ? zoneRect.right - px(zoneStyle.paddingRight)
+          : zoneRect.left + px(zoneStyle.paddingLeft)
+        : reversed
+        ? zoneRect.bottom - px(zoneStyle.paddingBottom)
+        : zoneRect.top + px(zoneStyle.paddingTop);
+    }
 
-      // Horizontal and grid flows use a vertical caret at the insertion edge.
-      // Row wraps and edge positions respect the zone gap or sibling margin.
-      const x = next
-        ? prev && prev.rect.right <= next.rect.left
-          ? (prev.rect.right + next.rect.left) / 2
-          : next.rect.left -
-            Math.max(px(styleOf(next.el)?.marginLeft), columnGap) / 2
-        : prev
-        ? prev.rect.right +
-          Math.max(px(styleOf(prev.el)?.marginRight), columnGap) / 2
-        : zoneRect.left + px(zoneStyle?.paddingLeft);
-
+    if (horizontal) {
+      // Vertical caret: centred at `main` on the x axis, spanning the
+      // cross-axis height of the neighbouring item (or the zone's content box).
       setStyle({
         top:
-          (closest?.rect.top ?? zoneRect.top + px(zoneStyle?.paddingTop)) -
+          (closest?.rect.top ?? zoneRect.top + px(zoneStyle.paddingTop)) -
           zoneRect.top +
           zoneEl.scrollTop,
         height:
           closest?.rect.height ??
           zoneRect.height -
-            px(zoneStyle?.paddingTop) -
-            px(zoneStyle?.paddingBottom),
+            px(zoneStyle.paddingTop) -
+            px(zoneStyle.paddingBottom),
         left: clamp(
-          x - zoneRect.left + zoneEl.scrollLeft - size / 2,
+          main - zoneRect.left + zoneEl.scrollLeft,
           0,
-          zoneEl.scrollWidth - size
+          zoneEl.scrollWidth
         ),
-        width: size,
+        width: LINE_SIZE,
+        transform: "translateX(-50%)",
+      });
+    } else {
+      // Horizontal caret: centred at `main` on the y axis, spanning the
+      // cross-axis width.
+      setStyle({
+        left:
+          (closest?.rect.left ?? zoneRect.left + px(zoneStyle.paddingLeft)) -
+          zoneRect.left +
+          zoneEl.scrollLeft,
+        width:
+          closest?.rect.width ??
+          zoneRect.width -
+            px(zoneStyle.paddingLeft) -
+            px(zoneStyle.paddingRight),
+        top: clamp(
+          main - zoneRect.top + zoneEl.scrollTop,
+          0,
+          zoneEl.scrollHeight
+        ),
+        height: LINE_SIZE,
+        transform: "translateY(-50%)",
       });
     }
-  }, [zoneRef, contentIds, index, dragAxis]);
+  }, [zoneRef, contentIds, index]);
 
   if (!style) return null;
 

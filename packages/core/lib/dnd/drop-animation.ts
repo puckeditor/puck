@@ -5,6 +5,7 @@ import {
   prefersReducedMotion,
   waitForCommit,
 } from "./commit-animation";
+import { getComponentSelector } from "../dom-selectors";
 
 type DropAnimationContext = Parameters<DropAnimationFunction>[0];
 
@@ -76,6 +77,8 @@ export const runFallbackDropAnimation: DropAnimationFunction = ({
   placeholder,
   translate,
 }) => {
+  if (prefersReducedMotion(feedbackElement.ownerDocument)) return;
+
   const target = placeholder ?? element;
   const currentRect = feedbackElement.getBoundingClientRect();
   const targetRect = target.getBoundingClientRect();
@@ -161,7 +164,7 @@ export const runTargetDropAnimation = ({
   hideStyle.textContent = `
     ${
       itemId
-        ? `[data-puck-component="${itemId}"] { visibility: hidden !important; }`
+        ? `${getComponentSelector(itemId)} { visibility: hidden !important; }`
         : ""
     }
     [data-puck-overlay] { opacity: 0 !important; }
@@ -195,7 +198,7 @@ export const runTargetDropAnimation = ({
 
       if (!itemId && committedId) {
         hideStyle.textContent += `
-          [data-puck-component="${committedId}"] { visibility: hidden !important; }
+          ${getComponentSelector(committedId)} { visibility: hidden !important; }
         `;
       }
 

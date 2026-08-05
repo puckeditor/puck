@@ -1,3 +1,5 @@
+import { getComponentSelector, getZoneSelector } from "../dom-selectors";
+
 export const COMMIT_ANIMATION: KeyframeAnimationOptions = {
   duration: 250,
   easing: "ease",
@@ -10,17 +12,25 @@ export const prefersReducedMotion = (doc: Document) =>
   false;
 
 type WaitForCommitOptions = {
+  /** The zones to check for the item. */
   zones: string[];
+  /** The id of the item to wait for. If not provided, the first item that is not in the initial expected order will be used. */
   itemId?: string;
+  /** The zone the item is moved or inserted into. */
   targetZone: string;
+  /** A function that returns the expected order of items in the target zone. */
   getExpectedOrder: () => string[];
+  /** The initial expected order of items in the target zone. Defaults to an empty array. */
   initialExpectedOrder?: string[];
 };
 
 /**
- * Waits for a dispatched move or insert to render. The committed item must
- * appear in the target zone's expected order and leave every other zone.
- * Inserted item ids are inferred by comparing the pre- and post-commit order.
+ * Dispatches a callback when an item has been moved or inserted into a target zone
+ * and rendered in the DOM.
+ *
+ * @param doc The document to query for the target zone and item.
+ * @param options The options for waiting for the commit.
+ * @param callback The callback to invoke when the item has been committed.
  */
 export const waitForCommit = (
   doc: Document,
@@ -33,18 +43,26 @@ export const waitForCommit = (
   }: WaitForCommitOptions,
   callback: (committed: HTMLElement | null) => void
 ) => {
+  const initialIds = new Set(initialExpectedOrder);
+
   let attempts = 0;
 
   const tick = () => {
-    const zoneEl = doc.querySelector(`[data-puck-dropzone="${targetZone}"]`);
+    const zoneEl = doc.querySelector(getZoneSelector(targetZone));
+
     const expected = getExpectedOrder();
+
     const committedItemId =
-      itemId ?? expected.find((id) => !initialExpectedOrder.includes(id));
+      itemId ?? expected.find((id) => !initialIds.has(id));
+
     const committed = committedItemId
       ? zoneEl?.querySelector<HTMLElement>(
-          `:scope > [data-puck-component="${committedItemId}"]:not([data-dnd-dragging]):not([data-dnd-placeholder])`
+          `:scope > ${getComponentSelector(
+            committedItemId
+          )}:not([data-dnd-dragging]):not([data-dnd-placeholder])`
         ) ?? null
       : null;
+
     const rendered = zoneEl
       ? Array.from(
           zoneEl.querySelectorAll(
@@ -52,16 +70,21 @@ export const waitForCommit = (
           )
         ).map((el) => el.getAttribute("data-puck-component"))
       : [];
-    const expectedRendered = expected.filter((id) => rendered.includes(id));
+
+    const renderedIds = new Set(rendered);
+
+    const expectedRendered = expected.filter((id) => renderedIds.has(id));
+
     const orderMatches =
       rendered.length === expectedRendered.length &&
       rendered.every((id, index) => id === expectedRendered[index]);
+
     const leftOtherZones = zones.every(
       (zone) =>
         zone === targetZone ||
         !committedItemId ||
         !doc.querySelector(
-          `[data-puck-dropzone="${zone}"] > [data-puck-component="${committedItemId}"]`
+          `${getZoneSelector(zone)} > ${getComponentSelector(committedItemId)}`
         )
     );
 

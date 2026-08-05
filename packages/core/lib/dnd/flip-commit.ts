@@ -4,6 +4,7 @@ import {
   prefersReducedMotion,
   waitForCommit,
 } from "./commit-animation";
+import { getZoneSelector } from "../dom-selectors";
 
 /**
  * Captures sibling positions before a static drop commits and returns a
@@ -29,7 +30,9 @@ export const prepareCommitFlip = ({
   const itemsSelector = Array.from(new Set(zones))
     .map(
       (zone) =>
-        `[data-puck-dropzone="${zone}"] > [data-puck-component]:not([data-dnd-dragging]):not([data-dnd-placeholder])`
+        `${getZoneSelector(
+          zone
+        )} > [data-puck-component]:not([data-dnd-dragging]):not([data-dnd-placeholder])`
     )
     .join(", ");
 
