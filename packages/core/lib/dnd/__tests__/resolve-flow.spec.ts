@@ -1,9 +1,6 @@
 import { resolveZoneFlow } from "../resolve-flow";
 
-const zoneWith = (
-  style: Partial<CSSStyleDeclaration>,
-  dir?: "ltr" | "rtl"
-) => {
+const zoneWith = (style: Partial<CSSStyleDeclaration>, dir?: "ltr" | "rtl") => {
   const el = document.createElement("div");
 
   if (dir) el.setAttribute("dir", dir);

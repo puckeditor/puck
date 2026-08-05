@@ -51,7 +51,9 @@ export type UseLinePlaceholderApi = {
  * @param zoneStore The Zustand store for managing dnd.
  * @returns An object with methods to manage the line placeholder.
  */
-export const useLinePlaceholder = (zoneStore: StoreApi<ZoneStore>): UseLinePlaceholderApi => {
+export const useLinePlaceholder = (
+  zoneStore: StoreApi<ZoneStore>
+): UseLinePlaceholderApi => {
   const appStore = useAppStoreApi();
   const scrollCleanup = useRef<(() => void) | null>(null);
 

@@ -428,13 +428,12 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
     );
 
     // contentIdsWithPreview counts a non-line preview as one injected
-    // placeholder, but a line placeholder injects nothing. So a zone 
+    // placeholder, but a line placeholder injects nothing. So a zone
     // is empty (and a valid drop target) when its only
-    // entry, if any, is that injected placeholder. 
+    // entry, if any, is that injected placeholder.
     // Otherwise the children within the zone should be the targets.
     const injectedPreviewCount = preview && !preview.linePlaceholder ? 1 : 0;
-    const isZoneEmpty =
-      contentIdsWithPreview.length === injectedPreviewCount;
+    const isZoneEmpty = contentIdsWithPreview.length === injectedPreviewCount;
     const isDropEnabled = isEnabled && isZoneEmpty;
 
     const zoneStore = useContext(ZoneStoreContext);

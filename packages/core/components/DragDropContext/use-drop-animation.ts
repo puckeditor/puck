@@ -8,7 +8,7 @@ import type { ZoneStore } from "../DropZone/context";
 
 /**
  * Builds the "glide" drop animation callback for components in the canvas/drawer.
- * 
+ *
  * @param zoneStore - The store for the drop zone where the item is being dropped.
  * @param id - The ID of the item being dropped. Provide it if using within created components.
  * @returns A function that can be used as the drop animation callback.

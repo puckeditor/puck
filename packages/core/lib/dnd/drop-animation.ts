@@ -198,7 +198,9 @@ export const runTargetDropAnimation = ({
 
       if (!itemId && committedId) {
         hideStyle.textContent += `
-          ${getComponentSelector(committedId)} { visibility: hidden !important; }
+          ${getComponentSelector(
+            committedId
+          )} { visibility: hidden !important; }
         `;
       }
 
