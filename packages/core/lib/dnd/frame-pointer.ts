@@ -24,6 +24,10 @@ export const getFramePointer = (targetEl: Element, position: Point): Point => {
   const rect = frameEl.getBoundingClientRect();
   const scale = rect.width / (frameEl.contentWindow?.innerWidth || 1);
 
+  if (!(scale > 0)) {
+    return position;
+  }
+
   return {
     x: (position.x - rect.left) / scale,
     y: (position.y - rect.top) / scale,
