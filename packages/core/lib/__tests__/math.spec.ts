@@ -25,10 +25,14 @@ describe("distanceToSegment", () => {
   });
 
   it("clamps beyond the segment endpoints", () => {
-    // Point is past the top of a horizontal segment.
+    // Point is past the right endpoint of a horizontal segment.
     expect(
-      getDistanceToSegment({ x: 5, y: 20 }, { x1: 0, y1: 0, x2: 10, y2: 0 })
-    ).toBe(20);
+      getDistanceToSegment({ x: 20, y: 0 }, { x1: 0, y1: 0, x2: 10, y2: 0 })
+    ).toBe(10);
+    // Point is past the right endpoint and offset on the cross axis.
+    expect(
+      getDistanceToSegment({ x: 13, y: 4 }, { x1: 0, y1: 0, x2: 10, y2: 0 })
+    ).toBe(5);
   });
 
   it("handles unordered endpoints", () => {
