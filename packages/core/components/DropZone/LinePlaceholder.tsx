@@ -111,6 +111,9 @@ export const LinePlaceholder = ({
         : zoneRect.top + px(zoneStyle.paddingTop);
     }
 
+    const borderLeft = px(zoneStyle.borderLeftWidth);
+    const borderTop = px(zoneStyle.borderTopWidth);
+
     if (horizontal) {
       // Vertical caret: centred at `main` on the x axis, spanning the
       // cross-axis height of the neighbouring item (or the zone's content box).
@@ -118,14 +121,15 @@ export const LinePlaceholder = ({
         top:
           (closest?.rect.top ?? zoneRect.top + px(zoneStyle.paddingTop)) -
           zoneRect.top +
-          zoneEl.scrollTop,
+          zoneEl.scrollTop -
+          borderTop,
         height:
           closest?.rect.height ??
           zoneRect.height -
             px(zoneStyle.paddingTop) -
             px(zoneStyle.paddingBottom),
         left: clamp(
-          main - zoneRect.left + zoneEl.scrollLeft,
+          main - zoneRect.left + zoneEl.scrollLeft - borderLeft,
           0,
           zoneEl.scrollWidth
         ),
@@ -139,14 +143,15 @@ export const LinePlaceholder = ({
         left:
           (closest?.rect.left ?? zoneRect.left + px(zoneStyle.paddingLeft)) -
           zoneRect.left +
-          zoneEl.scrollLeft,
+          zoneEl.scrollLeft -
+          borderLeft,
         width:
           closest?.rect.width ??
           zoneRect.width -
             px(zoneStyle.paddingLeft) -
             px(zoneStyle.paddingRight),
         top: clamp(
-          main - zoneRect.top + zoneEl.scrollTop,
+          main - zoneRect.top + zoneEl.scrollTop - borderTop,
           0,
           zoneEl.scrollHeight
         ),
