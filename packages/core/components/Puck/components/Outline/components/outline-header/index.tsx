@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import { getClassNameFactory } from "../../../../../../lib";
 import { useMessage } from "../../../../../../lib/use-message";
+import { Heading } from "../../../../../Heading";
 
 import styles from "./styles.module.css";
 
@@ -22,7 +23,9 @@ const OutlineHeader = ({
 
   return (
     <div className={getClassName()}>
-      <div className={getClassName("title")}>{outlineHeaderMsg ?? title}</div>
+      <Heading rank="2" size="xs">
+        {outlineHeaderMsg ?? title}
+      </Heading>
       {children}
     </div>
   );

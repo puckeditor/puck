@@ -5,7 +5,7 @@
 
   --_puck-outline-color-text: var(
     --puck-outline-color-text,
-    var(--puck-color-text-secondary)
+    var(--puck-color-text-primary)
   );
   --_puck-outline-border-width: var(
     --puck-outline-border-width,
@@ -63,7 +63,7 @@
   /* Caret slot + the row title's inline margin + one border width: lines
      zone titles and helpers up with row titles at the same depth */
   --_puck-outline-label-indent: calc(
-    var(--_puck-outline-caret-slot) + var(--puck-space-1) +
+    var(--_puck-outline-caret-slot) + var(--puck-space-2) +
       var(--_puck-outline-border-width)
   );
 }
