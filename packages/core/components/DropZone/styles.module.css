@@ -43,7 +43,7 @@
 .DropZone-linePlaceholder {
   background: var(
     --puck-slot-component-color-placeholder,
-    var(--puck-color-insertion-indicator)
+    var(--puck-color-line-placeholder)
   );
   /* Size follows --puck-border-width-focus (see LinePlaceholder.tsx) */
   border-radius: calc(var(--puck-border-width-focus, 2px) / 2);
