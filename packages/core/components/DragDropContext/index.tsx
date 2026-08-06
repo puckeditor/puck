@@ -608,24 +608,15 @@ const DragDropContextClient = ({
             if (item) {
               const originZone = initialSelector.current.zone;
               const isReparenting = originZone !== targetZone;
-              let isLinePlaceholder =
+              const isLinePlaceholder =
                 resolveDndMode(behavior, {
                   isDraggingBetweenSlots: isReparenting,
                 }) === "static";
 
               if (isLinePlaceholder) {
-                const linePreviewIndex = getLinePlaceholderTargetIndex(
-                  targetZone,
-                  manager
-                );
-
-                if (linePreviewIndex !== null) {
-                  targetIndex = linePreviewIndex;
-                } else {
-                  // No gap resolved: keep the fluid `targetIndex` and drop the
-                  // line flag so onDragEnd does not offset it a second time.
-                  isLinePlaceholder = false;
-                }
+                targetIndex =
+                  getLinePlaceholderTargetIndex(targetZone, manager) ??
+                  targetIndex;
               }
 
               setLinePlaceholderActive(isLinePlaceholder);
