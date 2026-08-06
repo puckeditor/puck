@@ -45,8 +45,8 @@
     --puck-slot-component-color-placeholder,
     var(--puck-color-line-placeholder)
   );
-  /* Size follows --puck-border-width-focus (see LinePlaceholder.tsx) */
-  border-radius: calc(var(--puck-border-width-focus, 2px) / 2);
+  /* Size follows --puck-line-placeholder-width (see LinePlaceholder.tsx) */
+  border-radius: calc(var(--puck-line-placeholder-width, 2px) / 2);
   pointer-events: none;
   position: absolute;
   z-index: 1;

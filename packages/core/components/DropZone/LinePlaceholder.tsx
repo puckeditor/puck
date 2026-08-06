@@ -12,7 +12,7 @@ import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
-const LINE_SIZE = "var(--puck-border-width-focus, 2px)";
+const LINE_SIZE = "var(--puck-line-placeholder-width, 2px)";
 
 /**
  * Renders the line preview

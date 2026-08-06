@@ -116,5 +116,6 @@
     --puck-user-sidebar-left-width: var(--puck-sidebar-width);
     --puck-user-sidebar-right-width: var(--puck-sidebar-width);
     --puck-slot-min-empty-height: 128px;
+    --puck-line-placeholder-width: 2px;
   }
 }
