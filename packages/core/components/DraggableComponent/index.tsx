@@ -54,12 +54,15 @@ const DefaultActionBar = ({
   label,
   children,
   parentAction,
+  dragHandle,
 }: {
   label: string | undefined;
   children: ReactNode;
   parentAction: ReactNode;
+  dragHandle?: ReactNode;
 }) => (
   <ActionBar>
+    {dragHandle && <ActionBar.Group>{dragHandle}</ActionBar.Group>}
     <ActionBar.Group>
       {parentAction}
       {label && <ActionBar.Label label={label} />}
@@ -127,6 +130,7 @@ export const DraggableComponent = ({
     (s) => s._experimentalFullScreenCanvas
   );
   const overrides = useAppStore((s) => s.overrides);
+  const enableDragHandle = useAppStore((s) => s.dnd?.enableDragHandle ?? false);
   const dispatch = useAppStore((s) => s.dispatch);
   const iframe = useAppStore((s) => s.iframe);
   const lastMeasureRef = useRef(0);
@@ -190,6 +194,7 @@ export const DraggableComponent = ({
   const {
     ref: sortableRef,
     isDragging: thisIsDragging,
+    handleRef,
     sortable,
   } = useSortable<ComponentDndData>({
     id,
@@ -709,6 +714,7 @@ export const DraggableComponent = ({
   }, [ref, userDragAxis, autoDragAxis]);
 
   const selectParentLabel = useMessage("action-selectparent");
+  const dragLabel = useMessage("action-drag");
   const duplicateLabel = useMessage("action-duplicate");
   const deleteLabel = useMessage("action-delete");
 
@@ -721,6 +727,14 @@ export const DraggableComponent = ({
         </ActionBar.Action>
       ),
     [ctx?.areaId, selectParentLabel]
+  );
+
+  const dragHandle = useMemo(
+    () =>
+      enableDragHandle && permissions.drag ? (
+        <ActionBar.DragHandle ref={handleRef} label={dragLabel} />
+      ) : undefined,
+    [enableDragHandle, permissions.drag, handleRef, dragLabel]
   );
 
   const nextContextValue = useMemo<DropZoneContext>(
@@ -790,6 +804,7 @@ export const DraggableComponent = ({
                 <CustomActionBar
                   parentAction={parentAction}
                   label={DEBUG ? id : label}
+                  dragHandle={dragHandle}
                 >
                   {richText && (
                     <>

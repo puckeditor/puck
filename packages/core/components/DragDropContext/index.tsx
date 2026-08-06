@@ -307,7 +307,13 @@ const DragDropContextClient = ({
     ),
   ]);
 
-  const sensors = useSensors();
+  // Allow dragging from the component body or a registered handle (action bar).
+  const sensors = useSensors({
+    activatorElements: (source) =>
+      source.handle && source.handle !== source.element
+        ? [source.element, source.handle]
+        : [source.element],
+  });
 
   const [dragListeners, setDragListeners] = useState<DragCbs>({});
 
