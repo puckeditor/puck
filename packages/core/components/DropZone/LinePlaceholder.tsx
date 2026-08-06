@@ -82,6 +82,11 @@ export const LinePlaceholder = ({
       return px(styleOf(el)?.[side]);
     };
 
+    const borderLeft = px(zoneStyle.borderLeftWidth);
+    const borderTop = px(zoneStyle.borderTopWidth);
+    const borderRight = px(zoneStyle.borderRightWidth);
+    const borderBottom = px(zoneStyle.borderBottomWidth);
+
     // The caret's position along the main axis, in viewport coordinates.
     let main: number;
 
@@ -101,31 +106,31 @@ export const LinePlaceholder = ({
         end(prev.rect) +
         forward * (Math.max(marginOf(prev.el, "end"), gap) / 2);
     } else {
-      // Empty zone: start after the zone's leading padding.
+      // Empty zone: start after the zone's leading border and padding.
       main = horizontal
         ? reversed
-          ? zoneRect.right - px(zoneStyle.paddingRight)
-          : zoneRect.left + px(zoneStyle.paddingLeft)
+          ? zoneRect.right - borderRight - px(zoneStyle.paddingRight)
+          : zoneRect.left + borderLeft + px(zoneStyle.paddingLeft)
         : reversed
-        ? zoneRect.bottom - px(zoneStyle.paddingBottom)
-        : zoneRect.top + px(zoneStyle.paddingTop);
+        ? zoneRect.bottom - borderBottom - px(zoneStyle.paddingBottom)
+        : zoneRect.top + borderTop + px(zoneStyle.paddingTop);
     }
-
-    const borderLeft = px(zoneStyle.borderLeftWidth);
-    const borderTop = px(zoneStyle.borderTopWidth);
 
     if (horizontal) {
       // Vertical caret: centred at `main` on the x axis, spanning the
       // cross-axis height of the neighbouring item (or the zone's content box).
       setStyle({
         top:
-          (closest?.rect.top ?? zoneRect.top + px(zoneStyle.paddingTop)) -
+          (closest?.rect.top ??
+            zoneRect.top + borderTop + px(zoneStyle.paddingTop)) -
           zoneRect.top +
           zoneEl.scrollTop -
           borderTop,
         height:
           closest?.rect.height ??
           zoneRect.height -
+            borderTop -
+            borderBottom -
             px(zoneStyle.paddingTop) -
             px(zoneStyle.paddingBottom),
         left: clamp(
@@ -141,13 +146,16 @@ export const LinePlaceholder = ({
       // cross-axis width.
       setStyle({
         left:
-          (closest?.rect.left ?? zoneRect.left + px(zoneStyle.paddingLeft)) -
+          (closest?.rect.left ??
+            zoneRect.left + borderLeft + px(zoneStyle.paddingLeft)) -
           zoneRect.left +
           zoneEl.scrollLeft -
           borderLeft,
         width:
           closest?.rect.width ??
           zoneRect.width -
+            borderLeft -
+            borderRight -
             px(zoneStyle.paddingLeft) -
             px(zoneStyle.paddingRight),
         top: clamp(
