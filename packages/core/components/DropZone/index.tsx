@@ -56,6 +56,7 @@ import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
+import { getComponentLabel } from "../../lib/data/get-component-label";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -134,6 +135,10 @@ const DropZoneChild = ({
     useShallow((s) => s.state.indexes.nodes[componentId]?.data.readOnly)
   );
 
+  const nodePuckMetadata = useAppStore(
+    useShallow((s) => s.state.indexes.nodes[componentId]?.data.__puck)
+  );
+
   const appStore = useAppStoreApi();
 
   const item = useMemo(() => {
@@ -141,6 +146,7 @@ const DropZoneChild = ({
       const expanded = expandNode({
         type: nodeType,
         props: nodeProps,
+        ...(nodePuckMetadata ? { __puck: nodePuckMetadata } : {}),
       }) as ComponentData;
 
       return expanded;
@@ -158,7 +164,14 @@ const DropZoneChild = ({
     }
 
     return null;
-  }, [appStore, componentId, zoneCompound, nodeType, nodeProps]);
+  }, [
+    appStore,
+    componentId,
+    zoneCompound,
+    nodeType,
+    nodeProps,
+    nodePuckMetadata,
+  ]);
 
   const componentConfig = useAppStore((s) =>
     item?.type ? s.config.components[item.type] : null
@@ -187,7 +200,9 @@ const DropZoneChild = ({
     type: item?.type?.toString() ?? "",
   });
 
-  let label = componentConfig?.label ?? item?.type.toString() ?? componentLabel;
+  const config = useAppStore((s) => s.config);
+
+  const label = item ? getComponentLabel(item, config) : componentLabel;
 
   const defaultsProps = useMemo(
     () => ({
@@ -203,8 +218,6 @@ const DropZoneChild = ({
     () => ({ type: item?.type ?? nodeType, props: defaultsProps }),
     [item?.type, nodeType, defaultsProps]
   );
-
-  const config = useAppStore((s) => s.config);
 
   const plugins = useAppStore((s) => s.plugins);
   const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
