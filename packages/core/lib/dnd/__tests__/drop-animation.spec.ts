@@ -1,3 +1,10 @@
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+(globalThis as any).ResizeObserver = ResizeObserverMock;
+
 import { runTargetDropAnimation } from "../drop-animation";
 
 jest.mock("../../get-frame", () => ({
@@ -74,7 +81,8 @@ describe("runTargetDropAnimation", () => {
     expect(copy).not.toBeNull();
     expect(copy?.animate).toHaveBeenCalledWith(
       {
-        translate: ["0px 0px 0", "0px -300px 0"],
+        left: ["0px", "0px"],
+        top: ["300px", "0px"],
         width: ["100px", "100px"],
         height: ["100px", "100px"],
       },

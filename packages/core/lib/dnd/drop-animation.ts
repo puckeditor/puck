@@ -1,4 +1,9 @@
 import type { DropAnimationFunction } from "@dnd-kit/dom";
+import {
+  DOMRectangle,
+  getComputedStyles,
+  parseTranslate,
+} from "@dnd-kit/dom/utilities";
 import { getFrame } from "../get-frame";
 import {
   COMMIT_ANIMATION,
@@ -13,17 +18,6 @@ type TargetDrop = {
   itemId?: string;
   targetZone: string;
   getExpectedOrder: () => string[];
-};
-
-const parseTranslateValue = (value: string) => {
-  if (!value || value === "none") return null;
-
-  const [x, y = "0px"] = value.split(" ");
-  const parsed = { x: parseFloat(x), y: parseFloat(y) };
-
-  if (isNaN(parsed.x) || isNaN(parsed.y)) return null;
-
-  return parsed;
 };
 
 const getFrameTransform = (element: Element, boundary: Element | null) => {
@@ -68,8 +62,7 @@ const getRectInDocument = (element: HTMLElement, doc: Document) => {
 };
 
 /**
- * Matches dnd-kit's default behavior when a drag needs to return to its
- * source placeholder, such as a canceled or invalid drop.
+ * Runs the `"fluid"` drop animation.
  */
 export const runFallbackDropAnimation: DropAnimationFunction = ({
   element,
@@ -80,20 +73,21 @@ export const runFallbackDropAnimation: DropAnimationFunction = ({
   if (prefersReducedMotion(feedbackElement.ownerDocument)) return;
 
   const target = placeholder ?? element;
-  const currentRect = feedbackElement.getBoundingClientRect();
-  const targetRect = target.getBoundingClientRect();
-  const finalPosition = {
-    x: targetRect.left + (targetRect.width - currentRect.width) / 2,
-    y: targetRect.top + (targetRect.height - currentRect.height) / 2,
-  };
-  const win = feedbackElement.ownerDocument.defaultView ?? window;
+
+  // Skip the (costly) frame transform when both elements live in the same
+  // document, matching dnd-kit's default.
+  const sameFrame = feedbackElement.ownerDocument === target.ownerDocument;
+  const options = { frameTransform: sameFrame ? null : undefined };
+  const current = new DOMRectangle(feedbackElement, options);
+  const final = new DOMRectangle(target, options);
+
   const currentTranslate =
-    parseTranslateValue(
-      win.getComputedStyle(feedbackElement as HTMLElement).translate
-    ) ?? translate;
+    parseTranslate(getComputedStyles(feedbackElement).translate) ?? translate;
+
+  // Centre-align the feedback onto the target, matching dnd-kit's default.
   const finalTranslate = {
-    x: currentTranslate.x + finalPosition.x - currentRect.left,
-    y: currentTranslate.y + finalPosition.y - currentRect.top,
+    x: currentTranslate.x - (current.center.x - final.center.x),
+    y: currentTranslate.y - (current.center.y - final.center.y),
   };
 
   feedbackElement.setAttribute("data-dnd-dropping", "");
@@ -115,6 +109,8 @@ export const runFallbackDropAnimation: DropAnimationFunction = ({
 };
 
 /**
+ * Runs the `"static"` drop animation.
+ *
  * Commits a valid drop immediately, then glides a visual copy from the
  * pointer to the final rendered item in the canvas.
  */
@@ -206,13 +202,16 @@ export const runTargetDropAnimation = ({
 
       const final = getRectInDocument(committed, overlayDoc);
 
+      // Glide with `left`/`top` rather than a `translate` keyframe. WebKit runs
+      // accelerated properties (translate) on the compositor but width/height
+      // on the main thread, and the post-drop React commit blocks the main
+      // thread, so on Safari the translate races ahead of the width changes and
+      // the still-narrow clone swept sideways before the size caught up.
       copy
         .animate(
           {
-            translate: [
-              "0px 0px 0",
-              `${final.left - rect.left}px ${final.top - rect.top}px 0`,
-            ],
+            left: [`${rect.left}px`, `${final.left}px`],
+            top: [`${rect.top}px`, `${final.top}px`],
             width: [`${rect.width}px`, `${final.width}px`],
             height: [`${rect.height}px`, `${final.height}px`],
           },
