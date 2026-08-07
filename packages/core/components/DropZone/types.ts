@@ -1,7 +1,12 @@
-import { CSSProperties, ElementType, Ref } from "react";
+import {
+  ComponentPropsWithoutRef,
+  CSSProperties,
+  ElementType,
+  Ref,
+} from "react";
 import { DragAxis } from "../../types";
 
-export type DropZoneProps = {
+export type DropZoneOwnProps = {
   zone: string;
   allow?: string[];
   disallow?: string[];
@@ -9,6 +14,18 @@ export type DropZoneProps = {
   minEmptyHeight?: CSSProperties["minHeight"] | number;
   className?: string;
   collisionAxis?: DragAxis;
-  as?: ElementType;
   ref?: Ref<any>;
 };
+
+/**
+ * Props for a slot or DropZone.
+ *
+ * Any additional props not consumed by Puck are forwarded to the element or
+ * component provided via `as` (defaulting to a `div`), typed against it.
+ */
+export type DropZoneProps<T extends ElementType = "div"> = DropZoneOwnProps & {
+  as?: T;
+} & Omit<
+    ComponentPropsWithoutRef<T>,
+    keyof DropZoneOwnProps | "as" | "content"
+  >;

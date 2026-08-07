@@ -301,7 +301,10 @@ const DropZoneChild = ({
 
 const DropZoneChildMemo = memo(DropZoneChild);
 
-export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
+// `content` is injected by the slot transform but unused by DropZoneEdit
+type DropZoneEditProps = DropZoneProps & { content?: unknown };
+
+export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneEditProps>(
   function DropZoneEditInternal(
     {
       zone,
@@ -312,6 +315,8 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       minEmptyHeight: userMinEmptyHeight = "128px",
       collisionAxis,
       as,
+      content: _content,
+      ...rest
     },
     userRef
   ) {
@@ -490,6 +495,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
 
     return (
       <El
+        {...rest}
         className={`${getClassName({
           isRootZone,
           hoveringOverArea,
@@ -598,7 +604,20 @@ export const DropZoneRenderPure = (props: DropZoneProps) => (
 );
 
 const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
-  function DropZoneRenderInternal({ className, style, zone, as }, ref) {
+  function DropZoneRenderInternal(
+    {
+      className,
+      style,
+      zone,
+      as,
+      allow,
+      disallow,
+      collisionAxis,
+      minEmptyHeight,
+      ...rest
+    },
+    ref
+  ) {
     const ctx = useContext(dropZoneContext);
     const { areaId = "root" } = ctx || {};
     const { config, data, metadata } = useContext(renderContext);
@@ -626,7 +645,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       content = setupZone(data, zoneCompound).zones[zoneCompound];
     }
     return (
-      <El className={className} style={style} ref={ref}>
+      <El {...rest} className={className} style={style} ref={ref}>
         {content.map((item) => {
           const Component = config.components[item.type];
           if (Component) {
