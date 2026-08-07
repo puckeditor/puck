@@ -3,6 +3,12 @@
   pointer-events: auto !important;
 }
 
+/* Disable portals while dragging to avoid mis-targeting them */
+[data-puck-entry][data-puck-dragging] [data-puck-overlay-portal],
+[data-puck-entry][data-puck-dragging] [data-puck-overlay-portal] * {
+  pointer-events: none !important;
+}
+
 /* Render the outline only in edit mode */
 [data-puck-entry][data-puck-preview-mode="edit"]
   [data-puck-overlay-portal]:hover {
