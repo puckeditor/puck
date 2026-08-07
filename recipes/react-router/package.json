@@ -11,15 +11,15 @@
   },
   "dependencies": {
     "@puckeditor/core": "*",
-    "@react-router/node": "^7.5.3",
-    "@react-router/serve": "^7.5.3",
+    "@react-router/node": "^7.18.0",
+    "@react-router/serve": "^7.18.0",
     "isbot": "^5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.5.3"
+    "react-router": "^7.18.0"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.5.3",
+    "@react-router/dev": "^7.18.0",
     "@types/node": "^20",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
