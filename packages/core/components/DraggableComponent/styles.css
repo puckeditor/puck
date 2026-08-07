@@ -47,6 +47,10 @@
   transition: none !important;
 }
 
+[data-puck-line-drag] [data-dnd-dragging][data-puck-component] {
+  opacity: 0.9 !important;
+}
+
 [data-dnd-dragging][data-puck-component] {
   pointer-events: none !important;
   outline: var(
