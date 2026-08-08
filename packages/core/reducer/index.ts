@@ -16,6 +16,7 @@ import {
   registerZoneAction,
   unregisterZoneAction,
 } from "./actions/register-zone";
+import { setVisibilityAction } from "./actions/set-visibility";
 import { setDataAction } from "./actions/set-data";
 import { setUiAction } from "./actions/set-ui";
 import { makeStatePublic } from "../lib/data/make-state-public";
@@ -119,6 +120,10 @@ export function createReducer<UserData extends Data>({
 
       if (action.type === "setUi") {
         return setUiAction(state, action);
+      }
+
+      if (action.type === "setVisibility") {
+        return setVisibilityAction(state, action, appStore);
       }
 
       return state;

@@ -148,3 +148,12 @@
 .Layer--isDragSource > .Layer-zones {
   opacity: 0.5;
 }
+
+/* Hidden outline items */
+.Layer--isHidden > .Layer-inner .Layer-title {
+  opacity: 0.45;
+}
+
+.Layer--isHidden > .Layer-inner .Layer-name {
+  text-decoration: line-through;
+}
