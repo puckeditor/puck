@@ -2,12 +2,16 @@ import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { WithLayout, withLayout } from "../../components/Layout";
 import { Section } from "../../components/Section";
+import { Components } from "../../types";
 
 export type RichTextProps = WithLayout<{
   richtext?: string;
 }>;
 
-const RichTextInner: ComponentConfig<RichTextProps> = {
+const RichTextInner: ComponentConfig<{
+  props: RichTextProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     richtext: {
       type: "richtext",

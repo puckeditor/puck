@@ -1,6 +1,7 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { Button as _Button } from "@/core/components/Button";
+import { Components } from "../../types";
 
 export type ButtonProps = {
   label: string;
@@ -8,7 +9,10 @@ export type ButtonProps = {
   variant: "primary" | "secondary";
 };
 
-export const Button: ComponentConfig<ButtonProps> = {
+export const Button: ComponentConfig<{
+  props: ButtonProps;
+  availableComponents: keyof Components;
+}> = {
   label: "Button",
   fields: {
     label: {

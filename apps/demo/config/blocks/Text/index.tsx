@@ -4,6 +4,7 @@ import { ALargeSmall, AlignLeft } from "lucide-react";
 import { ComponentConfig } from "@/core/types";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { Components } from "../../types";
 
 export type TextProps = WithLayout<{
   align: "left" | "center" | "right";
@@ -14,7 +15,10 @@ export type TextProps = WithLayout<{
   maxWidth?: string;
 }>;
 
-const TextInner: ComponentConfig<TextProps> = {
+const TextInner: ComponentConfig<{
+  props: TextProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     text: {
       type: "textarea",
