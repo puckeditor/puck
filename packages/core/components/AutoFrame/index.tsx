@@ -105,6 +105,7 @@ const styleElHash = (el: HTMLElement): string => {
   }
   const attrs = Array.from(el.attributes)
     .map((a) => `${a.name}=${a.value}`)
+    .sort()
     .join(",");
   return `style:${fastHash(el.innerHTML)}:${attrs}`;
 };
@@ -222,12 +223,13 @@ const CopyHostStyles = ({
         return;
       }
 
+      hashes[elHash] = true;
+
       const mirror = await mirrorEl(el);
       if (!mirror) {
+        delete hashes[elHash];
         return;
       }
-
-      hashes[elHash] = true;
 
       doc.head.append(mirror as HTMLElement);
       elements.push({ original: el, mirror: mirror });
@@ -279,7 +281,7 @@ const CopyHostStyles = ({
       toAdd.forEach((el) => addEl(el));
     };
 
-    const scheduledFlush = () => {
+    const scheduleFlush = () => {
       if (flushTimer === null) {
         flushTimer = defer(flushPending);
       }
@@ -300,7 +302,7 @@ const CopyHostStyles = ({
 
               if (el && shouldMirrorStyleElement(el)) {
                 pendingAdded.push(el);
-                scheduledFlush();
+                scheduleFlush();
               }
             }
           });
@@ -317,7 +319,7 @@ const CopyHostStyles = ({
 
               if (el && el.matches(styleSelector) && !isPuckStyleElement(el)) {
                 pendingRemoved.push(el);
-                scheduledFlush();
+                scheduleFlush();
               }
             }
           });
@@ -372,11 +374,15 @@ const CopyHostStyles = ({
           return;
         }
 
+        hashes[elHash] = true;
+
         const mirror = await mirrorEl(styleNode);
 
-        if (!mirror) return;
+        if (!mirror) {
+          delete hashes[elHash];
+          return;
+        }
 
-        hashes[elHash] = true;
         elements.push({ original: styleNode, mirror });
 
         return mirror;
