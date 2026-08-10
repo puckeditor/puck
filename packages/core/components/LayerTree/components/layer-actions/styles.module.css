@@ -7,11 +7,12 @@
   display: flex;
   visibility: hidden;
   flex-shrink: 0;
-  gap: var(--puck-space-1);
   color: var(--_puck-outline-color-text);
   /* Set to the row's bg by the Layer hover/selected rules so the sticky
      actions cover the text scrolling beneath them */
   background: var(--_puck-outline-actions-color-bg);
+  border-top-right-radius: var(--_puck-outline-radius);
+  border-bottom-right-radius: var(--_puck-outline-radius);
 }
 
 .LayerActions--visible {

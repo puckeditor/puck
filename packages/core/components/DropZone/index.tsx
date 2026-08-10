@@ -49,6 +49,7 @@ import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
 import { useMessage } from "../../lib/use-message";
+import { getComponentLabel } from "../../lib/data/get-component-label";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
@@ -56,7 +57,7 @@ import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
-import { getComponentLabel } from "../../lib/data/get-component-label";
+import { LinePlaceholder } from "./LinePlaceholder";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -439,11 +440,14 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       zoneCompound
     );
 
-    const isDropEnabled =
-      isEnabled &&
-      (preview
-        ? contentIdsWithPreview.length === 1
-        : contentIdsWithPreview.length === 0);
+    // contentIdsWithPreview counts a non-line preview as one injected
+    // placeholder, but a line placeholder injects nothing. So a zone
+    // is empty (and a valid drop target) when its only
+    // entry, if any, is that injected placeholder.
+    // Otherwise the children within the zone should be the targets.
+    const injectedPreviewCount = preview && !preview.linePlaceholder ? 1 : 0;
+    const isZoneEmpty = contentIdsWithPreview.length === injectedPreviewCount;
+    const isDropEnabled = isEnabled && isZoneEmpty;
 
     const zoneStore = useContext(ZoneStoreContext);
 
@@ -549,6 +553,13 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
               inDroppableZone={targetAccepted}
             />
           ))
+        )}
+        {preview?.linePlaceholder && (
+          <LinePlaceholder
+            zoneRef={ref}
+            contentIds={contentIds}
+            index={preview.index}
+          />
         )}
       </El>
     );

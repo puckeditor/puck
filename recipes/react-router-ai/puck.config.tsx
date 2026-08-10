@@ -1,8 +1,10 @@
-import type { Config } from "@puckeditor/core";
+import type { Config, Data } from "@puckeditor/core";
 
-type Props = {
+export type Props = {
   HeadingBlock: { title: string };
 };
+
+export type UserData = Data<Props>;
 
 export const config: Config<Props> = {
   components: {

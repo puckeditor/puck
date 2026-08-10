@@ -1,4 +1,6 @@
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
+import mergeClassNames from "../../../../lib/merge-class-names";
+import { rootAreaId } from "../../../../lib/root-droppable-id";
 import { useMessage } from "../../../../lib/use-message";
 
 import useOutlineDropZone from "../../lib/dnd/use-outline-drop-zone";
@@ -23,10 +25,15 @@ export const EmptyZonePlaceholder = ({
   });
 
   const noItemsMsg = useMessage("outline-empty");
+  const [parentId] = zoneCompound.split(":");
+  const isRoot = parentId === rootAreaId;
 
   return (
     <li
-      className={getClassName("helper")}
+      className={mergeClassNames(
+        getClassName("helper"),
+        isRoot ? getClassName("helperRoot") : undefined
+      )}
       data-puck-drop-target={isDropTarget || undefined}
       ref={ref}
     >

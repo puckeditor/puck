@@ -27,6 +27,11 @@ const config: Config = {
       resolveData: childResolveData,
       render: () => <div />,
     },
+    StaticChild: {
+      fields: { label: { type: "text" } },
+      resolveData: async (data) => data, // Return the same data to simulate a no-op resolve
+      render: () => <div />,
+    },
   },
 };
 
@@ -74,6 +79,13 @@ function resetStores() {
                 props: {
                   id: "Parent-2",
                   items: [],
+                },
+              },
+              {
+                type: "StaticChild",
+                props: {
+                  id: "Static-1",
+                  label: "old",
                 },
               },
             ],
@@ -144,5 +156,60 @@ describe("resolveAndReplaceData", () => {
     // Then: ---------------
     expect(consoleWarnMock).toHaveBeenCalledTimes(1);
     consoleWarnMock.mockRestore();
+  });
+
+  describe("writeThrough", () => {
+    const editedStaticChild = {
+      type: "StaticChild",
+      props: { id: "Static-1", label: "new" },
+    };
+
+    const getLabel = () =>
+      appStore.getState().state.indexes.nodes["Static-1"].data.props.label;
+
+    it("commits the edit when writeThrough is true even though the resolver reports no change", async () => {
+      // When: ---------------
+      await act(() =>
+        resolveAndReplaceData(
+          editedStaticChild, // Resolver returns same data, so didChange === false, keeping `old` in store.
+          appStore.getState,
+          "replace",
+          true
+        )
+      );
+
+      // Then: the edit is written through to the store
+      expect(getLabel()).toBe("new");
+    });
+
+    it("does not commit the edit when writeThrough is false and the resolver reports no change", async () => {
+      // When: ---------------
+      await act(() =>
+        resolveAndReplaceData(
+          editedStaticChild,
+          appStore.getState,
+          "replace",
+          false
+        )
+      );
+
+      // Then: the no-op resolve is skipped and the store keeps the original data.
+      // (This passing also proves didChange was false for the case above.)
+      expect(getLabel()).toBe("old");
+    });
+
+    it("still commits when the resolver does change the data, regardless of writeThrough", async () => {
+      // Given: Child's resolver always rewrites props (didChange === true)
+      // When: writeThrough is false
+      await act(() =>
+        resolveAndReplaceData(child1, appStore.getState, "replace", false)
+      );
+
+      // Then: the resolved data is committed
+      expect(
+        appStore.getState().state.indexes.nodes["Child-1"].data.props
+          .resolvedProp
+      ).toBe("replace");
+    });
   });
 });
