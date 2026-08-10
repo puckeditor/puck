@@ -191,17 +191,18 @@ function AutoFieldInternal<
 
   const fieldKey = field.type === "custom" ? field.key : undefined;
 
-  let FieldComponent: React.ComponentType<any> = useMemo(() => {
-    // if there's an override provided for custom fields, fallback to standard behavior
-    if (field.type === "custom" && !render[field.type]) {
-      if (!field.render) {
-        return null;
+  let FieldComponent: React.ComponentType<any> | null | undefined =
+    useMemo(() => {
+      // if there's an override provided for custom fields, fallback to standard behavior
+      if (field.type === "custom" && !render[field.type]) {
+        if (!field.render) {
+          return null;
+        }
+        return field.render;
+      } else if (field.type !== "slot") {
+        return render[field.type];
       }
-      return field.render as any;
-    } else if (field.type !== "slot") {
-      return render[field.type] as (props: FieldProps) => ReactElement;
-    }
-  }, [field.type, fieldKey, render]);
+    }, [field.type, fieldKey, render]);
 
   const { visible = true } = props.field;
 
