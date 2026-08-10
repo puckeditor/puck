@@ -25,6 +25,7 @@ import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
 import { setDeep } from "../../lib/data/set-deep";
+import { isFieldVisible } from "../../lib/fields/is-field-visible";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
@@ -204,13 +205,7 @@ function AutoFieldInternal<
       }
     }, [field.type, fieldKey, render]);
 
-  const { visible = true } = props.field;
-
-  if (!visible) {
-    return null;
-  }
-
-  if (field.type === "slot") {
+  if (!isFieldVisible(overrides.fieldTypes, field)) {
     return null;
   }
 
