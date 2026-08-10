@@ -8,6 +8,10 @@
   border: var(--_puck-outline-border-width) solid transparent;
 }
 
+.LayerTree-helperRoot {
+  padding-inline-start: var(--puck-space-3);
+}
+
 /* Drag and drop: hosts a DropLine while targeted */
 .LayerTree-helper[data-puck-drop-target] {
   position: relative;

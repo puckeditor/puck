@@ -1,11 +1,21 @@
 import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { DragIcon } from "../DragIcon";
-import { ReactElement, ReactNode, Ref, useMemo, useState } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  Ref,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import { generateId } from "../../lib/generate-id";
 import { useDragListener } from "../DragDropContext";
 import { useSafeId } from "../../lib/use-safe-id";
 import { useDraggable, useDroppable } from "@dnd-kit/react";
+import { Feedback } from "@dnd-kit/dom";
+import { ZoneStoreContext } from "../DropZone/context";
+import { useDropAnimation } from "../DragDropContext/use-drop-animation";
 
 const getClassName = getClassNameFactory("Drawer", styles);
 const getClassNameItem = getClassNameFactory("DrawerItem", styles);
@@ -72,11 +82,15 @@ const DrawerItemDraggable = ({
   id: string;
   isDragDisabled?: boolean;
 }) => {
+  const zoneStore = useContext(ZoneStoreContext);
+  const dropAnimation = useDropAnimation(zoneStore);
+
   const { ref } = useDraggable({
     id,
     data: { componentType: name },
     disabled: isDragDisabled,
     type: "drawer",
+    plugins: [Feedback.configure({ dropAnimation })],
   });
 
   return (

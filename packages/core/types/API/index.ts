@@ -22,9 +22,19 @@ export type IframeConfig = {
   syncHostStyles?: boolean;
 };
 
+export type DndBehavior = "auto" | "fluid" | "static";
+
 export type DndConfig = {
   disableAutoScroll?: boolean;
   disableOutlineDrag?: boolean;
+  /**
+   * - `auto` (default): fluid drags within a slot, switching to a static
+   *   line placeholder when dragging between slots or inserting a new item
+   * - `fluid`: always animate sibling items during a drag
+   * - `static`: always show a line placeholder during a drag, only
+   *   animating sibling items on drop
+   */
+  behavior?: DndBehavior;
 };
 
 export type OnAction<UserData extends Data = Data> = (

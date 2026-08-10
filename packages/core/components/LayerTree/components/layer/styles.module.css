@@ -121,7 +121,7 @@
   }
 }
 
-.Layer--isSelected {
+.Layer--isSelected > .Layer-inner {
   border-color: var(
     --puck-outline-color-border-selected,
     var(--puck-color-selection-border)

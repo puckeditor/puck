@@ -1,5 +1,5 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { Config } from "../../../types";
+import { Config, Plugin } from "../../../types";
 import "@testing-library/jest-dom";
 import {
   PUCK_STYLE_ID_ATTRIBUTE,
@@ -87,7 +87,7 @@ describe("Puck", () => {
   const componentBRender = jest.fn(() => null);
   const rootRender = jest.fn(() => null);
 
-  const config: Config = {
+  const config: Config<{}> = {
     root: {
       render: ({ children }) => {
         rootRender();
@@ -147,6 +147,58 @@ describe("Puck", () => {
     const { appStore } = getInternal();
 
     expect(appStore.getState()).toMatchSnapshot();
+  });
+
+  it("creates a new store every time it is mounted", async () => {
+    const { container } = render(
+      <>
+        <Puck config={config} data={{}} iframe={{ enabled: false }} />
+        <Puck config={config} data={{}} iframe={{ enabled: false }} />
+      </>
+    );
+
+    await flush();
+
+    const ids = Array.from(container.querySelectorAll("div.Puck"))
+      .map((el) => el.id)
+      .filter(Boolean);
+
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2);
+  });
+
+  it("applies min-content height to a plugin selected on mount", async () => {
+    const previousMatchMedia = window.matchMedia;
+
+    window.matchMedia = jest.fn((query: string) => ({
+      ...previousMatchMedia(query),
+      matches: true,
+    }));
+
+    const plugin: Plugin = {
+      name: "custom",
+      render: () => <div>Custom plugin</div>,
+      mobilePanelHeight: "min-content",
+    };
+
+    try {
+      render(
+        <Puck
+          config={config}
+          data={{}}
+          iframe={{ enabled: false }}
+          plugins={[plugin]}
+          ui={{ plugin: { current: "custom" } }}
+        />
+      );
+
+      await flush();
+
+      expect(screen.getByText("Custom plugin")).toBeInTheDocument();
+      expect(screen.queryByTitle("maximize")).not.toBeInTheDocument();
+    } finally {
+      window.matchMedia = previousMatchMedia;
+    }
   });
 
   it("should index slots on mount", async () => {
