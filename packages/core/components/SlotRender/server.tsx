@@ -50,8 +50,9 @@ const Item = ({
   ) as WithPuckProps<ComponentData["props"]>;
 
   const richtextProps = useRichtextProps(
-    fieldTransforms?.richtext ? undefined : Component.fields,
-    props
+    Component.fields,
+    props,
+    fieldTransforms
   );
 
   return (

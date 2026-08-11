@@ -78,8 +78,9 @@ function DropZoneRenderItem({
   );
 
   const richtextProps = useRichtextProps(
-    fieldTransforms?.richtext ? undefined : Component?.fields,
-    propsWithSlots
+    Component?.fields,
+    propsWithSlots,
+    fieldTransforms
   );
 
   if (!Component) {
@@ -186,8 +187,9 @@ export function Render<
   );
 
   const richtextProps = useRichtextProps(
-    fieldTransforms?.richtext ? undefined : config.root?.fields,
-    propsWithSlots
+    config.root?.fields,
+    propsWithSlots,
+    fieldTransforms
   );
 
   if (config.root?.render) {
