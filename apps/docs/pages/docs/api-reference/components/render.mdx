@@ -16,11 +16,12 @@ export function Example() {
 
 ## Props
 
-| Param                   | Example                      | Type                                        | Status   |
-| ----------------------- | ---------------------------- | ------------------------------------------- | -------- |
-| [`config`](#config)     | `config: { components: {} }` | [Config](/docs/api-reference/config)        | Required |
-| [`data`](#data)         | `data: {}`                   | [Data](/docs/api-reference/data-model/data) | Required |
-| [`metadata`](#metadata) | `metadata: {}`               | [Metadata](/docs/api-reference/metadata)    | -        |
+| Param                                 | Example                                  | Type                                                    | Status   |
+| ------------------------------------- | ---------------------------------------- | ------------------------------------------------------- | -------- |
+| [`config`](#config)                   | `config: { components: {} }`             | [Config](/docs/api-reference/config)                    | Required |
+| [`data`](#data)                       | `data: {}`                               | [Data](/docs/api-reference/data-model/data)             | Required |
+| [`fieldTransforms`](#fieldtransforms) | `fieldTransforms: {text: () => <div />}` | [FieldTransforms](/docs/api-reference/field-transforms) | -        |
+| [`metadata`](#metadata)               | `metadata: {}`                           | [Metadata](/docs/api-reference/metadata)                | -        |
 
 ## Required props
 
@@ -68,6 +69,25 @@ export function Example() {
           },
         ],
         root: {},
+      }}
+      // ...
+    />
+  );
+}
+```
+
+### `fieldTransforms`
+
+Specify transforms to modify field values before being passed to your components. Implements the [Field Transforms API](/docs/api-reference/field-transforms).
+
+Transforms may return components, unlike [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params), which must return JSON and writes back to your [`Data`](/docs/api-reference/data-model/data) payload.
+
+```tsx {4} copy
+export function Example() {
+  return (
+    <Render
+      fieldTransforms={{
+        text: ({ value }) => <div>{value}</div>, // Wrap all text field values in a div
       }}
       // ...
     />

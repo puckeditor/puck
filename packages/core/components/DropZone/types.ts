@@ -49,7 +49,8 @@ export type ConsumedPropKey =
   | "as"
   | "content"
   | "config"
-  | "metadata";
+  | "metadata"
+  | "fieldTransforms";
 
 /**
  * Additional props forwarded to the element or component provided via `as`,

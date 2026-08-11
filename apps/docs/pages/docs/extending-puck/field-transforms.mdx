@@ -1,14 +1,8 @@
-import { Callout } from "nextra/components";
-
 # Field Transforms
 
-Puck lets you modify props before rendering in the editor via the [`FieldTransforms` API](/docs/api-reference/field-transforms).
+Puck lets you modify props before rendering via the [`FieldTransforms` API](/docs/api-reference/field-transforms).
 
 Use this API to implement custom rendering behavior for specific field types, which can be used to implement features such as inline text editing.
-
-<Callout type="info">
-  Field transforms only apply to components rendered in `<Puck>` and will not be applied to `<Render>`.
-</Callout>
 
 ## Implementing a transform
 
@@ -21,6 +15,22 @@ const fieldTransforms = {
 
 const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 ```
+
+## Transforming at render time
+
+Transforms can also be provided to [`<Render>`](/docs/api-reference/components/render) to apply them to a finished page.
+
+```tsx
+const fieldTransforms = {
+  text: ({ value }) => <div style={{ color: "blue" }}>{value}</div>, // Make all text fields blue
+};
+
+const Example = () => <Render fieldTransforms={fieldTransforms} />;
+```
+
+Transforms can return components, which makes them a good fit for non-serializable values that should not be baked into your [`Data`](/docs/api-reference/data-model/data) payload.
+
+[`isReadOnly`](/docs/api-reference/field-transforms#isreadonly) is always `true` under `<Render>`. Use it to skip any editing behavior in transforms that you share with `<Puck>`.
 
 ## Making it interactive
 
