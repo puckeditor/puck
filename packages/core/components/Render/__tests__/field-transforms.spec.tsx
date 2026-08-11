@@ -232,7 +232,7 @@ describe("Render fieldTransforms", () => {
   // The transform walker replaces a parent (object/array) field and stops
   // recursing, so the nested richtext leaf could no longer exist. The built-in
   // richtext pass must not still try to descend into the replaced value:
-  // mapDeep would spread a non-object leaf (e.g. string) into unusable data (e.g. `{ 0: "h", 1: "e" }`) 
+  // mapDeep would spread a non-object leaf (e.g. string) into unusable data (e.g. `{ 0: "h", 1: "e" }`)
   // and React crashes.
   it("does not process richtext nested inside an object that a transform replaced", () => {
     const nestedRichtextConfig: Config = {
