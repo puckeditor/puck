@@ -6,6 +6,7 @@ import {
   Content,
   Metadata,
   WithPuckProps,
+  FieldTransforms,
 } from "../../types";
 import { useSlots } from "../../lib/use-slots";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
@@ -14,6 +15,7 @@ type SlotRenderProps = DropZoneProps & {
   content: Content;
   config: Config;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 };
 
 export const SlotRenderPure = (props: SlotRenderProps) => (
@@ -24,19 +26,33 @@ const Item = ({
   config,
   item,
   metadata,
+  fieldTransforms,
 }: {
   config: Config;
   item: ComponentData;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 }) => {
   const Component = config.components[item.type];
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const props = useSlots(config, item, (slotProps) => (
-    <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
-  )) as WithPuckProps<ComponentData["props"]>;
+  const props = useSlots(
+    config,
+    item,
+    (slotProps) => (
+      <SlotRenderPure
+        {...slotProps}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
+  ) as WithPuckProps<ComponentData["props"]>;
 
-  const richtextProps = useRichtextProps(Component.fields, props);
+  const richtextProps = useRichtextProps(
+    fieldTransforms?.richtext ? undefined : Component.fields,
+    props
+  );
 
   return (
     <Component.render
@@ -57,7 +73,7 @@ const Item = ({
  */
 export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
   function SlotRenderInternal(
-    { className, style, content, config, metadata, as },
+    { className, style, content, config, metadata, as, fieldTransforms },
     ref
   ) {
     const El = as ?? "div";
@@ -75,6 +91,7 @@ export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
               config={config}
               item={item}
               metadata={metadata}
+              fieldTransforms={fieldTransforms}
             />
           );
         })}

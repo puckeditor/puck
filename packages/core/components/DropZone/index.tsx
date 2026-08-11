@@ -557,16 +557,28 @@ const DropZoneRenderItem = ({
   config,
   item,
   metadata,
+  fieldTransforms,
 }: {
   config: Config;
   item: ComponentData;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 }) => {
   const Component = config.components[item.type];
 
-  const props = useSlots(config, item, (slotProps) => (
-    <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
-  )) as WithPuckProps<ComponentData["props"]>;
+  const props = useSlots(
+    config,
+    item,
+    (slotProps) => (
+      <SlotRenderPure
+        {...slotProps}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
+  ) as WithPuckProps<ComponentData["props"]>;
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
@@ -576,7 +588,10 @@ const DropZoneRenderItem = ({
     [props]
   );
 
-  const richtextProps = useRichtextProps(Component.fields, props);
+  const richtextProps = useRichtextProps(
+    fieldTransforms?.richtext ? undefined : Component.fields,
+    props
+  );
 
   return (
     <DropZoneProvider key={props.id} value={nextContextValue}>
@@ -601,7 +616,8 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
   function DropZoneRenderInternal({ className, style, zone, as }, ref) {
     const ctx = useContext(dropZoneContext);
     const { areaId = "root" } = ctx || {};
-    const { config, data, metadata } = useContext(renderContext);
+    const { config, data, metadata, fieldTransforms } =
+      useContext(renderContext);
 
     let zoneCompound = `${areaId}:${zone}`;
     let content = data?.content || [];
@@ -636,6 +652,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
                 config={config}
                 item={item}
                 metadata={metadata}
+                fieldTransforms={fieldTransforms}
               />
             );
           }

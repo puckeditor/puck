@@ -2,7 +2,13 @@
 
 import { rootZone } from "../../lib/root-droppable-id";
 import { useSlots } from "../../lib/use-slots";
-import { Config, Data, Metadata, UserGenerics } from "../../types";
+import {
+  Config,
+  Data,
+  Metadata,
+  UserGenerics,
+  FieldTransforms,
+} from "../../types";
 import {
   DropZonePure,
   DropZoneProvider,
@@ -17,6 +23,7 @@ export const renderContext = React.createContext<{
   config: Config;
   data: Data;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 }>({
   config: { components: {} },
   data: { root: {}, content: [] },
@@ -30,11 +37,17 @@ export function Render<
   config,
   data,
   metadata = {},
+  fieldTransforms: userFieldTransforms,
 }: {
   config: UserConfig;
   data: Partial<G["UserData"] | Data>;
   metadata?: Metadata;
+  fieldTransforms?: FieldTransforms<UserConfig>;
 }) {
+  // The generic only exists to type the user's transforms against their own
+  // field types. Everything downstream works off the unparameterised type.
+  const fieldTransforms = userFieldTransforms as FieldTransforms | undefined;
+
   const defaultedData = {
     ...data,
     root: data.root || {},
@@ -64,10 +77,21 @@ export function Render<
   const propsWithSlots = useSlots(
     config,
     { type: "root", props: pageProps },
-    (props) => <SlotRender {...props} config={config} metadata={metadata} />
+    (props) => (
+      <SlotRender
+        {...props}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
   );
 
-  const richtextProps = useRichtextProps(config.root?.fields, pageProps);
+  const richtextProps = useRichtextProps(
+    fieldTransforms?.richtext ? undefined : config.root?.fields,
+    propsWithSlots
+  );
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
@@ -79,7 +103,9 @@ export function Render<
 
   if (config.root?.render) {
     return (
-      <renderContext.Provider value={{ config, data: defaultedData, metadata }}>
+      <renderContext.Provider
+        value={{ config, data: defaultedData, metadata, fieldTransforms }}
+      >
         <DropZoneProvider value={nextContextValue}>
           <config.root.render {...propsWithSlots} {...richtextProps}>
             <DropZoneRenderPure zone={rootZone} />
@@ -90,7 +116,9 @@ export function Render<
   }
 
   return (
-    <renderContext.Provider value={{ config, data: defaultedData, metadata }}>
+    <renderContext.Provider
+      value={{ config, data: defaultedData, metadata, fieldTransforms }}
+    >
       <DropZoneProvider value={nextContextValue}>
         <DropZoneRenderPure zone={rootZone} />
       </DropZoneProvider>
