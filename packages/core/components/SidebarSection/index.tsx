@@ -31,19 +31,13 @@ export const SidebarSection = ({
         <div className={getClassName("breadcrumbs")}>
           {showBreadcrumbs && <Breadcrumbs />}
           <div className={getClassName("heading")}>
-            {selectedItem?.props.id ? (
-              <InlineLabelEdit componentId={selectedItem.props.id}>
-                {({ label }) => (
-                  <Heading rank="2" size="xs">
-                    {label}
-                  </Heading>
-                )}
-              </InlineLabelEdit>
-            ) : (
-              <Heading rank="2" size="xs">
-                {title}
-              </Heading>
-            )}
+            <Heading rank="2" size="xs">
+              {selectedItem?.props.id ? (
+                <InlineLabelEdit componentId={selectedItem.props.id} />
+              ) : (
+                title
+              )}
+            </Heading>
           </div>
         </div>
       </div>
