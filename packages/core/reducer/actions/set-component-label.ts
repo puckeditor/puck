@@ -14,7 +14,7 @@ export const setComponentLabelAction = <UserData extends Data>(
 
     const type = item.type.toString();
     const defaultLabel = appStore.config.components[type]?.label ?? type;
-    const newLabel = action.label || undefined;
+    const newLabel = action.label?.trim() || undefined;
 
     // If the new label matches the default, remove the custom override
     if (!newLabel || newLabel === defaultLabel) {
