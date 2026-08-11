@@ -28,6 +28,12 @@ const EditorPage = memo(() => {
   );
   const config = useAppStore((s) => s.config);
   const metadata = useAppStore((s) => s.metadata);
+  const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
+
+  const combinedFieldTransforms = useMemo(
+    () => ({ ...slotFieldTransforms, ...userFieldTransforms }),
+    [userFieldTransforms]
+  );
 
   // Root as object with slots still defaulted to null
   const rootAsComponent = useMemo(() => {
@@ -43,7 +49,7 @@ const EditorPage = memo(() => {
   const propsWithSlots = useFieldTransformsTracked(
     config,
     rootAsComponent,
-    slotFieldTransforms
+    combinedFieldTransforms
   );
 
   // Build the final props to be passed to the user provided root render
@@ -61,10 +67,11 @@ const EditorPage = memo(() => {
     };
   }, [propsWithSlots, metadata]);
 
-  // Get the richtext props for the root render
+  // Get the richtext props for the root render.
   const richtextProps = useRichtextProps(
     config.root?.fields ?? {},
-    renderProps
+    renderProps,
+    userFieldTransforms
   );
 
   return config.root?.render ? (
