@@ -5,8 +5,8 @@ import { getClassNameFactory } from "../../../../lib";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
 
 import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
-import { Render } from "../../../Render";
 
+import InteractivePage from "./components/interactive-page";
 import EditorPage from "./components/editor-page";
 import styles from "./styles.module.css";
 
@@ -83,14 +83,10 @@ const usePreviewModeAttribute = (ref: RefObject<HTMLIFrameElement | null>) => {
 
 export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const dispatch = useAppStore((s) => s.dispatch);
-  const config = useAppStore((s) => s.config);
   const setStatus = useAppStore((s) => s.setStatus);
   const iframe = useAppStore((s) => s.iframe);
   const overrides = useAppStore((s) => s.overrides);
-  const metadata = useAppStore((s) => s.metadata);
-  const renderData = useAppStore((s) =>
-    s.state.ui.previewMode === "edit" ? null : s.state.data
-  );
+  const isEditMode = useAppStore((s) => s.state.ui.previewMode === "edit");
 
   const Frame = useMemo(() => overrides.iframe, [overrides]);
 
@@ -99,11 +95,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   useBubbleIframeEvents(ref);
   usePreviewModeAttribute(ref);
 
-  const inner = !renderData ? (
-    <EditorPage />
-  ) : (
-    <Render data={renderData} config={config} metadata={metadata} />
-  );
+  const inner = isEditMode ? <EditorPage /> : <InteractivePage />;
 
   useEffect(() => {
     if (!iframe.enabled) {
