@@ -34,6 +34,7 @@ const CONSUMED_PROP_KEYS: Record<ConsumedPropKey, true> = {
   as: true,
   content: true,
   config: true,
+  fieldTransforms: true,
   metadata: true,
 };
 

@@ -49,6 +49,7 @@ export type ConsumedPropKey =
   | "as"
   | "content"
   | "config"
+  | "fieldTransforms"
   | "metadata";
 
 /**

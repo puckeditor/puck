@@ -3,6 +3,7 @@ import { getDropZoneProps } from "../get-drop-zone-props";
 describe("getDropZoneProps", () => {
   const style = { color: "red" };
   const onClick = () => {};
+  const fieldTransforms = {};
   const children = "rogue";
   const dangerouslySetInnerHTML = { __html: "<em>injected</em>" };
 
@@ -12,6 +13,7 @@ describe("getDropZoneProps", () => {
     className: "my-class",
     style,
     as: "button",
+    fieldTransforms,
     id: "my-id",
     onClick,
     "data-custom": "foo",
@@ -29,6 +31,7 @@ describe("getDropZoneProps", () => {
       className: "my-class",
       style,
       as: "button",
+      fieldTransforms,
     });
     expect(forwardableProps).toEqual({
       id: "my-id",
@@ -44,6 +47,7 @@ describe("getDropZoneProps", () => {
 
     expect(props.style).toBe(style);
     expect(props.allow).toBe(allProps.allow);
+    expect(props.fieldTransforms).toBe(fieldTransforms);
     expect(forwardableProps.onClick).toBe(onClick);
     expect(nonForwardableProps.dangerouslySetInnerHTML).toBe(
       dangerouslySetInnerHTML
