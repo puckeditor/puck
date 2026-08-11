@@ -89,8 +89,9 @@ export function Render<
   );
 
   const richtextProps = useRichtextProps(
-    fieldTransforms?.richtext ? undefined : config.root?.fields,
-    propsWithSlots
+    config.root?.fields,
+    propsWithSlots,
+    fieldTransforms
   );
 
   const nextContextValue = useMemo<DropZoneContext>(
