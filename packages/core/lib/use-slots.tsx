@@ -7,7 +7,7 @@ import { FieldTransforms } from "../types/API/FieldTransforms";
 
 /**
  * Converts the item slot props to ReactNodes, applies any transforms to them, and returns them.
- * 
+ *
  * @param config The Puck config used to build the item
  * @param item The component or root data to resolve props for
  * @param renderSlot A function that converts slot component data to a ReactNode.
