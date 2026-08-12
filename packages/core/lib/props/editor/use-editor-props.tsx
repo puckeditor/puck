@@ -3,18 +3,18 @@
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { DropZoneEditPure } from "../../components/DropZone";
-import { ContextSlotRender } from "../../components/SlotRender";
+import { DropZoneEditPure } from "../../../components/DropZone";
+import { ContextSlotRender } from "../../../components/SlotRender";
 
-import { useAppStore } from "../../store";
+import { useAppStore } from "../../../store";
 
-import { ComponentData, FieldTransforms } from "../../types";
+import { ComponentData, FieldTransforms } from "../../../types";
 
-import { useFieldTransformsTracked } from "./use-field-transforms-tracked";
+import { useFieldTransformsTracked } from "../../field-transforms/use-field-transforms-tracked";
 
-import { getInlineTextTransform } from "./default-transforms/inline-text-transform";
-import { getRichTextTransform } from "./default-transforms/rich-text-transform";
-import { getSlotTransform } from "./default-transforms/slot-transform";
+import { getInlineTextTransform } from "../../field-transforms/default-transforms/inline-text-transform";
+import { getRichTextTransform } from "../../field-transforms/default-transforms/rich-text-transform";
+import { getSlotTransform } from "../../field-transforms/default-transforms/slot-transform";
 
 export type UseEditorPropsOptions = {
   component: ComponentData;

@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 
 import { rootZone } from "../../lib/root-droppable-id";
-import useRenderProps from "../../lib/field-transforms/use-render-props";
+import useRenderProps from "../../lib/props/render/use-render-props";
 
 import {
   Config,
