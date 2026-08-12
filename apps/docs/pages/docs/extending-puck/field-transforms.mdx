@@ -28,7 +28,7 @@ const fieldTransforms = {
 const Example = () => <Render fieldTransforms={fieldTransforms} />;
 ```
 
-Transforms can return components, which makes them a good fit for non-serializable values that should not be baked into your [`Data`](/docs/api-reference/data-model/data) payload.
+Transforms can return components, which makes them a good fit for unserializable values that should not be baked into your [`Data`](/docs/api-reference/data-model/data) payload.
 
 [`isReadOnly`](/docs/api-reference/field-transforms#isreadonly) is always `true` under `<Render>`. Use it to skip any editing behavior in transforms that you share with `<Puck>`.
 
