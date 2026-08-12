@@ -80,7 +80,7 @@ export function Example() {
 
 Specify transforms to modify field values before being passed to your components. Implements the [Field Transforms API](/docs/api-reference/field-transforms).
 
-Transforms may return components, unlike [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params), which must return JSON and writes back to your [`Data`](/docs/api-reference/data-model/data) payload.
+Unlike [`resolveData`](/docs/api-reference/configuration/component-config#resolvedatadata-params), transforms may return components and other unserializable data.
 
 ```tsx {4} copy
 export function Example() {
