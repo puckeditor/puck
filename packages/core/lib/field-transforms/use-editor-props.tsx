@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -20,7 +22,7 @@ export type UseEditorPropsOptions = {
 
 /**
  * Returns the transformed props for a component to use in the editor, applying all relevant field transforms and read-only state.
- * 
+ *
  * @param component The component data for which to get the editor props.
  * @returns The transformed props for the component in the editor.
  */

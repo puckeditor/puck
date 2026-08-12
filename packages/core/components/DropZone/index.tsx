@@ -32,7 +32,6 @@ import {
   Metadata,
   Overrides,
   PuckContext,
-  WithPuckProps,
 } from "../../types";
 
 import { useDroppable, UseDroppableInput } from "@dnd-kit/react";
@@ -47,16 +46,15 @@ import { useDragAxis } from "./lib/use-drag-axis";
 import { useContextStore } from "../../lib/use-context-store";
 import { useShallow } from "zustand/react/shallow";
 import { renderContext } from "../Render";
-import { useSlots } from "../../lib/use-slots";
 import { SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useMessage } from "../../lib/use-message";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
+import useEditorProps from "../../lib/field-transforms/use-editor-props";
+import useRenderProps from "../../lib/field-transforms/use-render-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
 import { LinePlaceholder } from "./LinePlaceholder";
-import useEditorProps from "../../lib/field-transforms/use-editor-props";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -538,7 +536,7 @@ const DropZoneRenderItem = ({
 }) => {
   const Component = config.components[item.type];
 
-  const props = useSlots(
+  const renderProps = useRenderProps(
     config,
     item,
     (slotProps) => (
@@ -550,29 +548,22 @@ const DropZoneRenderItem = ({
       />
     ),
     fieldTransforms
-  ) as WithPuckProps<ComponentData["props"]>;
+  );
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
-      areaId: props.id,
+      areaId: renderProps.id,
       depth: 1,
     }),
-    [props]
-  );
-
-  const richtextProps = useRichtextProps(
-    Component.fields,
-    props,
-    fieldTransforms
+    [renderProps.id]
   );
 
   return (
-    <DropZoneProvider key={props.id} value={nextContextValue}>
+    <DropZoneProvider key={renderProps.id} value={nextContextValue}>
       <Component.render
-        {...props}
-        {...richtextProps}
+        {...renderProps}
         puck={{
-          ...props.puck,
+          ...renderProps.puck,
           renderDropZone: DropZoneRenderPure,
           metadata: { ...metadata, ...Component.metadata },
         }}
