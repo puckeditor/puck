@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppStore } from "../../../../../store";
@@ -10,18 +10,20 @@ import { rootDroppableId } from "../../../../../lib/root-droppable-id";
 import {
   ComponentData,
   DefaultRootRenderProps,
+  FieldTransforms,
   RootData,
 } from "../../../../../types";
 
-import { useRichtextProps } from "../../../../RichTextEditor/lib/use-richtext-props";
 import { DropZoneEditPure, DropZonePure } from "../../../../DropZone";
+import { getInlineTextTransform } from "../../../../../lib/field-transforms/default-transforms/inline-text-transform";
+import { getRichTextTransform } from "../../../../../lib/field-transforms/default-transforms/rich-text-transform";
 
 const slotFieldTransforms = getSlotTransform(DropZoneEditPure);
 
 /**
- * Renders the puck data in the editor where this component is rendered as an editable page.
+ * Renders the puck data as an editable page.
  */
-const EditorPage = memo(() => {
+const EditPage = () => {
   // All the props, slot props are defaulted to null
   const flatRootProps = useAppStore(
     useShallow((s) => s.state.indexes.nodes.root?.flatData.props)
@@ -29,10 +31,25 @@ const EditorPage = memo(() => {
   const config = useAppStore((s) => s.config);
   const metadata = useAppStore((s) => s.metadata);
   const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
+  const plugins = useAppStore((s) => s.plugins);
 
   const combinedFieldTransforms = useMemo(
-    () => ({ ...slotFieldTransforms, ...userFieldTransforms }),
-    [userFieldTransforms]
+    () => ({
+      ...slotFieldTransforms,
+      ...getInlineTextTransform(),
+      ...getRichTextTransform(),
+      ...plugins.reduce<FieldTransforms>((acc, plugin) => {
+        if (!plugin.fieldTransforms) return acc;
+
+        Object.keys(plugin.fieldTransforms).forEach((key) => {
+          acc[key as keyof typeof acc] = plugin.fieldTransforms![key];
+        });
+
+        return acc;
+      }, {}),
+      ...userFieldTransforms,
+    }),
+    [plugins, userFieldTransforms]
   );
 
   // Root as object with slots still defaulted to null
@@ -67,24 +84,14 @@ const EditorPage = memo(() => {
     };
   }, [propsWithSlots, metadata]);
 
-  // Get the richtext props for the root render.
-  const richtextProps = useRichtextProps(
-    config.root?.fields ?? {},
-    renderProps,
-    userFieldTransforms
-  );
-
   return config.root?.render ? (
     config.root?.render({
       ...renderProps,
-      ...richtextProps,
       id: "puck-root",
     })
   ) : (
     <>{renderProps.children}</>
   );
-});
+};
 
-EditorPage.displayName = "EditorPage";
-
-export default EditorPage;
+export default EditPage;

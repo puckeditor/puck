@@ -7,7 +7,7 @@ import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
 import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
 
 import InteractivePage from "./components/interactive-page";
-import EditorPage from "./components/editor-page";
+import EditPage from "./components/edit-page";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
@@ -95,7 +95,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   useBubbleIframeEvents(ref);
   usePreviewModeAttribute(ref);
 
-  const inner = isEditMode ? <EditorPage /> : <InteractivePage />;
+  const inner = isEditMode ? <EditPage /> : <InteractivePage />;
 
   useEffect(() => {
     if (!iframe.enabled) {
