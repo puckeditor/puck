@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 
-import useRenderProps from "../../lib/field-transforms/use-render-props";
+import useRenderProps from "../../lib/props/render/use-render-props";
 import { DropZoneProps } from "../DropZone/types";
 
 import {

@@ -7,12 +7,12 @@ import {
   Content,
   RootData,
   FieldTransforms,
-} from "../../types";
-import { DropZoneProps } from "../../components/DropZone/types";
+} from "../../../types";
+import { DropZoneProps } from "../../../components/DropZone/types";
 
-import { useFieldTransforms } from "../field-transforms/use-field-transforms";
-import { getSlotTransform } from "../field-transforms/default-transforms/slot-transform";
-import { useRichtextProps } from "../../components/RichTextEditor/lib/use-richtext-props";
+import { useFieldTransforms } from "../../field-transforms/use-field-transforms";
+import { getSlotTransform } from "../../field-transforms/default-transforms/slot-transform";
+import { useRichtextProps } from "../../../components/RichTextEditor/lib/use-richtext-props";
 
 const EMPTY_FIELD_CONFIG = {} as const;
 

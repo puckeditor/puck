@@ -12,7 +12,7 @@ import {
 } from "../../../../../types";
 
 import { DropZonePure } from "../../../../DropZone";
-import useEditorProps from "../../../../../lib/field-transforms/use-editor-props";
+import useEditorProps from "../../../../../lib/props/editor/use-editor-props";
 
 /**
  * Renders the puck data as an editable page.
