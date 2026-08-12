@@ -170,7 +170,7 @@ export function Editor() {
   return (
     <Puck
       fieldTransforms={{
-        text: ({ value }) => <div>{value}</div>, // Wrap all text field values in a div
+        text: ({ value }) => <span>{value}</span>, // Wrap all text field values in a span
       }}
       // ...
     />
