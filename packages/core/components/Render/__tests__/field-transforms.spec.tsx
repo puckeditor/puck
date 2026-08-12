@@ -296,7 +296,10 @@ describe("Render fieldTransforms", () => {
               type: "List",
               props: {
                 id: "list-1",
-                rows: [{ body: "<p>a</p>" }, { body: "<p>b</p>" }],
+                rows: [
+                  { body: "<p>hidden-a</p>" },
+                  { body: "<p>hidden-b</p>" },
+                ],
               },
             },
           ],
@@ -308,6 +311,7 @@ describe("Render fieldTransforms", () => {
     );
 
     expect(html).toContain("rows:2");
-    expect(html).not.toContain("<p>a</p>");
+    expect(html).not.toContain("hidden-a");
+    expect(html).not.toContain("hidden-b");
   });
 });
