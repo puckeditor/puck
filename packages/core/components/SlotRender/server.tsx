@@ -1,15 +1,15 @@
 import { forwardRef } from "react";
+
+import useRenderProps from "../../lib/field-transforms/use-render-props";
 import { DropZoneProps } from "../DropZone/types";
+
 import {
   ComponentData,
   Config,
   Content,
   Metadata,
-  WithPuckProps,
   FieldTransforms,
 } from "../../types";
-import { useSlots } from "../../lib/use-slots";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 type SlotRenderProps = DropZoneProps & {
   content: Content;
@@ -35,7 +35,7 @@ const Item = ({
 }) => {
   const Component = config.components[item.type];
 
-  const props = useSlots(
+  const props = useRenderProps(
     config,
     item,
     (slotProps) => (
@@ -47,18 +47,11 @@ const Item = ({
       />
     ),
     fieldTransforms
-  ) as WithPuckProps<ComponentData["props"]>;
-
-  const richtextProps = useRichtextProps(
-    Component.fields,
-    props,
-    fieldTransforms
   );
 
   return (
     <Component.render
       {...props}
-      {...richtextProps}
       puck={{
         ...props.puck,
         metadata: metadata || {},

@@ -1,7 +1,10 @@
 "use client";
 
+import React, { useMemo } from "react";
+
 import { rootZone } from "../../lib/root-droppable-id";
-import { useSlots } from "../../lib/use-slots";
+import useRenderProps from "../../lib/field-transforms/use-render-props";
+
 import {
   Config,
   Data,
@@ -9,15 +12,14 @@ import {
   UserGenerics,
   FieldTransforms,
 } from "../../types";
+
 import {
   DropZonePure,
   DropZoneProvider,
   DropZoneRenderPure,
 } from "../DropZone";
-import React, { useMemo } from "react";
 import { SlotRender } from "../SlotRender";
 import { DropZoneContext } from "../DropZone/context";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 export const renderContext = React.createContext<{
   config: Config;
@@ -74,7 +76,7 @@ export function Render<
     id: "puck-root",
   };
 
-  const propsWithSlots = useSlots(
+  const renderProps = useRenderProps(
     config,
     { type: "root", props: pageProps },
     (props) => (
@@ -85,12 +87,6 @@ export function Render<
         fieldTransforms={fieldTransforms}
       />
     ),
-    fieldTransforms
-  );
-
-  const richtextProps = useRichtextProps(
-    config.root?.fields,
-    propsWithSlots,
     fieldTransforms
   );
 
@@ -108,7 +104,7 @@ export function Render<
         value={{ config, data: defaultedData, metadata, fieldTransforms }}
       >
         <DropZoneProvider value={nextContextValue}>
-          <config.root.render {...propsWithSlots} {...richtextProps}>
+          <config.root.render {...renderProps}>
             <DropZoneRenderPure zone={rootZone} />
           </config.root.render>
         </DropZoneProvider>

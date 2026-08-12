@@ -1,9 +1,11 @@
 import { CSSProperties } from "react";
+
 import {
   rootAreaId,
   rootDroppableId,
   rootZone,
 } from "../../lib/root-droppable-id";
+import useRenderProps from "../../lib/field-transforms/use-render-props";
 import { setupZone } from "../../lib/data/setup-zone";
 import {
   Config,
@@ -12,9 +14,8 @@ import {
   UserGenerics,
   FieldTransforms,
 } from "../../types";
-import { useSlots } from "../../lib/use-slots";
+
 import { SlotRenderPure } from "../SlotRender/server";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 type DropZoneRenderProps = {
   zone: string;
@@ -63,7 +64,7 @@ function DropZoneRenderItem({
   };
 
   const renderItem = { ...item, props };
-  const propsWithSlots = useSlots(
+  const renderProps = useRenderProps(
     config,
     renderItem,
     (slotProps) => (
@@ -77,17 +78,11 @@ function DropZoneRenderItem({
     fieldTransforms
   );
 
-  const richtextProps = useRichtextProps(
-    Component?.fields,
-    propsWithSlots,
-    fieldTransforms
-  );
-
   if (!Component) {
     return null;
   }
 
-  return <Component.render {...propsWithSlots} {...richtextProps} />;
+  return <Component.render {...renderProps} />;
 }
 
 export function DropZoneRender({
@@ -172,7 +167,7 @@ export function Render<
     id: "puck-root",
   };
 
-  const propsWithSlots = useSlots(
+  const renderProps = useRenderProps(
     config,
     { type: "root", props },
     (props) => (
@@ -186,15 +181,9 @@ export function Render<
     fieldTransforms
   );
 
-  const richtextProps = useRichtextProps(
-    config.root?.fields,
-    propsWithSlots,
-    fieldTransforms
-  );
-
   if (config.root?.render) {
     return (
-      <config.root.render {...propsWithSlots} {...richtextProps}>
+      <config.root.render {...renderProps}>
         <DropZoneRender
           config={config}
           data={data}
