@@ -45,18 +45,15 @@ import { useContextStore } from "../../lib/use-context-store";
 import { useShallow } from "zustand/react/shallow";
 import { renderContext } from "../Render";
 import { useSlots } from "../../lib/use-slots";
-import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
+import { SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
-import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
 import { useMessage } from "../../lib/use-message";
-import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
-import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
-import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
 import { LinePlaceholder } from "./LinePlaceholder";
+import useEditorProps from "../../lib/field-transforms/use-editor-props";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -131,10 +128,6 @@ const DropZoneChild = ({
     (s) => s.state.indexes.nodes[componentId]?.data.type
   );
 
-  const nodeReadOnly = useAppStore(
-    useShallow((s) => s.state.indexes.nodes[componentId]?.data.readOnly)
-  );
-
   const appStore = useAppStoreApi();
 
   const item = useMemo(() => {
@@ -205,33 +198,7 @@ const DropZoneChild = ({
     [item?.type, nodeType, defaultsProps]
   );
 
-  const config = useAppStore((s) => s.config);
-
-  const plugins = useAppStore((s) => s.plugins);
-  const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
-  const combinedFieldTransforms = useMemo(
-    () => ({
-      ...getSlotTransform(DropZoneEditPure, (slotProps) => (
-        <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
-      )),
-      ...getInlineTextTransform(),
-      ...getRichTextTransform(),
-      ...plugins.reduce<FieldTransforms>(
-        (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
-        {}
-      ),
-      ...userFieldTransforms,
-    }),
-    [plugins, userFieldTransforms]
-  );
-
-  const transformedProps = useFieldTransformsTracked(
-    config,
-    defaultedNode,
-    combinedFieldTransforms,
-    nodeReadOnly,
-    isLoading
-  );
+  const transformedProps = useEditorProps({ component: defaultedNode });
 
   if (!item) return;
 
