@@ -10906,7 +10906,7 @@ next@^15.5.21:
     "@next/swc-win32-x64-msvc" "15.5.22"
     sharp "^0.34.3"
 
-next@~16.2.11:
+next@^16.2.11:
   version "16.2.12"
   resolved "https://registry.yarnpkg.com/next/-/next-16.2.12.tgz#70c834b297c9ac573a41b00555b507a827506a52"
   integrity sha512-iD59eYQWmbFcEbX7v/acG5DRym9iw1DdaPoD0WTA920naWsE25wShzJW4+UvAs8MK9EC2kBfIH6vtto1H1PHGw==
