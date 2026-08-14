@@ -45,10 +45,11 @@
     "tar": "7.5.21",
     "form-data": "4.0.6",
     "tmp": "0.2.7",
-    "lerna/js-yaml": "4.3.0",
+    "lerna/js-yaml": "4.3.1",
     "postcss": "^8.5.23",
     "sharp": "^0.35.0",
     "axios": "^1.18.0",
-    "lerna/nx/brace-expansion": "^5.0.9"
+    "lerna/nx/brace-expansion": "^5.0.9",
+    "undici": "^6.28.0"
   }
 }
