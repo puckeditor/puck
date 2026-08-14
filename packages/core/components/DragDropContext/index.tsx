@@ -25,6 +25,10 @@ import {
   ZoneStoreProvider,
 } from "../DropZone/context";
 import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
+import { prepareCommitFlip } from "../../lib/dnd/flip-commit";
+import { resolveDndMode } from "../../lib/dnd/resolve-dnd-mode";
+import { getZoneContentIds } from "../../lib/get-zone-content-ids";
+import { getComponentSelector } from "../../lib/dom-selectors";
 import { insertComponent } from "../../lib/insert-component";
 import { moveComponent } from "../../lib/move-component";
 import { useDebouncedCallback } from "use-debounce";
@@ -41,6 +45,8 @@ import {
 import { useSensors } from "../../lib/dnd/use-sensors";
 import { getFrame } from "../../lib/get-frame";
 import { effect } from "@dnd-kit/state";
+import type { DndBehavior } from "../../types";
+import { useLinePlaceholder } from "./use-line-placeholder";
 
 const DEBUG = false;
 
@@ -83,6 +89,7 @@ const AREA_CHANGE_DEBOUNCE_MS = 100;
 type DragDropContextProps = {
   children: ReactNode;
   disableAutoScroll?: boolean;
+  behavior?: DndBehavior;
 };
 
 /**
@@ -114,6 +121,7 @@ const useTempDisableFallback = (timeout: number) => {
 const DragDropContextClient = ({
   children,
   disableAutoScroll,
+  behavior = "auto",
 }: DragDropContextProps) => {
   const dispatch = useAppStore((s) => s.dispatch);
   const instanceId = useAppStore((s) => s.instanceId);
@@ -159,7 +167,7 @@ const DragDropContextClient = ({
           }
         } else {
           const frame = getFrame();
-          const el = frame?.querySelector(`[data-puck-component="${id}"]`);
+          const el = frame?.querySelector(getComponentSelector(id));
           el?.scrollIntoView({ behavior: "smooth" });
         }
       },
@@ -315,6 +323,14 @@ const DragDropContextClient = ({
 
   const initialSelector = useRef<{ zone: string; index: number }>(undefined);
 
+  const {
+    getTargetIndex: getLinePlaceholderTargetIndex,
+    setActive: setLinePlaceholderActive,
+    startScrollTracking: startLinePlaceholderScrollTracking,
+    stopScrollTracking: stopLinePlaceholderScrollTracking,
+    update: updateLinePlaceholder,
+  } = useLinePlaceholder(zoneStore);
+
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
       mode: "edit",
@@ -335,12 +351,15 @@ const DragDropContextClient = ({
         plugins={plugins}
         sensors={sensors}
         onDragEnd={(event, manager) => {
+          stopLinePlaceholderScrollTracking();
+
           const entryEl = getFrame()?.querySelector("[data-puck-entry]");
           entryEl?.removeAttribute("data-puck-dragging");
 
           const { source, target } = event.operation;
 
           if (!source) {
+            setLinePlaceholderActive(false);
             zoneStore.setState({ draggedItem: null });
 
             return;
@@ -350,12 +369,42 @@ const DragDropContextClient = ({
 
           const { previewIndex = {} } = zoneStore.getState() || {};
 
+          // Look the preview up by id: during line placeholder (cross-zone)
+          // drags the source stays in its original zone, so the preview key
+          // no longer matches the source's zone. Ghost previews only pin the
+          // item visually and never describe the drop position.
           const thisPreview: Preview | null =
-            previewIndex[zone]?.props.id === source.id
-              ? previewIndex[zone]
+            Object.values(previewIndex).find(
+              (preview) => preview?.props.id === source.id && !preview.ghost
+            ) ?? null;
+
+          // Capture sibling positions now, before dnd-kit tears the drag
+          // state down, so the slide animations measure from what's on
+          // screen at the moment of drop
+          const playCommitFlip =
+            !event.canceled &&
+            target?.type !== "void" &&
+            thisPreview?.linePlaceholder
+              ? prepareCommitFlip({
+                  zones: initialSelector.current
+                    ? [initialSelector.current.zone, thisPreview.zone]
+                    : [thisPreview.zone],
+                  itemId:
+                    thisPreview.type === "move"
+                      ? thisPreview.props.id
+                      : undefined,
+                  targetZone: thisPreview.zone,
+                  getExpectedOrder: () =>
+                    getZoneContentIds(
+                      appStore.getState().state,
+                      thisPreview.zone
+                    ),
+                })
               : null;
 
           const onAnimationEnd = () => {
+            // Keep the ghost faded until the drop animation lands
+            setLinePlaceholderActive(false);
             zoneStore.setState({ draggedItem: null });
 
             // Tidy up cancellation
@@ -377,6 +426,18 @@ const DragDropContextClient = ({
               return;
             }
 
+            // Line placeholder indices count the dragged item at its
+            // original position, so moving to a later gap within the same
+            // zone lands one index lower once the item is removed
+            const commitIndex =
+              thisPreview &&
+              thisPreview.linePlaceholder &&
+              initialSelector.current &&
+              thisPreview.zone === initialSelector.current.zone &&
+              thisPreview.index > initialSelector.current.index
+                ? thisPreview.index - 1
+                : thisPreview?.index ?? index;
+
             // Finalise the drag
             if (thisPreview) {
               zoneStore.setState({ previewIndex: {} });
@@ -392,20 +453,24 @@ const DragDropContextClient = ({
                 moveComponent(
                   thisPreview.props.id,
                   initialSelector.current,
-                  thisPreview,
+                  { ...thisPreview, index: commitIndex },
                   appStore
                 );
               }
+
+              playCommitFlip?.();
             }
 
             const movedToNewPosition =
               initialSelector.current?.zone !== thisPreview?.zone ||
-              initialSelector.current?.index !== thisPreview?.index;
+              initialSelector.current?.index !== commitIndex;
 
             dispatch({
               type: "setUi",
               ui: {
-                itemSelector: { index, zone },
+                itemSelector: thisPreview
+                  ? { index: commitIndex, zone: thisPreview.zone }
+                  : { index, zone },
                 isDragging: false,
               },
               recordHistory: movedToNewPosition,
@@ -424,6 +489,16 @@ const DragDropContextClient = ({
               onAnimationEnd();
               dispose?.();
             }
+          });
+        }}
+        onDragMove={(event, manager) => {
+          // Keep the line in the gap nearest the pointer as it moves within
+          // the target zone: collisions only re-fire when the target
+          // changes, which can leave the line in a stale gap
+          updateLinePlaceholder(manager);
+
+          dragListeners.dragmove?.forEach((fn) => {
+            fn(event, manager);
           });
         }}
         onDragOver={(event, manager) => {
@@ -460,11 +535,13 @@ const DragDropContextClient = ({
 
             const collisionData = manager.collisionObserver.collisions[0]?.data;
 
+            const position = getCollisionPosition(
+              collisionData?.direction,
+              getDeepDir(target.element)
+            );
+
             targetIndex = getInsertIndex({
-              position: getCollisionPosition(
-                collisionData?.direction,
-                getDeepDir(target.element)
-              ),
+              position,
               sourceIndex,
               targetIndex: targetData.index,
               isSameZone: sourceZone === targetZone,
@@ -489,6 +566,17 @@ const DragDropContextClient = ({
           }
 
           if (dragMode.current === "new") {
+            const isLinePlaceholder =
+              resolveDndMode(behavior, { isNewComponent: true }) === "static";
+
+            if (isLinePlaceholder) {
+              targetIndex =
+                getLinePlaceholderTargetIndex(targetZone, manager) ??
+                targetIndex;
+            }
+
+            setLinePlaceholderActive(isLinePlaceholder);
+
             zoneStore.setState({
               previewIndex: {
                 [targetZone]: {
@@ -500,6 +588,7 @@ const DragDropContextClient = ({
                   props: {
                     id: source.id.toString(),
                   },
+                  linePlaceholder: isLinePlaceholder,
                 },
               },
             });
@@ -517,18 +606,59 @@ const DragDropContextClient = ({
             );
 
             if (item) {
-              zoneStore.setState({
-                previewIndex: {
-                  [targetZone]: {
-                    componentType: sourceData.componentType,
-                    type: "move",
-                    index: targetIndex,
-                    zone: targetZone,
-                    props: item.props,
-                    element: source.element,
-                  },
+              const originZone = initialSelector.current.zone;
+              const isReparenting = originZone !== targetZone;
+              const isLinePlaceholder =
+                resolveDndMode(behavior, {
+                  isDraggingBetweenSlots: isReparenting,
+                }) === "static";
+
+              if (isLinePlaceholder) {
+                targetIndex =
+                  getLinePlaceholderTargetIndex(targetZone, manager) ??
+                  targetIndex;
+              }
+
+              setLinePlaceholderActive(isLinePlaceholder);
+
+              const previewIndex: Record<string, Preview> = {
+                [targetZone]: {
+                  componentType: sourceData.componentType,
+                  type: "move",
+                  index: targetIndex,
+                  zone: targetZone,
+                  props: item.props,
+                  element: source.element,
+                  linePlaceholder: isLinePlaceholder,
                 },
-              });
+              };
+
+              // If line, pin the item as a ghost at its currently rendered position in the original zone.
+              if (isLinePlaceholder && isReparenting) {
+                const originPreview =
+                  zoneStore.getState().previewIndex[originZone];
+
+                // Assume we were in static mode. Preview didn't move the item.
+                let originIndex = initialSelector.current.index;
+
+                // Current preview isn't line placeholder. We were in fluid mode.
+                // Preview moved the item to its latest index. Pin the ghost preview there.
+                if (originPreview && !originPreview.linePlaceholder) {
+                  originIndex = originPreview.index;
+                }
+
+                previewIndex[originZone] = {
+                  componentType: sourceData.componentType,
+                  type: "move",
+                  index: originIndex,
+                  zone: originZone,
+                  props: item.props,
+                  element: source.element,
+                  ghost: true,
+                };
+              }
+
+              zoneStore.setState({ previewIndex });
             }
           }
 
@@ -537,20 +667,31 @@ const DragDropContextClient = ({
           });
         }}
         onDragStart={(event, manager) => {
+          if (behavior !== "fluid") {
+            // Scrolling moves the content under a stationary pointer without
+            // firing drag events, which would leave the line placeholder
+            // drifting with the page; recompute it on scroll.
+            startLinePlaceholderScrollTracking(manager);
+          }
+
           const { source } = event.operation;
 
-          if (source && source.type !== "void") {
+          if (source?.type === "component") {
             const sourceData = source.data as ComponentDndData;
+            const sourceSelector = {
+              zone: sourceData.zone,
+              index: sourceData.index,
+            };
 
-            const item = getItem(
-              {
-                zone: sourceData.zone,
-                index: sourceData.index,
-              },
-              appStore.getState().state
-            );
+            initialSelector.current = sourceSelector;
+
+            const item = getItem(sourceSelector, appStore.getState().state);
 
             if (item) {
+              const showLinePlaceholder = resolveDndMode(behavior) === "static";
+
+              setLinePlaceholderActive(showLinePlaceholder);
+
               zoneStore.setState({
                 previewIndex: {
                   [sourceData.zone]: {
@@ -560,6 +701,7 @@ const DragDropContextClient = ({
                     zone: sourceData.zone,
                     props: item.props,
                     element: source.element,
+                    linePlaceholder: showLinePlaceholder,
                   },
                 },
               });
@@ -602,6 +744,7 @@ const DragDropContextClient = ({
 
           const entryEl = getFrame()?.querySelector("[data-puck-entry]");
           entryEl?.setAttribute("data-puck-dragging", "true");
+          setLinePlaceholderActive(false);
         }}
       >
         <ZoneStoreProvider store={zoneStore}>
@@ -617,6 +760,7 @@ const DragDropContextClient = ({
 export const DragDropContext = ({
   children,
   disableAutoScroll,
+  behavior,
 }: DragDropContextProps) => {
   const status = useAppStore((s) => s.status);
 
@@ -625,7 +769,10 @@ export const DragDropContext = ({
   }
 
   return (
-    <DragDropContextClient disableAutoScroll={disableAutoScroll}>
+    <DragDropContextClient
+      disableAutoScroll={disableAutoScroll}
+      behavior={behavior}
+    >
       {children}
     </DragDropContextClient>
   );

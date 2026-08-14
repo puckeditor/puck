@@ -66,14 +66,16 @@ export type FieldRenderFunctions<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>,
   UserField extends { type: string } = Field | G["UserField"]
-> = Omit<
-  {
-    [Type in UserField["type"]]: React.FunctionComponent<
-      FieldProps<ExtractField<UserField, Type>, any> & {
-        children: ReactNode;
-        name: string;
-      }
-    >;
-  },
-  "custom"
->;
+> = {
+  /**
+   * The React component used to render this field type.
+   *
+   * Set to `null` to not render anything for the field type.
+   */
+  [Type in UserField["type"]]: React.FunctionComponent<
+    FieldProps<ExtractField<UserField, Type>, any> & {
+      children: ReactNode;
+      name: string;
+    }
+  > | null;
+};

@@ -56,6 +56,7 @@ import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
+import { LinePlaceholder } from "./LinePlaceholder";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -426,11 +427,14 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       zoneCompound
     );
 
-    const isDropEnabled =
-      isEnabled &&
-      (preview
-        ? contentIdsWithPreview.length === 1
-        : contentIdsWithPreview.length === 0);
+    // contentIdsWithPreview counts a non-line preview as one injected
+    // placeholder, but a line placeholder injects nothing. So a zone
+    // is empty (and a valid drop target) when its only
+    // entry, if any, is that injected placeholder.
+    // Otherwise the children within the zone should be the targets.
+    const injectedPreviewCount = preview && !preview.linePlaceholder ? 1 : 0;
+    const isZoneEmpty = contentIdsWithPreview.length === injectedPreviewCount;
+    const isDropEnabled = isEnabled && isZoneEmpty;
 
     const zoneStore = useContext(ZoneStoreContext);
 
@@ -536,6 +540,13 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
               inDroppableZone={targetAccepted}
             />
           ))
+        )}
+        {preview?.linePlaceholder && (
+          <LinePlaceholder
+            zoneRef={ref}
+            contentIds={contentIds}
+            index={preview.index}
+          />
         )}
       </El>
     );

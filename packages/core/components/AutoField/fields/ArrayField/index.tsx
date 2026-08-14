@@ -28,6 +28,7 @@ import { walkField } from "../../../../lib/data/map-fields";
 import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
 import { getDeep } from "../../../../lib/data/get-deep";
+import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
 import { SubField } from "../../subfield";
 import { setDeep } from "../../../../lib/data/set-deep";
 import { useMessage } from "../../../../lib/use-message";
@@ -95,12 +96,13 @@ const ArrayFieldItemInternal = ({
   name?: string;
   localName?: string;
 }) => {
-  // NB this will prevent array fields from being used outside of Puck
+  // NB AppStore usage will prevent array fields from being used outside of Puck
+  const fieldTypeOverrides = useAppStore((s) => s.overrides.fieldTypes);
+
   const isExpanded = useAppStore((s) => {
     return s.state.ui.arrayState[arrayId]?.openId === id;
   });
 
-  // NB this will prevent array fields from being used outside of Puck
   const canEdit = useAppStore(
     (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
   );
@@ -110,10 +112,10 @@ const ArrayFieldItemInternal = ({
       return false;
     }
 
-    return Object.values(field.arrayFields).some(
-      (subField) => subField.type !== "slot" && subField.visible !== false
+    return Object.values(field.arrayFields).some((subField) =>
+      isFieldVisible(fieldTypeOverrides, subField)
     );
-  }, [field.arrayFields]);
+  }, [field.arrayFields, fieldTypeOverrides]);
 
   return (
     <Sortable id={id} index={dragIndex} disabled={readOnly}>

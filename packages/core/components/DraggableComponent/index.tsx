@@ -34,6 +34,7 @@ import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
+import { useDropAnimation } from "../DragDropContext/use-drop-animation";
 import { LoadedRichTextMenu } from "../RichTextMenu";
 import type { NodeHandle } from "../../store/slices/nodes";
 import { assignRefs } from "../../lib/assign-refs";
@@ -179,6 +180,7 @@ export const DraggableComponent = ({
   );
 
   const zoneStore = useContext(ZoneStoreContext);
+  const appStore = useAppStoreApi();
 
   const [dragAxis, setDragAxis] = useState(userDragAxis || autoDragAxis);
 
@@ -186,6 +188,11 @@ export const DraggableComponent = ({
     () => createDynamicCollisionDetector(dragAxis),
     [dragAxis]
   );
+
+  // The default drop animation targets the source placeholder. Line drags and
+  // drawer insertion previews instead commit immediately and glide a visual
+  // copy to the item's final rendered position.
+  const dropAnimation = useDropAnimation(zoneStore, id);
 
   const {
     ref: sortableRef,
@@ -215,7 +222,7 @@ export const DraggableComponent = ({
     },
     plugins: (defaults) => [
       ...defaults,
-      Feedback.configure({ feedback: "clone" }),
+      Feedback.configure({ feedback: "clone", dropAnimation }),
     ],
   });
 
@@ -446,8 +453,6 @@ export const DraggableComponent = ({
     },
     [index, zoneCompound, id, isSelected, _experimentalFullScreenCanvas]
   );
-
-  const appStore = useAppStoreApi();
 
   const onSelectParent = useCallback(() => {
     const { nodes, zones } = appStore.getState().state.indexes;

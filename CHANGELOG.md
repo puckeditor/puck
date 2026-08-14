@@ -2,6 +2,32 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.23.0](/compare/v0.22.4...v0.23.0) (2026-08-07)
+
+
+### Features
+
+* add dictionary ([65790c8](https://github.com/puckeditor/puck/commit/65790c826cfdb51364da14ae9a7d96d43548edae]))
+* add draggable outline and streamline UI ([db035ce](https://github.com/puckeditor/puck/commit/db035ce57a94425da9d0e82d3f1c06ecabd4c350))
+* allow the user to specify drag-and-drop behavior ([d204aa9](https://github.com/puckeditor/puck/commit/d204aa9f2049ec3d98393dba9f9bf6cf1c21c66c))
+* introduce static drag-and-drop for reduced layout shift ([835ab3e](https://github.com/puckeditor/puck/commit/2facb6b589fbf3675a9433144f1d24d532cf0e61))
+
+
+### Bug Fixes
+
+* default page data in next recipes ([66de27c](https://github.com/puckeditor/puck/commit/66de27c13120f823b2cd05139a8d596ea4d8b6d7))
+* don't call generate-id at module import time ([1ab086c](https://github.com/puckeditor/puck/commit/1ab086c1c0247daece6ddb757e2665fa7f29b435))
+* don't drop last fields when updating config ([4bf6887](https://github.com/puckeditor/puck/commit/4bf6887d6ef08964c520a172a8db20da5329d1d5))
+* don't drop transformed fields on updates ([9bf3e00](https://github.com/puckeditor/puck/commit/9bf3e00c13120f823b2cd05139a8d596ea4d8b6d7))
+* don't mutate nested values in setDeep ([cd238ee](https://github.com/puckeditor/puck/commit/cd238eeae9e4edd3d66faab83a90c182ebff6834))
+* don't prevent root prop title type changes ([666fb74](https://github.com/puckeditor/puck/commit/666fb747298ec90618e321944b19e7981f3a35c3))
+* don't remount root slots when props change ([1960be2](https://github.com/puckeditor/puck/commit/1960be2ae934d2dde459e778ffd79341104e4341))
+* don't reset caret position in custom and overriden fields ([c37bed9](https://github.com/puckeditor/puck/commit/c37bed930a66a2f0a0b2e2c3b1489594e37af804))
+* type data as user data before sending it to action in react router ai recipe ([026f030](https://github.com/puckeditor/puck/commit/026f0300cca5ea8effc23cdcd6192bc3e1bf0cc1))
+* use the latest component position in inline fields ([e83767b](https://github.com/puckeditor/puck/commit/e83767b13120f823b2cd05139a8d596ea4d8b6d7))
+
+
+
 ## [0.22.4](https://github.com/measuredco/puck/compare/v0.22.3...v0.22.4) (2026-07-29)
 
 

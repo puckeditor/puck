@@ -4,7 +4,7 @@ title: fieldTypes
 
 # fieldTypes
 
-Override each [field type](/docs/api-reference/fields).
+Override or hide each [field type](/docs/api-reference/fields).
 
 ```tsx copy
 const overrides = {
@@ -21,6 +21,20 @@ const overrides = {
 ```
 
 You can specify a custom render method for each known [field type](/docs/api-reference/fields), or introduce completely new ones.
+
+## Hiding field types
+
+Set a field type to `null` to hide every field of that type from the fields sidebar.
+
+```tsx copy
+const overrides = {
+  fieldTypes: {
+    text: null,
+  },
+};
+```
+
+[Plugins](/docs/api-reference/plugins) can override this behavior, showing hidden field types if necessary.
 
 ## Render Props
 
