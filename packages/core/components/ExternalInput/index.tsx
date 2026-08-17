@@ -129,6 +129,7 @@ export const ExternalInput = ({
   }, []);
 
   const externalItemLabel = useMessage("field-external-item");
+  const detachLabel = useMessage("field-external-detach");
   const searchLabel = useMessage("field-external-search");
   const toggleFiltersLabel = useMessage("field-external-togglefilters");
   const selectDataLabel = useMessage("field-external-selectdata");
@@ -171,6 +172,7 @@ export const ExternalInput = ({
               onChange(null);
             }}
             disabled={readOnly}
+            aria-label={detachLabel}
           >
             <Unlock size={16} />
           </button>
