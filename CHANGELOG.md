@@ -2,6 +2,21 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.24.0](https://github.com/puckeditor/puck/compare/v0.23.0...v0.24.0) (2026-08-17)
+
+
+### Bug Fixes
+
+* accept custom fields for fieldTypes overrides ([169405a](https://github.com/puckeditor/puck/commit/169405ab8d067ec091a6dc614f9c8ed1a29af3ba))
+
+
+### Features
+
+* add option to hide fields through fieldTypes overrides ([9e95619](https://github.com/puckeditor/puck/commit/9e956191d1a85f000a28c792f4c352da49a4858f))
+
+
+
+
 ## [0.23.0](/compare/v0.22.4...v0.23.0) (2026-08-07)
 
 
