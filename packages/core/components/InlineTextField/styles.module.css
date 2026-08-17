@@ -3,6 +3,10 @@
   display: inline-block;
   white-space: pre-wrap;
   text-decoration: inherit;
+  /* Browsers force `overflow-wrap: break-word` on contenteditable elements,
+     which wraps overflowing text on hover and shifts the layout. Inherit the
+     parent's value so the editable and rendered states stay identical. */
+  overflow-wrap: inherit;
 }
 
 /* Safari fixes for https://bugs.webkit.org/show_bug.cgi?id=112854 */
