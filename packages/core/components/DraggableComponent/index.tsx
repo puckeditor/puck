@@ -63,12 +63,12 @@ const DefaultActionBar = ({
   dragHandle?: ReactNode;
 }) => (
   <ActionBar>
-    {dragHandle && <ActionBar.Group>{dragHandle}</ActionBar.Group>}
     <ActionBar.Group>
       {parentAction}
       {label && <ActionBar.Label label={label} />}
     </ActionBar.Group>
     <ActionBar.Group>{children}</ActionBar.Group>
+    {dragHandle && <ActionBar.Group>{dragHandle}</ActionBar.Group>}
   </ActionBar>
 );
 

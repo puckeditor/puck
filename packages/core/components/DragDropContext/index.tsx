@@ -1,5 +1,3 @@
-import { DragDropProvider } from "@dnd-kit/react";
-import { useAppStore, useAppStoreApi } from "../../store";
 import {
   createContext,
   Dispatch,
@@ -12,18 +10,16 @@ import {
   useRef,
   useState,
 } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import { createStore } from "zustand";
+import { effect } from "@dnd-kit/state";
 import { AutoScroller, defaultPreset, DragDropManager } from "@dnd-kit/dom";
 import { DragDropEventHandlers } from "@dnd-kit/abstract";
-import { DropZoneProvider } from "../DropZone";
 import type { Draggable, Droppable } from "@dnd-kit/dom";
+import { DragDropProvider } from "@dnd-kit/react";
+
+import { useAppStore, useAppStoreApi } from "../../store";
 import { getItem } from "../../lib/data/get-item";
-import {
-  DropZoneContext,
-  Preview,
-  RootVirtualizerHandle,
-  ZoneStore,
-  ZoneStoreProvider,
-} from "../DropZone/context";
 import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
 import { prepareCommitFlip } from "../../lib/dnd/flip-commit";
 import { resolveDndMode } from "../../lib/dnd/resolve-dnd-mode";
@@ -31,21 +27,29 @@ import { getZoneContentIds } from "../../lib/get-zone-content-ids";
 import { getComponentSelector } from "../../lib/dom-selectors";
 import { insertComponent } from "../../lib/insert-component";
 import { moveComponent } from "../../lib/move-component";
-import { useDebouncedCallback } from "use-debounce";
-import { ComponentDndData } from "../DraggableComponent";
-
 import { collisionStore } from "../../lib/dnd/collision/dynamic/store";
-import { generateId } from "../../lib/generate-id";
-import { createStore } from "zustand";
-import { getDeepDir } from "../../lib/get-deep-dir";
+import isDraggingFromHandle from "../../lib/dnd/is-dragging-from-handle";
 import {
   getCollisionPosition,
   getInsertIndex,
 } from "../../lib/dnd/get-insert-index";
+import { generateId } from "../../lib/generate-id";
+import { getDeepDir } from "../../lib/get-deep-dir";
 import { useSensors } from "../../lib/dnd/use-sensors";
 import { getFrame } from "../../lib/get-frame";
-import { effect } from "@dnd-kit/state";
+
 import type { DndBehavior } from "../../types";
+
+import { DropZoneProvider } from "../DropZone";
+import {
+  DropZoneContext,
+  Preview,
+  RootVirtualizerHandle,
+  ZoneStore,
+  ZoneStoreProvider,
+} from "../DropZone/context";
+import { ComponentDndData } from "../DraggableComponent";
+
 import { useLinePlaceholder } from "./use-line-placeholder";
 
 const DEBUG = false;
@@ -326,6 +330,8 @@ const DragDropContextClient = ({
   const [dragListeners, setDragListeners] = useState<DragCbs>({});
 
   const dragMode = useRef<"new" | "existing" | null>(null);
+
+  const dragStartedFromHandle = useRef(false);
 
   const initialSelector = useRef<{ zone: string; index: number }>(undefined);
 
@@ -617,6 +623,7 @@ const DragDropContextClient = ({
               const isLinePlaceholder =
                 resolveDndMode(behavior, {
                   isDraggingBetweenSlots: isReparenting,
+                  isDraggingFromHandle: dragStartedFromHandle.current,
                 }) === "static";
 
               if (isLinePlaceholder) {
@@ -694,7 +701,10 @@ const DragDropContextClient = ({
             const item = getItem(sourceSelector, appStore.getState().state);
 
             if (item) {
-              const showLinePlaceholder = resolveDndMode(behavior) === "static";
+              const showLinePlaceholder =
+                resolveDndMode(behavior, {
+                  isDraggingFromHandle: dragStartedFromHandle.current,
+                }) === "static";
 
               setLinePlaceholderActive(showLinePlaceholder);
 
@@ -722,6 +732,9 @@ const DragDropContextClient = ({
           const isNewComponent = event.operation.source?.type === "drawer";
 
           dragMode.current = isNewComponent ? "new" : "existing";
+          // The action bar overlay unmounts once dragging begins, clearing source.handle.
+          // So we check and track the source handle before the drag starts
+          dragStartedFromHandle.current = isDraggingFromHandle(event.operation);
           initialSelector.current = undefined;
 
           zoneStore.setState({ draggedItem: event.operation.source });

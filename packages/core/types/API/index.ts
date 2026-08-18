@@ -30,7 +30,8 @@ export type DndConfig = {
   enableDragHandle?: boolean;
   /**
    * - `auto` (default): fluid drags within a slot, switching to a static
-   *   line placeholder when dragging between slots or inserting a new item
+   *   line placeholder when dragging between slots, inserting a new item,
+   *   or dragging from the action bar drag handle
    * - `fluid`: always animate sibling items during a drag
    * - `static`: always show a line placeholder during a drag, only
    *   animating sibling items on drop
