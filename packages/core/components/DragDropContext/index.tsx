@@ -13,7 +13,12 @@ import {
 import { useDebouncedCallback } from "use-debounce";
 import { createStore } from "zustand";
 import { effect } from "@dnd-kit/state";
-import { AutoScroller, defaultPreset, DragDropManager } from "@dnd-kit/dom";
+import {
+  AutoScroller,
+  defaultPreset,
+  DragDropManager,
+  PointerActivationConstraints,
+} from "@dnd-kit/dom";
 import { DragDropEventHandlers } from "@dnd-kit/abstract";
 import type { Draggable, Droppable } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
@@ -320,12 +325,23 @@ const DragDropContextClient = ({
     ),
   ]);
 
+  // The distance constraint below defers drag activation until the pointer moves,
+  // so dnd-kit's activator event ends up being a later pointermove whose
+  // target can be the Puck iframe rather than the actual target. 
+  // This pins the pointerdown, whose target is the element actually pressed 
+  // for reliable handle detection in onBeforeDragStart.
+  const dragPointerDownEvent = useRef<PointerEvent | null>(null);
+
   // Allow dragging from the component body or a registered handle (action bar).
   const sensors = useSensors({
     activatorElements: (source) =>
       source.handle && source.handle !== source.element
         ? [source.element, source.handle]
         : [source.element],
+    mouse: [new PointerActivationConstraints.Distance({ value: 5 })],
+    onPointerDown: (event) => {
+      dragPointerDownEvent.current = event;
+    },
   });
 
   const [dragListeners, setDragListeners] = useState<DragCbs>({});
@@ -628,8 +644,7 @@ const DragDropContextClient = ({
               const isLinePlaceholder =
                 resolveDndMode(behavior, {
                   isDraggingBetweenSlots: isReparenting,
-                  isDraggingFromHandle:
-                    zoneStore.getState().draggingFromHandle,
+                  isDraggingFromHandle: zoneStore.getState().draggingFromHandle,
                 }) === "static";
 
               if (isLinePlaceholder) {
@@ -709,8 +724,7 @@ const DragDropContextClient = ({
             if (item) {
               const showLinePlaceholder =
                 resolveDndMode(behavior, {
-                  isDraggingFromHandle:
-                    zoneStore.getState().draggingFromHandle,
+                  isDraggingFromHandle: zoneStore.getState().draggingFromHandle,
                 }) === "static";
 
               setLinePlaceholderActive(showLinePlaceholder);
@@ -743,10 +757,15 @@ const DragDropContextClient = ({
 
           // Check the handle before the drag starts: the flag is what keeps
           // the dragged component's action bar mounted, and for body drags
-          // the overlay unmounts once dragging begins
+          // the overlay unmounts once dragging begins.
+          // (Using the pointerdown event since dnd-kit can incorrectly 
+          // report the iframe as the target)
           zoneStore.setState({
             draggedItem: event.operation.source,
-            draggingFromHandle: isDraggingFromHandle(event.operation),
+            draggingFromHandle: isDraggingFromHandle({
+              event: dragPointerDownEvent.current,
+              source: event.operation.source,
+            }),
           });
 
           if (
