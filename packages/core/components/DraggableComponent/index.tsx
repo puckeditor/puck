@@ -27,6 +27,11 @@ import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic"
 import { DragAxis } from "../../types";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
 import { Feedback } from "@dnd-kit/dom";
+import {
+  hidePopover,
+  showPopover,
+  supportsPopover,
+} from "@dnd-kit/dom/utilities";
 import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
 import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
 import { useShallow } from "zustand/react/shallow";
@@ -339,6 +344,7 @@ export const DraggableComponent = ({
   }, [iframe.enabled]);
 
   const [style, setStyle] = useState<CSSProperties>();
+  const overlayRef = useRef<HTMLDivElement>(null);
   const lastRectRef = useRef<DOMRectReadOnly | null>(null);
 
   // PERFORMANCE: coalesce multiple triggers into a single rAF'd sync
@@ -508,6 +514,91 @@ export const DraggableComponent = ({
     ZoneStoreContext,
     (s) => s.hoveringComponent === id
   );
+
+  const isHandleDragSource = useContextStore(
+    ZoneStoreContext,
+    (s) => s.draggingFromHandle && s.draggedItem?.id === id
+  );
+
+  useEffect(() => {
+    if (!isHandleDragSource) return;
+
+    const source = ref.current;
+    const view = source?.ownerDocument.defaultView;
+
+    if (!source || !view) return;
+
+    let frame = 0;
+
+    const syncDraggedComponent = () => {
+      const overlay = overlayRef.current;
+
+      if (source.hasAttribute("data-dnd-dragging") && overlay) {
+        const rect = source.getBoundingClientRect();
+
+        Object.assign(overlay.style, {
+          left: `${rect.left}px`,
+          top: `${rect.top}px`,
+          height: `${rect.height}px`,
+          width: `${rect.width}px`,
+          position: "fixed",
+        });
+
+        if (supportsPopover(overlay)) {
+          overlay.setAttribute("popover", "manual");
+          showPopover(overlay);
+        }
+      }
+    };
+
+    // Drop animations update computed geometry without mutating inline styles.
+    const trackDropAnimation = () => {
+      frame = 0;
+      syncDraggedComponent();
+
+      if (source.hasAttribute("data-dnd-dropping")) {
+        frame = view.requestAnimationFrame(trackDropAnimation);
+      }
+    };
+
+    // Pointer translations are written by dnd-kit during its own rAF. Respond
+    // to that write so the separate action-bar portal moves in the same frame.
+    const observer = new view.MutationObserver(() => {
+      syncDraggedComponent();
+
+      if (!frame && source.hasAttribute("data-dnd-dropping")) {
+        frame = view.requestAnimationFrame(trackDropAnimation);
+      }
+    });
+
+    observer.observe(source, {
+      attributes: true,
+      attributeFilter: ["style", "data-dnd-dropping"],
+    });
+    syncDraggedComponent();
+
+    return () => {
+      observer.disconnect();
+      view.cancelAnimationFrame(frame);
+
+      const overlay = overlayRef.current;
+      const nextStyle = getStyle();
+
+      if (overlay) {
+        hidePopover(overlay);
+        overlay.removeAttribute("popover");
+      }
+
+      if (overlay && nextStyle) {
+        Object.assign(overlay.style, nextStyle);
+        overlay.style.position = nextStyle.position ?? "";
+      }
+    };
+  }, [
+    getStyle,
+    isHandleDragSource,
+    ref.current, // Retarget if an inline component replaces its root mid-drag
+  ]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -771,28 +862,33 @@ export const DraggableComponent = ({
 
   return (
     <DropZoneProvider value={nextContextValue}>
-      {dragFinished &&
-        isVisible &&
+      {/* Keep the action bar attached to the component during handle drags. */}
+      {((dragFinished && isVisible) || isHandleDragSource) &&
         createPortal(
           <div
             className={getClassName({
-              isSelected,
-              isDragging: thisIsDragging,
+              isSelected: isSelected || isHandleDragSource,
               hover: hover || indicativeHover,
             })}
             style={{ ...style }}
             data-puck-overlay
+            ref={overlayRef}
           >
-            {debug}
-            {isLoading && (
-              <div className={getClassName("loadingOverlay")}>
-                <Loader />
-              </div>
+            {!isHandleDragSource && (
+              <>
+                {debug}
+                {isLoading && (
+                  <div className={getClassName("loadingOverlay")}>
+                    <Loader />
+                  </div>
+                )}
+              </>
             )}
             <div
               className={getClassName("actionsOverlay")}
               style={{
                 top: actionsOverlayTop / zoom,
+                pointerEvents: isHandleDragSource ? "none" : undefined,
               }}
             >
               <div
@@ -839,16 +935,18 @@ export const DraggableComponent = ({
                 </CustomActionBar>
               </div>
             </div>
-            <div className={getClassName("overlayWrapper")}>
-              <CustomOverlay
-                componentId={id}
-                componentType={componentType}
-                hover={hover}
-                isSelected={isSelected}
-              >
-                <div className={getClassName("overlay")}></div>
-              </CustomOverlay>
-            </div>
+            {!isHandleDragSource && (
+              <div className={getClassName("overlayWrapper")}>
+                <CustomOverlay
+                  componentId={id}
+                  componentType={componentType}
+                  hover={hover}
+                  isSelected={isSelected}
+                >
+                  <div className={getClassName("overlay")}></div>
+                </CustomOverlay>
+              </div>
+            )}
           </div>,
           portalEl || document.body
         )}

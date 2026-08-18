@@ -144,6 +144,7 @@ const DragDropContextClient = ({
       areaDepthIndex: {},
       nextAreaDepthIndex: {},
       draggedItem: null,
+      draggingFromHandle: false,
       previewIndex: {},
       enabledIndex: {},
       hoveringComponent: null,
@@ -331,8 +332,6 @@ const DragDropContextClient = ({
 
   const dragMode = useRef<"new" | "existing" | null>(null);
 
-  const dragStartedFromHandle = useRef(false);
-
   const initialSelector = useRef<{ zone: string; index: number }>(undefined);
 
   const {
@@ -372,7 +371,10 @@ const DragDropContextClient = ({
 
           if (!source) {
             setLinePlaceholderActive(false);
-            zoneStore.setState({ draggedItem: null });
+            zoneStore.setState({
+              draggedItem: null,
+              draggingFromHandle: false,
+            });
 
             return;
           }
@@ -417,7 +419,10 @@ const DragDropContextClient = ({
           const onAnimationEnd = () => {
             // Keep the ghost faded until the drop animation lands
             setLinePlaceholderActive(false);
-            zoneStore.setState({ draggedItem: null });
+            zoneStore.setState({
+              draggedItem: null,
+              draggingFromHandle: false,
+            });
 
             // Tidy up cancellation
             if (event.canceled || target?.type === "void") {
@@ -623,7 +628,8 @@ const DragDropContextClient = ({
               const isLinePlaceholder =
                 resolveDndMode(behavior, {
                   isDraggingBetweenSlots: isReparenting,
-                  isDraggingFromHandle: dragStartedFromHandle.current,
+                  isDraggingFromHandle:
+                    zoneStore.getState().draggingFromHandle,
                 }) === "static";
 
               if (isLinePlaceholder) {
@@ -703,7 +709,8 @@ const DragDropContextClient = ({
             if (item) {
               const showLinePlaceholder =
                 resolveDndMode(behavior, {
-                  isDraggingFromHandle: dragStartedFromHandle.current,
+                  isDraggingFromHandle:
+                    zoneStore.getState().draggingFromHandle,
                 }) === "static";
 
               setLinePlaceholderActive(showLinePlaceholder);
@@ -732,12 +739,15 @@ const DragDropContextClient = ({
           const isNewComponent = event.operation.source?.type === "drawer";
 
           dragMode.current = isNewComponent ? "new" : "existing";
-          // The action bar overlay unmounts once dragging begins, clearing source.handle.
-          // So we check and track the source handle before the drag starts
-          dragStartedFromHandle.current = isDraggingFromHandle(event.operation);
           initialSelector.current = undefined;
 
-          zoneStore.setState({ draggedItem: event.operation.source });
+          // Check the handle before the drag starts: the flag is what keeps
+          // the dragged component's action bar mounted, and for body drags
+          // the overlay unmounts once dragging begins
+          zoneStore.setState({
+            draggedItem: event.operation.source,
+            draggingFromHandle: isDraggingFromHandle(event.operation),
+          });
 
           if (
             appStore.getState().selectedItem?.props.id !==

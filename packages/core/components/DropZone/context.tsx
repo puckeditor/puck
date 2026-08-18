@@ -59,6 +59,7 @@ export type ZoneStore = {
   enabledIndex: Record<string, boolean>;
   previewIndex: Record<string, Preview>;
   draggedItem?: Draggable | null;
+  draggingFromHandle: boolean;
   hoveringComponent: string | null;
   registerRootVirtualizer: (
     zoneCompound: string,
@@ -78,6 +79,7 @@ export const ZoneStoreContext = createContext<StoreApi<ZoneStore>>(
     previewIndex: {},
     enabledIndex: {},
     hoveringComponent: null,
+    draggingFromHandle: false,
     registerRootVirtualizer: () => {},
     unregisterRootVirtualizer: () => {},
     scrollToComponent: () => false,
