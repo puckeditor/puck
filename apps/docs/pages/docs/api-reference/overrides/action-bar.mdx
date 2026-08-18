@@ -20,22 +20,31 @@ const overrides = {
 
 ## Props
 
-| Prop                            | Example          | Type      |
-| ------------------------------- | ---------------- | --------- |
-| [`children`](#children)         | `<div />`        | ReactNode |
-| [`dragHandle`](#dragHandle)     | `<div />`        | ReactNode |
-| [`label`](#label)               | `"HeadingBlock"` | String    |
-| [`parentAction`](#parentAction) | `<div />`        | ReactNode |
+| Prop                              | Example          | Type      |
+| --------------------------------- | ---------------- | --------- |
+| [`children`](#children)           | `<div />`        | ReactNode |
+| [`dragHandle`](#draghandle)       | `<div />`        | ReactNode |
+| [`dragHandleRef`](#draghandleref) | `(el) => {}`     | Ref       |
+| [`label`](#label)                 | `"HeadingBlock"` | String    |
+| [`parentAction`](#parentaction)   | `<div />`        | ReactNode |
 
 ### `children`
 
-A fragment containing the default [actions](/docs/api-reference/components/action-bar-action). This should normally be rendered inside an [`<ActionBar.Group>`](/docs/api-reference/components/action-bar-group).
+A fragment containing the default [actions](/docs/api-reference/components/action-bar-action). Normally rendered inside an [`<ActionBar.Group>`](/docs/api-reference/components/action-bar-group).
 
 ### `dragHandle`
 
-A pre-wired [`<ActionBar.DragHandle>`](/docs/api-reference/components/action-bar-drag-handle) to drag the current component.
+The default drag handle action to drag the current component.
 
-`undefined` unless [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is set, or if the user doesn't have the `drag` [permission](/docs/api-reference/permissions).
+`undefined` unless [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is enabled.
+
+### `dragHandleRef`
+
+A `ref` to register your own element as the drag handle.
+
+`undefined` unless [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is enabled.
+
+Only use this if not rendering the provided [`dragHandle`](#draghandle) node.
 
 ### `label`
 

@@ -7,13 +7,13 @@ import { ActionBar } from "@/puck";
 
 # \<ActionBar.DragHandle\>
 
-Render a drag handle in the [`<ActionBar>`](action-bar). Used by the [actionBar override](/docs/api-reference/overrides/action-bar) when [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is set.
+Render a drag handle in the [`<ActionBar>`](action-bar). Used by the [actionBar override](/docs/api-reference/overrides/action-bar) when [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is enabled.
 
-Dragging is driven by Puck's drag-and-drop sensors, so the handle must be registered via the [`ref`](#ref) provided by the [`dragHandle`](/docs/api-reference/overrides/action-bar#draghandle) prop. In most cases you should render that prop directly rather than using this component.
-
-```tsx showLineNumbers {2} copy
+```tsx showLineNumbers {3} copy
 <ActionBar>
-  <ActionBar.Group>{dragHandle}</ActionBar.Group>
+  <ActionBar.Group>
+    <ActionBar.DragHandle label="Drag to reorder" />
+  </ActionBar.Group>
 </ActionBar>
 ```
 
@@ -39,7 +39,7 @@ Dragging is driven by Puck's drag-and-drop sensors, so the handle must be regist
 
 ### `label`
 
-A label to provide an accessible label for the handle. Defaults to the [`action-drag`](/docs/api-reference/dictionary) dictionary token when rendered by Puck.
+An accessible label for the handle. Defaults to the [`action-drag`](/docs/api-reference/dictionary) dictionary token when rendered by Puck.
 
 ### `disabled`
 
@@ -47,4 +47,4 @@ Prevent the handle from initiating a drag.
 
 ### `ref`
 
-A [ref](https://react.dev/learn/manipulating-the-dom-with-refs) to the underlying `button`, used to register the handle with Puck's drag-and-drop sensors.
+A [ref](https://react.dev/learn/manipulating-the-dom-with-refs) passed to the underlying `button`. Pass the override's [`dragHandleRef`](/docs/api-reference/overrides/action-bar#draghandleref) when using it within the [`actionBar`](/docs/api-reference/overrides/action-bar) override.

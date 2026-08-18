@@ -85,10 +85,6 @@
   touch-action: none;
 }
 
-.ActionBarAction--grab:active {
-  cursor: grabbing;
-}
-
 .ActionBarAction-icon {
   height: var(--puck-actionbar-action-size, var(--puck-icon-size-s));
   width: var(--puck-actionbar-action-size, var(--puck-icon-size-s));

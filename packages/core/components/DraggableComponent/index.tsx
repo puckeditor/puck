@@ -64,6 +64,7 @@ const DefaultActionBar = ({
   children: ReactNode;
   parentAction: ReactNode;
   dragHandle?: ReactNode;
+  dragHandleRef?: (element: Element | null) => void;
 }) => (
   <ActionBar>
     <ActionBar.Group>
@@ -751,6 +752,14 @@ export const DraggableComponent = ({
     [enableDragHandle, permissions.drag, handleRef, dragLabel]
   );
 
+  // Expose the raw handle ref too, so custom action bars can attach it to
+  // their own element. Gated identically to `dragHandle` so both appear
+  // under the same conditions.
+  const dragHandleRef = useMemo(
+    () => (enableDragHandle && permissions.drag ? handleRef : undefined),
+    [enableDragHandle, permissions.drag, handleRef]
+  );
+
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
       ...ctx!,
@@ -824,6 +833,7 @@ export const DraggableComponent = ({
                   parentAction={parentAction}
                   label={DEBUG ? id : label}
                   dragHandle={dragHandle}
+                  dragHandleRef={dragHandleRef}
                 >
                   {richText && (
                     <>

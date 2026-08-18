@@ -327,8 +327,8 @@ const DragDropContextClient = ({
 
   // The distance constraint below defers drag activation until the pointer moves,
   // so dnd-kit's activator event ends up being a later pointermove whose
-  // target can be the Puck iframe rather than the actual target. 
-  // This pins the pointerdown, whose target is the element actually pressed 
+  // target can be the Puck iframe rather than the actual target.
+  // This pins the pointerdown, whose target is the element actually pressed
   // for reliable handle detection in onBeforeDragStart.
   const dragPointerDownEvent = useRef<PointerEvent | null>(null);
 
@@ -758,7 +758,7 @@ const DragDropContextClient = ({
           // Check the handle before the drag starts: the flag is what keeps
           // the dragged component's action bar mounted, and for body drags
           // the overlay unmounts once dragging begins.
-          // (Using the pointerdown event since dnd-kit can incorrectly 
+          // (Using the pointerdown event since dnd-kit can incorrectly
           // report the iframe as the target)
           zoneStore.setState({
             draggedItem: event.operation.source,
