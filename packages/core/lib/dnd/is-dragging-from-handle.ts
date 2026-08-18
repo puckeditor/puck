@@ -6,14 +6,14 @@ import { isElement } from "@dnd-kit/dom/utilities";
  *
  * NB: If the handle unmounts before the drag starts, you should use this in the `onBeforeDragStart` callback to check and track the source handle.
  *
- * @param operation The drag operation object from dnd-kit
+ * @param operation The drag event and source.
  * @returns True if the drag was started from a registered drag handle, false otherwise.
  */
 const isDraggingFromHandle = (operation: {
-  activatorEvent: Event | null;
+  event: Event | null;
   source: Draggable | null;
 }) => {
-  const { activatorEvent, source } = operation;
+  const { event: activatorEvent, source } = operation;
   const target = activatorEvent?.target ?? null;
 
   return Boolean(
