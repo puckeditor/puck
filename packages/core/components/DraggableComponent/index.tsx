@@ -246,11 +246,11 @@ export const DraggableComponent = ({
       sortable.droppable.disabled = !s.enabledIndex[zoneCompound];
     });
 
-    if (ref.current && !permissions.drag) {
-      ref.current.setAttribute("data-puck-disabled", "");
+    if (componentRef.current && !permissions.drag) {
+      componentRef.current.setAttribute("data-puck-disabled", "");
 
       return () => {
-        ref.current?.removeAttribute("data-puck-disabled");
+        componentRef.current?.removeAttribute("data-puck-disabled");
         cleanup();
       };
     }
@@ -260,14 +260,14 @@ export const DraggableComponent = ({
 
   const [, setRerender] = useState(0);
 
-  const ref = useRef<HTMLElement>(null);
+  const componentRef = useRef<HTMLElement>(null);
 
   const refSetter = useCallback(
     (el: HTMLElement | null) => {
       sortableRef(el);
 
-      if (ref.current !== el) {
-        ref.current = el;
+      if (componentRef.current !== el) {
+        componentRef.current = el;
         setRerender((update) => update + 1);
 
         if (itemRef) {
@@ -283,16 +283,16 @@ export const DraggableComponent = ({
   useEffect(() => {
     setPortalEl(
       iframe.enabled
-        ? ref.current?.ownerDocument.body
-        : ref.current?.closest<HTMLElement>("[data-puck-preview]") ??
+        ? componentRef.current?.ownerDocument.body
+        : componentRef.current?.closest<HTMLElement>("[data-puck-preview]") ??
             document.body
     );
   }, [iframe.enabled]);
 
   const getStyle = useCallback(() => {
-    if (!ref.current) return;
+    if (!componentRef.current) return;
 
-    const el = ref.current!;
+    const el = componentRef.current!;
     const rect = el.getBoundingClientRect();
     const portalContainerEl = iframe.enabled
       ? null
@@ -354,7 +354,7 @@ export const DraggableComponent = ({
     setStyle(getStyle());
 
     if (itemRef) {
-      assignRefs([itemRef], ref.current);
+      assignRefs([itemRef], componentRef.current);
     }
   }, [getStyle, itemRef]);
 
@@ -377,12 +377,12 @@ export const DraggableComponent = ({
   }, []);
 
   useEffect(() => {
-    if (ref.current) {
+    if (componentRef.current) {
       const observer = new ResizeObserver(() => {
         scheduleSync();
       });
 
-      observer.observe(ref.current);
+      observer.observe(componentRef.current);
 
       return () => {
         observer.disconnect();
@@ -523,18 +523,18 @@ export const DraggableComponent = ({
   useEffect(() => {
     if (!isHandleDragSource) return;
 
-    const source = ref.current;
-    const view = source?.ownerDocument.defaultView;
+    const componentElement = componentRef.current;
+    const componentWindow = componentElement?.ownerDocument.defaultView;
 
-    if (!source || !view) return;
+    if (!componentElement || !componentWindow) return;
 
     let frame = 0;
 
     const syncDraggedComponent = () => {
       const overlay = overlayRef.current;
 
-      if (source.hasAttribute("data-dnd-dragging") && overlay) {
-        const rect = source.getBoundingClientRect();
+      if (componentElement.hasAttribute("data-dnd-dragging") && overlay) {
+        const rect = componentElement.getBoundingClientRect();
 
         Object.assign(overlay.style, {
           left: `${rect.left}px`,
@@ -556,22 +556,22 @@ export const DraggableComponent = ({
       frame = 0;
       syncDraggedComponent();
 
-      if (source.hasAttribute("data-dnd-dropping")) {
-        frame = view.requestAnimationFrame(trackDropAnimation);
+      if (componentElement.hasAttribute("data-dnd-dropping")) {
+        frame = componentWindow.requestAnimationFrame(trackDropAnimation);
       }
     };
 
     // Pointer translations are written by dnd-kit during its own rAF. Respond
     // to that write so the separate action-bar portal moves in the same frame.
-    const observer = new view.MutationObserver(() => {
+    const observer = new componentWindow.MutationObserver(() => {
       syncDraggedComponent();
 
-      if (!frame && source.hasAttribute("data-dnd-dropping")) {
-        frame = view.requestAnimationFrame(trackDropAnimation);
+      if (!frame && componentElement.hasAttribute("data-dnd-dropping")) {
+        frame = componentWindow.requestAnimationFrame(trackDropAnimation);
       }
     });
 
-    observer.observe(source, {
+    observer.observe(componentElement, {
       attributes: true,
       attributeFilter: ["style", "data-dnd-dropping"],
     });
@@ -579,7 +579,7 @@ export const DraggableComponent = ({
 
     return () => {
       observer.disconnect();
-      view.cancelAnimationFrame(frame);
+      componentWindow.cancelAnimationFrame(frame);
 
       const overlay = overlayRef.current;
       const nextStyle = getStyle();
@@ -597,15 +597,15 @@ export const DraggableComponent = ({
   }, [
     getStyle,
     isHandleDragSource,
-    ref.current, // Retarget if an inline component replaces its root mid-drag
+    componentRef.current, // Retarget if an inline component replaces its root mid-drag
   ]);
 
   useEffect(() => {
-    if (!ref.current) {
+    if (!componentRef.current) {
       return;
     }
 
-    const el = ref.current as HTMLElement;
+    const el = componentRef.current as HTMLElement;
 
     const _onMouseOver = (e: Event) => {
       const userIsDragging = !!zoneStore.getState().draggedItem;
@@ -645,7 +645,7 @@ export const DraggableComponent = ({
       el.removeEventListener("mouseout", _onMouseOut);
     };
   }, [
-    ref.current, // Remount attributes if the element changes
+    componentRef.current, // Remount attributes if the element changes
     onClick,
     containsActiveZone,
     zoneCompound,
@@ -698,7 +698,7 @@ export const DraggableComponent = ({
   useEffect(() => {
     if (!dragFinished || !(isSelected || thisIsDragging)) return;
 
-    const el = ref.current;
+    const el = componentRef.current;
     if (!el) return;
 
     const doc = el.ownerDocument;
@@ -719,7 +719,7 @@ export const DraggableComponent = ({
       if (t - lastMeasureRef.current >= MEASURE_EVERY_MS) {
         lastMeasureRef.current = t;
 
-        const node = ref.current;
+        const node = componentRef.current;
         if (node) {
           const rect = node.getBoundingClientRect();
           const prev = lastRectRef.current;
@@ -793,8 +793,8 @@ export const DraggableComponent = ({
       return;
     }
 
-    if (ref.current) {
-      const computedStyle = window.getComputedStyle(ref.current);
+    if (componentRef.current) {
+      const computedStyle = window.getComputedStyle(componentRef.current);
 
       if (
         computedStyle.display === "inline" ||
@@ -807,7 +807,7 @@ export const DraggableComponent = ({
     }
 
     setDragAxis(autoDragAxis);
-  }, [ref, userDragAxis, autoDragAxis]);
+  }, [componentRef, userDragAxis, autoDragAxis]);
 
   const selectParentLabel = useMessage("action-selectparent");
   const dragLabel = useMessage("action-drag");
