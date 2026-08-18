@@ -4,7 +4,7 @@ title: FieldTransforms
 
 # FieldTransforms
 
-Transform the data for each [field type](/docs/api-reference/fields) before rendering in the editor.
+Transform the data for each [field type](/docs/api-reference/fields) before rendering. Supported by both [`<Puck>`](/docs/api-reference/components/puck#fieldtransforms) and [`<Render>`](/docs/api-reference/components/render#fieldtransforms).
 
 ```tsx copy
 const fieldTransforms = {
@@ -36,7 +36,7 @@ The component's field definition for this prop.
 
 ### `isReadOnly`
 
-Whether or not this field is currently set to read-only.
+Whether or not this field is currently set to read-only. Always `true` under [`<Render>`](/docs/api-reference/components/render).
 
 ### `propName`
 
