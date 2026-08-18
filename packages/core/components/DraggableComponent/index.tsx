@@ -12,38 +12,36 @@ import {
   useState,
   useTransition,
 } from "react";
-import styles from "./styles.module.css";
-import "./styles.css";
-import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Copy, CornerLeftUp, Trash } from "lucide-react";
-import { useAppStore, useAppStoreApi } from "../../store";
-import { Loader } from "../Loader";
-import { ActionBar } from "../ActionBar";
-
 import { createPortal } from "react-dom";
-
-import { dropZoneContext, DropZoneProvider } from "../DropZone";
-import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
-import { DragAxis } from "../../types";
+import { useShallow } from "zustand/react/shallow";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
 import { Feedback } from "@dnd-kit/dom";
-import {
-  hidePopover,
-  showPopover,
-  supportsPopover,
-} from "@dnd-kit/dom/utilities";
-import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
-import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
-import { useShallow } from "zustand/react/shallow";
-import { getItem } from "../../lib/data/get-item";
 import { useSortable } from "@dnd-kit/react/sortable";
+
+import { useAppStore, useAppStoreApi } from "../../store";
+import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
+import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
+import getClassNameFactory from "../../lib/get-class-name-factory";
+import { getItem } from "../../lib/data/get-item";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
-import { useDropAnimation } from "../DragDropContext/use-drop-animation";
-import { LoadedRichTextMenu } from "../RichTextMenu";
 import type { NodeHandle } from "../../store/slices/nodes";
 import { assignRefs } from "../../lib/assign-refs";
 import { useMessage } from "../../lib/use-message";
+
+import { DragAxis } from "../../types";
+
+import { Loader } from "../Loader";
+import { ActionBar } from "../ActionBar";
+import { dropZoneContext, DropZoneProvider } from "../DropZone";
+import { DropZoneContext, ZoneStoreContext } from "../DropZone/context";
+import { useDropAnimation } from "../DragDropContext/use-drop-animation";
+import { LoadedRichTextMenu } from "../RichTextMenu";
+
+import useDragHandle from "./use-drag-handle";
+import styles from "./styles.module.css";
+import "./styles.css";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -343,8 +341,13 @@ export const DraggableComponent = ({
     return style;
   }, [iframe.enabled]);
 
+  const { overlayRef, isHandleDragSource } = useDragHandle<HTMLDivElement>({
+    componentId: id,
+    componentRef,
+    getComponentStyle: getStyle,
+  });
+
   const [style, setStyle] = useState<CSSProperties>();
-  const overlayRef = useRef<HTMLDivElement>(null);
   const lastRectRef = useRef<DOMRectReadOnly | null>(null);
 
   // PERFORMANCE: coalesce multiple triggers into a single rAF'd sync
@@ -514,91 +517,6 @@ export const DraggableComponent = ({
     ZoneStoreContext,
     (s) => s.hoveringComponent === id
   );
-
-  const isHandleDragSource = useContextStore(
-    ZoneStoreContext,
-    (s) => s.draggingFromHandle && s.draggedItem?.id === id
-  );
-
-  useEffect(() => {
-    if (!isHandleDragSource) return;
-
-    const componentElement = componentRef.current;
-    const componentWindow = componentElement?.ownerDocument.defaultView;
-
-    if (!componentElement || !componentWindow) return;
-
-    let frame = 0;
-
-    const syncDraggedComponent = () => {
-      const overlay = overlayRef.current;
-
-      if (componentElement.hasAttribute("data-dnd-dragging") && overlay) {
-        const rect = componentElement.getBoundingClientRect();
-
-        Object.assign(overlay.style, {
-          left: `${rect.left}px`,
-          top: `${rect.top}px`,
-          height: `${rect.height}px`,
-          width: `${rect.width}px`,
-          position: "fixed",
-        });
-
-        if (supportsPopover(overlay)) {
-          overlay.setAttribute("popover", "manual");
-          showPopover(overlay);
-        }
-      }
-    };
-
-    // Drop animations update computed geometry without mutating inline styles.
-    const trackDropAnimation = () => {
-      frame = 0;
-      syncDraggedComponent();
-
-      if (componentElement.hasAttribute("data-dnd-dropping")) {
-        frame = componentWindow.requestAnimationFrame(trackDropAnimation);
-      }
-    };
-
-    // Pointer translations are written by dnd-kit during its own rAF. Respond
-    // to that write so the separate action-bar portal moves in the same frame.
-    const observer = new componentWindow.MutationObserver(() => {
-      syncDraggedComponent();
-
-      if (!frame && componentElement.hasAttribute("data-dnd-dropping")) {
-        frame = componentWindow.requestAnimationFrame(trackDropAnimation);
-      }
-    });
-
-    observer.observe(componentElement, {
-      attributes: true,
-      attributeFilter: ["style", "data-dnd-dropping"],
-    });
-    syncDraggedComponent();
-
-    return () => {
-      observer.disconnect();
-      componentWindow.cancelAnimationFrame(frame);
-
-      const overlay = overlayRef.current;
-      const nextStyle = getStyle();
-
-      if (overlay) {
-        hidePopover(overlay);
-        overlay.removeAttribute("popover");
-      }
-
-      if (overlay && nextStyle) {
-        Object.assign(overlay.style, nextStyle);
-        overlay.style.position = nextStyle.position ?? "";
-      }
-    };
-  }, [
-    getStyle,
-    isHandleDragSource,
-    componentRef.current, // Retarget if an inline component replaces its root mid-drag
-  ]);
 
   useEffect(() => {
     if (!componentRef.current) {

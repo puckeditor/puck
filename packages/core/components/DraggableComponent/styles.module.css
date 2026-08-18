@@ -3,7 +3,7 @@
   pointer-events: none;
 }
 
-/* Action bar styles while dragging from handle */
+/* Overlay styles while dragging from handle */
 .DraggableComponent[popover] {
   opacity: 0.9 !important;
   background: transparent;
