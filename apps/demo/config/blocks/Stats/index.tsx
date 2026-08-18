@@ -4,6 +4,7 @@ import { ComponentConfig } from "@/core";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
+import { Components } from "../../types";
 
 const getClassName = getClassNameFactory("Stats", styles);
 
@@ -14,7 +15,10 @@ export type StatsProps = {
   }[];
 };
 
-export const Stats: ComponentConfig<StatsProps> = {
+export const Stats: ComponentConfig<{
+  props: StatsProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     items: {
       type: "array",

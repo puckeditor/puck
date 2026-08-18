@@ -31,16 +31,20 @@ export type Components = {
   RichText: RichTextProps;
 };
 
+export type UserField = {
+  type: "userField";
+  option: boolean;
+};
+
+export type Fields = {
+  userField: UserField;
+};
+
 export type UserConfig = Config<{
   components: Components;
   root: RootProps;
   categories: ["layout", "typography", "interactive"];
-  fields: {
-    userField: {
-      type: "userField";
-      option: boolean;
-    };
-  };
+  fields: Fields;
 }>;
 
 export type UserData = Data<Components, RootProps>;

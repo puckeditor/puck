@@ -78,13 +78,14 @@ export interface RichtextField<
 
 export interface ArrayField<
   Props extends { [key: string]: any }[] = { [key: string]: any }[],
-  UserField extends {} = {}
+  UserField extends {} = {},
+  AvailableComponents extends string = string
 > extends BaseField {
   type: "array";
   arrayFields: {
-    [SubPropName in keyof Props[0]]: UserField extends { type: PropertyKey }
-      ? Field<Props[0][SubPropName], UserField> | UserField
-      : Field<Props[0][SubPropName], UserField>;
+    [SubPropName in keyof Props[0]]: [UserField] extends [{ type: PropertyKey }]
+      ? Field<Props[0][SubPropName], UserField, AvailableComponents> | UserField
+      : Field<Props[0][SubPropName], UserField, AvailableComponents>;
   };
   defaultItemProps?: Props[0] | ((index: number) => Props[0]);
   getItemSummary?: (item: Props[0], index?: number) => ReactNode;
@@ -94,13 +95,14 @@ export interface ArrayField<
 
 export interface ObjectField<
   Props extends any = { [key: string]: any },
-  UserField extends {} = {}
+  UserField extends {} = {},
+  AvailableComponents extends string = string
 > extends BaseField {
   type: "object";
   objectFields: {
-    [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
-      ? Field<Props[SubPropName]> | UserField
-      : Field<Props[SubPropName]>;
+    [SubPropName in keyof Props]: [UserField] extends [{ type: PropertyKey }]
+      ? Field<Props[SubPropName], UserField, AvailableComponents> | UserField
+      : Field<Props[SubPropName], UserField, AvailableComponents>;
   };
 }
 
@@ -167,13 +169,18 @@ export interface CustomField<Value extends any> extends BaseField {
   key?: string;
 }
 
-export interface SlotField extends BaseField {
+export interface SlotField<AvailableComponents extends string = string>
+  extends BaseField {
   type: "slot";
-  allow?: string[];
-  disallow?: string[];
+  allow?: AvailableComponents[];
+  disallow?: AvailableComponents[];
 }
 
-export type Field<ValueType = any, UserField extends {} = {}> =
+export type Field<
+  ValueType = any,
+  UserField extends {} = {},
+  AvailableComponents extends string = string
+> =
   | TextField
   | RichtextField
   | NumberField
@@ -182,23 +189,27 @@ export type Field<ValueType = any, UserField extends {} = {}> =
   | RadioField
   | ArrayField<
       ValueType extends { [key: string]: any }[] ? ValueType : never,
-      UserField
+      UserField,
+      AvailableComponents
     >
-  | ObjectField<ValueType, UserField>
+  | ObjectField<ValueType, UserField, AvailableComponents>
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>
   | CustomField<ValueType>
-  | SlotField;
+  | SlotField<AvailableComponents>;
 
 export type Fields<
   ComponentProps extends DefaultComponentProps = DefaultComponentProps,
-  UserField extends {} = {}
+  UserField extends {} = {},
+  AvailableComponents extends string = string
 > = {
-  [PropName in keyof Omit<ComponentProps, "editMode">]: UserField extends {
-    type: PropertyKey;
-  }
-    ? Field<ComponentProps[PropName], UserField> | UserField
-    : Field<ComponentProps[PropName]>;
+  [PropName in keyof Omit<ComponentProps, "editMode">]: [UserField] extends [
+    { type: PropertyKey }
+  ]
+    ?
+        | Field<ComponentProps[PropName], UserField, AvailableComponents>
+        | UserField
+    : Field<ComponentProps[PropName], {}, AvailableComponents>;
 };
 
 export type FieldProps<F = Field<any>, ValueType = any> = {

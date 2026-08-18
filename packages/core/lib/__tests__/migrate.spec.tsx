@@ -279,7 +279,7 @@ describe("migrate method", () => {
       },
     };
 
-    const config: Config = {
+    const config: Config<{}> = {
       components: {
         HeadingBlock: {
           fields: {

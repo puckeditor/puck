@@ -5,6 +5,7 @@ import { Heading as _Heading } from "@/core/components/Heading";
 import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { Components } from "../../types";
 
 export type HeadingProps = WithLayout<{
   align: "left" | "center" | "right";
@@ -33,7 +34,10 @@ const levelOptions = [
   { label: "6", value: "6" },
 ];
 
-const HeadingInternal: ComponentConfig<HeadingProps> = {
+const HeadingInternal: ComponentConfig<{
+  props: HeadingProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     text: {
       type: "textarea",

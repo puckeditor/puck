@@ -6,6 +6,7 @@ import { getClassNameFactory } from "@/core/lib";
 import dynamic from "next/dynamic";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { withLayout, WithLayout } from "../../components/Layout";
+import { Components } from "../../types";
 
 const getClassName = getClassNameFactory("Card", styles);
 
@@ -32,7 +33,10 @@ export type CardProps = WithLayout<{
   mode: "flat" | "card";
 }>;
 
-const CardInner: ComponentConfig<CardProps> = {
+const CardInner: ComponentConfig<{
+  props: CardProps;
+  availableComponents: keyof Components;
+}> = {
   fields: {
     title: {
       type: "text",
