@@ -1,6 +1,7 @@
 import { Config } from "../../../types";
 import { NodeIndex, ZoneIndex } from "../../../types/Internal";
 import { getSlotField } from "../../../lib/data/get-slot-field";
+import { getNodeLabel } from "../../../lib/data/get-component-label";
 import { LayerNode, LayerZone } from "../types";
 
 const getZonesByParent = (zones: ZoneIndex): Record<string, string[]> => {
@@ -60,7 +61,7 @@ const buildLayerNode = ({
   const nodeData = nodes[itemId];
   const componentType =
     nodeData?.data.type?.toString() ?? componentFallbackLabel;
-  const label = config.components[componentType]?.label ?? componentType;
+  const label = getNodeLabel(nodeData, config, componentFallbackLabel);
   const childZoneCompounds = zonesByParent[itemId] || [];
 
   return {
