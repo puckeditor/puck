@@ -61,6 +61,11 @@ body {
       var(--puck-color-azure-06) 22%,
       transparent
     );
+    --puck-color-drop-target-bg: color-mix(
+      in srgb,
+      var(--puck-color-azure-08) 22%,
+      transparent
+    );
     --puck-color-selection-border: var(--puck-color-azure-06);
 
     --puck-color-bg-disabled: #252527;

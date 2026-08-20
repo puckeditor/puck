@@ -35,7 +35,11 @@
     );
     --puck-color-selection-border: var(--puck-color-azure-08);
     --puck-color-line-placeholder: var(--puck-color-azure-06);
-    --puck-color-drop-target-bg: var(--puck-color-azure-12);
+    --puck-color-drop-target-bg: color-mix(
+      in srgb,
+      var(--puck-color-azure-11) 30%,
+      transparent
+    );
     --puck-color-highlight: var(--puck-color-rose-07);
     --puck-color-bg-disabled: var(--puck-color-grey-07);
     --puck-color-text-disabled: var(--puck-color-grey-03);
