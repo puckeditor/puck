@@ -1,4 +1,12 @@
-import { CSSProperties, Ref, RefObject, useEffect, useRef } from "react";
+import {
+  CSSProperties,
+  Ref,
+  RefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import {
   hidePopover,
   showPopover,
@@ -18,9 +26,13 @@ type UseDragHandleProps = {
   getComponentStyle: () => CSSProperties | undefined;
 };
 
-type UseDragHandleAPI<T extends HTMLElement> = {
+type UseDragHandleAPI<OverlayElement extends Element> = {
+  /** Ref object with the handle element (for dnd-kit) */
+  handleRef: RefObject<Element | null>;
+  /** Function to assign the handle element ref in elements (for the component that renders the handle) */
+  assignHandleRef: (handleElement: Element | null) => void;
   /** Ref to assign to the draggable component overlay element */
-  overlayRef: Ref<T | null>;
+  overlayRef: Ref<OverlayElement | null>;
   /** Indicates whether the drag handle is the source of the current drag */
   isHandleDragSource: boolean;
 };
@@ -35,7 +47,43 @@ const useDragHandle = <OverlayElement extends HTMLElement>({
   componentRef,
   getComponentStyle: getStyle,
 }: UseDragHandleProps): UseDragHandleAPI<OverlayElement> => {
+  const zoneStoreApi = useContext(ZoneStoreContext);
+
   const overlayRef = useRef<OverlayElement | null>(null);
+
+  const handleRef = useRef<Element | null>(null);
+
+  const notifyDraggingFromHandle = useCallback(() => {
+    zoneStoreApi.setState({ draggingFromHandle: true });
+  }, [zoneStoreApi]);
+
+  const disableDraggingFromHandle = useCallback(() => {
+    zoneStoreApi.setState({ draggingFromHandle: false });
+  }, [zoneStoreApi]);
+
+  const assignHandleRef = useCallback((handleElement: Element | null) => {
+    // Handle unmounting, remove listeners
+    if (!handleElement) {
+      handleRef.current?.removeEventListener(
+        "pointerdown",
+        notifyDraggingFromHandle
+      );
+      handleRef.current?.removeEventListener(
+        "pointerup",
+        disableDraggingFromHandle
+      );
+
+      handleRef.current = null;
+
+      return;
+    }
+
+    // Handle mounting, add listeners
+    handleRef.current = handleElement;
+
+    handleRef.current.addEventListener("pointerdown", notifyDraggingFromHandle);
+    handleRef.current.addEventListener("pointerup", disableDraggingFromHandle);
+  }, []);
 
   const isHandleDragSource = useContextStore(
     ZoneStoreContext,
@@ -49,8 +97,6 @@ const useDragHandle = <OverlayElement extends HTMLElement>({
     const componentWindow = componentElement?.ownerDocument.defaultView;
 
     if (!componentElement || !componentWindow) return;
-
-    let frame = 0;
 
     // Sync the overlay element's position and size with the draggable component's bounding rect while dragging from the handle.
     const syncDraggedComponent = () => {
@@ -74,25 +120,10 @@ const useDragHandle = <OverlayElement extends HTMLElement>({
       }
     };
 
-    // Drop animations can change the geometry of the dragged component without mutating its inline styles.
-    // Track those changes and update the overlay element accordingly.
-    const trackDropAnimation = () => {
-      frame = 0;
-      syncDraggedComponent();
-
-      if (componentElement.hasAttribute("data-dnd-dropping")) {
-        frame = componentWindow.requestAnimationFrame(trackDropAnimation);
-      }
-    };
-
     // Pointer translations are written by dnd-kit during its own rAF. Respond
     // to that write so the separate action-bar portal moves in the same frame.
     const observer = new componentWindow.MutationObserver(() => {
       syncDraggedComponent();
-
-      if (!frame && componentElement.hasAttribute("data-dnd-dropping")) {
-        frame = componentWindow.requestAnimationFrame(trackDropAnimation);
-      }
     });
 
     observer.observe(componentElement, {
@@ -106,7 +137,6 @@ const useDragHandle = <OverlayElement extends HTMLElement>({
 
     return () => {
       observer.disconnect();
-      componentWindow.cancelAnimationFrame(frame);
 
       const overlay = overlayRef.current;
       const nextStyle = getStyle();
@@ -127,7 +157,12 @@ const useDragHandle = <OverlayElement extends HTMLElement>({
     componentRef.current, // Retarget if an inline component replaces its root mid-drag
   ]);
 
-  return { overlayRef, isHandleDragSource };
+  return {
+    handleRef,
+    assignHandleRef,
+    overlayRef,
+    isHandleDragSource,
+  };
 };
 
 export default useDragHandle;

@@ -20,13 +20,14 @@ import { Feedback } from "@dnd-kit/dom";
 import { useSortable } from "@dnd-kit/react/sortable";
 
 import { useAppStore, useAppStoreApi } from "../../store";
+import type { NodeHandle } from "../../store/slices/nodes";
 import { createDynamicCollisionDetector } from "../../lib/dnd/collision/dynamic";
 import { getDeepScrollPosition } from "../../lib/get-deep-scroll-position";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { getItem } from "../../lib/data/get-item";
 import { useContextStore } from "../../lib/use-context-store";
 import { useOnDragFinished } from "../../lib/dnd/use-on-drag-finished";
-import type { NodeHandle } from "../../store/slices/nodes";
+import isFixed from "../../lib/styles/is-fixed";
 import { assignRefs } from "../../lib/assign-refs";
 import { useMessage } from "../../lib/use-message";
 
@@ -193,122 +194,29 @@ export const DraggableComponent = ({
   const [dragAxis, setDragAxis] = useState(userDragAxis || autoDragAxis);
 
   const dynamicCollisionDetector = useMemo(
-    () => createDynamicCollisionDetector(dragAxis),
-    [dragAxis]
+    () =>
+      createDynamicCollisionDetector(
+        dragAxis,
+        0.05,
+        () =>
+          zoneStore.getState().staticDrag ||
+          zoneStore.getState().draggingFromHandle
+      ),
+    [dragAxis, zoneStore]
   );
-
-  // The default drop animation targets the source placeholder. Line drags and
-  // drawer insertion previews instead commit immediately and glide a visual
-  // copy to the item's final rendered position.
-  const dropAnimation = useDropAnimation(zoneStore, id);
-
-  const {
-    ref: sortableRef,
-    isDragging: thisIsDragging,
-    handleRef,
-    sortable,
-  } = useSortable<ComponentDndData>({
-    id,
-    index,
-    group: zoneCompound,
-    type: "component",
-    data: {
-      areaId: ctx?.areaId,
-      zone: zoneCompound,
-      index,
-      componentType,
-      containsActiveZone,
-      depth,
-      path: path || [],
-      inDroppableZone,
-    },
-    collisionPriority: depth,
-    collisionDetector: dynamicCollisionDetector,
-    // "Out of the way" transition from react-beautiful-dnd
-    transition: {
-      duration: 200,
-      easing: "cubic-bezier(0.2, 0, 0, 1)",
-    },
-    plugins: (defaults) => [
-      ...defaults,
-      Feedback.configure({ feedback: "clone", dropAnimation }),
-    ],
-  });
-
-  useEffect(() => {
-    const isEnabled = zoneStore.getState().enabledIndex[zoneCompound];
-
-    sortable.droppable.disabled = !isEnabled;
-    sortable.draggable.disabled = !permissions.drag;
-
-    const cleanup = zoneStore.subscribe((s) => {
-      sortable.droppable.disabled = !s.enabledIndex[zoneCompound];
-    });
-
-    if (componentRef.current && !permissions.drag) {
-      componentRef.current.setAttribute("data-puck-disabled", "");
-
-      return () => {
-        componentRef.current?.removeAttribute("data-puck-disabled");
-        cleanup();
-      };
-    }
-
-    return cleanup;
-  }, [permissions.drag, zoneCompound]);
-
-  const [, setRerender] = useState(0);
 
   const componentRef = useRef<HTMLElement>(null);
 
-  const refSetter = useCallback(
-    (el: HTMLElement | null) => {
-      sortableRef(el);
-
-      if (componentRef.current !== el) {
-        componentRef.current = el;
-        setRerender((update) => update + 1);
-
-        if (itemRef) {
-          assignRefs([itemRef], el);
-        }
-      }
-    },
-    [itemRef, sortableRef]
-  );
-
-  const [portalEl, setPortalEl] = useState<HTMLElement>();
-
-  useEffect(() => {
-    setPortalEl(
-      iframe.enabled
-        ? componentRef.current?.ownerDocument.body
-        : componentRef.current?.closest<HTMLElement>("[data-puck-preview]") ??
-            document.body
-    );
-  }, [iframe.enabled]);
-
-  const getStyle = useCallback(() => {
+  const getComponentStyle = useCallback(() => {
     if (!componentRef.current) return;
 
-    const el = componentRef.current!;
-    const rect = el.getBoundingClientRect();
+    const componentEl = componentRef.current!;
+    const rect = componentEl.getBoundingClientRect();
     const portalContainerEl = iframe.enabled
       ? null
-      : el.closest<HTMLElement>("[data-puck-preview]");
+      : componentEl.closest<HTMLElement>("[data-puck-preview]");
 
-    const targetIsFixed = (() => {
-      let node: HTMLElement | null = el;
-
-      while (node && node !== document.documentElement) {
-        if (getComputedStyle(node).position === "fixed") {
-          return true;
-        }
-        node = node.parentElement;
-      }
-
-      return false;
-    })();
+    const targetIsFixed = isFixed(componentEl);
 
     const portalContainerRect = portalContainerEl?.getBoundingClientRect();
     const portalScroll = portalContainerEl
@@ -316,7 +224,7 @@ export const DraggableComponent = ({
       : { x: 0, y: 0 };
     const deepScrollPosition = targetIsFixed
       ? { x: 0, y: 0 }
-      : getDeepScrollPosition(el);
+      : getDeepScrollPosition(componentEl);
 
     const scroll = targetIsFixed
       ? { x: 0, y: 0 }
@@ -342,11 +250,101 @@ export const DraggableComponent = ({
     return style;
   }, [iframe.enabled]);
 
-  const { overlayRef, isHandleDragSource } = useDragHandle<HTMLDivElement>({
-    componentId: id,
-    componentRef,
-    getComponentStyle: getStyle,
+  // The default drop animation targets the source placeholder. Line drags and
+  // drawer insertion previews instead commit immediately and glide a visual
+  // copy to the item's final rendered position.
+  const dropAnimation = useDropAnimation(zoneStore, id);
+
+  const { handleRef, assignHandleRef, overlayRef, isHandleDragSource } =
+    useDragHandle<HTMLDivElement>({
+      componentId: id,
+      componentRef,
+      getComponentStyle,
+    });
+
+  const {
+    ref: sortableRef,
+    isDragging: thisIsDragging,
+    sortable,
+  } = useSortable<ComponentDndData>({
+    id,
+    index,
+    handle: handleRef,
+    group: zoneCompound,
+    type: "component",
+    data: {
+      areaId: ctx?.areaId,
+      zone: zoneCompound,
+      index,
+      componentType,
+      containsActiveZone,
+      depth,
+      path: path || [],
+      inDroppableZone,
+    },
+    collisionPriority: depth,
+    collisionDetector: dynamicCollisionDetector,
+    // "Out of the way" transition from react-beautiful-dnd
+    transition: {
+      duration: 200,
+      easing: "cubic-bezier(0.2, 0, 0, 1)",
+    },
+    plugins: (defaults) => [
+      ...defaults,
+      Feedback.configure({ feedback: "clone", dropAnimation }),
+    ],
   });
+
+  const refSetter = useCallback(
+    (el: HTMLElement | null) => {
+      sortableRef(el);
+
+      if (componentRef.current !== el) {
+        componentRef.current = el;
+        setRerender((update) => update + 1);
+
+        if (itemRef) {
+          assignRefs([itemRef], el);
+        }
+      }
+    },
+    [itemRef, sortableRef]
+  );
+
+  useEffect(() => {
+    const isEnabled = zoneStore.getState().enabledIndex[zoneCompound];
+
+    sortable.droppable.disabled = !isEnabled;
+    sortable.draggable.disabled = !permissions.drag;
+
+    const cleanup = zoneStore.subscribe((s) => {
+      sortable.droppable.disabled = !s.enabledIndex[zoneCompound];
+    });
+
+    if (componentRef.current && !permissions.drag) {
+      componentRef.current.setAttribute("data-puck-disabled", "");
+
+      return () => {
+        componentRef.current?.removeAttribute("data-puck-disabled");
+        cleanup();
+      };
+    }
+
+    return cleanup;
+  }, [permissions.drag, zoneCompound]);
+
+  const [, setRerender] = useState(0);
+
+  const [portalEl, setPortalEl] = useState<HTMLElement>();
+
+  useEffect(() => {
+    setPortalEl(
+      iframe.enabled
+        ? componentRef.current?.ownerDocument.body
+        : componentRef.current?.closest<HTMLElement>("[data-puck-preview]") ??
+            document.body
+    );
+  }, [iframe.enabled]);
 
   const [style, setStyle] = useState<CSSProperties>();
   const lastRectRef = useRef<DOMRectReadOnly | null>(null);
@@ -355,12 +353,12 @@ export const DraggableComponent = ({
   const syncRafRef = useRef<number | null>(null);
 
   const sync = useCallback(() => {
-    setStyle(getStyle());
+    setStyle(getComponentStyle());
 
     if (itemRef) {
       assignRefs([itemRef], componentRef.current);
     }
-  }, [getStyle, itemRef]);
+  }, [getComponentStyle, itemRef]);
 
   const scheduleSync = useCallback(() => {
     if (syncRafRef.current != null) return;
@@ -747,17 +745,17 @@ export const DraggableComponent = ({
   const dragHandle = useMemo(
     () =>
       enableDragHandle && permissions.drag ? (
-        <ActionBar.DragHandle ref={handleRef} label={dragLabel} />
+        <ActionBar.DragHandle ref={assignHandleRef} label={dragLabel} />
       ) : undefined,
-    [enableDragHandle, permissions.drag, handleRef, dragLabel]
+    [enableDragHandle, permissions.drag, assignHandleRef, dragLabel]
   );
 
   // Expose the raw handle ref too, so custom action bars can attach it to
   // their own element. Gated identically to `dragHandle` so both appear
   // under the same conditions.
   const dragHandleRef = useMemo(
-    () => (enableDragHandle && permissions.drag ? handleRef : undefined),
-    [enableDragHandle, permissions.drag, handleRef]
+    () => (enableDragHandle && permissions.drag ? assignHandleRef : undefined),
+    [enableDragHandle, permissions.drag, assignHandleRef]
   );
 
   const nextContextValue = useMemo<DropZoneContext>(

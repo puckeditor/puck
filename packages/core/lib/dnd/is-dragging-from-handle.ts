@@ -1,4 +1,4 @@
-import { Draggable } from "@dnd-kit/dom";
+import type { Draggable } from "@dnd-kit/dom";
 import { isElement } from "@dnd-kit/dom/utilities";
 
 /**
