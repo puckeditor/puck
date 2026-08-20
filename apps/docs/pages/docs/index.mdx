@@ -4,27 +4,32 @@ Welcome to the Puck documentation!
 
 ## What is Puck?
 
-Puck is a modular, open-source visual editor for React.js. You can use Puck to build custom drag-and-drop experiences with your own application and React components.
+Puck is a modular, open-source visual editor for React, Vue, and Svelte. Use
+Puck to build custom drag-and-drop experiences with your own application and
+native framework components.
 
-Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there's no vendor lock-in.
+`@puckeditor/core` provides the React implementation. The official
+`@puckeditor/vue` and `@puckeditor/svelte` adapters share the same config,
+fields, data model, and utilities while bridging native Vue 3 and Svelte 5
+components into the editor. You own your data and there's no vendor lock-in.
 
 Puck is also licensed under MIT, making it suitable for both internal systems and commercial applications.
 
 ## Main Features
 
-| Feature                                                                   | Description                                                                                                          |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| [Component Configuration](/docs/integrating-puck/component-configuration) | Integrate your own components with Puck by providing render functions and configuring fields that map to your props. |
-| [Root Configuration](/docs/integrating-puck/root-configuration)           | Customize the root component that wraps all other Puck components.                                                   |
-| [Multi-column Layouts](/docs/integrating-puck/multi-column-layouts)       | Create multi-column layouts using nested components. Now supports advanced CSS layouts.                              |
-| [Categories](/docs/integrating-puck/categories)                           | Group your components in the side bar.                                                                               |
-| [Dynamic Props](/docs/integrating-puck/dynamic-props)                     | Dynamically set props after user input and mark fields as read-only                                                  |
-| [Dynamic Fields](/docs/integrating-puck/dynamic-fields)                   | Dynamically set fields based on user input                                                                           |
-| [External Data Sources](/docs/integrating-puck/external-data-sources)     | Load content from a third-party CMS or other data source                                                             |
-| [Server Components](/docs/integrating-puck/server-components)             | Opt-in support for React Server Components                                                                           |
-| [Data Migration](/docs/integrating-puck/data-migration)                   | Migrate between breaking Puck releases and your own breaking prop changes                                            |
-| [Viewports](/docs/integrating-puck/viewports)                             | Preview and edit your content in a same-origin iframe to simulate different viewports                                |
-| [Feature Toggling](/docs/integrating-puck/feature-toggling)               | Toggle Puck features, like duplication or deletion, via the permissions API.                                         |
+| Feature                                                                   | Description                                                                                     |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [Component Configuration](/docs/integrating-puck/component-configuration) | Integrate native React, Vue, or Svelte components and configure fields that map to their props. |
+| [Root Configuration](/docs/integrating-puck/root-configuration)           | Customize the root component that wraps all other Puck components.                              |
+| [Multi-column Layouts](/docs/integrating-puck/multi-column-layouts)       | Create multi-column layouts using nested components. Now supports advanced CSS layouts.         |
+| [Categories](/docs/integrating-puck/categories)                           | Group your components in the side bar.                                                          |
+| [Dynamic Props](/docs/integrating-puck/dynamic-props)                     | Dynamically set props after user input and mark fields as read-only                             |
+| [Dynamic Fields](/docs/integrating-puck/dynamic-fields)                   | Dynamically set fields based on user input                                                      |
+| [External Data Sources](/docs/integrating-puck/external-data-sources)     | Load content from a third-party CMS or other data source                                        |
+| [Server Components](/docs/integrating-puck/server-components)             | Opt-in support for React Server Components                                                      |
+| [Data Migration](/docs/integrating-puck/data-migration)                   | Migrate between breaking Puck releases and your own breaking prop changes                       |
+| [Viewports](/docs/integrating-puck/viewports)                             | Preview and edit your content in a same-origin iframe to simulate different viewports           |
+| [Feature Toggling](/docs/integrating-puck/feature-toggling)               | Toggle Puck features, like duplication or deletion, via the permissions API.                    |
 
 ## Get Support
 

@@ -4,6 +4,14 @@ import { Callout } from "nextra/components";
 
 Puck provides support for [React Server Components](https://react.dev/reference/react/use-server#use-server) (RSC), but the interactive-nature of Puck requires special consideration.
 
+<Callout type="warning">
+  This guide applies to `@puckeditor/core`. The Vue and Svelte adapters mount
+  `<Render>` client-side and currently emit an empty `div` on the server, so
+  they do not yet provide SSR or SSG output for published pages. Their
+  framework-agnostic utilities, such as `resolveAllData` and `migrate`, remain
+  safe to import on the server.
+</Callout>
+
 ## Environments
 
 ### Server

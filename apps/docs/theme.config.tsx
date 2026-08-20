@@ -14,10 +14,10 @@ const Head = () => {
   const url =
     siteUrl + (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
-  const defaultTitle = `Puck - The open-source visual editor for React`;
+  const defaultTitle = `Puck - The open-source visual editor for React, Vue and Svelte`;
   const description =
     frontMatter.description ||
-    `Puck empowers developers to build amazing visual editing experiences into their own React applications, powering the next generation of content tools.`;
+    `Puck empowers developers to build visual editing experiences with native React, Vue and Svelte components.`;
 
   return (
     <>

@@ -1,5 +1,6 @@
 const menu = {
   "using-with-vue": { title: "Using with Vue" },
+  "using-with-svelte": { title: "Using with Svelte" },
   "component-configuration": {},
   "root-configuration": {},
   "multi-column-layouts": {},

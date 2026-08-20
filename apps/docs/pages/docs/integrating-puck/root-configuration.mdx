@@ -1,3 +1,5 @@
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
+
 # Root Configuration
 
 The root is the top-level component within Puck. It:
@@ -9,7 +11,12 @@ Configuring the root is similar to [configuring components](component-configurat
 
 ## The root `render` function
 
-Use the [`root` parameter](/docs/api-reference/configuration/config#root) to specify a [`render` function](/docs/api-reference/configuration/component-config#renderprops):
+Use the [`root` parameter](/docs/api-reference/configuration/config#root) to
+specify a renderer. The root must render its `children` outlet for the page's
+top-level components to appear:
+
+<FrameworkTabs>
+  <FrameworkTab>
 
 ```tsx showLineNumbers copy {10-12}
 const config = {
@@ -27,6 +34,56 @@ const config = {
   },
 };
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts showLineNumbers copy {5-7} filename="puck.config.ts"
+import Root from "./Root.vue";
+
+const config = {
+  components: { HeadingBlock: { render: HeadingBlock } },
+  root: {
+    render: Root,
+  },
+};
+```
+
+```vue copy filename="Root.vue"
+<script setup lang="ts">
+import type { VueSlot } from "@puckeditor/vue";
+defineProps<{ children?: VueSlot }>();
+</script>
+
+<template>
+  <main><component :is="children" /></main>
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts showLineNumbers copy {5-7} filename="puck.config.ts"
+import Root from "./Root.svelte";
+
+const config = {
+  components: { HeadingBlock: { render: HeadingBlock } },
+  root: {
+    render: Root,
+  },
+};
+```
+
+```svelte copy filename="Root.svelte"
+<script lang="ts">
+  import { PuckChildren } from "@puckeditor/svelte";
+</script>
+
+<main><PuckChildren /></main>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 The root `render` function will wrap all of the components. `children` is a node containing the nested components.
 
@@ -125,7 +182,8 @@ When the user modifies the inputs, the editor will produce a data payload like t
 
 ### TypeScript
 
-Generic types can be passed to the `Config` type to strictly type your root configuration:
+Generic types can be passed to `Config`, `VueConfig`, or `SvelteConfig` to
+strictly type your root configuration:
 
 ```tsx copy {1,3-5} /RootProps/2
 import type { Config } from "@puckeditor/core";

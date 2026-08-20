@@ -4,6 +4,12 @@ import { Callout } from "nextra/components";
 
 The [plugin API](/docs/api-reference/plugins) enables developers to share extensions to Puck.
 
+<Callout type="warning">
+  Vue and Svelte adapters can receive core plugins through the `plugins` prop,
+  but plugin UI and field transforms are still Preact-based. Native Vue or
+  Svelte plugin components are not yet supported.
+</Callout>
+
 Plugins can display dedicated UI in the **Plugin Rail** on the left-hand side of the screen (bottom on mobile), configure their own [overrides](ui-overrides), or apply [field transforms](field-transforms).
 
 ## Official plugins

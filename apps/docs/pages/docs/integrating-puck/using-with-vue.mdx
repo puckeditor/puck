@@ -51,12 +51,12 @@ Render the editor with `<Puck>` and the published page with `<Render>`:
 
 ```vue copy filename="Editor.vue"
 <script setup lang="ts">
-import { Puck } from "@puckeditor/vue";
+import { Puck, type Data } from "@puckeditor/vue";
 import "@puckeditor/vue/puck.css";
 import { config } from "./puck.config";
 
 const data = { root: {}, content: [] };
-function onPublish(data: unknown) {
+function onPublish(data: Data) {
   /* persist data */
 }
 </script>
@@ -96,13 +96,13 @@ framework-agnostic and works exactly as documented for
 `height`, `fieldTransforms`, plus the initial-only `ui` and `initialHistory`,
 and these events:
 
-| Event          | Payload                                                        |
-| -------------- | -------------------------------------------------------------- |
-| `@change`      | the current data (on every edit)                               |
-| `@update:data` | the current data (alongside `@change`, for `v-model:data`)     |
-| `@publish`     | the current data (on publish)                                  |
-| `@action`      | `(action, appState, prevAppState)` on every dispatched action  |
-| `@ready`       | a `getPuck` accessor — call `getPuck()` for the `PuckApi`      |
+| Event          | Payload                                                       |
+| -------------- | ------------------------------------------------------------- |
+| `@change`      | the current data (on every edit)                              |
+| `@update:data` | the current data (alongside `@change`, for `v-model:data`)    |
+| `@publish`     | the current data (on publish)                                 |
+| `@action`      | `(action, appState, prevAppState)` on every dispatched action |
+| `@ready`       | a `getPuck` accessor — call `getPuck()` for the `PuckApi`     |
 
 ```vue copy
 <Puck
@@ -146,7 +146,7 @@ defineProps<{ items?: VueSlot }>();
 You can pass DropZone props as attributes, e.g.
 `<component :is="items" :allow="['Heading']" />`.
 
-The same pattern renders every *node-valued* field — `richtext` fields and
+The same pattern renders every _node-valued_ field — `richtext` fields and
 `contentEditable` text fields also arrive as `VueSlot` outlet components
 (an inline editor in `<Puck>`, static content in `<Render>`):
 
@@ -209,7 +209,7 @@ Bridged Vue components automatically inherit the app context of the app
 rendering `<Puck>` / `<Render>` — Pinia stores, plugins, app-level `provide`s
 and globally-registered components just work, with no setup.
 
-To substitute a *different* context (e.g. to isolate the editor preview from
+To substitute a _different_ context (e.g. to isolate the editor preview from
 your app), create an unmounted app instance carrying the plugins and pass it
 via the `app` prop (read once at setup):
 
@@ -241,7 +241,7 @@ const puck = usePuck();
 </template>
 ```
 
-To *reactively subscribe* to editor state — the equivalent of React's
+To _reactively subscribe_ to editor state — the equivalent of React's
 selector-based [`usePuck`](/docs/api-reference/puck-api) — use
 `usePuckApi(selector)` from a bridged component or custom field. It returns a
 ref that updates whenever the selected value changes:
@@ -298,8 +298,8 @@ head styles into the preview.
 
 ## Limitations
 
-- Advanced `overrides` / `plugins` are passed through as Preact components (for
-  advanced users); Vue equivalents are not yet available.
+- Advanced `overrides`, `plugins`, and `fieldTransforms` pass through to the
+  Preact-based core APIs; native Vue equivalents are not yet available.
 - `<Render>` mounts client-side (the server emits an empty div) — no SSR/SSG
   output for published pages yet.
 - Rich text / `contentEditable` fields nested inside `object`/`array` fields

@@ -3,6 +3,7 @@ title: Multi-column Layouts
 ---
 
 import { PuckPreview } from "@/docs/components/Preview";
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
 import { Puck } from "@/puck";
 import { Callout } from "nextra/components";
 
@@ -14,7 +15,12 @@ Puck supports nested and multi-column layouts across any CSS layout using the [`
 
 ## Nested components
 
-Add the [`slot`](/docs/api-reference/fields/slot) field to your component to create a zone that you can drop components into.
+Add the [`slot`](/docs/api-reference/fields/slot) field to your component to
+create a zone that you can drop components into. Slot data is the same in every
+framework, but each adapter exposes its native way to place the editable slot:
+
+<FrameworkTabs>
+  <FrameworkTab>
 
 ```tsx {5-7,10} showLineNumbers copy
 const config = {
@@ -35,6 +41,62 @@ const config = {
   },
 };
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts {6-8} showLineNumbers copy filename="puck.config.ts"
+import Example from "./Example.vue";
+
+const config = {
+  components: {
+    Example: {
+      fields: { content: { type: "slot" } },
+      render: Example,
+    },
+    Card: { render: Card },
+  },
+};
+```
+
+```vue copy filename="Example.vue"
+<script setup lang="ts">
+import type { VueSlot } from "@puckeditor/vue";
+defineProps<{ content?: VueSlot }>();
+</script>
+
+<template>
+  <component :is="content" />
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts {6-8} showLineNumbers copy filename="puck.config.ts"
+import Example from "./Example.svelte";
+
+const config = {
+  components: {
+    Example: {
+      fields: { content: { type: "slot" } },
+      render: Example,
+    },
+    Card: { render: Card },
+  },
+};
+```
+
+```svelte copy filename="Example.svelte"
+<script lang="ts">
+  import { PuckSlot } from "@puckeditor/svelte";
+</script>
+
+<PuckSlot name="content" />
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 <PuckPreview
   label="Nested components example"
@@ -92,6 +154,9 @@ const config = {
 
 Combine multiple DropZones to achieve fixed layouts. By default, components inside a DropZone are arranged along the vertical (`block`) axis.
 
+<FrameworkTabs>
+  <FrameworkTab>
+
 ```tsx {5-10,17,18} showLineNumbers copy
 const config = {
   components: {
@@ -121,6 +186,82 @@ const config = {
   },
 };
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy filename="puck.config.ts"
+const config = {
+  components: {
+    Example: {
+      fields: {
+        leftColumn: { type: "slot" },
+        rightColumn: { type: "slot" },
+      },
+      render: Example,
+    },
+    Card: { render: Card },
+  },
+};
+```
+
+```vue copy filename="Example.vue"
+<script setup lang="ts">
+import type { VueSlot } from "@puckeditor/vue";
+defineProps<{ leftColumn?: VueSlot; rightColumn?: VueSlot }>();
+</script>
+
+<template>
+  <div class="columns">
+    <component :is="leftColumn" />
+    <component :is="rightColumn" />
+  </div>
+</template>
+
+<style scoped>
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+</style>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy filename="puck.config.ts"
+const config = {
+  components: {
+    Example: {
+      fields: {
+        leftColumn: { type: "slot" },
+        rightColumn: { type: "slot" },
+      },
+      render: Example,
+    },
+    Card: { render: Card },
+  },
+};
+```
+
+```svelte copy filename="Example.svelte"
+<script lang="ts">
+  import { PuckSlot } from "@puckeditor/svelte";
+</script>
+
+<div class="columns">
+  <PuckSlot name="leftColumn" />
+  <PuckSlot name="rightColumn" />
+</div>
+
+<style>
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+</style>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 <PuckPreview
   label="Fixed layout example"
@@ -204,6 +345,9 @@ const config = {
 
 Apply the [CSS display](https://developer.mozilla.org/en-US/docs/Web/CSS/display) property to a slot via the [`style`](/docs/api-reference/components/drop-zone#style) or [`className`](/docs/api-reference/components/drop-zone#className) props to arrange your components in different layouts. Puck supports drag-and-drop for all `display` values, including `grid` and `flex`.
 
+<FrameworkTabs>
+  <FrameworkTab>
+
 ```tsx {12-15} showLineNumbers copy
 const config = {
   components: {
@@ -230,6 +374,44 @@ const config = {
   },
 };
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```vue copy filename="Example.vue"
+<script setup lang="ts">
+import type { VueSlot } from "@puckeditor/vue";
+defineProps<{ content?: VueSlot }>();
+</script>
+
+<template>
+  <component
+    :is="content"
+    :style="{
+      display: 'grid',
+      gridTemplateColumns: '2fr 1fr',
+      gap: '16px',
+    }"
+  />
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```svelte copy filename="Example.svelte"
+<script lang="ts">
+  import { PuckSlot } from "@puckeditor/svelte";
+</script>
+
+<PuckSlot
+  name="content"
+  style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px"
+/>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 <PuckPreview
   label="Fluid layout using CSS grid"

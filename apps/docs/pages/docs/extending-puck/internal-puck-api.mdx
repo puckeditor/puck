@@ -2,20 +2,29 @@
 title: Internal Puck API
 ---
 
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
+
 # Internal Puck API
 
 Puck exposes its internal API as [`PuckApi`](/docs/api-reference/puck-api) for extending Puck with custom functionality within [custom fields](/docs/extending-puck/custom-fields), [compositional interfaces](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides).
 
 ## Accessing the internal API
 
-You can access [`PuckApi`](/docs/api-reference/puck-api) via two hooks:
+Core exposes `PuckApi` through React hooks. The Vue and Svelte adapters expose
+equivalent reactive APIs for native bridged components and custom fields.
+
+In core, you can access it via two hooks:
 
 - [`usePuck`](/docs/api-reference/functions/use-puck) - returns `PuckApi` as part of your component render lifecycle
 - [`useGetPuck`](/docs/api-reference/functions/use-get-puck) - returns a function to access the latest `PuckApi` at call time
 
 ### Within the render lifecycle
 
-To access the API within your render lifecycle, use the `usePuck` hook. You can use a selector to limit re-rendering to a specific part of the API.
+To access the API within your render lifecycle, use the framework's reactive
+selector. A selector limits updates to the part of the API you need.
+
+<FrameworkTabs>
+  <FrameworkTab>
 
 ```tsx copy
 import { createUsePuck } from "@puckeditor/core";
@@ -30,11 +39,51 @@ const Example = () => {
 };
 ```
 
-See the [`usePuck`](/docs/api-reference/functions/use-puck) docs for a full API reference.
+  </FrameworkTab>
+  <FrameworkTab>
+
+```vue copy filename="Example.vue"
+<script setup lang="ts">
+import { usePuckApi } from "@puckeditor/vue";
+
+const type = usePuckApi((api) => api.selectedItem?.type || "Nothing");
+</script>
+
+<template>
+  <h2>{{ type }} selected</h2>
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```svelte copy filename="Example.svelte"
+<script lang="ts">
+  import { puckApi } from "@puckeditor/svelte";
+
+  const type = puckApi(
+    (api) => api.selectedItem?.type || "Nothing"
+  );
+</script>
+
+<h2>{type.current} selected</h2>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
+
+See the [`usePuck`](/docs/api-reference/functions/use-puck) docs for the core
+hook API. Vue's `usePuckApi` returns a `ref`; Svelte's `puckApi` returns an
+object whose reactive selected value is available as `.current`.
 
 ### Outside of the render lifecycle
 
-Often it's not necessary to re-render your component when the PuckApi changes. Puck provides the `useGetPuck` hook for accessing the latest `PuckApi` at call time.
+Often it's not necessary to update your component when `PuckApi` changes. Core
+provides `useGetPuck`; the adapters can select the full API and read its latest
+value in an event callback.
+
+<FrameworkTabs>
+  <FrameworkTab>
 
 ```tsx copy
 import { useGetPuck } from "@puckeditor/core";
@@ -53,11 +102,47 @@ const Example = () => {
 };
 ```
 
-See the [`useGetPuck`](/docs/api-reference/functions/use-get-puck) docs for a full API reference.
+  </FrameworkTab>
+  <FrameworkTab>
+
+```vue copy filename="Example.vue"
+<script setup lang="ts">
+import { usePuckApi } from "@puckeditor/vue";
+
+const puck = usePuckApi();
+const handleClick = () => console.log(puck.value?.appState);
+</script>
+
+<template>
+  <button @click="handleClick">Click me</button>
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```svelte copy filename="Example.svelte"
+<script lang="ts">
+  import { puckApi } from "@puckeditor/svelte";
+
+  const puck = puckApi();
+  const handleClick = () => console.log(puck.current?.appState);
+</script>
+
+<button onclick={handleClick}>Click me</button>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
+
+Outside a bridged component, Vue's `@ready` event and Svelte's `onready`
+callback receive a `getPuck` accessor for imperative use.
 
 ## Usage in practice
 
-Generally, you'll want to combine this with composition, UI overrides or custom fields.
+Generally, you'll combine this with a custom field or component. Composition
+and UI overrides are currently core/React APIs; native Vue and Svelte override
+components are not yet supported.
 
 Here's an example using the internal API to log the page data as JSON while retaining the standard Puck UI:
 

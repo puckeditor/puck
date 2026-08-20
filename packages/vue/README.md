@@ -88,7 +88,7 @@ for full documentation.
 
 ## Not yet supported
 
-- Vue versions of advanced `overrides` / `plugins` (passed through as Preact components).
+- Vue versions of advanced `overrides`, `plugins`, and `fieldTransforms` (passed through to Preact-based core APIs).
 - Server-side rendering of `<Render>` (mounts client-side; the server emits an empty div).
 - Rich text / inline-editable fields nested inside `object`/`array` fields (top-level fields only).
 

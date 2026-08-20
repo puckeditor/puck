@@ -7,6 +7,12 @@ import { Callout } from "nextra/components";
   changes.
 </Callout>
 
+<Callout type="warning">
+  Native Vue and Svelte overrides are not yet supported. Adapter `overrides`
+  pass through to the Preact-based core API. To replace built-in field UIs with
+  native components, use the adapter's `fieldTypes` prop instead.
+</Callout>
+
 Overrides allow you to change how Puck renders its default interface. It can be used with or without [composition](/docs/extending-puck/composition).
 
 There are many different overrides available. See the [`overrides` API reference](/docs/api-reference/overrides) for the full list.

@@ -91,10 +91,13 @@ Render published data with `<Render {config} {data} />`.
 - **App context** — pass a `Map` as the `context` prop to `<Puck>`/`<Render>`; entries are `setContext`-ed into every bridged component (e.g. a runes store). Read once at setup — later changes to the Map identity are ignored.
 - **Scoped styles** render in the editor's iframe (mirrored via AutoFrame).
 
+See the [Using with Svelte guide](https://puckeditor.com/docs/integrating-puck/using-with-svelte)
+for full documentation.
+
 ## Not yet supported
 
 - Server-side rendering of `<Render>` (mounts client-side; the server emits an empty div — the compiled module itself is safe to import in node for `migrate`/`resolveAllData` etc.).
-- Svelte versions of advanced `overrides` / `plugins` (passed through as Preact components).
+- Svelte versions of advanced `overrides`, `plugins`, and `fieldTransforms` (passed through to Preact-based core APIs).
 - Rich text / inline-editable fields nested inside `object`/`array` fields (top-level fields only).
 
 ## License

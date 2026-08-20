@@ -6,13 +6,18 @@ import { Callout } from "nextra/components";
 
 # PuckApi
 
-`PuckApi` exposes Puck's internals to enable extension and modification to Puck's core behavior. It can be accessed by the [`usePuck`](/docs/api-reference/functions/use-puck) and [`useGetPuck`](/docs/api-reference/functions/use-get-puck) hooks.
+`PuckApi` exposes Puck's internals to enable extension and modification of its
+behavior. Core provides the [`usePuck`](/docs/api-reference/functions/use-puck)
+and [`useGetPuck`](/docs/api-reference/functions/use-get-puck) React hooks. The
+Vue adapter provides `usePuckApi`, and the Svelte adapter provides `puckApi`;
+see the [internal API guide](/docs/extending-puck/internal-puck-api) for
+framework-specific examples.
 
 <Callout type="info">
-  `PuckApi` can currently only be accessed through
-  [composition](/docs/extending-puck/composition), [UI
-  overrides](/docs/extending-puck/ui-overrides) or [custom
-  fields](/docs/extending-puck/custom-fields).
+  Reactive access must be used inside Puck's render context: composition, UI
+  overrides, custom fields, or bridged Vue/Svelte components. For imperative
+  access outside that context, capture the accessor supplied by `onReady`, Vue's
+  `@ready`, or Svelte's `onready`.
 </Callout>
 
 ## Params

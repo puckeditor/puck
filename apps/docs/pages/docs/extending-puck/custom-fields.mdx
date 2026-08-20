@@ -1,5 +1,7 @@
 import { ConfigPreview } from "@/docs/components/Preview";
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
 import { AutoField, FieldLabel } from "@/puck";
+import { Callout } from "nextra/components";
 
 # Custom Fields
 
@@ -7,7 +9,13 @@ Puck can be extended with completely custom fields for different use-cases.
 
 ## Creating a custom field
 
-Creating a custom field is possible using the [`custom` field type](/docs/api-reference/fields/custom):
+Creating a custom field is possible using the
+[`custom` field type](/docs/api-reference/fields/custom). Its render props are
+the same in every framework; the `render` value uses a native component in Vue
+and Svelte:
+
+<FrameworkTabs>
+  <FrameworkTab>
 
 ```tsx copy showLineNumbers {5-15}
 const config = {
@@ -34,7 +42,88 @@ const config = {
 };
 ```
 
-The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) updates the Puck data payload for the field name, in this case "title".
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy showLineNumbers {1,7} filename="puck.config.ts"
+import TitleField from "./TitleField.vue";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        title: { type: "custom", render: TitleField },
+      },
+      render: Example,
+    },
+  },
+};
+```
+
+```vue copy filename="TitleField.vue"
+<script setup lang="ts">
+defineProps<{
+  name: string;
+  value?: string;
+  onChange: (value: string) => void;
+}>();
+</script>
+
+<template>
+  <input
+    :name="name"
+    :value="value"
+    @input="onChange(($event.target as HTMLInputElement).value)"
+  />
+</template>
+```
+
+Vue custom fields also receive `modelValue` and emit `update:modelValue`, so
+`defineModel()` and `v-model` can be used instead of calling `onChange`.
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy showLineNumbers {1,7} filename="puck.config.ts"
+import TitleField from "./TitleField.svelte";
+
+const config = {
+  components: {
+    Example: {
+      fields: {
+        title: { type: "custom", render: TitleField },
+      },
+      render: Example,
+    },
+  },
+};
+```
+
+```svelte copy filename="TitleField.svelte"
+<script lang="ts">
+  let {
+    name,
+    value = "",
+    onChange,
+  }: {
+    name: string;
+    value?: string;
+    onChange: (value: string) => void;
+  } = $props();
+</script>
+
+<input
+  {name}
+  {value}
+  oninput={(event) => onChange(event.currentTarget.value)}
+/>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
+
+The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui)
+updates the Puck data payload for the field name, in this case "title".
 
 <ConfigPreview
   label="Example"
@@ -69,7 +158,13 @@ The [`onChange` function](/docs/api-reference/fields/custom#onchangevalue-ui) up
 
 ## Adding a label
 
-You can add your own label, but it's recommended to use the [`<FieldLabel>` component](/docs/api-reference/components/field-label) provided by Puck to seamlessly integrate into the Puck field UI.
+You can add your own label, but it's recommended to use the
+[`<FieldLabel>` component](/docs/api-reference/components/field-label) exported
+by your framework package to seamlessly integrate into the Puck field UI.
+
+The JSX example below uses core. In Vue or Svelte, import `FieldLabel` from
+`@puckeditor/vue` or `@puckeditor/svelte` and place it in the native field
+component shown above.
 
 ```tsx copy showLineNumbers {1, 11-13}
 import { FieldLabel } from "@puckeditor/core";
@@ -129,6 +224,12 @@ const config = {
 />
 
 ## Rendering Puck fields internally
+
+<Callout type="warning">
+  `AutoField` is currently a core React/Preact component. A native Vue or Svelte
+  `AutoField` is not yet available; use a native input or a `fieldTypes`
+  replacement in those adapters.
+</Callout>
 
 Use the [`<AutoField>` component](/docs/api-reference/components/auto-field) to render Puck fields within your custom field.
 

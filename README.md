@@ -9,7 +9,7 @@
   </picture>
 </a>
 
-_The visual editor for React_
+_The visual editor for React, Vue and Svelte_
 
 [Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
 
@@ -23,19 +23,29 @@ _The visual editor for React_
 
 ## What is Puck?
 
-Puck is a modular, open-source visual editor for React.js. You can use Puck to build custom drag-and-drop experiences with your own application and React components.
+Puck is a modular, open-source visual editor for React, Vue and Svelte. You can
+use Puck to build custom drag-and-drop experiences with your own application
+and native framework components.
 
-Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there’s no vendor lock-in.
+`@puckeditor/core` provides the React implementation. The official
+`@puckeditor/vue` and `@puckeditor/svelte` adapters share its config, fields,
+data model and utilities. You own your data and there’s no vendor lock-in.
 
 Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
 
 ## Quick start
 
-Install the package:
+Install the package for your framework:
 
-```sh
-npm i @puckeditor/core --save # or npx create-puck-app my-app
-```
+| Framework | Install command                   |
+| --------- | --------------------------------- |
+| React     | `npm i @puckeditor/core`          |
+| Vue 3     | `npm i @puckeditor/vue vue`       |
+| Svelte 5  | `npm i @puckeditor/svelte svelte` |
+
+The following example uses core with React. See the
+[Getting Started guide](https://puckeditor.com/docs/getting-started) for Vue and
+Svelte examples alongside React.
 
 Render the editor:
 
@@ -94,6 +104,8 @@ Available recipes include:
 
 - [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
 - [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
+- [**vue**](https://github.com/puckeditor/puck/tree/main/recipes/vue): Vue 3 example using Vite and Vue Router
+- [**svelte**](https://github.com/puckeditor/puck/tree/main/recipes/svelte): Svelte 5 example using Vite
 
 ## Community
 

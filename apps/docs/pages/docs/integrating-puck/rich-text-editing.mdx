@@ -1,4 +1,5 @@
 import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
 import { Puck, RichTextMenu } from "@/puck";
 import { Callout } from "nextra/components";
 
@@ -8,9 +9,14 @@ Puck supports rich text editing via the [`richtext`](/docs/api-reference/fields/
 
 ## Adding a rich text field
 
-To use rich text, add the `richtext` field to your component config:
+To use rich text, add the `richtext` field to your component config. Rich text
+is node-valued: React receives the node as a prop, Vue receives an outlet
+component, and Svelte renders it by field name with `<PuckText>`.
 
-```tsx copy showLineNumbers {6}
+<FrameworkTabs>
+  <FrameworkTab>
+
+```tsx copy showLineNumbers {6,9}
 const config = {
   components: {
     Example: {
@@ -24,6 +30,60 @@ const config = {
   },
 };
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy showLineNumbers {6,9} filename="puck.config.ts"
+import Example from "./Example.vue";
+
+const config = {
+  components: {
+    Example: {
+      fields: { body: { type: "richtext" } },
+      render: Example,
+    },
+  },
+};
+```
+
+```vue copy filename="Example.vue"
+<script setup lang="ts">
+import type { VueSlot } from "@puckeditor/vue";
+defineProps<{ body?: VueSlot }>();
+</script>
+
+<template>
+  <component :is="body" />
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy showLineNumbers {6,9} filename="puck.config.ts"
+import Example from "./Example.svelte";
+
+const config = {
+  components: {
+    Example: {
+      fields: { body: { type: "richtext" } },
+      render: Example,
+    },
+  },
+};
+```
+
+```svelte copy filename="Example.svelte"
+<script lang="ts">
+  import { PuckText } from "@puckeditor/svelte";
+</script>
+
+<PuckText name="body" />
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 <ConfigPreview
   label="Example"
@@ -177,6 +237,12 @@ const config = {
 </ConfigPreview>
 
 ## Customizing the menu bar
+
+<Callout type="warning">
+  Native Vue and Svelte menu components are not yet supported. `renderMenu`
+  passes through to the Preact-based core API, so the examples in this section
+  apply to core or to advanced adapter configs authored with Preact components.
+</Callout>
 
 Use [`renderMenu()`](/docs/api-reference/fields/richtext#rendermenuprops) to customize the menu bar layout using the [`<RichTextMenu>`](/docs/api-reference/components/rich-text-menu) component:
 

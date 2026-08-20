@@ -1,0 +1,303 @@
+# Using with Svelte
+
+Use the full Puck editor and `<Render>` in a [Svelte 5](https://svelte.dev/)
+app, with **Svelte components as your Puck components** and no React dependency
+in your app.
+
+This is provided by the
+[`@puckeditor/svelte`](https://www.npmjs.com/package/@puckeditor/svelte)
+package. Internally it compiles `@puckeditor/core` against
+[Preact](https://preactjs.com/) and bundles Preact as an implementation detail.
+The Svelte bridge ships as source so it uses the same Svelte runtime as your
+app.
+
+## Installation
+
+```sh npm2yarn copy
+npm i @puckeditor/svelte svelte
+```
+
+Svelte 5 and a Vite app using `@sveltejs/vite-plugin-svelte` are required. Add
+`svelte` to `resolve.dedupe` so your app and the bridge share one runtime:
+
+```ts copy filename="vite.config.ts"
+import { defineConfig } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
+
+export default defineConfig({
+  plugins: [svelte()],
+  resolve: { dedupe: ["svelte"] },
+});
+```
+
+## Quick start
+
+Define a `SvelteConfig`. It is identical to a core `Config`, except each
+component's `render` is a **Svelte component**:
+
+```ts copy showLineNumbers filename="puck.config.ts"
+import type { SvelteConfig } from "@puckeditor/svelte";
+import Heading from "./components/Heading.svelte";
+
+export const config: SvelteConfig = {
+  components: {
+    Heading: {
+      fields: { title: { type: "text" } },
+      defaultProps: { title: "Hello" },
+      render: Heading,
+    },
+  },
+};
+```
+
+```svelte copy filename="components/Heading.svelte"
+<script lang="ts">
+  let { title = "" }: { title?: string } = $props();
+</script>
+
+<h1>{title}</h1>
+```
+
+Render the editor with `<Puck>` and the published page with `<Render>`:
+
+```svelte copy filename="Editor.svelte"
+<script lang="ts">
+  import { Puck, type Data } from "@puckeditor/svelte";
+  import "@puckeditor/svelte/puck.css";
+  import { config } from "./puck.config";
+
+  const data = { root: {}, content: [] };
+  const onpublish = (data: Data) => {
+    /* persist data */
+  };
+</script>
+
+<div style="height: 100vh">
+  <Puck {config} {data} {onpublish} />
+</div>
+```
+
+```svelte copy filename="Page.svelte"
+<script lang="ts">
+  import { Render, type Data } from "@puckeditor/svelte";
+  import { config } from "./puck.config";
+
+  let { data }: { data: Data } = $props();
+</script>
+
+<Render {config} {data} />
+```
+
+Everything else in `Config` — `fields`, `defaultProps`, `resolveData`,
+`resolveFields`, `resolvePermissions`, `categories`, and `label` — is
+framework-agnostic and works as documented for
+[`@puckeditor/core`](/docs/api-reference/configuration/config).
+
+## `<Puck>` props and callbacks
+
+`<Puck>` accepts `config`, `data`, and the passthrough props `permissions`,
+`viewports`, `iframe`, `dnd`, `metadata`, `headerTitle`, `headerPath`, `height`,
+and `fieldTransforms`, plus the initial-only `ui` and `initialHistory`.
+
+Svelte 5 callback props replace React event props:
+
+| Callback    | Payload                                                      |
+| ----------- | ------------------------------------------------------------ |
+| `onchange`  | the current data on every edit                               |
+| `onpublish` | the current data on publish                                  |
+| `onaction`  | `(action, appState, prevAppState)` on each dispatched action |
+| `onready`   | a `getPuck` accessor — call `getPuck()` for the `PuckApi`    |
+
+```svelte copy
+<script lang="ts">
+  import type { PuckApi } from "@puckeditor/svelte";
+
+  let page = $state(initialData);
+  let getEditor: (() => PuckApi) | undefined;
+</script>
+
+<Puck
+  {config}
+  data={page}
+  onchange={(data) => (page = data)}
+  onpublish={save}
+  onready={(getPuck) => (getEditor = getPuck)}
+/>
+```
+
+As with React, `data` is **initial-only**: inbound changes after mount do not
+reset the editor. Update your own state in `onchange` when you need the latest
+outbound value. Changing `config` identity performs a full remount.
+
+## Slots and DropZones
+
+The Svelte adapter passes serializable Puck values as component props and
+exposes node-valued fields by name. Render a
+[`slot` field](/docs/integrating-puck/multi-column-layouts) with `<PuckSlot>`:
+
+```ts copy
+// config
+Columns: {
+  fields: { items: { type: "slot" } },
+  render: Columns,
+},
+```
+
+```svelte copy filename="Columns.svelte"
+<script lang="ts">
+  import { PuckSlot } from "@puckeditor/svelte";
+</script>
+
+<div class="columns">
+  <PuckSlot name="items" allow={["Heading"]} />
+</div>
+```
+
+Use `<PuckText name="title" />` for every other node-valued field, including
+`richtext` fields and `contentEditable` text fields. It renders an inline
+editor in `<Puck>` and static content in `<Render>`:
+
+```svelte copy filename="Heading.svelte"
+<script lang="ts">
+  import { PuckText } from "@puckeditor/svelte";
+</script>
+
+<h1><PuckText name="title" /></h1>
+```
+
+For an imperative DropZone that is not backed by a slot field, use
+`<PuckDropZone zone="name" />`. A custom root renders its children with
+`<PuckChildren />`.
+
+## Custom fields
+
+Set a field to `{ type: "custom", render: MySvelteField }`. Its render props
+(`id`, `name`, `value`, `onChange`, `field`, `readOnly`) arrive as plain props:
+
+```svelte copy filename="ColorField.svelte"
+<script lang="ts">
+  import { FieldLabel } from "@puckeditor/svelte";
+
+  let {
+    name,
+    value = "#000000",
+    field,
+    readOnly = false,
+    onChange,
+  }: {
+    name?: string;
+    value?: string;
+    field?: { label?: string };
+    readOnly?: boolean;
+    onChange: (value: string) => void;
+  } = $props();
+</script>
+
+<FieldLabel label={field?.label ?? name ?? ""} {readOnly}>
+  <input
+    type="color"
+    {value}
+    disabled={readOnly}
+    oninput={(event) => onChange(event.currentTarget.value)}
+  />
+</FieldLabel>
+```
+
+To replace a built-in field UI globally, pass a `fieldTypes` map to `<Puck>`:
+
+```svelte copy
+<Puck {config} {data} fieldTypes={{ text: MyTextField }} />
+```
+
+## Sharing Svelte context
+
+Pass a `Map` through the `context` prop to make app-level values available to
+every bridged component. Each entry is applied with Svelte's `setContext`:
+
+```svelte copy
+<script>
+  import { STORE_KEY, store } from "./store.svelte";
+
+  const context = new Map([[STORE_KEY, store]]);
+</script>
+
+<Puck {config} {data} {context} />
+```
+
+The same `context` prop is available on `<Render>`. Context is read once during
+setup: changes inside a reactive value are preserved, but replacing the `Map`
+after mount does not replace the bridge context.
+
+## `getPuck` and `puckApi`
+
+Inside a bridged component, `getPuck()` returns the reactive per-component
+context (`isEditing`, `metadata`, and `id`):
+
+```svelte copy
+<script>
+  import { getPuck } from "@puckeditor/svelte";
+
+  const puck = getPuck();
+</script>
+
+{#if puck.isEditing}<span>Editing…</span>{/if}
+```
+
+To reactively subscribe to editor state — the equivalent of React's
+selector-based [`usePuck`](/docs/api-reference/puck-api) — use
+`puckApi(selector)`. Read the selected value from `.current`:
+
+```svelte copy
+<script>
+  import { puckApi } from "@puckeditor/svelte";
+
+  const selectedItem = puckApi((api) => api.selectedItem);
+  const hasPast = puckApi((api) => api.history.hasPast);
+</script>
+
+{#if hasPast.current}<span>Undo available</span>{/if}
+```
+
+For one-shot imperative control, use the accessor received by `onready`; it
+returns the same [`PuckApi`](/docs/api-reference/puck-api).
+
+## Mixed React/Svelte configs
+
+For an existing React config containing a few Svelte components, use
+`defineSvelteComponent` and `defineSvelteField` as per-render escape hatches:
+
+```ts copy
+import { defineSvelteComponent } from "@puckeditor/svelte";
+
+const config = {
+  components: {
+    MyReactComponent: {
+      /* ... */
+    },
+    MySvelteComponent: {
+      render: defineSvelteComponent(SvelteHeading),
+    },
+  },
+};
+```
+
+## Styling
+
+Import the styles once, as with core:
+
+```ts copy
+import "@puckeditor/svelte/puck.css";
+```
+
+Component-scoped `<style>` rules work in the editor preview without extra
+setup. Vite injects them into the document head and Puck mirrors head styles
+into its preview iframe.
+
+## Limitations
+
+- Advanced `overrides`, `plugins`, and `fieldTransforms` pass through to the
+  Preact-based core APIs; native Svelte equivalents are not yet available.
+- `<Render>` mounts client-side and emits an empty `div` on the server, so
+  published pages do not yet produce SSR or SSG output.
+- Rich text and `contentEditable` fields nested inside `object` or `array`
+  fields are not supported; use top-level fields.

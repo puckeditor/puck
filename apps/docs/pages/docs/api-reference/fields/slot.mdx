@@ -4,6 +4,7 @@ import {
   CodeBlockDrawer,
 } from "@/docs/components/Preview";
 import { usePuck } from "@/puck";
+import { Callout } from "nextra/components";
 
 # Slot
 
@@ -12,7 +13,13 @@ Define a drag-and-drop area containing nested components. Extends [Base](base).
 - This field produces an array of [ComponentData](/docs/api-reference/data-model/component-data)
 - The array is transformed to a [render function](#render-function) before being provided to `render()`
 
-This field does render any UI in the form section.
+This field does not render any UI in the form section.
+
+<Callout type="info">
+  Core renders the transformed slot prop as a React component. Vue renders it
+  with `<component :is>`, while Svelte places it by name with `<PuckSlot>`. See
+  the [framework examples](/docs/integrating-puck/multi-column-layouts#nested-components).
+</Callout>
 
 <PuckPreview
   label="Example"

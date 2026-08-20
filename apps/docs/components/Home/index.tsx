@@ -15,13 +15,15 @@ export const Home = () => {
         <h1 style={{ visibility: "hidden" }}>Puck</h1>
 
         <span>Open-source under MIT</span>
-        <h2 className={getClassName("heading")}>The visual editor for React</h2>
+        <h2 className={getClassName("heading")}>
+          The visual editor for React, Vue and Svelte
+        </h2>
       </div>
       <div style={{ paddingTop: 24 }} />
       <div className={getClassName("description")}>
         <p style={{ fontSize: 18, lineHeight: 1.5, opacity: 0.7 }}>
           Puck empowers developers to build amazing visual editing experiences
-          into their own React applications, powering the next generation of
+          with native framework components, powering the next generation of
           content tools, no-code builders and WYSIWYG editors.
         </p>
       </div>

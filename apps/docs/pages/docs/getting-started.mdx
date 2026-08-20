@@ -1,58 +1,235 @@
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
+
 # Getting Started
+
+Puck supports React, Vue 3, and Svelte 5. Choose a framework below; your
+selection is remembered across the documentation.
 
 ## Installation
 
-Install the package
+<FrameworkTabs>
+  <FrameworkTab>
 
 ```sh npm2yarn copy
 npm i @puckeditor/core --save
 ```
 
-Or generate a Puck application using a [recipe](https://github.com/puckeditor/puck#recipes)
+  </FrameworkTab>
+  <FrameworkTab>
+
+```sh npm2yarn copy
+npm i @puckeditor/vue vue --save
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```sh npm2yarn copy
+npm i @puckeditor/svelte svelte --save
+```
+
+Svelte requires a Vite app using `@sveltejs/vite-plugin-svelte`. Add
+`resolve: { dedupe: ["svelte"] }` to your Vite config. See
+[Using with Svelte](/docs/integrating-puck/using-with-svelte) for details.
+
+  </FrameworkTab>
+</FrameworkTabs>
+
+You can also generate a Puck application using a [recipe](https://github.com/puckeditor/puck#recipes):
 
 ```sh copy
 npx create-puck-app my-app
 ```
 
-## Render the editor
+## Configure your components
 
-```jsx copy filename="Editor.jsx"
-import { Puck } from "@puckeditor/core";
+The config describes the components that editors can add. Fields and the data
+model are shared by every framework; only the component supplied to `render`
+changes.
 
-// Create Puck component config
-const config = {
+<FrameworkTabs>
+  <FrameworkTab>
+
+```tsx copy filename="puck.config.tsx"
+import type { Config } from "@puckeditor/core";
+
+export const config: Config = {
   components: {
     HeadingBlock: {
-      fields: {
-        children: {
-          type: "text",
-        },
-      },
-      render: ({ children }) => {
-        return <h1>{children}</h1>;
-      },
+      fields: { title: { type: "text" } },
+      defaultProps: { title: "Hello" },
+      render: ({ title }) => <h1>{title}</h1>,
     },
   },
 };
+```
 
-// Describe the initial data
-const initialData = {};
+  </FrameworkTab>
+  <FrameworkTab>
 
-// Save the data to your database
-const save = (data) => {};
+```ts copy filename="puck.config.ts"
+import type { VueConfig } from "@puckeditor/vue";
+import HeadingBlock from "./HeadingBlock.vue";
 
-// Render Puck editor
+export const config: VueConfig = {
+  components: {
+    HeadingBlock: {
+      fields: { title: { type: "text" } },
+      defaultProps: { title: "Hello" },
+      render: HeadingBlock,
+    },
+  },
+};
+```
+
+```vue copy filename="HeadingBlock.vue"
+<script setup lang="ts">
+defineProps<{ title: string }>();
+</script>
+
+<template>
+  <h1>{{ title }}</h1>
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```ts copy filename="puck.config.ts"
+import type { SvelteConfig } from "@puckeditor/svelte";
+import HeadingBlock from "./HeadingBlock.svelte";
+
+export const config: SvelteConfig = {
+  components: {
+    HeadingBlock: {
+      fields: { title: { type: "text" } },
+      defaultProps: { title: "Hello" },
+      render: HeadingBlock,
+    },
+  },
+};
+```
+
+```svelte copy filename="HeadingBlock.svelte"
+<script lang="ts">
+  let { title = "" }: { title?: string } = $props();
+</script>
+
+<h1>{title}</h1>
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
+
+## Render the editor
+
+Pass your config and initial data to `<Puck>`, then persist the data emitted
+when the editor publishes.
+
+<FrameworkTabs>
+  <FrameworkTab>
+
+```tsx copy filename="Editor.tsx"
+import { Puck, type Data } from "@puckeditor/core";
+import "@puckeditor/core/puck.css";
+import { config } from "./puck.config";
+
+const initialData = { root: {}, content: [] };
+const save = (data: Data) => {};
+
 export function Editor() {
   return <Puck config={config} data={initialData} onPublish={save} />;
 }
 ```
 
+  </FrameworkTab>
+  <FrameworkTab>
+
+```vue copy filename="Editor.vue"
+<script setup lang="ts">
+import { Puck, type Data } from "@puckeditor/vue";
+import "@puckeditor/vue/puck.css";
+import { config } from "./puck.config";
+
+const initialData = { root: {}, content: [] };
+const save = (data: Data) => {};
+</script>
+
+<template>
+  <Puck :config="config" :data="initialData" @publish="save" />
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```svelte copy filename="Editor.svelte"
+<script lang="ts">
+  import { Puck, type Data } from "@puckeditor/svelte";
+  import "@puckeditor/svelte/puck.css";
+  import { config } from "./puck.config";
+
+  const initialData = { root: {}, content: [] };
+  const save = (data: Data) => {};
+</script>
+
+<Puck {config} data={initialData} onpublish={save} />
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
+
 ## Render the page
 
-```jsx copy filename="Page.jsx"
-import { Render } from "@puckeditor/core";
+Use the same config with the data you loaded from your database.
 
-export function Page() {
+<FrameworkTabs>
+  <FrameworkTab>
+
+```tsx copy filename="Page.tsx"
+import { Render, type Data } from "@puckeditor/core";
+import { config } from "./puck.config";
+
+export function Page({ data }: { data: Data }) {
   return <Render config={config} data={data} />;
 }
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```vue copy filename="Page.vue"
+<script setup lang="ts">
+import { Render, type Data } from "@puckeditor/vue";
+import { config } from "./puck.config";
+
+defineProps<{ data: Data }>();
+</script>
+
+<template>
+  <Render :config="config" :data="data" />
+</template>
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```svelte copy filename="Page.svelte"
+<script lang="ts">
+  import { Render, type Data } from "@puckeditor/svelte";
+  import { config } from "./puck.config";
+
+  let { data }: { data: Data } = $props();
+</script>
+
+<Render {config} {data} />
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
+
+The Vue and Svelte adapters share Puck's config, fields, data model, and utility
+APIs, but use native components at render boundaries. Their dedicated guides
+cover framework-specific events, slots, context, styling, and current
+limitations: [Vue](/docs/integrating-puck/using-with-vue) and
+[Svelte](/docs/integrating-puck/using-with-svelte).

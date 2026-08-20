@@ -1,4 +1,5 @@
 import { Callout } from "nextra/components";
+import { FrameworkTab, FrameworkTabs } from "@/docs/components/FrameworkTabs";
 
 # Styling
 
@@ -86,11 +87,32 @@ By default, Puck loads styles client-side. This is fine for most use-cases, but 
 
 ### Avoiding FOUC
 
-You can avoid FOUC by bundling `puck.css`:
+You can avoid FOUC by bundling the `puck.css` exported by your framework
+package:
 
-```css
+<FrameworkTabs>
+  <FrameworkTab>
+
+```css copy
 @import "@puckeditor/core/puck.css";
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```css copy
+@import "@puckeditor/vue/puck.css";
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```css copy
+@import "@puckeditor/svelte/puck.css";
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 When bundling CSS, make sure you consider the impact on your production CSS bundle.
 
@@ -101,12 +123,32 @@ When bundling CSS, make sure you consider the impact on your production CSS bund
 
 ### Excluding external imports
 
-Puck includes references to external font packages. Use the `no-external` CSS bundle to exclude them:
+Puck includes references to external font packages. Use your framework
+package's `no-external.css` bundle to exclude them:
 
-```css
-/* @import "@puckeditor/core/puck.css"; */
+<FrameworkTabs>
+  <FrameworkTab>
+
+```css copy
 @import "@puckeditor/core/no-external.css";
 ```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```css copy
+@import "@puckeditor/vue/no-external.css";
+```
+
+  </FrameworkTab>
+  <FrameworkTab>
+
+```css copy
+@import "@puckeditor/svelte/no-external.css";
+```
+
+  </FrameworkTab>
+</FrameworkTabs>
 
 ## Theming
 

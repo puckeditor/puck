@@ -2,9 +2,17 @@
 title: <Render>
 ---
 
+import { Callout } from "nextra/components";
+
 # \<Render\>
 
 Render a [`Data`](/docs/api-reference/data-model/data) object for a given [`Config`](/docs/api-reference/configuration/config).
+
+<Callout type="info">
+  Import `<Render>` from your framework package and provide its native config.
+  The Vue and Svelte adapters currently mount `<Render>` client-side and do not
+  emit published page content during SSR or SSG.
+</Callout>
 
 ```tsx copy showLineNumbers
 import { Render } from "@puckeditor/core";

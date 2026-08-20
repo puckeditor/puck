@@ -1,6 +1,16 @@
+import { Callout } from "nextra/components";
+
 # Config
 
 The main configuration object describing what Puck can render.
+
+<Callout type="info">
+  Fields, categories, resolvers, permissions, and the data model are shared
+  across frameworks. Use `Config` from `@puckeditor/core`, `VueConfig` from
+  `@puckeditor/vue`, or `SvelteConfig` from `@puckeditor/svelte`. Native adapter
+  configs provide Vue or Svelte components as `render`; see [Component
+  Configuration](/docs/integrating-puck/component-configuration).
+</Callout>
 
 ```tsx copy
 const config = {
