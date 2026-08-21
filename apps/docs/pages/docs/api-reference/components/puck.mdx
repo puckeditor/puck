@@ -144,12 +144,13 @@ Configure drag-and-drop behavior.
 | [`behavior`](#behavior)                     | `behavior: "static"`       | `"auto" \| "fluid" \| "static"` | -      |
 | [`disableAutoScroll`](#disableautoscroll)   | `disableAutoScroll: true`  | boolean                         | -      |
 | [`disableOutlineDrag`](#disableoutlinedrag) | `disableOutlineDrag: true` | boolean                         | -      |
+| [`enableDragHandle`](#enabledraghandle)     | `enableDragHandle: true`   | boolean                         | -      |
 
 ##### `behavior`
 
 Control animation behavior while dragging. Defaults to `"auto"`.
 
-- `"auto"` (default): Use fluid behavior within a slot, then switch to static behavior when dragging an item between slots or inserting a new component.
+- `"auto"` (default): Use fluid behavior within a slot, then switch to static behavior when dragging an item between slots, inserting a new component, or dragging from the [drag handle](#enabledraghandle).
 - `"fluid"`: Move the item during a drag, animating other items out of the way.
 - `"static"`: Freeze the item in-place during a drag, showing a line placeholder at the drop destination.
 
@@ -160,6 +161,10 @@ Disable auto-scroll when the user drags an item near the edge of the preview are
 ##### `disableOutlineDrag`
 
 Disable drag-and-drop in the [outline](/docs/api-reference/components/puck-outline). Items can still be selected and expanded.
+
+##### `enableDragHandle`
+
+Show a drag handle in the component action bar. Defaults to `false`. When [`behavior`](#behavior) is `"auto"`, drags started from the handle show a static line placeholder instead of animating sibling items.
 
 ### `fieldTransforms`
 

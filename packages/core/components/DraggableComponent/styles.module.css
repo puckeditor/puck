@@ -3,6 +3,19 @@
   pointer-events: none;
 }
 
+/* Overlay styles while dragging from handle */
+.DraggableComponent[popover] {
+  opacity: 0.9 !important;
+  background: transparent;
+  border: 0;
+  bottom: auto;
+  color: inherit;
+  margin: 0;
+  overflow: visible;
+  padding: 0;
+  right: auto;
+}
+
 .DraggableComponent-overlayWrapper {
   height: 100%;
   width: 100%;

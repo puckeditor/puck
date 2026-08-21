@@ -1,5 +1,3 @@
-import { DragDropProvider } from "@dnd-kit/react";
-import { useAppStore, useAppStoreApi } from "../../store";
 import {
   createContext,
   Dispatch,
@@ -12,18 +10,21 @@ import {
   useRef,
   useState,
 } from "react";
-import { AutoScroller, defaultPreset, DragDropManager } from "@dnd-kit/dom";
-import { DragDropEventHandlers } from "@dnd-kit/abstract";
-import { DropZoneProvider } from "../DropZone";
-import type { Draggable, Droppable } from "@dnd-kit/dom";
-import { getItem } from "../../lib/data/get-item";
+import { useDebouncedCallback } from "use-debounce";
+import { createStore } from "zustand";
+import { effect } from "@dnd-kit/state";
 import {
-  DropZoneContext,
-  Preview,
-  RootVirtualizerHandle,
-  ZoneStore,
-  ZoneStoreProvider,
-} from "../DropZone/context";
+  AutoScroller,
+  defaultPreset,
+  DragDropManager,
+  PointerActivationConstraints,
+} from "@dnd-kit/dom";
+import { DragDropEventHandlers } from "@dnd-kit/abstract";
+import type { Draggable, Droppable } from "@dnd-kit/dom";
+import { DragDropProvider } from "@dnd-kit/react";
+
+import { useAppStore, useAppStoreApi } from "../../store";
+import { getItem } from "../../lib/data/get-item";
 import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
 import { prepareCommitFlip } from "../../lib/dnd/flip-commit";
 import { resolveDndMode } from "../../lib/dnd/resolve-dnd-mode";
@@ -31,21 +32,28 @@ import { getZoneContentIds } from "../../lib/get-zone-content-ids";
 import { getComponentSelector } from "../../lib/dom-selectors";
 import { insertComponent } from "../../lib/insert-component";
 import { moveComponent } from "../../lib/move-component";
-import { useDebouncedCallback } from "use-debounce";
-import { ComponentDndData } from "../DraggableComponent";
-
 import { collisionStore } from "../../lib/dnd/collision/dynamic/store";
-import { generateId } from "../../lib/generate-id";
-import { createStore } from "zustand";
-import { getDeepDir } from "../../lib/get-deep-dir";
 import {
   getCollisionPosition,
   getInsertIndex,
 } from "../../lib/dnd/get-insert-index";
+import { generateId } from "../../lib/generate-id";
+import { getDeepDir } from "../../lib/get-deep-dir";
 import { useSensors } from "../../lib/dnd/use-sensors";
 import { getFrame } from "../../lib/get-frame";
-import { effect } from "@dnd-kit/state";
+
 import type { DndBehavior } from "../../types";
+
+import { DropZoneProvider } from "../DropZone";
+import {
+  DropZoneContext,
+  Preview,
+  RootVirtualizerHandle,
+  ZoneStore,
+  ZoneStoreProvider,
+} from "../DropZone/context";
+import { ComponentDndData } from "../DraggableComponent";
+
 import { useLinePlaceholder } from "./use-line-placeholder";
 
 const DEBUG = false;
@@ -140,6 +148,8 @@ const DragDropContextClient = ({
       areaDepthIndex: {},
       nextAreaDepthIndex: {},
       draggedItem: null,
+      draggingFromHandle: false,
+      staticDrag: false,
       previewIndex: {},
       enabledIndex: {},
       hoveringComponent: null,
@@ -315,7 +325,14 @@ const DragDropContextClient = ({
     ),
   ]);
 
-  const sensors = useSensors();
+  // Allow dragging from the component body or a registered handle (action bar).
+  const sensors = useSensors({
+    activatorElements: (source) =>
+      source.handle && source.handle !== source.element
+        ? [source.element, source.handle]
+        : [source.element],
+    mouse: [new PointerActivationConstraints.Distance({ value: 5 })],
+  });
 
   const [dragListeners, setDragListeners] = useState<DragCbs>({});
 
@@ -360,7 +377,10 @@ const DragDropContextClient = ({
 
           if (!source) {
             setLinePlaceholderActive(false);
-            zoneStore.setState({ draggedItem: null });
+            zoneStore.setState({
+              draggedItem: null,
+              draggingFromHandle: false,
+            });
 
             return;
           }
@@ -405,7 +425,10 @@ const DragDropContextClient = ({
           const onAnimationEnd = () => {
             // Keep the ghost faded until the drop animation lands
             setLinePlaceholderActive(false);
-            zoneStore.setState({ draggedItem: null });
+            zoneStore.setState({
+              draggedItem: null,
+              draggingFromHandle: false,
+            });
 
             // Tidy up cancellation
             if (event.canceled || target?.type === "void") {
@@ -611,6 +634,7 @@ const DragDropContextClient = ({
               const isLinePlaceholder =
                 resolveDndMode(behavior, {
                   isDraggingBetweenSlots: isReparenting,
+                  isDraggingFromHandle: zoneStore.getState().draggingFromHandle,
                 }) === "static";
 
               if (isLinePlaceholder) {
@@ -688,7 +712,10 @@ const DragDropContextClient = ({
             const item = getItem(sourceSelector, appStore.getState().state);
 
             if (item) {
-              const showLinePlaceholder = resolveDndMode(behavior) === "static";
+              const showLinePlaceholder =
+                resolveDndMode(behavior, {
+                  isDraggingFromHandle: zoneStore.getState().draggingFromHandle,
+                }) === "static";
 
               setLinePlaceholderActive(showLinePlaceholder);
 
