@@ -28,6 +28,10 @@ export type ActiveFieldTypeOverrides = Readonly<Record<string, boolean>>;
  * stack is exhausted. Puck's own nested fields go through `AutoFieldPrivate`, so
  * only the public `<AutoField>` can re-enter an override this way.
  *
+ * Compared against `true` rather than coerced, so a field type that names an
+ * `Object.prototype` member — `toString`, `constructor` — reads as inactive
+ * rather than picking up the inherited value.
+ *
  * @param activeFieldTypeOverrides The field types whose override is rendering above.
  * @param fieldType The field type to check.
  * @returns True if rendering the override again would re-enter it, false otherwise.
@@ -36,5 +40,5 @@ export const isFieldTypeOverrideActive = (
   activeFieldTypeOverrides?: ActiveFieldTypeOverrides,
   fieldType?: string
 ) => {
-  return fieldType ? !!activeFieldTypeOverrides?.[fieldType] : false;
+  return fieldType ? activeFieldTypeOverrides?.[fieldType] === true : false;
 };

@@ -43,4 +43,12 @@ describe("isFieldTypeOverrideActive", () => {
   it("returns false when the field type is missing", () => {
     expect(isFieldTypeOverrideActive({ text: true })).toBe(false);
   });
+
+  it("returns false for a field type inherited from Object.prototype", () => {
+    expect(isFieldTypeOverrideActive({ text: true }, "toString")).toBe(false);
+    expect(isFieldTypeOverrideActive({ text: true }, "constructor")).toBe(
+      false
+    );
+    expect(isFieldTypeOverrideActive({}, "hasOwnProperty")).toBe(false);
+  });
 });
