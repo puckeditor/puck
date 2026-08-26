@@ -15,12 +15,14 @@ import styles from "./styles.module.css";
 const getClassName = getClassNameFactory("InlineTextField", styles);
 
 const InlineTextFieldInternal = ({
+  placeholder,
   propPath,
   componentId,
   value,
   isReadOnly,
   opts = {},
 }: {
+  placeholder?: string;
   propPath: string;
   value: string | null | undefined;
   componentId: string;
@@ -92,6 +94,7 @@ const InlineTextFieldInternal = ({
   return (
     <span
       className={getClassName()}
+      data-placeholder={placeholder}
       ref={ref}
       contentEditable={isHovering || isFocused ? "plaintext-only" : "false"}
       onClick={(e) => {
