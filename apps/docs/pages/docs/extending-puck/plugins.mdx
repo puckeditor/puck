@@ -127,10 +127,22 @@ This may result in some incompatible plugin combinations. To improve your chance
 
 Both the field transforms and overrides let you introduce [entirely new field types](/docs/extending-puck/ui-overrides#introducing-new-field-types). Plugins can combine this functionality to bundle up new field behavior in a convenient package.
 
-This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can modified directly in the editor preview.
+This example uses [Overlay Portals](overlay-portals) to create an interactive rich text field that can be modified directly in the editor preview.
 
-```tsx showLineNumbers copy {6-8, 12-20}
+```tsx showLineNumbers copy {4-14, 23-25}
+import { useCallback } from "react";
 import { registerOverlayPortal } from "@puckeditor/core";
+
+const InlineRichText = ({ value }) => {
+  const handleInput = useCallback(() => {}, []); // Implement your input behavior
+
+  return (
+    // Wrap the value in a span, create an overlay portal, and make it editable
+    <span ref={registerOverlayPortal} contentEditable onInput={handleInput}>
+      {value}
+    </span>
+  );
+};
 
 const plugin = {
   overrides: {
@@ -140,16 +152,8 @@ const plugin = {
     },
   },
   fieldTransforms: {
-    // Wrap the value in a span, create an overlay portal, and make it editable
-    richText: ({ value }) => {
-      const handleInput = useCallback(() => {}, []); // Implement your input behavior
-
-      return (
-        <span ref={registerOverlayPortal} contentEditable onInput={handleInput}>
-          {value}
-        </span>
-      );
-    },
+    // Make the richText field editable inline
+    richText: (props) => <InlineRichText {...props} />,
   },
 };
 ```
