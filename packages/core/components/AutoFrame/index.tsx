@@ -199,8 +199,24 @@ export const CopyHostStyles = ({
       if (hashes[elHash]) {
         if (debug)
           console.log(
-            `iframe already contains element that is being mirrored. Skipping...`
+            `iframe already contains element that is being mirrored. Sharing...`
           );
+
+        // A second host style whose mirror would be byte-identical to one
+        // already in the frame. Don't append a duplicate — but do record this
+        // original against the existing mirror, so that removing the *first*
+        // style does not take the mirror away from this one.
+        const shared = elements.find(
+          (elementMap) => elementMap.mirrorHash === elHash
+        );
+
+        if (shared) {
+          elements.push({
+            original: el,
+            mirror: shared.mirror,
+            mirrorHash: elHash,
+          });
+        }
 
         return;
       }
@@ -226,16 +242,31 @@ export const CopyHostStyles = ({
 
       const { mirror, mirrorHash } = elements[index];
 
-      mirror.remove();
+      // Drop this original's claim first, so the two checks below see only the
+      // claims that survive it. Without this the entry outlives its mirror, and
+      // a re-add takes addEl's "already mirrored" branch and updates a node no
+      // longer in the document.
+      elements.splice(index, 1);
+
+      // One mirror can be shared by several identical host styles (addEl), and
+      // the initial bulk sync can produce several *distinct* mirrors that hash
+      // alike. So the node and the hash are retired independently: the node
+      // once nothing still points at it, the hash once no mirror in the frame
+      // carries that content.
+      if (!elements.some((elementMap) => elementMap.mirror === mirror)) {
+        mirror.remove();
+      }
+
       // Keyed by the mirror, matching addEl and the initial bulk sync. Hashing
       // `el` here keyed by the original, which carries no
       // data-puck-style-mirror attribute, so the delete missed and the real
       // entry survived — an identical style re-added later then looked like a
       // duplicate and was never mirrored back into the iframe.
-      delete hashes[mirrorHash];
-      // Without this the entry outlives its mirror, so a re-add takes addEl's
-      // "already mirrored" branch and updates a node no longer in the document.
-      elements.splice(index, 1);
+      if (
+        !elements.some((elementMap) => elementMap.mirrorHash === mirrorHash)
+      ) {
+        delete hashes[mirrorHash];
+      }
 
       if (debug) console.log(`Removed style node ${el.outerHTML}`);
     };

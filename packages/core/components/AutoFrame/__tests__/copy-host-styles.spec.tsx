@@ -103,4 +103,42 @@ describe("CopyHostStyles", () => {
     hostStyle = null;
     await flush();
   });
+
+  it("keeps the mirror until the last of several identical styles is removed", async () => {
+    render(
+      <autoFrameContext.Provider
+        value={{ document: mirrorDoc, window: window as Window }}
+      >
+        <CopyHostStyles>{null}</CopyHostStyles>
+      </autoFrameContext.Provider>
+    );
+    await flush();
+
+    const first = await addHostStyle();
+    const second = document.createElement("style");
+    second.innerHTML = CSS;
+    document.head.appendChild(second);
+    await flush();
+
+    expect(mirroredCss(mirrorDoc)).toHaveLength(1);
+
+    // Removing the FIRST of the two must not take the shared mirror away from
+    // the second, which is still in the host document. Both nodes are dedupe
+    // partners, so only one of them ever owned an `elements` entry.
+    first.remove();
+    await flush();
+    expect(mirroredCss(mirrorDoc)).toHaveLength(1);
+
+    // ...and the mirror goes when the last owner does, leaving nothing stale
+    // behind for the re-add path above to trip over.
+    second.remove();
+    hostStyle = null;
+    await flush();
+    expect(mirroredCss(mirrorDoc)).toHaveLength(0);
+
+    // The hash must have been retired with it: an identical style added now is
+    // mirrored rather than skipped as a duplicate.
+    await addHostStyle();
+    expect(mirroredCss(mirrorDoc)).toHaveLength(1);
+  });
 });
