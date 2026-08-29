@@ -42,7 +42,7 @@ const CardInner: ComponentConfig<CardProps> = {
     description: {
       type: "textarea",
       contentEditable: true,
-      placeholder: "Enter a title",
+      placeholder: "Enter a description",
     },
     icon: {
       type: "select",
