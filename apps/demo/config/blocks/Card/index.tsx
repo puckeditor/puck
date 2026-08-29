@@ -37,10 +37,12 @@ const CardInner: ComponentConfig<CardProps> = {
     title: {
       type: "text",
       contentEditable: true,
+      placeholder: "Enter a title",
     },
     description: {
       type: "textarea",
       contentEditable: true,
+      placeholder: "Enter a title",
     },
     icon: {
       type: "select",
@@ -55,8 +57,8 @@ const CardInner: ComponentConfig<CardProps> = {
     },
   },
   defaultProps: {
-    title: "Title",
-    description: "Description",
+    title: "",
+    description: "",
     icon: "Feather",
     mode: "flat",
   },

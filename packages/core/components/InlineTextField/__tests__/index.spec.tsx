@@ -77,4 +77,42 @@ describe("InlineTextField", () => {
     const span = container.querySelector("span");
     expect(span?.textContent).toBe("Hello world");
   });
+
+  it("normalizes empty state and shows placeholder even when filler <br> is retained", () => {
+    const { container, rerender } = render(
+      <InlineTextField
+        propPath="subtitle"
+        componentId="comp-1"
+        value="Initial"
+        isReadOnly={false}
+        placeholder="Enter a subtitle"
+      />
+    );
+
+    const span = container.querySelector("span");
+    expect(span).not.toBeNull();
+
+    // Simulate browser retaining a <br> filler when field is emptied by user
+    if (span) {
+      span.innerHTML = "<br>";
+    }
+
+    // Re-render with empty value to trigger normalization
+    rerender(
+      <InlineTextField
+        propPath="subtitle"
+        componentId="comp-1"
+        value=""
+        isReadOnly={false}
+        placeholder="Enter a subtitle"
+      />
+    );
+
+    // After normalization, the <br> should be removed and element should be empty
+    expect(span?.innerHTML).toBe("");
+    expect(span?.textContent ?? "").toBe("");
+    // :empty pseudo-class should now match (though we can't directly test this,
+    // the data-placeholder attribute presence confirms placeholder will render)
+    expect(span).toHaveAttribute("data-placeholder", "Enter a subtitle");
+  });
 });
