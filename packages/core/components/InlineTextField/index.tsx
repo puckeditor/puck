@@ -49,9 +49,9 @@ const InlineTextFieldInternal = ({
       // args, so passing null/undefined renders the literal text "null"/"undefined".
       const safeValue = value ?? "";
 
-      // Normalize empty contenteditable spans to remove filler <br> nodes that
-      // browsers insert for editability (which prevent :empty from matching).
-      // Always replaceChildren when empty, not just when innerText differs.
+      // Replace when the user has edited the value or when the value is empty to
+      // remove any elements inserted by the browser that would break placeholder
+      // styling (e.g. <br>).
       if (!safeValue || safeValue !== ref.current.innerText) {
         ref.current.replaceChildren(safeValue);
       }

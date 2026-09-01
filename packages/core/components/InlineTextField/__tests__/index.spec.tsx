@@ -30,7 +30,7 @@ jest.mock("../../../lib/overlay-portal", () => ({
 jest.mock("../styles.module.css");
 
 describe("InlineTextField", () => {
-  it("renders the placeholder as an attribute when value is empty", () => {
+  it("renders empty when value is null instead of the literal string 'null'", () => {
     const { container } = render(
       <InlineTextField
         propPath="subtitle"
@@ -44,7 +44,6 @@ describe("InlineTextField", () => {
     const span = container.querySelector("span");
     expect(span).not.toBeNull();
     expect(span?.innerText ?? span?.textContent ?? "").toBe("");
-    expect(span).toHaveAttribute("data-placeholder", "Enter a subtitle");
   });
 
   it("renders empty when value is undefined instead of the literal string 'undefined'", () => {
@@ -61,6 +60,23 @@ describe("InlineTextField", () => {
     const span = container.querySelector("span");
     expect(span).not.toBeNull();
     expect(span?.innerText ?? span?.textContent ?? "").toBe("");
+  });
+
+  it("renders the placeholder as an attribute when value is empty", () => {
+    const { container } = render(
+      <InlineTextField
+        propPath="subtitle"
+        componentId="comp-1"
+        value={""}
+        isReadOnly={false}
+        placeholder="Enter a subtitle"
+      />
+    );
+
+    const span = container.querySelector("span");
+    expect(span).not.toBeNull();
+    expect(span?.innerText ?? span?.textContent ?? "").toBe("");
+    expect(span).toHaveAttribute("data-placeholder", "Enter a subtitle");
   });
 
   it("renders the value when it is a non-empty string", () => {
