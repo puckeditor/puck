@@ -52,6 +52,7 @@ import { PrivateAppState } from "../../types/Internal";
 import { deepEqual } from "fast-equals";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { populateIds } from "../../lib/data/populate-ids";
+import { generateId } from "../../lib/generate-id";
 import { toComponent } from "../../lib/data/to-component";
 import { Layout } from "./components/Layout";
 import { useSafeId } from "../../lib/use-safe-id";
@@ -166,12 +167,21 @@ function PuckProvider<
       config
     );
 
+    // Content items may arrive without `props.id` (it is optional per
+    // ComponentDataOptionalId). Populate them so the node index doesn't
+    // collapse every item into a single `undefined` key, which corrupts the
+    // canvas and layer tree (every item renders as the last component).
+    const content = (initialData.content || []).map((item) => {
+      const id = item.props?.id || generateId(item.type);
+      return { ...item, props: { id, ...item.props } };
+    }) as G["UserData"]["content"];
+
     const newAppState = {
       ...defaultAppState,
       data: {
         ...initialData,
         root: { ...initialData?.root, props: root.props },
-        content: initialData.content || [],
+        content,
       },
       ui: {
         ...initial,
