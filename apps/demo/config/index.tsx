@@ -13,7 +13,6 @@ import { RichText } from "./blocks/RichText";
 
 import Root from "./root";
 import { UserConfig } from "./types";
-import { initialData } from "./initial-data";
 
 // We avoid the name config as next gets confused
 export const conf: UserConfig = {
@@ -50,10 +49,14 @@ export const conf: UserConfig = {
   },
 };
 
+// Namespaces stored pages so they're discarded when the component set changes
+// and previously-saved data could reference a component that no longer exists.
+//
+// This deliberately excludes the seed data in ./initial-data: changing a seed
+// page no longer nukes every saved page. @puckeditor/router detects that case
+// precisely instead, reporting it as drift on the affected page only.
 export const componentKey = Buffer.from(
-  `${Object.keys(conf.components).join("-")}-${JSON.stringify({
-    initialData,
-  })}`
+  Object.keys(conf.components).join("-")
 ).toString("base64");
 
 export default conf;
