@@ -15,7 +15,8 @@ import {
 } from "@/core";
 import { HeadingAnalyzer } from "@/plugin-heading-analyzer/src/HeadingAnalyzer";
 import config from "../../../config";
-import { UserConfig } from "../../../config/types";
+import { UserConfig, UserData } from "../../../config/types";
+import { NotFound } from "../../../lib/not-found";
 import { useDemoData } from "../../../lib/use-demo-data";
 import { IconButton, createUsePuck } from "@/core";
 import { ReactNode, useEffect, useRef, useState } from "react";
@@ -221,7 +222,7 @@ const Tabs = ({
   );
 };
 
-const CustomPuck = ({ dataKey }: { dataKey: string }) => {
+const CustomPuck = ({ onPublish }: { onPublish: (data: Data) => void }) => {
   const [hoveringTabs, setHoveringTabs] = useState(false);
 
   const [actionBarScroll, setActionBarScroll] = useState(0);
@@ -233,11 +234,7 @@ const CustomPuck = ({ dataKey }: { dataKey: string }) => {
       }}
     >
       <div style={{ position: "sticky", top: 0, zIndex: 2 }}>
-        <CustomHeader
-          onPublish={async (data: Data) => {
-            localStorage.setItem(dataKey, JSON.stringify(data));
-          }}
-        />
+        <CustomHeader onPublish={onPublish} />
       </div>
       <div
         style={{
@@ -348,7 +345,7 @@ const CustomDrawer = () => {
 };
 
 export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
-  const { data, resolvedData, key } = useDemoData({
+  const { resolved, resolvedData, save, isResolving } = useDemoData({
     path,
     isEdit,
   });
@@ -389,13 +386,17 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
     setIsClient(true);
   }, []);
 
-  if (!isClient) return null;
+  if (!isClient || isResolving) return null;
+
+  // In edit mode resolvePage always returns a page — an empty shell for a path
+  // that doesn't exist yet — so this only fires on the public route.
+  if (!resolved) return <NotFound />;
 
   if (isEdit) {
     return (
       <Puck<UserConfig>
         config={configOverride}
-        data={data}
+        data={resolved.data}
         iframe={{ enabled: false }}
         headerPath={path}
         permissions={{
@@ -492,31 +493,16 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
             );
           },
           drawer: () => <CustomDrawer />,
-          puck: () => <CustomPuck dataKey={key} />,
+          puck: () => (
+            <CustomPuck onPublish={(data) => save(data as UserData)} />
+          ),
         }}
       />
     );
   }
 
-  if (data) {
-    return <Render<UserConfig> config={config} data={resolvedData} />;
-  }
-
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        textAlign: "center",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div>
-        <h1>404</h1>
-        <p>Page does not exist in session storage</p>
-      </div>
-    </div>
+    <Render<UserConfig> config={config} data={resolvedData ?? resolved.data} />
   );
 }
 

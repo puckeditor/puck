@@ -1,4 +1,4 @@
 module.exports = {
   reactStrictMode: true,
-  transpilePackages: ["@puckeditor/core", "lucide-react"],
+  transpilePackages: ["@puckeditor/core", "@puckeditor/router", "lucide-react"],
 };

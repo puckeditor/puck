@@ -5,7 +5,8 @@
     "packages/create-puck-app",
     "packages/field-contentful",
     "packages/plugin-emotion-cache",
-    "packages/plugin-heading-analyzer"
+    "packages/plugin-heading-analyzer",
+    "packages/router"
   ],
   "version": "0.23.0",
   "npmClient": "yarn",

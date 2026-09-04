@@ -1,6 +1,6 @@
 import "@/core/styles.css";
 
-import resolvePuckPath from "../../lib/resolve-puck-path";
+import { resolvePuckPath } from "@puckeditor/router";
 import { Metadata } from "next";
 import Client from "./client";
 export async function generateMetadata({
@@ -9,9 +9,9 @@ export async function generateMetadata({
   params: Promise<{ framework: string; uuid: string; puckPath: string[] }>;
 }): Promise<Metadata> {
   const { puckPath } = await params;
-  const { isEdit, path } = resolvePuckPath(puckPath);
+  const { isEditorRoute, path } = resolvePuckPath(puckPath);
 
-  if (isEdit) {
+  if (isEditorRoute) {
     return {
       title: "Editing: " + path,
     };
@@ -28,9 +28,9 @@ export default async function Page({
   params: Promise<{ framework: string; uuid: string; puckPath: string[] }>;
 }) {
   const { puckPath } = await params;
-  const { isEdit, path } = resolvePuckPath(puckPath);
+  const { isEditorRoute, path } = resolvePuckPath(puckPath);
 
-  return <Client isEdit={isEdit} path={path} />;
+  return <Client isEdit={isEditorRoute} path={path} />;
 }
 
 export const dynamic = "force-dynamic";

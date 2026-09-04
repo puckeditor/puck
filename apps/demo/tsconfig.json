@@ -8,6 +8,7 @@
       "@/core": ["../../packages/core/index.ts"],
       "@/core/*": ["../../packages/core/*"],
       "@puckeditor/core": ["../../packages/core/index.ts"],
+      "@puckeditor/router": ["../../packages/router/index.ts"],
       "@/plugin-heading-analyzer": ["../../packages/plugin-heading-analyzer"],
       "@/plugin-heading-analyzer/*": [
         "../../packages/plugin-heading-analyzer/*"

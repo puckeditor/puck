@@ -40,3 +40,4 @@ yarn-error.log*
 .idea
 
 dist
+*.tsbuildinfo
