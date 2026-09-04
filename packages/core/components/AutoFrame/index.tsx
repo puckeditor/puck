@@ -77,7 +77,9 @@ const syncAttributes = (sourceElement: Element, targetElement: Element) => {
 
 const defer = (fn: () => void) => setTimeout(fn, 0);
 
-const CopyHostStyles = ({
+// Exported for tests, like shouldMirrorStyleElement above it. Not re-exported
+// from the package root.
+export const CopyHostStyles = ({
   children,
   debug = false,
   onStylesLoaded = () => null,
@@ -97,7 +99,14 @@ const CopyHostStyles = ({
       return () => {};
     }
 
-    let elements: { original: HTMLElement; mirror: HTMLElement }[] = [];
+    // `mirrorHash` is the key this entry put into `hashes`, stored rather than
+    // recomputed: it is derived from the mirror, which `addEl` can mutate after
+    // insertion, so recomputing it later can produce a key that was never set.
+    let elements: {
+      original: HTMLElement;
+      mirror: HTMLElement;
+      mirrorHash: string;
+    }[] = [];
     const hashes: Record<string, boolean> = {};
 
     const removeAllMirrors = () => {
@@ -190,8 +199,24 @@ const CopyHostStyles = ({
       if (hashes[elHash]) {
         if (debug)
           console.log(
-            `iframe already contains element that is being mirrored. Skipping...`
+            `iframe already contains element that is being mirrored. Sharing...`
           );
+
+        // A second host style whose mirror would be byte-identical to one
+        // already in the frame. Don't append a duplicate — but do record this
+        // original against the existing mirror, so that removing the *first*
+        // style does not take the mirror away from this one.
+        const shared = elements.find(
+          (elementMap) => elementMap.mirrorHash === elHash
+        );
+
+        if (shared) {
+          elements.push({
+            original: el,
+            mirror: shared.mirror,
+            mirrorHash: elHash,
+          });
+        }
 
         return;
       }
@@ -199,7 +224,7 @@ const CopyHostStyles = ({
       hashes[elHash] = true;
 
       doc.head.append(mirror as HTMLElement);
-      elements.push({ original: el, mirror: mirror });
+      elements.push({ original: el, mirror: mirror, mirrorHash: elHash });
 
       if (debug) console.log(`Added style node ${el.outerHTML}`);
     };
@@ -215,10 +240,33 @@ const CopyHostStyles = ({
         return;
       }
 
-      const elHash = hash(el.outerHTML);
+      const { mirror, mirrorHash } = elements[index];
 
-      elements[index]?.mirror?.remove();
-      delete hashes[elHash];
+      // Drop this original's claim first, so the two checks below see only the
+      // claims that survive it. Without this the entry outlives its mirror, and
+      // a re-add takes addEl's "already mirrored" branch and updates a node no
+      // longer in the document.
+      elements.splice(index, 1);
+
+      // One mirror can be shared by several identical host styles (addEl), and
+      // the initial bulk sync can produce several *distinct* mirrors that hash
+      // alike. So the node and the hash are retired independently: the node
+      // once nothing still points at it, the hash once no mirror in the frame
+      // carries that content.
+      if (!elements.some((elementMap) => elementMap.mirror === mirror)) {
+        mirror.remove();
+      }
+
+      // Keyed by the mirror, matching addEl and the initial bulk sync. Hashing
+      // `el` here keyed by the original, which carries no
+      // data-puck-style-mirror attribute, so the delete missed and the real
+      // entry survived — an identical style re-added later then looked like a
+      // duplicate and was never mirrored back into the iframe.
+      if (
+        !elements.some((elementMap) => elementMap.mirrorHash === mirrorHash)
+      ) {
+        delete hashes[mirrorHash];
+      }
 
       if (debug) console.log(`Removed style node ${el.outerHTML}`);
     };
@@ -301,7 +349,11 @@ const CopyHostStyles = ({
 
         if (!mirror) return;
 
-        elements.push({ original: styleNode, mirror });
+        elements.push({
+          original: styleNode,
+          mirror,
+          mirrorHash: hash(mirror.outerHTML),
+        });
 
         return mirror;
       })
@@ -357,10 +409,9 @@ const CopyHostStyles = ({
 
       observer.observe(parentDocument.head, { childList: true, subtree: true });
 
-      filtered.forEach((el) => {
-        const elHash = hash(el.outerHTML);
-
-        hashes[elHash] = true;
+      // Same keys the entries were pushed with, so removeEl can delete them.
+      elements.forEach(({ mirrorHash }) => {
+        hashes[mirrorHash] = true;
       });
     });
 
