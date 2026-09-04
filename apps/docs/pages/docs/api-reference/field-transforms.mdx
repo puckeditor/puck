@@ -7,8 +7,10 @@ title: FieldTransforms
 Transform the data for each [field type](/docs/api-reference/fields) before rendering in the editor.
 
 ```tsx copy
+const UppercaseText = ({ value }) => <p>{value.toUpperCase()}</p>;
+
 const fieldTransforms = {
-  text: ({ value }) => <p>{value}</p>,
+  text: (props) => <UppercaseText {...props} />,
   // ...
 };
 ```

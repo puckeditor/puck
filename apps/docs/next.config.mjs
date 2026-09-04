@@ -1,4 +1,4 @@
-import packageJson from "./package.json" assert { type: "json" };
+import packageJson from "./package.json" with { type: "json" };
 import nextra from "nextra";
 
 const withNextra = nextra({
