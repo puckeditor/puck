@@ -13,3 +13,32 @@ export const isFieldTypeHidden = (
 ) => {
   return fieldType ? overrides?.[fieldType] === null : false;
 };
+
+/**
+ * The field types whose `fieldTypes` override is already rendering higher up the
+ * tree.
+ */
+export type ActiveFieldTypeOverrides = Readonly<Record<string, boolean>>;
+
+/**
+ * Checks if a field type's override is already rendering higher up the tree.
+ *
+ * An override that renders an `<AutoField>` for its own field type resolves the
+ * same override again, which renders another `<AutoField>`, and so on until the
+ * stack is exhausted. Puck's own nested fields go through `AutoFieldPrivate`, so
+ * only the public `<AutoField>` can re-enter an override this way.
+ *
+ * Compared against `true` rather than coerced, so a field type that names an
+ * `Object.prototype` member — `toString`, `constructor` — reads as inactive
+ * rather than picking up the inherited value.
+ *
+ * @param activeFieldTypeOverrides The field types whose override is rendering above.
+ * @param fieldType The field type to check.
+ * @returns True if rendering the override again would re-enter it, false otherwise.
+ */
+export const isFieldTypeOverrideActive = (
+  activeFieldTypeOverrides?: ActiveFieldTypeOverrides,
+  fieldType?: string
+) => {
+  return fieldType ? activeFieldTypeOverrides?.[fieldType] === true : false;
+};

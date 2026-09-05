@@ -22,10 +22,11 @@ import {
 import { ObjectField } from "./fields/ObjectField";
 import { useAppStore } from "../../store";
 import { useSafeId } from "../../lib/use-safe-id";
-import { NestedFieldContext } from "./context";
+import { ActiveFieldTypeOverridesContext, NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
 import { setDeep } from "../../lib/data/set-deep";
 import { isFieldVisible } from "../../lib/fields/is-field-visible";
+import { isFieldTypeOverrideActive } from "../../lib/overrides/field-types";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
@@ -65,15 +66,20 @@ const defaultFields = {
 function AutoFieldInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
-    Label?: React.FC<FieldLabelPropsInternal>;
-  }
-) {
+>({
+  // Stripped from the props handed to field components: this is Puck's own
+  // bookkeeping, not part of the public field API.
+  bypassFieldTypeOverride = false,
+  ...props
+}: FieldPropsInternalOptional<ValueType, FieldType> & {
+  Label?: React.FC<FieldLabelPropsInternal>;
+  bypassFieldTypeOverride?: boolean;
+}) {
   const dispatch = useAppStore((s) => s.dispatch);
   const overrides = useAppStore((s) => s.overrides);
   const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
   const nestedFieldContext = useContext(NestedFieldContext);
+  const activeFieldTypeOverrides = useContext(ActiveFieldTypeOverridesContext);
 
   const { id, Label = FieldLabelInternal } = props;
 
@@ -101,10 +107,15 @@ function AutoFieldInternal<
     [overrides]
   );
 
+  // Whether this field is actually rendered by a `fieldTypes` override. False
+  // when the override is being bypassed to avoid re-entering itself, in which
+  // case this behaves exactly like a field with no override at all.
+  const rendersOverride =
+    !!overrides.fieldTypes?.[field.type] && !bypassFieldTypeOverride;
+
   // Custom fields and overridden field types are handed their value directly,
   // out of the field store. Built-in fields read it themselves.
-  const readsValueFromStore =
-    field.type === "custom" || !!overrides.fieldTypes?.[field.type];
+  const readsValueFromStore = field.type === "custom" || rendersOverride;
 
   const fieldPath = props.name ?? resolvedId;
 
@@ -192,18 +203,35 @@ function AutoFieldInternal<
 
   const fieldKey = field.type === "custom" ? field.key : undefined;
 
+  // Mark this field type as overridden for everything the override renders, so a
+  // public `<AutoField>` of the same type inside it doesn't resolve the override
+  // again. Unchanged by reference when nothing is being overridden here, so
+  // fields that aren't overridden pay nothing for this.
+  const childActiveFieldTypeOverrides = useMemo(
+    () =>
+      rendersOverride
+        ? { ...activeFieldTypeOverrides, [field.type]: true }
+        : activeFieldTypeOverrides,
+    [rendersOverride, activeFieldTypeOverrides, field.type]
+  );
+
   let FieldComponent: React.ComponentType<any> | null | undefined =
     useMemo(() => {
       // if there's an override provided for custom fields, fallback to standard behavior
-      if (field.type === "custom" && !render[field.type]) {
+      if (
+        field.type === "custom" &&
+        (!render[field.type] || bypassFieldTypeOverride)
+      ) {
         if (!field.render) {
           return null;
         }
         return field.render;
       } else if (field.type !== "slot") {
-        return render[field.type];
+        return bypassFieldTypeOverride
+          ? defaultFields[field.type as keyof typeof defaultFields]
+          : render[field.type];
       }
-    }, [field.type, fieldKey, render]);
+    }, [field.type, fieldKey, render, bypassFieldTypeOverride]);
 
   if (!isFieldVisible(overrides.fieldTypes, field)) {
     return null;
@@ -220,21 +248,25 @@ function AutoFieldInternal<
         localName: nestedFieldContext.localName ?? mergedProps.name,
       }}
     >
-      <div
-        className={getClassNameWrapper()}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onClick={(e) => {
-          // Prevent propagation of any click events to parent field.
-          // For example, a field within an array may bubble an event
-          // and fail to stop propagation.
-          e.stopPropagation();
-        }}
+      <ActiveFieldTypeOverridesContext.Provider
+        value={childActiveFieldTypeOverrides}
       >
-        <FieldComponent {...mergedProps}>
-          <Children {...(mergedProps as any)} />
-        </FieldComponent>
-      </div>
+        <div
+          className={getClassNameWrapper()}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onClick={(e) => {
+            // Prevent propagation of any click events to parent field.
+            // For example, a field within an array may bubble an event
+            // and fail to stop propagation.
+            e.stopPropagation();
+          }}
+        >
+          <FieldComponent {...mergedProps}>
+            <Children {...(mergedProps as any)} />
+          </FieldComponent>
+        </div>
+      </ActiveFieldTypeOverridesContext.Provider>
     </NestedFieldContext.Provider>
   );
 }
@@ -256,7 +288,14 @@ export function AutoFieldPrivate<
 function AutoFieldPublicInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->({ value, ...props }: FieldProps<FieldType, ValueType> & { value: any }) {
+>({
+  value,
+  bypassFieldTypeOverride,
+  ...props
+}: FieldProps<FieldType, ValueType> & {
+  value: any;
+  bypassFieldTypeOverride?: boolean;
+}) {
   const DefaultLabel = useMemo(() => {
     const DefaultLabel = (labelProps: any) => (
       <div
@@ -292,6 +331,7 @@ function AutoFieldPublicInternal<
       {...props}
       onChange={onChange}
       Label={DefaultLabel}
+      bypassFieldTypeOverride={bypassFieldTypeOverride}
     />
   );
 }
@@ -301,14 +341,30 @@ export function AutoField<
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(props: FieldProps<FieldType, ValueType> & { value: any }) {
   const id = useSafeId();
+  const activeFieldTypeOverrides = useContext(ActiveFieldTypeOverridesContext);
 
   if (props.field.type === "slot") {
     return null;
   }
 
+  // A `fieldTypes` override that renders an `<AutoField>` for its own field type
+  // would resolve that same override again and recurse until the stack is
+  // exhausted. Inside an override's own subtree, render the built-in field for
+  // that type instead. Only this public entry point can re-enter an override —
+  // the default node an override receives as `children`, and every field Puck
+  // nests itself, go through `AutoFieldPrivate`.
+  const bypassFieldTypeOverride = isFieldTypeOverrideActive(
+    activeFieldTypeOverrides,
+    props.field.type
+  );
+
   return (
     <fieldContextStore.Provider value={{ [id]: props.value }}>
-      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={id} />
+      <AutoFieldPublicInternal<ValueType, FieldType>
+        {...props}
+        id={id}
+        bypassFieldTypeOverride={bypassFieldTypeOverride}
+      />
     </fieldContextStore.Provider>
   );
 }
