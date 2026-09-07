@@ -153,10 +153,7 @@ export const ViewportControls = ({
     <div
       className={getClassName({ isExpanded, fullScreen })}
       suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
-      onClick={(e) => {
-        // Prevent clicks from propagating to the canvas and triggering a blur event
-        e.stopPropagation();
-      }}
+      data-puck-viewport-controls
     >
       <div className={getClassName("actions")}>
         <div className={getClassName("actionsInner")}>

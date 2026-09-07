@@ -247,7 +247,8 @@ export const Canvas = () => {
 
         if (
           !el.hasAttribute("data-puck-component") &&
-          !el.hasAttribute("data-puck-dropzone")
+          !el.hasAttribute("data-puck-dropzone") &&
+          !el.closest("[data-puck-viewport-controls]")
         ) {
           dispatch({
             type: "setUi",
