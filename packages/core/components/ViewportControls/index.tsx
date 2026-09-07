@@ -160,7 +160,9 @@ export const ViewportControls = ({
             <ViewportButton
               key={i}
               viewport={viewport}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+
                 setActiveViewport(viewport.width);
                 onViewportChange(viewport);
               }}
