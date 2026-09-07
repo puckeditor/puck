@@ -153,6 +153,10 @@ export const ViewportControls = ({
     <div
       className={getClassName({ isExpanded, fullScreen })}
       suppressHydrationWarning // Suppress hydration warning as frame is not visible until after load
+      onClick={(e) => {
+        // Prevent clicks from propagating to the canvas and triggering a blur event
+        e.stopPropagation();
+      }}
     >
       <div className={getClassName("actions")}>
         <div className={getClassName("actionsInner")}>
@@ -160,9 +164,7 @@ export const ViewportControls = ({
             <ViewportButton
               key={i}
               viewport={viewport}
-              onClick={(e) => {
-                e.stopPropagation();
-
+              onClick={() => {
                 setActiveViewport(viewport.width);
                 onViewportChange(viewport);
               }}
@@ -173,8 +175,7 @@ export const ViewportControls = ({
           <ActionButton
             title={zoomOutLabel}
             disabled={zoom <= zoomOptions[0]?.value}
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
               onZoom(
                 zoomOptions[
                   Math.max(
@@ -191,9 +192,7 @@ export const ViewportControls = ({
           <ActionButton
             title={zoomInLabel}
             disabled={zoom >= zoomOptions[zoomOptions.length - 1]?.value}
-            onClick={(e) => {
-              e.stopPropagation();
-
+            onClick={() => {
               onZoom(
                 zoomOptions[
                   Math.min(
@@ -213,9 +212,6 @@ export const ViewportControls = ({
             <select
               className={getClassName("zoomSelect")}
               value={zoom.toString()}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
               onChange={(e) => {
                 onZoom(parseFloat(e.currentTarget.value));
               }}
