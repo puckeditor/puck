@@ -17,7 +17,9 @@ export const DefaultField = ({
   labelIcon,
   Label,
 }: FieldPropsInternal) => {
-  const [localValue, onChangeLocal] = useLocalValue(name, onChange);
+  const [localValue, onChangeLocal] = useLocalValue(name, onChange, {
+    fallback: "",
+  });
 
   return (
     <Label

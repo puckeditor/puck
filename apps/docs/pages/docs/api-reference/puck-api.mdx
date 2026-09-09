@@ -20,6 +20,7 @@ import { Callout } from "nextra/components";
 | Param                                                             | Example                                            | Type                                                           |
 | ----------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------- |
 | [`appState`](#appstate)                                           | `{ data: {}, ui: {} }`                             | [AppState](/docs/api-reference/data-model/app-state)           |
+| [`dictionary`](#dictionary)                                       | `{ "header-publish": "Publish" }`                  | [Dictionary](/docs/api-reference/dictionary)                   |
 | [`dispatch`](#dispatchaction)                                     | `(action: PuckAction) => void`                     | Function                                                       |
 | [`getItemBySelector`](#getitembyselectorselector)                 | `() => ({ type: "Heading", props: {} })`           | Function                                                       |
 | [`getItemById`](#getitembyidid)                                   | `() => ({ type: "Heading", props: {} })`           | Function                                                       |
@@ -39,6 +40,10 @@ The current [application state](/docs/api-reference/data-model/app-state) for th
 console.log(appState.data);
 // { content: [], root: {}, zones: {} }
 ```
+
+### `dictionary`
+
+The [`dictionary`](/docs/api-reference/dictionary) object passed to [`<Puck>`](/docs/api-reference/components/puck#dictionary).
 
 ### `dispatch(action)`
 

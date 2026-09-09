@@ -20,26 +20,48 @@
   cursor: pointer;
 }
 
-/* Placeholder */
-[data-dnd-placeholder] {
-  background: var(--puck-color-azure-06, #6499cf) !important;
+/* Placeholder. The entry carries data-puck-line-drag during line placeholder
+   drags, where the placeholder renders as a faded ghost
+   of the actual content instead of a solid block */
+[data-dnd-placeholder]:not([data-puck-line-drag] *) {
+  background: var(
+    --puck-slot-component-color-placeholder,
+    var(--puck-color-azure-06)
+  ) !important;
   border: none !important;
-  color: #00000000 !important;
+  color: transparent !important;
   opacity: 0.3 !important;
   outline: none !important;
   transition: none !important;
 }
 
-[data-dnd-placeholder] *,
-[data-dnd-placeholder]::after,
-[data-dnd-placeholder]::before {
+[data-dnd-placeholder]:not([data-puck-line-drag] *) *,
+[data-dnd-placeholder]:not([data-puck-line-drag] *)::after,
+[data-dnd-placeholder]:not([data-puck-line-drag] *)::before {
   opacity: 0 !important;
+}
+
+[data-puck-line-drag] [data-dnd-placeholder] {
+  opacity: 0.4 !important;
+  outline: none !important;
+  transition: none !important;
+}
+
+[data-puck-line-drag] [data-dnd-dragging][data-puck-component] {
+  opacity: 0.9 !important;
 }
 
 [data-dnd-dragging][data-puck-component] {
   pointer-events: none !important;
-  outline: 2px var(--puck-color-azure-09, #cfdff0) solid !important;
-  outline-offset: -2px !important;
+  outline: var(
+      --puck-slot-component-border-width,
+      var(--puck-border-width-focus)
+    )
+    var(--puck-slot-component-color-border-dragging, var(--puck-color-azure-09))
+    solid !important;
+  outline-offset: calc(
+    var(--puck-slot-component-border-width, var(--puck-border-width-focus)) * -1
+  ) !important;
 }
 
 /*

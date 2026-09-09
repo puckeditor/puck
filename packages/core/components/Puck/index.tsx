@@ -16,6 +16,7 @@ import {
 
 import type {
   UiState,
+  DndConfig,
   IframeConfig,
   OnAction,
   Overrides,
@@ -28,6 +29,7 @@ import type {
   Metadata,
   AsFieldProps,
   DefaultComponentProps,
+  Dictionary,
 } from "../../types";
 
 import { PuckAction } from "../../reducer";
@@ -83,11 +85,10 @@ type PuckProps<
   headerPath?: string;
   viewports?: Viewports;
   iframe?: IframeConfig;
-  dnd?: {
-    disableAutoScroll?: boolean;
-  };
+  dnd?: DndConfig;
   initialHistory?: InitialHistory;
   metadata?: Metadata;
+  dictionary?: Dictionary;
   height?: CSSProperties["height"];
   _experimentalFullScreenCanvas?: boolean;
   _experimentalVirtualization?: boolean;
@@ -122,8 +123,10 @@ function PuckProvider<
     overrides,
     viewports = defaultViewports,
     iframe: _iframe,
+    dnd,
     initialHistory: _initialHistory,
     metadata,
+    dictionary,
     onAction,
     fieldTransforms,
     _experimentalFullScreenCanvas,
@@ -266,6 +269,8 @@ function PuckProvider<
         _experimentalVirtualization: !!_experimentalVirtualization,
         onAction,
         metadata,
+        dictionary: dictionary || {},
+        dnd,
         fieldTransforms: loadedFieldTransforms,
       };
     },
@@ -281,6 +286,8 @@ function PuckProvider<
       _experimentalVirtualization,
       onAction,
       metadata,
+      dictionary,
+      dnd,
       loadedFieldTransforms,
     ]
   );

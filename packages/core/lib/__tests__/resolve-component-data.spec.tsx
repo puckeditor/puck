@@ -367,6 +367,39 @@ describe("resolveComponentData", () => {
     expect(movedResolution.didChange).toBe(false);
   });
 
+  it("should pass root down to every resolver in the tree", async () => {
+    // When: ---------------
+    const root = { props: { title: "My root title" } };
+
+    await resolveComponentData(
+      toComponent({
+        type: "MyComponentWithResolver",
+        props: {
+          id: "parent",
+          prop: "Not yet resolved",
+          slot: [
+            {
+              type: "MyComponentWithResolver",
+              props: { id: "child", prop: "Not yet resolved" },
+            },
+          ],
+        },
+      }),
+      appStore.getState().config,
+      undefined,
+      undefined,
+      undefined,
+      "force",
+      null,
+      root
+    );
+
+    // Then: ---------------
+    expect(componentResolveData).toHaveBeenCalledTimes(2);
+    expect(componentResolveData.mock.calls[0][1].root).toStrictEqual(root);
+    expect(componentResolveData.mock.calls[1][1].root).toStrictEqual(root);
+  });
+
   it("shouldn't run for 'move' triggers before the component resolves once for other actions", async () => {
     // When: ---------------
     const movedResolution = await resolveComponentData(

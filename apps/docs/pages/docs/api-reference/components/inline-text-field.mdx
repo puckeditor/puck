@@ -1,0 +1,129 @@
+---
+title: <InlineTextField>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { Puck, InlineTextField } from "@/puck";
+import { Callout } from "nextra/components";
+
+# \<InlineTextField\>
+
+Render inline-editable text from a [field transform](/docs/api-reference/field-transforms).
+
+This is the same component that powers the [`contentEditable`](/docs/api-reference/fields/text#contenteditable) option internally. Use it to create new [inline-editable fields](/docs/extending-puck/ui-overrides#introducing-new-field-types).
+
+<PuckPreview
+  label="Example"
+  config={{
+    components: {
+      Example: {
+        fields: {
+          heading: { type: "heading" },
+        },
+        render: ({ heading }) => <h2>{heading}</h2>,
+      },
+    },
+  }}
+  data={{
+    content: [
+      {
+        type: "Example",
+        props: {
+          id: "example",
+          heading: "Edit me inline",
+        },
+      },
+    ],
+    root: { props: {} },
+  }}
+  overrides={{
+    fieldTypes: {
+      heading: {
+        render: () => <div />,
+      },
+    },
+  }}
+  fieldTransforms={{
+    heading: ({ value, componentId, propPath, isReadOnly, field }) => (
+      <InlineTextField
+        value={value}
+        componentId={componentId}
+        propPath={propPath}
+        isReadOnly={isReadOnly}
+      />
+    ),
+  }}
+  permissions={{ drag: false, delete: false, duplicate: false }}
+/>
+
+```tsx {1,5-10} showLineNumbers copy
+import { InlineTextField, Puck } from "@puckeditor/core";
+
+const fieldTransforms = {
+  heading: ({ value, componentId, propPath, isReadOnly }) => (
+    <InlineTextField
+      value={value}
+      componentId={componentId}
+      propPath={propPath}
+      isReadOnly={isReadOnly}
+    />
+  ),
+};
+```
+
+All required props below are available in [field transforms](/docs/api-reference/field-transforms).
+
+## Props
+
+| Param                         | Example                       | Type                        | Status   |
+| ----------------------------- | ----------------------------- | --------------------------- | -------- |
+| [`componentId`](#componentid) | `"Example-1"`                 | String                      | Required |
+| [`propPath`](#proppath)       | `"heading.text"`              | String                      | Required |
+| [`value`](#value)             | `"Hello, world"`              | String \| null \| undefined | Required |
+| [`isReadOnly`](#isreadonly)   | `false`                       | Boolean                     | Required |
+| [`opts`](#opts)               | `{ disableLineBreaks: true }` | Object                      | -        |
+
+## Required props
+
+### `componentId`
+
+The id of the component containing the prop being edited.
+
+### `propPath`
+
+The path of the prop to write changes to, within the component's props object.
+
+Append keys to the transform's [`propPath`](/docs/api-reference/field-transforms#proppath) to target a nested property within the field value (for example `${propPath}.text`).
+
+### `value`
+
+The current field value.
+
+### `isReadOnly`
+
+Whether the field is currently read-only. When `true`, edits are prevented.
+
+## Optional props
+
+### `opts`
+
+Additional options for the field.
+
+#### `opts.disableLineBreaks`
+
+Prevent the user from adding line breaks when pressing `Enter`. Defaults to `false`.
+
+```tsx /opts={{ disableLineBreaks: true }}/ copy
+<InlineTextField
+  value={value}
+  componentId={componentId}
+  propPath={propPath}
+  isReadOnly={isReadOnly}
+  opts={{ disableLineBreaks: true }}
+/>
+```
+
+## Further reading
+
+- [Field Transforms API reference](/docs/api-reference/field-transforms)
+- [Field Transforms guide](/docs/extending-puck/field-transforms)

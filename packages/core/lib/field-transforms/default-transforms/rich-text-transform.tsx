@@ -1,10 +1,6 @@
 "use client";
-import { EditorFallback } from "../../../components/RichTextEditor/components/EditorFallback";
-import { RichTextRenderFallback } from "../../../components/RichTextEditor/components/RenderFallback";
-import { FieldTransforms } from "../../../types/API/FieldTransforms";
-import { useAppStoreApi } from "../../../store";
-import { setDeep } from "../../../lib/data/set-deep";
-import { registerOverlayPortal } from "../../../lib/overlay-portal";
+
+import type { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
 import {
   useEffect,
   useRef,
@@ -14,9 +10,19 @@ import {
   lazy,
   Suspense,
 } from "react";
-import type { Editor as TipTapEditor, JSONContent } from "@tiptap/react";
-import { getSelectorForId } from "../../get-selector-for-id";
+import { resolveAndReplaceData } from "../../data/resolve-and-replace-data";
+
+import { EditorFallback } from "../../../components/RichTextEditor/components/EditorFallback";
+import { RichTextRenderFallback } from "../../../components/RichTextEditor/components/RenderFallback";
+import { FieldTransforms } from "../../../types/API/FieldTransforms";
+import { useAppStoreApi } from "../../../store";
+
 import { RichtextField, UiState } from "../../../types";
+
+import { setDeep } from "../../data/set-deep";
+import { registerOverlayPortal } from "../../overlay-portal";
+
+import { getSelectorForId } from "../../get-selector-for-id";
 
 const Editor = lazy(() =>
   import("../../../components/RichTextEditor/components/Editor").then((m) => ({
@@ -77,26 +83,16 @@ const InlineEditorWrapper = memo(
       async (content: string | JSONContent, ui?: Partial<UiState>) => {
         const appStore = appStoreApi.getState();
         const node = appStore.state.indexes.nodes[componentId];
-        const zoneCompound = `${node.parentId}:${node.zone}`;
-        const index =
-          appStore.state.indexes.zones[zoneCompound]?.contentIds.indexOf(
-            componentId
-          );
 
         const newProps = setDeep(node.data.props, propPath, content);
 
-        const resolvedData = await appStore.resolveComponentData(
+        await resolveAndReplaceData(
           { ...node.data, props: newProps },
-          "replace"
+          appStoreApi.getState,
+          "replace",
+          true,
+          ui
         );
-
-        appStore.dispatch({
-          type: "replace",
-          data: resolvedData.node,
-          destinationIndex: index,
-          destinationZone: zoneCompound,
-          ui,
-        });
       },
       [appStoreApi, componentId, propPath]
     );

@@ -26,33 +26,32 @@ export function buildMappers<
   readOnly?: T["readOnly"],
   forceReadOnly?: boolean
 ) {
-  return Object.keys(transforms).reduce<Mappers>((acc, _fieldType) => {
+  const newMappers: Mappers = {};
+
+  Object.keys(transforms).forEach((_fieldType) => {
     const fieldType = _fieldType as Field["type"]; // Not strictly true, as could include user fields, but this should be safe enough
 
-    return {
-      ...acc,
-      [fieldType]: ({
-        parentId,
-        ...params
-      }: MapFnParams<ExtractField<G["UserField"], Field["type"]>>) => {
-        const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
+    newMappers[fieldType] = ({ parentId, ...params }: MapFnParams<Field>) => {
+      const wildcardPath = params.propPath.replace(/\[\d+\]/g, "[*]");
 
-        const isReadOnly =
-          readOnly?.[params.propPath] ||
-          readOnly?.[wildcardPath] ||
-          forceReadOnly ||
-          false;
+      const isReadOnly =
+        readOnly?.[params.propPath] ||
+        readOnly?.[wildcardPath] ||
+        forceReadOnly ||
+        false;
 
-        const fn = transforms[fieldType] as FieldTransformFn<
-          ExtractField<G["UserField"], Field["type"]>
-        >;
+      const fn = transforms[fieldType] as FieldTransformFn<
+        ExtractField<G["UserField"], Field["type"]>
+      >;
 
-        return fn?.({
-          ...params,
-          isReadOnly,
-          componentId: parentId,
-        });
-      },
+      return fn?.({
+        ...params,
+        field: params.field as ExtractField<G["UserField"], Field["type"]>,
+        isReadOnly,
+        componentId: parentId,
+      });
     };
-  }, {});
+  });
+
+  return newMappers;
 }

@@ -64,7 +64,13 @@ export const VirtualizedDropZone = ({
 
   const dragTargetParentId = useContextStore(ZoneStoreContext, (s) => {
     if (s.draggedItem?.id) {
-      const parentZone = Object.keys(s.previewIndex ?? {})[0];
+      // Ghost previews only pin the item in its original zone; the drop
+      // target is described by the non-ghost preview
+      const [parentZone] =
+        Object.entries(s.previewIndex ?? {}).find(
+          ([, preview]) => !preview?.ghost
+        ) ?? [];
+
       return parentZone?.split(":")[0];
     }
 

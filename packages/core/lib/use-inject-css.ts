@@ -174,7 +174,7 @@ const hasStaticPuckCss = (): boolean => {
 
   staticCssDetected =
     getComputedStyle(document.documentElement)
-      .getPropertyValue("--puck-color-azure-05")
+      .getPropertyValue("--_puck-styles-loaded")
       .trim() !== "";
 
   return staticCssDetected;

@@ -8,19 +8,36 @@ import {
   Heading6,
 } from "lucide-react";
 import { RichtextField } from "../../../../types";
+import { useMessage } from "../../../../lib/use-message";
 
-const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
-  h1: { label: "Heading 1", icon: Heading1 },
-  h2: { label: "Heading 2", icon: Heading2 },
-  h3: { label: "Heading 3", icon: Heading3 },
-  h4: { label: "Heading 4", icon: Heading4 },
-  h5: { label: "Heading 5", icon: Heading5 },
-  h6: { label: "Heading 6", icon: Heading6 },
+const optionIcons: Record<string, React.FC | undefined> = {
+  h1: Heading1,
+  h2: Heading2,
+  h3: Heading3,
+  h4: Heading4,
+  h5: Heading5,
+  h6: Heading6,
 };
 
 export type HeadingElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 export const useHeadingOptions = (fieldOptions: RichtextField["options"]) => {
+  const h1String = useMessage("field-richtext-headingselect-1");
+  const h2String = useMessage("field-richtext-headingselect-2");
+  const h3String = useMessage("field-richtext-headingselect-3");
+  const h4String = useMessage("field-richtext-headingselect-4");
+  const h5String = useMessage("field-richtext-headingselect-5");
+  const h6String = useMessage("field-richtext-headingselect-6");
+
+  const optionLabels: Record<HeadingElement, string> = {
+    h1: h1String,
+    h2: h2String,
+    h3: h3String,
+    h4: h4String,
+    h5: h5String,
+    h6: h6String,
+  };
+
   let blockOptions: HeadingElement[] = [];
 
   if (fieldOptions?.heading !== false) {
@@ -57,9 +74,9 @@ export const useHeadingOptions = (fieldOptions: RichtextField["options"]) => {
     () =>
       blockOptions.map((item) => ({
         value: item,
-        label: optionNodes[item].label,
-        icon: optionNodes[item].icon,
+        label: optionLabels[item],
+        icon: optionIcons[item],
       })),
-    [blockOptions]
+    [blockOptions, optionLabels]
   );
 };

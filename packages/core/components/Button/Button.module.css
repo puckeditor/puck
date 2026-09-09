@@ -1,21 +1,26 @@
 .Button {
+  --_puck-button-default-space-x: 20px;
+  --_puck-button-default-font-size: var(--puck-font-size-xxs);
+  --_puck-button-default-font-weight: var(--puck-font-weight-regular);
+  --_puck-button-default-color-bg-disabled: var(--puck-color-bg-disabled);
+  --_puck-button-default-color-text-disabled: var(--puck-color-text-disabled);
+
   appearance: none;
   background: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  color: var(--puck-color-white);
+  border: var(--puck-border-width-regular) solid transparent;
+  border-radius: var(--puck-button-radius, var(--puck-radius-m));
+  color: var(--puck-color-text-inverse);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  letter-spacing: 0.05ch;
+  gap: var(--puck-space-2);
+  letter-spacing: var(--puck-letter-spacing-ui);
   font-family: var(--puck-font-family);
-  font-size: 14px;
-  font-weight: 400;
   box-sizing: border-box;
   line-height: 1;
   text-align: center;
   text-decoration: none;
-  transition: background-color 50ms ease-in;
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
   cursor: pointer;
   white-space: nowrap;
   margin: 0;
@@ -28,17 +33,57 @@
 
 .Button--medium {
   min-height: 34px;
-  padding-bottom: 7px;
-  padding-inline-start: 19px;
-  padding-inline-end: 19px;
-  padding-top: 7px;
+  padding-bottom: var(
+    --puck-button-medium-space-y,
+    calc(var(--puck-space-2) - var(--puck-border-width-regular))
+  );
+  padding-inline-start: var(
+    --puck-button-medium-space-x,
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
+  );
+  padding-inline-end: var(
+    --puck-button-medium-space-x,
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
+  );
+  padding-top: var(
+    --puck-button-medium-space-y,
+    calc(var(--puck-space-2) - var(--puck-border-width-regular))
+  );
+  font-weight: var(
+    --puck-button-medium-font-weight,
+    var(--_puck-button-default-font-weight)
+  );
+  font-size: var(
+    --puck-button-medium-font-size,
+    var(--_puck-button-default-font-size)
+  );
 }
 
 .Button--large {
-  padding-bottom: 11px;
-  padding-inline-start: 19px;
-  padding-inline-end: 19px;
-  padding-top: 11px;
+  padding-bottom: var(
+    --puck-button-large-space-y,
+    calc(var(--puck-space-3) - var(--puck-border-width-regular))
+  );
+  padding-inline-start: var(
+    --puck-button-large-space-x,
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
+  );
+  padding-inline-end: var(
+    --puck-button-large-space-x,
+    calc(var(--_puck-button-default-space-x) - var(--puck-border-width-regular))
+  );
+  padding-top: var(
+    --puck-button-large-space-y,
+    calc(var(--puck-space-3) - var(--puck-border-width-regular))
+  );
+  font-weight: var(
+    --puck-button-large-font-weight,
+    var(--_puck-button-default-font-weight)
+  );
+  font-size: var(
+    --puck-button-large-font-size,
+    var(--_puck-button-default-font-size)
+  );
 }
 
 .Button-icon {
@@ -46,49 +91,88 @@
 }
 
 .Button--primary {
-  background: var(--puck-color-azure-04);
+  background: var(
+    --puck-button-primary-color-bg,
+    var(--puck-color-interactive)
+  );
+  border-color: var(--puck-button-primary-color-border, transparent);
+  color: var(--puck-button-primary-color-text, var(--puck-color-text-inverse));
 }
 
 .Button:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Button--primary:hover {
-    background-color: var(--puck-color-azure-03);
+    background-color: var(
+      --puck-button-primary-color-bg-hover,
+      var(--puck-color-interactive-hover)
+    );
   }
 }
 
 .Button--primary:active {
-  background-color: var(--puck-color-azure-02);
+  background-color: var(
+    --puck-button-primary-color-bg-active,
+    var(--puck-color-interactive-active)
+  );
+}
+
+.Button--primary.Button--disabled,
+.Button--primary.Button--disabled:hover {
+  background-color: var(
+    --puck-button-primary-color-bg-disabled,
+    var(--_puck-button-default-color-bg-disabled)
+  );
+  color: var(
+    --puck-button-primary-color-text-disabled,
+    var(--_puck-button-default-color-text-disabled)
+  );
 }
 
 .Button--secondary {
-  border: 1px solid currentColor;
-  color: currentColor;
+  background: var(--puck-button-secondary-color-bg, transparent);
+  border-color: var(--puck-button-secondary-color-border, currentColor);
+  color: var(--puck-button-secondary-color-text, currentColor);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .Button--secondary:hover {
-    background-color: var(--puck-color-azure-12);
-    color: var(--puck-color-black);
+    background-color: var(
+      --puck-button-secondary-color-bg-hover,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(--puck-button-secondary-color-text, var(--puck-color-text));
   }
 }
 
 .Button--secondary:active {
-  background-color: var(--puck-color-azure-11);
-  color: var(--puck-color-black);
+  background-color: var(
+    --puck-button-secondary-color-bg-active,
+    var(--puck-color-interactive-soft)
+  );
+  color: var(--puck-button-secondary-color-text, var(--puck-color-text));
+}
+
+.Button--secondary.Button--disabled,
+.Button--secondary.Button--disabled:hover {
+  background-color: var(
+    --puck-button-secondary-color-bg-disabled,
+    var(--_puck-button-default-color-bg-disabled)
+  );
+  color: var(
+    --puck-button-secondary-color-text-disabled,
+    var(--_puck-button-default-color-text-disabled)
+  );
 }
 
 .Button--flush {
-  border-radius: 0;
+  border-radius: var(--puck-radius-none);
 }
 
-.Button--disabled,
 .Button--disabled:hover {
-  background-color: var(--puck-color-grey-07);
-  color: var(--puck-color-grey-03);
   cursor: not-allowed;
 }
 
@@ -98,5 +182,5 @@
 }
 
 .Button-spinner {
-  padding-inline-start: 8px;
+  padding-inline-start: var(--puck-space-2);
 }

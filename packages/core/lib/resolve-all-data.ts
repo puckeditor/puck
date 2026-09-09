@@ -8,7 +8,10 @@ import {
   Metadata,
   RootData,
 } from "../types";
-import { resolveComponentData } from "./resolve-component-data";
+import {
+  ResolveDataCache,
+  resolveComponentData,
+} from "./resolve-component-data";
 import { groupZonesByComponent } from "./group-zones-by-component";
 import { defaultData } from "./data/default-data";
 import { toComponent } from "./data/to-component";
@@ -28,11 +31,18 @@ export async function resolveAllData<
 
   const zonesByComponent = groupZonesByComponent(defaultedData);
 
+  // Use a local cache so entries are garbage collected when this function
+  // returns, rather than accumulating in the shared module-level cache. This
+  // prevents unbounded memory growth when resolving many pages with unique
+  // component IDs.
+  const cacheStore: ResolveDataCache = { lastChange: {} };
+
   let resolvedZones: Record<string, Content> = {};
 
   const resolveNode = async <T extends ComponentData | RootData>(
     _node: T,
-    parent: ComponentData | null
+    parent: ComponentData | null,
+    root: RootData
   ) => {
     const node = toComponent(_node);
 
@@ -46,7 +56,9 @@ export async function resolveAllData<
         () => {},
         () => {},
         "force",
-        parent
+        parent,
+        root,
+        cacheStore
       )
     ).node as T;
 
@@ -56,7 +68,7 @@ export async function resolveAllData<
     const resolvedDeepPromise = mapFields(
       resolved,
       {
-        slot: ({ value }) => processContent(value, resolvedAsComponent),
+        slot: ({ value }) => processContent(value, resolvedAsComponent, root),
       },
       config
     ) as unknown as Promise<T>;
@@ -69,7 +81,8 @@ export async function resolveAllData<
         async ({ zoneCompound, content }) => {
           resolvedZones[zoneCompound] = await processContent(
             content,
-            resolvedAsComponent
+            resolvedAsComponent,
+            root
           );
         }
       );
@@ -86,17 +99,19 @@ export async function resolveAllData<
 
   const processContent = async (
     content: Content,
-    parent: ComponentData | null
+    parent: ComponentData | null,
+    root: RootData
   ) => {
-    return Promise.all(content.map((item) => resolveNode(item, parent)));
+    return Promise.all(content.map((item) => resolveNode(item, parent, root)));
   };
 
   const result: Data = defaultData({});
 
-  result.root = await resolveNode(defaultedData.root, null);
+  result.root = await resolveNode(defaultedData.root, null, defaultedData.root);
   result.content = await processContent(
     defaultedData.content,
-    toComponent(result.root)
+    toComponent(result.root),
+    result.root
   );
   result.zones = resolvedZones;
 

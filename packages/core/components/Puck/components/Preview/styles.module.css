@@ -8,3 +8,9 @@
   height: 100%;
   width: 100%;
 }
+
+/* Fences the preview off during outline drags, keeping autoscroll and drop
+   targeting inside the sidebar */
+.PuckPreview-frame[data-puck-outline-dragging] {
+  pointer-events: none;
+}

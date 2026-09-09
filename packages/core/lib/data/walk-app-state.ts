@@ -190,6 +190,7 @@ export function walkAppState<UserData extends Data = Data>(
   }, newZones);
 
   let rootAsComponent: ComponentData = toComponent({
+    // DEPRECATED root props without a `props` key, for backwards compatibility
     props: { ...(state.data.root.props ?? state.data.root) },
   });
 

@@ -1,5 +1,5 @@
 import getClassNameFactory from "../../lib/get-class-name-factory";
-import { Field, FieldProps } from "../../types";
+import { Field, FieldProps, UiState } from "../../types";
 
 import styles from "./styles.module.css";
 import {
@@ -24,13 +24,15 @@ import { useAppStore } from "../../store";
 import { useSafeId } from "../../lib/use-safe-id";
 import { NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
-import { getDeep } from "../../lib/data/get-deep";
+import { setDeep } from "../../lib/data/set-deep";
+import { isFieldVisible } from "../../lib/fields/is-field-visible";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
 } from "./FieldLabel";
 import { FieldLabelInternal } from "./FieldLabel";
-import { useFieldStore, useFieldStoreApi, fieldContextStore } from "./store";
+import { useFieldStoreApi, fieldContextStore } from "./store";
+import { useLocalValue } from "./lib/use-local-value";
 
 const getClassName = getClassNameFactory("Input", styles);
 const getClassNameWrapper = getClassNameFactory("InputWrapper", styles);
@@ -99,12 +101,42 @@ function AutoFieldInternal<
     [overrides]
   );
 
-  const fieldValue = useFieldStore((s) => {
-    // Always set a value for custom fields, or when an override is provided
-    if (field.type === "custom" || overrides.fieldTypes?.[field.type]) {
-      return getDeep(s, props.name ?? resolvedId);
+  // Custom fields and overridden field types are handed their value directly,
+  // out of the field store. Built-in fields read it themselves.
+  const readsValueFromStore =
+    field.type === "custom" || !!overrides.fieldTypes?.[field.type];
+
+  const fieldPath = props.name ?? resolvedId;
+
+  const fieldStore = useFieldStoreApi();
+
+  const onChangeWithStoreSync = useMemo(() => {
+    if (!readsValueFromStore) {
+      return props.onChange;
     }
-  });
+
+    return (value: any, uiState?: Partial<UiState>) => {
+      // Call the parent first, so nested (object/array) fields compute their
+      // update against the pre-change store value.
+      props.onChange?.(value, uiState);
+
+      // Race condition mitigation:
+      // Object and array fields build their update by merging the changed
+      // subfield over its siblings, which they read out of this store.
+      // The store is only written after resolving data asynchronously, so without
+      // this sync write, editing two siblings within objects/arrays in quick succession could make the
+      // second merge carry the first sibling's pre-change value and undo it.
+      fieldStore.setState(setDeep(fieldStore.getState(), fieldPath, value));
+    };
+  }, [readsValueFromStore, props.onChange, fieldPath, fieldStore]);
+
+  // Same local tracking the built-in fields use, so custom and overridden fields get their
+  // new value on the same render to avoid caret jumps and resolved data overriding the new value.
+  const [fieldValue, onChange] = useLocalValue(
+    fieldPath,
+    onChangeWithStoreSync,
+    { tracked: readsValueFromStore }
+  );
 
   const mergedProps = useMemo(
     () => ({
@@ -115,8 +147,9 @@ function AutoFieldInternal<
       Label,
       id: resolvedId,
       value: fieldValue,
+      onChange,
     }),
-    [props, field, label, labelIcon, Label, resolvedId, fieldValue]
+    [props, field, label, labelIcon, Label, resolvedId, fieldValue, onChange]
   );
 
   const onFocus = useCallback(
@@ -159,25 +192,20 @@ function AutoFieldInternal<
 
   const fieldKey = field.type === "custom" ? field.key : undefined;
 
-  let FieldComponent: React.ComponentType<any> = useMemo(() => {
-    // if there's an override provided for custom fields, fallback to standard behavior
-    if (field.type === "custom" && !render[field.type]) {
-      if (!field.render) {
-        return null;
+  let FieldComponent: React.ComponentType<any> | null | undefined =
+    useMemo(() => {
+      // if there's an override provided for custom fields, fallback to standard behavior
+      if (field.type === "custom" && !render[field.type]) {
+        if (!field.render) {
+          return null;
+        }
+        return field.render;
+      } else if (field.type !== "slot") {
+        return render[field.type];
       }
-      return field.render as any;
-    } else if (field.type !== "slot") {
-      return render[field.type] as (props: FieldProps) => ReactElement;
-    }
-  }, [field.type, fieldKey, render]);
+    }, [field.type, fieldKey, render]);
 
-  const { visible = true } = props.field;
-
-  if (!visible) {
-    return null;
-  }
-
-  if (field.type === "slot") {
+  if (!isFieldVisible(overrides.fieldTypes, field)) {
     return null;
   }
 

@@ -3,7 +3,7 @@
 }
 
 .ComponentList--isExpanded + .ComponentList {
-  margin-top: 12px;
+  margin-top: var(--puck-space-3);
 }
 
 .ComponentList-content {
@@ -17,36 +17,46 @@
 .ComponentList-title {
   background-color: transparent;
   border: 0;
-  color: var(--puck-color-grey-05);
+  color: var(--puck-drawer-category-color-text, var(--puck-color-text-muted));
   cursor: pointer;
   display: flex;
   font: inherit;
-  font-size: var(--puck-font-size-xxxs);
+  font-size: var(--puck-drawer-category-font-size, var(--puck-font-size-xxxs));
   list-style: none;
   margin-bottom: 6px;
-  padding: 8px;
+  padding: var(--puck-drawer-category-space, var(--puck-space-2));
   text-transform: uppercase;
-  transition: background-color 50ms ease-in, color 50ms ease-in;
-  gap: 4px;
-  border-radius: 4px;
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    color var(--puck-duration-fast) var(--puck-ease-exit);
+  gap: var(--puck-space-1);
+  border-radius: var(--puck-radius-m);
   width: 100%;
 }
 
 .ComponentList-title:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ComponentList-title:hover {
-    background-color: var(--puck-color-azure-11);
-    color: var(--puck-color-azure-04);
+    background-color: var(
+      --puck-drawer-category-color-bg-hover,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(
+      --puck-drawer-category-color-text-hover,
+      var(--puck-color-interactive)
+    );
     transition: none;
   }
 }
 
 .ComponentList-title:active {
-  background-color: var(--puck-color-azure-10);
+  background-color: var(
+    --puck-drawer-category-color-bg-active,
+    var(--puck-color-interactive-subtle)
+  );
   transition: none;
 }
 

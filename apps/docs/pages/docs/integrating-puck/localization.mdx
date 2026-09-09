@@ -1,0 +1,228 @@
+# Localization
+
+Puck's default UI uses US English. Use the [`dictionary`](/docs/api-reference/dictionary) prop to translate or reword Puck-owned strings.
+
+See the [Dictionary API reference](/docs/api-reference/dictionary) for the full list of strings and their defaults.
+
+## Translating Puck strings
+
+To translate strings, provide a dictionary object with the keys you want to change and their corresponding translations.
+
+```tsx showLineNumbers copy {6-10}
+import { Puck } from "@puckeditor/core";
+
+export function Editor() {
+  return (
+    <Puck
+      dictionary={{
+        "header-publish": "Publicar", // "Publish" button
+        "field-richtext-bold": "Negrita", // "Bold" rich text control
+        "viewport-switch": "Cambiar a {label}", // Viewport tooltip
+      }}
+      config={config}
+      data={data}
+    />
+  );
+}
+```
+
+## Switching languages at runtime
+
+Puck reacts to any changes in the `dictionary` prop, so you can swap the object at runtime to change the language of the UI.
+
+```tsx {10,14,17} showLineNumbers copy
+import { useState } from "react";
+import { Puck } from "@puckeditor/core";
+
+const dictionaries = {
+  en: {},
+  es: { "header-publish": "Publicar" },
+};
+
+export function Editor() {
+  const [locale, setLocale] = useState<"en" | "es">("en");
+
+  return (
+    <>
+      <button onClick={() => setLocale(locale === "en" ? "es" : "en")}>
+        Toggle language
+      </button>
+      <Puck dictionary={dictionaries[locale]} config={config} data={data} />
+    </>
+  );
+}
+```
+
+If you already use a library like [`react-i18next`](https://react.i18next.com/) or [`next-intl`](https://next-intl.dev/), resolve your strings into a plain object and feed that object into `dictionary`.
+
+```tsx showLineNumbers copy {7-13}
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+
+export function Editor() {
+  const { t } = useTranslation();
+
+  const dictionary = useMemo(
+    () => ({
+      "header-publish": t("header-publish"),
+      "field-richtext-bold": t("field-richtext-bold"),
+    }),
+    [t]
+  );
+
+  return <Puck dictionary={dictionary} config={config} data={data} />;
+}
+```
+
+## Translating user-defined labels
+
+The dictionary only covers strings owned by the editor. Labels defined by your app should be translated where they are configured:
+
+- Custom plugin labels via the plugin [`label`](/docs/api-reference/plugin#label)
+- Viewport labels via the [`viewports.label`](/docs/api-reference/components/puck#label) prop
+- Component labels, root label, category titles and field labels via the [`config`](/docs/api-reference/components/puck#config) prop
+
+### Plugins
+
+Your own plugins define their own [`label`](/docs/api-reference/plugin#label); translate it before passing the plugin to Puck.
+
+```tsx showLineNumbers copy
+import { useMemo } from "react";
+import { Puck } from "@puckeditor/core";
+
+export function Editor({ locale }) {
+  const labels = translations[locale];
+
+  const plugins = useMemo(
+    () => [
+      {
+        name: "my-plugin",
+        icon: <SomeIcon />,
+        label: labels.plugins.myPlugin,
+        render: () => <MyPanel />,
+      },
+    ],
+    [labels]
+  );
+
+  return <Puck config={config} data={data} plugins={plugins} />;
+}
+```
+
+### Viewports
+
+Viewport names are labels in the [`viewports`](/docs/api-reference/components/puck#viewports) prop.
+
+```tsx showLineNumbers copy
+import { useMemo } from "react";
+import { Puck, type Viewports } from "@puckeditor/core";
+
+export function Editor({ locale }) {
+  const labels = translations[locale];
+
+  const viewports: Viewports = useMemo(
+    () => [
+      { width: 360, icon: "Smartphone", label: labels.viewports.small },
+      { width: 768, icon: "Tablet", label: labels.viewports.medium },
+      { width: 1280, icon: "Monitor", label: labels.viewports.large },
+    ],
+    [labels]
+  );
+
+  return <Puck config={config} data={data} viewports={viewports} />;
+}
+```
+
+### Config
+
+Component labels, root label, category titles and field labels come from your [`config`](/docs/api-reference/components/puck#config) prop. Update the config when the locale changes, in the same way you update the dictionary.
+
+```tsx showLineNumbers copy
+import { useMemo } from "react";
+import { Puck } from "@puckeditor/core";
+
+export function Editor() {
+  const labels = translations["en"];
+
+  const localizedConfig = useMemo(
+    () => {
+      components: {
+        HeadingBlock: {
+          label: labels.components.HeadingBlock,
+          fields: {
+            title: { label: labels.fields.title },
+          },
+          render: (props) => <h1>{props.title}</h1>,
+        },
+      }
+    },
+    [labels]
+  );
+
+  return <Puck config={localizedConfig} data={data} />;
+}
+```
+
+## Interpolating values
+
+Some messages have dynamic values that can be interpolated into the string.
+
+Use `{key}` in the string to interpolate a value supplied by Puck.
+
+```tsx
+// Interpolates the viewport `label` value into the string.
+<Puck dictionary={{ "viewport-switch": "Cambiar a {label}" }} />
+```
+
+See the [Dictionary API reference](/docs/api-reference/dictionary) for the full list of strings that support interpolation and their corresponding keys.
+
+## Hiding a string
+
+Set a key to an empty string to render nothing for that message.
+
+```tsx
+// Hides the page label entirely.
+<Puck dictionary={{ "label-page": "" }} />
+```
+
+## Custom strings
+
+Puck supports adding your own keys to the dictionary to use them through the [internal Puck API](/docs/api-reference/puck-api#dictionary).
+
+```tsx showLineNumbers copy
+import { Puck, createUsePuck } from "@puckeditor/core";
+
+const usePuck = createUsePuck();
+
+const HeaderActions = ({ children }) => {
+  const savedMsg = usePuck((s) => s.dictionary["saved-state"]);
+
+  return (
+    <div>
+      <span>{savedMsg}</span>
+      {children}
+    </div>
+  );
+};
+
+export function Editor() {
+  return (
+    <Puck
+      dictionary={{ "saved-state": "Saved" }}
+      overrides={{
+        fieldTypes: {
+          headerActions: { render: HeaderActions },
+        },
+      }}
+      config={config}
+      data={data}
+    />
+  );
+}
+```
+
+## Further reading
+
+- [`Dictionary` API reference](/docs/api-reference/dictionary)
+- [`dictionary` prop](/docs/api-reference/components/puck#dictionary)
+- [`PuckApi.dictionary`](/docs/api-reference/puck-api#dictionary)

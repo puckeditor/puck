@@ -1,9 +1,11 @@
 import { AlignJustify as AlignJustifyIcon } from "lucide-react";
 import { Control } from "../components/Control";
+import { useMessage } from "../../../lib/use-message";
 import { useControlContext } from "../lib/use-control-context";
 
 export function AlignJustify() {
   const { editor, editorState } = useControlContext();
+  const alignJustifyLabel = useMessage("field-richtext-align-justify");
 
   return (
     <Control
@@ -14,7 +16,7 @@ export function AlignJustify() {
       }}
       disabled={!editorState?.canAlignJustify}
       active={editorState?.isAlignJustify}
-      title="Justify"
+      title={alignJustifyLabel}
     />
   );
 }

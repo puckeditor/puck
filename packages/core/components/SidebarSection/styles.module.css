@@ -2,7 +2,7 @@
   display: flex;
   position: relative;
   flex-direction: column;
-  color: var(--puck-color-black);
+  color: var(--puck-color-text);
 }
 
 .SidebarSection:last-of-type {
@@ -10,10 +10,10 @@
 }
 
 .SidebarSection-title {
-  background: var(--puck-color-white);
-  padding: 16px;
-  border-bottom: 1px solid var(--puck-color-grey-09);
-  border-top: 1px solid var(--puck-color-grey-09);
+  background: var(--_puck-sidebar-section-color-bg, var(--puck-color-surface));
+  padding: var(--puck-space-4);
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
   overflow-x: auto;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .SidebarSection-content:last-child {
-  padding-bottom: 4px;
+  padding-bottom: var(--puck-space-1);
 }
 
 .SidebarSection:last-of-type .SidebarSection-content {
@@ -33,50 +33,50 @@
 .SidebarSection-breadcrumbLabel {
   background: none;
   border: 0;
-  border-radius: 2px;
-  color: var(--puck-color-azure-04);
+  border-radius: var(--puck-radius-xs);
+  color: var(--puck-color-interactive);
   cursor: pointer;
   font: inherit;
   flex-shrink: 0;
   padding: 0;
-  transition: color 50ms ease-in;
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 }
 
 .SidebarSection-breadcrumbLabel:focus-visible {
-  outline: 2px solid var(--puck-color-azure-05);
-  outline-offset: 2px;
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .SidebarSection-breadcrumbLabel:hover {
-    color: var(--puck-color-azure-03);
+    color: var(--puck-color-interactive-hover);
     transition: none;
   }
 }
 
 .SidebarSection-breadcrumbLabel:active {
-  color: var(--puck-color-azure-02);
+  color: var(--puck-color-interactive-active);
   transition: none;
 }
 
 .SidebarSection-breadcrumbs {
   align-items: center;
   display: flex;
-  gap: 4px;
+  gap: var(--puck-space-1);
 }
 
 .SidebarSection-breadcrumb {
   align-items: center;
   display: flex;
-  gap: 4px;
+  gap: var(--puck-space-1);
 }
 
 .SidebarSection-heading {
-  padding-inline-end: 16px;
+  padding-inline-end: var(--puck-space-4);
 }
 
 .SidebarSection-loadingOverlay {
-  background: var(--puck-color-white);
+  background: var(--puck-color-surface);
   display: flex;
   justify-content: center;
   align-items: center;

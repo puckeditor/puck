@@ -43,6 +43,8 @@ type WalkObjectOpts = {
   getPropPath: (str: string) => string;
   config: Config;
   recurseSlots?: boolean;
+  ownedFields?: boolean;
+  keysToWalk?: string[];
 };
 
 const isPromise = <T = unknown>(v: any): v is Promise<T> =>
@@ -71,22 +73,11 @@ export const walkField = ({
 
     const mappedContent = recurseSlots
       ? content.map((el) => {
-          const componentConfig = config.components[el.type];
-
-          if (!componentConfig) {
+          if (!config.components[el.type]) {
             throw new Error(`Could not find component config for ${el.type}`);
           }
 
-          const fields = componentConfig.fields ?? {};
-
-          return walkField({
-            value: { ...el, props: defaultSlots(el.props, fields) },
-            fields,
-            mappers,
-            id: el.props.id,
-            config,
-            recurseSlots,
-          });
+          return mapFields(el, mappers, config, recurseSlots);
         })
       : content;
 
@@ -152,6 +143,8 @@ export const walkField = ({
         getPropPath: (k) => `${propPath}.${k}`,
         config,
         recurseSlots,
+        // Only default missing fields when objectFields describe this value
+        ownedFields: fields[propKey]?.type === "object",
       });
     }
   }
@@ -167,10 +160,24 @@ const walkObject = ({
   getPropPath,
   config,
   recurseSlots,
+  ownedFields,
+  keysToWalk: providedKeys,
 }: WalkObjectOpts): Record<string, any> => {
-  const newProps = Object.entries(value).map(([k, v]) => {
+  const keys = providedKeys ?? Object.keys(value);
+
+  if (!providedKeys && ownedFields) {
+    for (const fieldName in fields) {
+      const fieldType = fields[fieldName].type;
+
+      if (fieldType !== "slot" && mappers[fieldType] && !(fieldName in value)) {
+        keys.push(fieldName);
+      }
+    }
+  }
+
+  const newProps = keys.map((k) => {
     const opts: WalkFieldOpts = {
-      value: v,
+      value: value[k],
       fields,
       mappers,
       propKey: k,
@@ -205,7 +212,8 @@ export function mapFields<T extends ComponentData | RootData>(
   mappers: Mappers<MapFn>,
   config: Config,
   recurseSlots?: boolean,
-  shouldDefaultSlots?: boolean
+  shouldDefaultSlots?: boolean,
+  fieldsToMap?: string[]
 ): T;
 
 export function mapFields<T extends ComponentData | RootData>(
@@ -213,15 +221,29 @@ export function mapFields<T extends ComponentData | RootData>(
   mappers: Mappers<PromiseMapFn>,
   config: Config,
   recurseSlots?: boolean,
-  shouldDefaultSlots?: boolean
+  shouldDefaultSlots?: boolean,
+  fieldsToMap?: string[]
 ): Promise<T>;
 
+/**
+ * Walks and transforms the fields of a component or root item.
+ *
+ * @param item The component or root item to transform.
+ * @param mappers The mapping functions to apply to each field type.
+ * @param config The puck config for the item.
+ * @param recurseSlots Whether to recurse into slot fields.
+ * @param shouldDefaultSlots Whether to default missing slot fields.
+ * @param fieldsToMap Limit the walk to these top-level fields.
+ *                    When omitted, all props and field definitions are walked.
+ * @returns The transformed item.
+ */
 export function mapFields(
   item: any,
   mappers: Mappers,
   config: Config,
   recurseSlots: boolean = false,
-  shouldDefaultSlots: boolean = true
+  shouldDefaultSlots: boolean = true,
+  fieldsToMap?: string[]
 ): any {
   const itemType = "type" in item ? item.type : "root";
 
@@ -238,6 +260,8 @@ export function mapFields(
     getPropPath: (k) => k,
     config,
     recurseSlots,
+    ownedFields: true,
+    keysToWalk: fieldsToMap,
   });
 
   if (isPromise(newProps)) {

@@ -1,5 +1,5 @@
 .Modal {
-  background: color-mix(in srgb, var(--puck-color-black) 75%, transparent);
+  background: var(--puck-color-overlay-backdrop);
   display: none;
   justify-content: center;
   align-items: center;
@@ -19,9 +19,9 @@
 .Modal-inner {
   width: 100%;
   max-width: 1024px;
-  border-radius: 8px;
+  border-radius: var(--puck-radius-l);
   overflow: hidden;
-  background: var(--puck-color-white);
+  background: var(--puck-color-surface);
   display: flex;
   flex-direction: column;
   max-height: 90dvh;

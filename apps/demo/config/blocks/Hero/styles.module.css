@@ -8,6 +8,15 @@
   position: relative;
 }
 
+@media (prefers-color-scheme: dark) {
+  .Hero {
+    background-image: linear-gradient(
+      rgba(255, 255, 255, 0),
+      rgb(28, 29, 31) 100%
+    );
+  }
+}
+
 .Hero-inner {
   display: flex;
   align-items: center;
@@ -36,16 +45,16 @@
 }
 
 .Hero-subtitle {
-  color: var(--puck-color-grey-05);
+  color: var(--puck-color-text-muted);
   font-size: var(--puck-font-size-m);
   line-height: 1.5;
   margin: 0;
-  margin-bottom: 8px;
+  margin-bottom: var(--puck-space-2);
   font-weight: 300;
 }
 
 .Hero-subtitle strong {
-  font-weight: 500;
+  font-weight: var(--puck-font-weight-medium);
 }
 
 .Hero--hasImageBackground .Hero-subtitle {
@@ -93,7 +102,7 @@
 .Hero-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--puck-space-4);
   width: 100%;
 }
 
@@ -116,5 +125,5 @@
 
 .Hero-actions {
   display: flex;
-  gap: 16px;
+  gap: var(--puck-space-4);
 }

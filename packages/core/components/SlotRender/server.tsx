@@ -9,6 +9,7 @@ import {
 } from "../../types";
 import { useSlots } from "../../lib/use-slots";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
+import { getDropZoneProps } from "../../lib/props/shared/get-drop-zone-props";
 
 type SlotRenderProps = DropZoneProps & {
   content: Content;
@@ -56,14 +57,16 @@ const Item = ({
  * Replacement for DropZoneRender
  */
 export const SlotRender = forwardRef<HTMLDivElement, SlotRenderProps>(
-  function SlotRenderInternal(
-    { className, style, content, config, metadata, as },
-    ref
-  ) {
+  function SlotRenderInternal(allProps, ref) {
+    const {
+      props: { className, style, content, config, metadata, as },
+      forwardableProps,
+    } = getDropZoneProps(allProps);
+
     const El = as ?? "div";
 
     return (
-      <El className={className} style={style} ref={ref}>
+      <El {...forwardableProps} className={className} style={style} ref={ref}>
         {content.map((item) => {
           if (!config.components[item.type]) {
             return null;

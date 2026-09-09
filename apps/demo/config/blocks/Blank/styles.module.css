@@ -1,4 +1,4 @@
 .Blank {
   background: hotpink;
-  padding: 16px;
+  padding: var(--puck-space-4);
 }

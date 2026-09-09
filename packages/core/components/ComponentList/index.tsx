@@ -2,6 +2,7 @@ import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { ReactNode, useEffect } from "react";
 import { useAppStore } from "../../store";
+import { useMessage } from "../../lib/use-message";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Drawer } from "../Drawer";
 
@@ -54,12 +55,23 @@ const ComponentList = ({
 
   const { expanded = true } = componentList[id] || {};
 
+  const contentId = `puck-drawer-category-${id}`;
+
+  const collapseTitle = useMessage("drawer-category-collapse", {
+    title: title ?? "",
+  });
+  const expandTitle = useMessage("drawer-category-expand", {
+    title: title ?? "",
+  });
+
   return (
     <div className={getClassName({ isExpanded: expanded })}>
       {title && (
         <button
           type="button"
           className={getClassName("title")}
+          aria-expanded={expanded}
+          aria-controls={contentId}
           onClick={() =>
             setUi({
               componentList: {
@@ -71,11 +83,7 @@ const ComponentList = ({
               },
             })
           }
-          title={
-            expanded
-              ? `Collapse${title ? ` ${title}` : ""}`
-              : `Expand${title ? ` ${title}` : ""}`
-          }
+          title={expanded ? collapseTitle : expandTitle}
         >
           <div>{title}</div>
           <div className={getClassName("titleIcon")}>
@@ -83,7 +91,7 @@ const ComponentList = ({
           </div>
         </button>
       )}
-      <div className={getClassName("content")}>
+      <div className={getClassName("content")} id={contentId}>
         <Drawer>
           {children ||
             Object.keys(config.components).map((componentKey) => {

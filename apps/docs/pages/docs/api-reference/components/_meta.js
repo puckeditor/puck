@@ -9,6 +9,7 @@ const menu = {
   "drawer-item": {},
   "drop-zone": {},
   "field-label": {},
+  "inline-text-field": {},
   puck: {},
   "puck-components": {},
   "puck-fields": {},

@@ -16,7 +16,7 @@ Specify a transforms object for the fields you want to modify before rendering:
 
 ```tsx
 const fieldTransforms = {
-  text: ({ value }) => <div>Value: {value}</div>, // Wrap all text field props in divs
+  text: ({ value }) => value.toUpperCase(), // Transform text fields to uppercase
 };
 
 const Example = () => <Puck fieldTransforms={fieldTransforms} />;
@@ -48,11 +48,13 @@ const EditableText = ({ value }) => {
 };
 
 const fieldTransforms = {
-  text: EditableText,
+  text: (props) => <EditableText {...props} />,
 };
 
 const Example = () => <Puck fieldTransforms={fieldTransforms} />;
 ```
+
+Because Puck calls transforms as functions, render components that use hooks from the transform instead of passing them directly.
 
 ## Define new fields
 

@@ -1,9 +1,11 @@
 import { AlignCenter as AlignCenterIcon } from "lucide-react";
 import { Control } from "../components/Control";
+import { useMessage } from "../../../lib/use-message";
 import { useControlContext } from "../lib/use-control-context";
 
 export function AlignCenter() {
   const { editor, editorState } = useControlContext();
+  const alignCenterLabel = useMessage("field-richtext-align-center");
 
   return (
     <Control
@@ -14,7 +16,7 @@ export function AlignCenter() {
       }}
       disabled={!editorState?.canAlignCenter}
       active={editorState?.isAlignCenter}
-      title="Align center"
+      title={alignCenterLabel}
     />
   );
 }

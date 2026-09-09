@@ -116,50 +116,50 @@
   margin-bottom: 0px;
 }
 
-.PreviewFrame h1 {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) h1 {
   font-size: var(--puck-font-size-xxxl);
   font-weight: 600;
 }
 
-.PreviewFrame h2 {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) h2 {
   font-size: var(--puck-font-size-xxl);
   font-weight: 600;
 }
 
-.PreviewFrame h3 {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) h3 {
   font-size: var(--puck-font-size-xl);
   font-weight: 600;
 }
 
-.PreviewFrame h4 {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) h4 {
   font-size: var(--puck-font-size-l);
   font-weight: 600;
 }
 
-.PreviewFrame h5 {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) h5 {
   font-size: var(--puck-font-size-m);
   font-weight: 600;
 }
 
-.PreviewFrame h6 {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) h6 {
   font-size: var(--puck-font-size-s);
   font-weight: 600;
 }
 
-.PreviewFrame ul {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) ul {
   padding-left: 24px;
   list-style-type: disc;
 }
 
-.PreviewFrame ol {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) ol {
   padding-left: 24px;
   list-style-type: decimal;
 }
 
-.PreviewFrame p,
-.PreviewFrame ul,
-.PreviewFrame ol,
-.PreviewFrame blockquote,
-.PreviewFrame pre {
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) p,
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) ul,
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) ol,
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) blockquote,
+.PreviewFrame:not(.PreviewFrame--disableContentStyles) pre {
   margin-block: 12px;
 }

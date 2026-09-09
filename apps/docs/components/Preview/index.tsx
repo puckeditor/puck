@@ -82,6 +82,7 @@ export const PreviewFrame = ({
   label,
   style = {},
   disableOnClick = false,
+  disableContentStyles = false,
   renderInfo,
   renderDrawer,
 }: {
@@ -89,6 +90,7 @@ export const PreviewFrame = ({
   label?: string;
   style?: CSSProperties;
   disableOnClick?: boolean;
+  disableContentStyles?: boolean;
   renderInfo?: () => ReactNode;
   renderDrawer?: () => ReactNode;
 }) => {
@@ -96,7 +98,7 @@ export const PreviewFrame = ({
 
   return (
     <div
-      className={getClassNamePreview()}
+      className={getClassNamePreview({ disableContentStyles })}
       onClick={() => {
         if (disableOnClick) return;
 
@@ -152,12 +154,14 @@ export const PuckPreview = ({
   children = <Puck.Preview />,
   style = {},
   disableOnClick,
+  disableContentStyles,
   renderInfo,
   renderDrawer,
   ...puckProps
 }: React.ComponentProps<typeof Puck> & {
   label: string;
   disableOnClick: boolean;
+  disableContentStyles?: boolean;
   children?: ReactNode;
   style?: CSSProperties;
   renderInfo?: () => ReactNode;
@@ -174,6 +178,7 @@ export const PuckPreview = ({
           renderInfo={renderInfo}
           renderDrawer={renderDrawer}
           disableOnClick={disableOnClick}
+          disableContentStyles={disableContentStyles}
         >
           {children}
         </PreviewFrame>

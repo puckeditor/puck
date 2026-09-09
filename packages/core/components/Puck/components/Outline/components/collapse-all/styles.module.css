@@ -1,0 +1,12 @@
+.CollapseAll {
+  visibility: hidden;
+}
+
+.CollapseAll-icon {
+  height: var(--puck-icon-size-m);
+  width: var(--puck-icon-size-m);
+}
+
+.CollapseAll--visible {
+  visibility: visible;
+}

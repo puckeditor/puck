@@ -1,5 +1,7 @@
 import {
   CSSProperties,
+  ElementType,
+  ReactElement,
   Ref,
   forwardRef,
   memo,
@@ -22,6 +24,7 @@ import {
 } from "./context";
 import { useAppStore, useAppStoreApi } from "../../store";
 import { DropZoneProps } from "./types";
+import { getDropZoneProps } from "../../lib/props/shared/get-drop-zone-props";
 import {
   ComponentData,
   Config,
@@ -33,6 +36,7 @@ import {
 } from "../../types";
 
 import { useDroppable, UseDroppableInput } from "@dnd-kit/react";
+import { isComponentAllowed } from "../../lib/data/is-component-allowed";
 import { DrawerItemInner } from "../Drawer";
 import { pointerIntersection } from "@dnd-kit/collision";
 import { UniqueIdentifier } from "@dnd-kit/abstract";
@@ -47,6 +51,7 @@ import { useSlots } from "../../lib/use-slots";
 import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
+import { useMessage } from "../../lib/use-message";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
@@ -54,6 +59,7 @@ import { FieldTransforms } from "../../types/API/FieldTransforms";
 import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
+import { LinePlaceholder } from "./LinePlaceholder";
 
 const getClassName = getClassNameFactory("DropZone", styles);
 
@@ -90,9 +96,9 @@ const InsertPreview = ({
   return <DrawerItemInner name={label}>{override}</DrawerItemInner>;
 };
 
-export const DropZoneEditPure = (props: DropZoneProps) => (
-  <DropZoneEdit {...props} />
-);
+export const DropZoneEditPure = <ComponentType extends ElementType = "div">(
+  props: DropZoneProps<ComponentType>
+) => <DropZoneEdit {...(props as DropZoneProps)} />;
 
 const DropZoneChild = ({
   zoneCompound,
@@ -180,7 +186,12 @@ const DropZoneChild = ({
     (s) => s.selectedItem?.props.id === componentId || false
   );
 
-  let label = componentConfig?.label ?? item?.type.toString() ?? "Component";
+  const componentLabel = useMessage("label-component");
+  const noConfigMessage = useMessage("canvas-noconfig", {
+    type: item?.type?.toString() ?? "",
+  });
+
+  let label = componentConfig?.label ?? item?.type.toString() ?? componentLabel;
 
   const defaultsProps = useMemo(
     () => ({
@@ -231,7 +242,7 @@ const DropZoneChild = ({
     ? componentConfig.render
     : () => (
         <div style={{ padding: 48, textAlign: "center" }}>
-          No configuration for {item.type}
+          {noConfigMessage}
         </div>
       );
 
@@ -294,19 +305,20 @@ const DropZoneChild = ({
 const DropZoneChildMemo = memo(DropZoneChild);
 
 export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
-  function DropZoneEditInternal(
-    {
-      zone,
-      allow,
-      disallow,
-      style,
-      className,
-      minEmptyHeight: userMinEmptyHeight = "128px",
-      collisionAxis,
-      as,
-    },
-    userRef
-  ) {
+  function DropZoneEditInternal(allProps, userRef) {
+    const {
+      props: {
+        zone,
+        allow,
+        disallow,
+        style,
+        className,
+        minEmptyHeight: userMinEmptyHeight = "128px",
+        collisionAxis,
+        as,
+      },
+      forwardableProps,
+    } = getDropZoneProps(allProps);
     const ctx = useContext(dropZoneContext);
     const appStoreApi = useAppStoreApi();
 
@@ -377,30 +389,8 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
     const ref = useRef<HTMLDivElement | null>(null);
 
     const acceptsTarget = useCallback(
-      (componentType: string | null | undefined) => {
-        if (!componentType) {
-          return true;
-        }
-
-        if (disallow) {
-          const defaultedAllow = allow || [];
-
-          // remove any explicitly allowed items from disallow
-          const filteredDisallow = (disallow || []).filter(
-            (item) => defaultedAllow.indexOf(item) === -1
-          );
-
-          if (filteredDisallow.indexOf(componentType) !== -1) {
-            return false;
-          }
-        } else if (allow) {
-          if (allow.indexOf(componentType) === -1) {
-            return false;
-          }
-        }
-
-        return true;
-      },
+      (componentType: string | null | undefined) =>
+        isComponentAllowed(componentType, { allow, disallow }),
       [allow, disallow]
     );
 
@@ -441,11 +431,14 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       zoneCompound
     );
 
-    const isDropEnabled =
-      isEnabled &&
-      (preview
-        ? contentIdsWithPreview.length === 1
-        : contentIdsWithPreview.length === 0);
+    // contentIdsWithPreview counts a non-line preview as one injected
+    // placeholder, but a line placeholder injects nothing. So a zone
+    // is empty (and a valid drop target) when its only
+    // entry, if any, is that injected placeholder.
+    // Otherwise the children within the zone should be the targets.
+    const injectedPreviewCount = preview && !preview.linePlaceholder ? 1 : 0;
+    const isZoneEmpty = contentIdsWithPreview.length === injectedPreviewCount;
+    const isDropEnabled = isEnabled && isZoneEmpty;
 
     const zoneStore = useContext(ZoneStoreContext);
 
@@ -501,6 +494,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
 
     return (
       <El
+        {...forwardableProps}
         className={`${getClassName({
           isRootZone,
           hoveringOverArea,
@@ -515,7 +509,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
         style={
           {
             ...style,
-            "--min-empty-height": minEmptyHeight,
+            "--puck-slot-min-empty-height": minEmptyHeight,
             backgroundColor: RENDER_DEBUG
               ? getRandomColor()
               : style?.backgroundColor,
@@ -551,6 +545,13 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
               inDroppableZone={targetAccepted}
             />
           ))
+        )}
+        {preview?.linePlaceholder && (
+          <LinePlaceholder
+            zoneRef={ref}
+            contentIds={contentIds}
+            index={preview.index}
+          />
         )}
       </El>
     );
@@ -597,12 +598,16 @@ const DropZoneRenderItem = ({
   );
 };
 
-export const DropZoneRenderPure = (props: DropZoneProps) => (
-  <DropZoneRender {...props} />
-);
+export const DropZoneRenderPure = <ComponentType extends ElementType = "div">(
+  props: DropZoneProps<ComponentType>
+) => <DropZoneRender {...(props as DropZoneProps)} />;
 
 const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
-  function DropZoneRenderInternal({ className, style, zone, as }, ref) {
+  function DropZoneRenderInternal(allProps, ref) {
+    const {
+      props: { className, style, zone, as },
+      forwardableProps,
+    } = getDropZoneProps(allProps);
     const ctx = useContext(dropZoneContext);
     const { areaId = "root" } = ctx || {};
     const { config, data, metadata } = useContext(renderContext);
@@ -630,7 +635,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       content = setupZone(data, zoneCompound).zones[zoneCompound];
     }
     return (
-      <El className={className} style={style} ref={ref}>
+      <El {...forwardableProps} className={className} style={style} ref={ref}>
         {content.map((item) => {
           const Component = config.components[item.type];
           if (Component) {
@@ -651,9 +656,11 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
   }
 );
 
-export const DropZonePure = (props: DropZoneProps) => <DropZone {...props} />;
+export const DropZonePure = <ComponentType extends ElementType = "div">(
+  props: DropZoneProps<ComponentType>
+) => <DropZone {...props} />;
 
-export const DropZone = forwardRef<HTMLDivElement, DropZoneProps>(
+const DropZoneImpl = forwardRef<HTMLDivElement, DropZoneProps>(
   function DropZone(props: DropZoneProps, ref) {
     const ctx = useContext(dropZoneContext);
 
@@ -672,3 +679,14 @@ export const DropZone = forwardRef<HTMLDivElement, DropZoneProps>(
     );
   }
 );
+
+// Public DropZone component.
+// Cast so `as` infers `ComponentType` and any forwarded props are
+// typed against it (mirroring slots).
+//
+// We need a cast because `forwardRef` doesn't support generic parameters.
+export const DropZone = DropZoneImpl as <
+  ComponentType extends ElementType = "div"
+>(
+  props: DropZoneProps<ComponentType> & { ref?: Ref<HTMLDivElement> }
+) => ReactElement | null;

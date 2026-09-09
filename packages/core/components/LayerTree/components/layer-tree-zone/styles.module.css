@@ -1,0 +1,33 @@
+/* Private --_puck-outline-* vars resolve on .LayerTreeRoot. */
+.LayerTree-zoneTitle {
+  color: var(--_puck-outline-zone-color-text);
+  font-size: var(
+    --puck-outline-zone-font-size,
+    calc(var(--puck-font-size-xxxs) * 0.9)
+  );
+  display: flex;
+  gap: var(--puck-space-2);
+  align-items: center;
+  overflow-x: hidden;
+  padding-top: var(--puck-space-1);
+  padding-bottom: var(--puck-space-1);
+  padding-inline-start: var(--_puck-outline-label-indent);
+  /* We need this border to show a consistent drop preview in the title and nested zone */
+  border: var(--_puck-outline-border-width) solid transparent;
+}
+
+.LayerTree-zoneIcon {
+  margin-top: var(--puck-space-1);
+}
+
+.LayerTree-zoneIcon svg {
+  height: var(--_puck-outline-icon-size);
+  width: var(--_puck-outline-icon-size);
+}
+
+/* Drag and drop: hosts a DropLine while targeted */
+.LayerTree-zoneTitle[data-puck-drop-target] {
+  color: var(--_puck-outline-color-text-hover);
+  position: relative;
+  overflow: visible;
+}

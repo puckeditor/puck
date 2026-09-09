@@ -1,4 +1,5 @@
 import { Loader } from "../../../Loader";
+import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
 import { rootDroppableId } from "../../../../lib/root-droppable-id";
 import { ItemSelector } from "../../../../lib/data/get-item";
 import { getSelectorForId } from "../../../../lib/get-selector-for-id";
@@ -94,7 +95,10 @@ const createOnChange =
   };
 
 const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
+  const fieldTypeOverrides = useAppStore((s) => s.overrides.fieldTypes);
+
   const field = useAppStore((s) => s.fields.fields[fieldName]);
+
   const isReadOnly = useAppStore(
     (s) =>
       ((s.selectedItem
@@ -126,8 +130,6 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
     fieldName,
   ]);
 
-  const { visible = true } = field ?? {};
-
   const fieldStore = useContext(fieldContextStore.ctx);
 
   useEffect(() => {
@@ -143,9 +145,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
     );
   }, [appStore, fieldStore]);
 
-  if (!field || !id || !visible) return null;
-
-  if (field.type === "slot") return null;
+  if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
     <div key={id} className={getClassName("field")}>

@@ -1,0 +1,24 @@
+---
+title: Canvas
+---
+
+# Canvas
+
+Use the following CSS properties for theming the canvas.
+
+```css showLineNumbers
+.Container {
+  --puck-canvas-color-bg: #f4f4f8;
+  --puck-canvas-preview-color-bg: #ffffff;
+}
+```
+
+## CSS properties
+
+Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-reference/theming/global). See [computed values](/docs/api-reference/theming/computed-values#canvas) for the values they resolve to.
+
+| Token                            | Default                           | Description                        |
+| -------------------------------- | --------------------------------- | ---------------------------------- |
+| `--puck-canvas-color-text`       | `var(--puck-color-text)`          | Canvas text color                  |
+| `--puck-canvas-color-bg`         | `var(--puck-color-surface-muted)` | Canvas frame (gutter) background   |
+| `--puck-canvas-preview-color-bg` | `var(--puck-color-surface)`       | Background behind the page preview |

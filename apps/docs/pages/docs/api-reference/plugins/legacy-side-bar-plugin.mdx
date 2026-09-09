@@ -18,4 +18,41 @@ export function Editor() {
 
 ## Params
 
-This plugin does not accept any params.
+| Param                                 | Example                         | Type   | Status |
+| ------------------------------------- | ------------------------------- | ------ | ------ |
+| [`componentsLabel`](#componentslabel) | `componentsLabel: "Components"` | String | -      |
+| [`outlineLabel`](#outlinelabel)       | `outlineLabel: "Outline"`       | String | -      |
+
+## Optional params
+
+### `componentsLabel`
+
+Title shown above the component drawer section. Defaults to `"Components"`.
+
+```tsx
+import { Puck, legacySideBarPlugin } from "@puckeditor/core";
+
+const legacySideBar = legacySideBarPlugin({
+  componentsLabel: "Components",
+});
+
+export function Editor() {
+  return <Puck plugins={[legacySideBar]} />;
+}
+```
+
+### `outlineLabel`
+
+Title shown above the outline section. Defaults to `"Outline"`.
+
+```tsx
+import { Puck, legacySideBarPlugin } from "@puckeditor/core";
+
+const legacySideBar = legacySideBarPlugin({
+  outlineLabel: "Layers",
+});
+
+export function Editor() {
+  return <Puck plugins={[legacySideBar]} />;
+}
+```

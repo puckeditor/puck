@@ -28,8 +28,10 @@ import { walkField } from "../../../../lib/data/map-fields";
 import { populateIds } from "../../../../lib/data/populate-ids";
 import { defaultSlots } from "../../../../lib/data/default-slots";
 import { getDeep } from "../../../../lib/data/get-deep";
+import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
 import { SubField } from "../../subfield";
 import { setDeep } from "../../../../lib/data/set-deep";
+import { useMessage } from "../../../../lib/use-message";
 
 const getClassName = getClassNameFactory("ArrayField", styles);
 const getClassNameItem = getClassNameFactory("ArrayFieldItem", styles);
@@ -50,13 +52,17 @@ const ItemSummaryInner = ({
     return getDeep(s, path);
   });
 
+  const fallbackSummary = useMessage("field-arrayitem-summary", {
+    index: originalIndex,
+  });
+
   const itemSummary = useMemo(() => {
     if (data && field.getItemSummary) {
       return field.getItemSummary(data, index);
     }
 
-    return `Item #${originalIndex}`;
-  }, [data, field, originalIndex, index]);
+    return fallbackSummary;
+  }, [data, field, originalIndex, index, fallbackSummary]);
 
   return itemSummary;
 };
@@ -90,12 +96,13 @@ const ArrayFieldItemInternal = ({
   name?: string;
   localName?: string;
 }) => {
-  // NB this will prevent array fields from being used outside of Puck
+  // NB AppStore usage will prevent array fields from being used outside of Puck
+  const fieldTypeOverrides = useAppStore((s) => s.overrides.fieldTypes);
+
   const isExpanded = useAppStore((s) => {
     return s.state.ui.arrayState[arrayId]?.openId === id;
   });
 
-  // NB this will prevent array fields from being used outside of Puck
   const canEdit = useAppStore(
     (s) => s.permissions.getPermissions({ item: s.selectedItem }).edit
   );
@@ -105,10 +112,10 @@ const ArrayFieldItemInternal = ({
       return false;
     }
 
-    return Object.values(field.arrayFields).some(
-      (subField) => subField.type !== "slot" && subField.visible !== false
+    return Object.values(field.arrayFields).some((subField) =>
+      isFieldVisible(fieldTypeOverrides, subField)
     );
-  }, [field.arrayFields]);
+  }, [field.arrayFields, fieldTypeOverrides]);
 
   return (
     <Sortable id={id} index={dragIndex} disabled={readOnly}>
@@ -350,6 +357,9 @@ export const ArrayField = ({
     setUi(mapArrayStateToUi(newArrayState), false);
   }, [numItems]);
 
+  const duplicateLabel = useMessage("field-arrayitem-duplicate");
+  const deleteLabel = useMessage("field-arrayitem-delete");
+
   if (field.type !== "array" || !field.arrayFields) {
     return null;
   }
@@ -485,7 +495,7 @@ export const ArrayField = ({
 
                               updateValue(existingValue);
                             }}
-                            title="Duplicate"
+                            title={duplicateLabel}
                           >
                             <Copy size={16} />
                           </IconButton>
@@ -507,7 +517,7 @@ export const ArrayField = ({
 
                               updateValue(existingValue);
                             }}
-                            title="Delete"
+                            title={deleteLabel}
                           >
                             <Trash size={16} />
                           </IconButton>

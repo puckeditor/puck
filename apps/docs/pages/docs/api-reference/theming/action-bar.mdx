@@ -1,0 +1,56 @@
+---
+title: Action bar
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { ActionBar } from "@/puck";
+import { Color } from "@/docs/components/Color";
+
+# Action bar
+
+Use the following CSS properties for theming the action bar shown when selecting a component.
+
+```css showLineNumbers
+.Container {
+  --puck-actionbar-color-bg: darkgreen;
+  --puck-actionbar-color-action-hover: white;
+  --puck-actionbar-radius: 999px;
+}
+```
+
+<PuckPreview>
+  <div
+    style={{
+      "--puck-actionbar-color-bg": "darkgreen",
+      "--puck-actionbar-color-action-hover": "white",
+      "--puck-actionbar-radius": "999px",
+    }}
+  >
+    <ActionBar label="Actions">
+      <ActionBar.Group>
+        <ActionBar.Action>★</ActionBar.Action>
+      </ActionBar.Group>
+    </ActionBar>
+  </div>
+</PuckPreview>
+
+## CSS properties
+
+Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-reference/theming/global). See [computed values](/docs/api-reference/theming/computed-values#action-bar) for the values they resolve to.
+
+| Token                                      | Default                                        | Description                   |
+| ------------------------------------------ | ---------------------------------------------- | ----------------------------- |
+| `--puck-actionbar-color-bg`                | `var(--puck-color-surface-inverse)`            | Background color              |
+| `--puck-actionbar-color-text`              | `var(--puck-color-text-inverse)`               | Label and action text color   |
+| `--puck-actionbar-opacity-text`            | `var(--puck-opacity-text-inverse)`             | Label and action text opacity |
+| `--puck-actionbar-color-separator`         | `var(--puck-color-border-inverse)`             | Group separator color         |
+| `--puck-actionbar-color-action-hover`      | `var(--puck-color-interactive-inverse-hover)`  | Action color on hover         |
+| `--puck-actionbar-color-action-active`     | `var(--puck-color-interactive-inverse-active)` | Action color when active      |
+| `--puck-actionbar-color-action-disabled`   | `var(--puck-color-text-inverse)`               | Disabled action color         |
+| `--puck-actionbar-opacity-action-disabled` | `0.54`                                         | Disabled action opacity       |
+| `--puck-actionbar-space-y`                 | `var(--puck-space-1)`                          | Vertical padding              |
+| `--puck-actionbar-space-x`                 | `0`                                            | Horizontal padding            |
+| `--puck-actionbar-radius`                  | `var(--puck-radius-l)`                         | Border radius                 |
+| `--puck-actionbar-font-size`               | `var(--puck-font-size-xxxs)`                   | Label font size               |
+| `--puck-actionbar-action-space`            | `6px`                                          | Action button padding         |
+| `--puck-actionbar-action-size`             | `var(--puck-icon-size-s)`                      | Action icon size              |

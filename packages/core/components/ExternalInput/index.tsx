@@ -13,11 +13,23 @@ import { Modal } from "../Modal";
 import { Heading } from "../Heading";
 import { Loader } from "../Loader";
 import { Button } from "../Button";
-import { AutoField, AutoFieldPrivate, FieldLabel } from "../AutoField";
+import { AutoField, FieldLabel } from "../AutoField";
 import { IconButton } from "../IconButton";
+import { useMessage } from "../../lib/use-message";
 
 const getClassName = getClassNameFactory("ExternalInput", styles);
 const getClassNameModal = getClassNameFactory("ExternalInputModal", styles);
+
+const DefaultFooter = ({ count }: { count: number }) => {
+  const singular = useMessage("field-external-result-singular", { count });
+  const plural = useMessage("field-external-result-plural", { count });
+
+  return (
+    <span className={getClassNameModal("footer")}>
+      {count === 1 ? singular : plural}
+    </span>
+  );
+};
 
 const dataCache: Record<string, any> = {};
 
@@ -107,9 +119,7 @@ export const ExternalInput = ({
       field.renderFooter ? (
         field.renderFooter(props)
       ) : (
-        <span className={getClassNameModal("footer")}>
-          {props.items.length} result{props.items.length === 1 ? "" : "s"}
-        </span>
+        <DefaultFooter count={props.items.length} />
       ),
     [field.renderFooter]
   );
@@ -117,6 +127,11 @@ export const ExternalInput = ({
   useEffect(() => {
     search(searchQuery, filters);
   }, []);
+
+  const externalItemLabel = useMessage("field-external-item");
+  const searchLabel = useMessage("field-external-search");
+  const toggleFiltersLabel = useMessage("field-external-togglefilters");
+  const selectDataLabel = useMessage("field-external-selectdata");
 
   return (
     <div
@@ -139,7 +154,7 @@ export const ExternalInput = ({
             field.getItemSummary ? (
               field.getItemSummary(value)
             ) : (
-              "External item"
+              externalItemLabel
             )
           ) : (
             <>
@@ -180,7 +195,7 @@ export const ExternalInput = ({
               <div className={getClassNameModal("searchForm")}>
                 <label className={getClassNameModal("search")}>
                   <span className={getClassNameModal("searchIconText")}>
-                    Search
+                    {searchLabel}
                   </span>
                   <div className={getClassNameModal("searchIcon")}>
                     <Search size="18" />
@@ -199,13 +214,13 @@ export const ExternalInput = ({
                 </label>
                 <div className={getClassNameModal("searchActions")}>
                   <Button type="submit" loading={isLoading} fullWidth>
-                    Search
+                    {searchLabel}
                   </Button>
                   {hasFilterFields && (
                     <div className={getClassNameModal("searchActionIcon")}>
                       <IconButton
                         type="button"
-                        title="Toggle filters"
+                        title={toggleFiltersLabel}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -220,7 +235,7 @@ export const ExternalInput = ({
               </div>
             ) : (
               <Heading rank="2" size="xs">
-                {field.placeholder || "Select data"}
+                {field.placeholder || selectDataLabel}
               </Heading>
             )}
           </div>

@@ -33,6 +33,17 @@ export type Preview = {
   props: Record<string, any>;
   type: "insert" | "move";
   element: Element | undefined;
+  /**
+   * Render a thin line at the insertion point instead of the full item,
+   * preventing layout shift.
+   */
+  linePlaceholder?: boolean;
+  /**
+   * Pins the dragged item at its last previewed position in its original
+   * zone while a line placeholder shows in another zone, preventing the
+   * original zone from shifting back. Ignored when committing the drag.
+   */
+  ghost?: boolean;
 } | null;
 
 export type RootVirtualizerHandle = {

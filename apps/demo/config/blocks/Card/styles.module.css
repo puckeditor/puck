@@ -3,22 +3,28 @@
 }
 
 .Card--card {
-  background: white;
+  background: var(--puck-color-surface);
   box-shadow: rgba(140, 152, 164, 0.25) 0px 3px 6px 0px;
-  border-radius: 8px;
+  border-radius: var(--puck-radius-l);
   max-width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .Card--card {
+    box-shadow: rgba(24, 31, 41, 0.25) 0px 3px 6px 0px;
+  }
 }
 
 .Card-inner {
   align-items: center;
   display: flex;
-  gap: 16px;
+  gap: var(--puck-space-4);
   flex-direction: column;
 }
 
 .Card--card .Card-inner {
   align-items: flex-start;
-  padding: 24px;
+  padding: var(--puck-space-5);
 }
 
 .Card-icon {
@@ -42,9 +48,9 @@
 }
 
 .Card-description {
-  font-size: 16px;
+  font-size: var(--puck-font-size-xs);
   line-height: 1.5;
-  color: var(--puck-color-grey-05);
+  color: var(--puck-color-text-muted);
   text-align: center;
   font-weight: 300;
 }

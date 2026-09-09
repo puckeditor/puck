@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { getClassNameFactory } from "../../lib";
 import styles from "./styles.module.css";
+import { useMessage } from "../../lib/use-message";
 
 const getClassName = getClassNameFactory("Loader", styles);
 
@@ -12,6 +13,8 @@ export const Loader = ({
   color?: string;
   size?: number;
 } & JSX.IntrinsicAttributes) => {
+  const loadingLabel = useMessage("loader-loading");
+
   return (
     <span
       className={getClassName()}
@@ -20,7 +23,7 @@ export const Loader = ({
         height: size,
         color,
       }}
-      aria-label="loading"
+      aria-label={loadingLabel}
       {...props}
     />
   );

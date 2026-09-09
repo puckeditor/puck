@@ -4,6 +4,7 @@ import {
   Content,
   Metadata,
   ResolveDataTrigger,
+  RootData,
   RootDataWithProps,
 } from "../types";
 import { mapFields } from "./data/map-fields";
@@ -11,9 +12,11 @@ import { toComponent } from "./data/to-component";
 import { getChanged } from "./get-changed";
 import { deepEqual } from "fast-equals";
 
-export const cache: {
+export type ResolveDataCache = {
   lastChange: Record<string, any>;
-} = { lastChange: {} };
+};
+
+export const cache: ResolveDataCache = { lastChange: {} };
 
 export const resolveComponentData = async <
   T extends ComponentData | RootDataWithProps
@@ -24,7 +27,9 @@ export const resolveComponentData = async <
   onResolveStart?: (item: T) => void,
   onResolveEnd?: (item: T) => void,
   trigger: ResolveDataTrigger = "replace",
-  parent: ComponentData | null = null
+  parent: ComponentData | null = null,
+  root: RootData = { props: {} },
+  cacheStore: ResolveDataCache = cache
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -44,7 +49,7 @@ export const resolveComponentData = async <
       item: oldItem = null,
       resolved = {},
       parentId: oldParentId = null,
-    } = cache.lastChange[id] || {};
+    } = cacheStore.lastChange[id] || {};
     // Skip inserted nodes for "move" trigger
     // This is done this way to mitigate race conditions on insertion
     const isRootOrInserted = oldParentId === null;
@@ -72,6 +77,7 @@ export const resolveComponentData = async <
         metadata: { ...metadata, ...configForItem.metadata },
         trigger,
         parent,
+        root,
       });
 
     resolvedItem.props = {
@@ -103,7 +109,9 @@ export const resolveComponentData = async <
                   onResolveStart,
                   onResolveEnd,
                   trigger,
-                  itemAsComponentData
+                  itemAsComponentData,
+                  root,
+                  cacheStore
                 )
               ).node
           )
@@ -117,7 +125,7 @@ export const resolveComponentData = async <
     onResolveEnd(resolvedItem);
   }
 
-  cache.lastChange[id] = {
+  cacheStore.lastChange[id] = {
     item: item,
     resolved: itemWithResolvedChildren,
     parentId: parent?.props.id,

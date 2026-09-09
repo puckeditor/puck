@@ -13,9 +13,20 @@
 
 import "@puckeditor/core/puck.css";
 import "@puckeditor/plugin-ai/styles.css";
-import { Client } from "./client";
+import type { Data } from "@puckeditor/core";
 import { Metadata } from "next";
+import { Client } from "./client";
 import { getPage } from "../../../lib/get-page";
+
+// Empty data for new pages
+const EMPTY_PAGE_DATA: Data = {
+  content: [],
+  root: {
+    props: {
+      title: "",
+    },
+  },
+};
 
 export async function generateMetadata({
   params,
@@ -37,9 +48,10 @@ export default async function Page({
 }) {
   const { puckPath = [] } = await params;
   const path = `/${puckPath.join("/")}`;
+
   const data = getPage(path);
 
-  return <Client path={path} data={data || {}} />;
+  return <Client path={path} data={data || EMPTY_PAGE_DATA} />;
 }
 
 export const dynamic = "force-dynamic";

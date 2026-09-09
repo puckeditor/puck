@@ -31,7 +31,7 @@
   },
   "name": "puck-repo",
   "packageManager": "pnpm@11.26.0",
-  "version": "0.21.2",
+  "version": "0.23.0",
   "engines": {
     "node": ">=24.0.0",
     "pnpm": ">=11.0.0"
