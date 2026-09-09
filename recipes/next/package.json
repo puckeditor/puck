@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@puckeditor/core": "*",
+    "@puckeditor/core": "workspace:*",
     "classnames": "^2.3.2",
     "next": "^16.2.5",
     "react": "^19.2.1",

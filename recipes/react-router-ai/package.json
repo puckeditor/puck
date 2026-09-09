@@ -10,7 +10,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@puckeditor/core": "*",
+    "@puckeditor/core": "workspace:*",
     "@puckeditor/cloud-client": "^0.5.0",
     "@puckeditor/plugin-ai": "^0.5.0",
     "@react-router/node": "^7.5.3",

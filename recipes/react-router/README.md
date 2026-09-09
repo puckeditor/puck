@@ -19,7 +19,7 @@ npx create-puck-app my-app
 Start the server
 
 ```
-yarn dev
+pnpm dev
 ```
 
 Navigate to the homepage at http://localhost:5173/. To edit the homepage, access the Puck editor at http://localhost:5173/edit.

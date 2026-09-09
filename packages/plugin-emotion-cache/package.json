@@ -24,7 +24,7 @@
   ],
   "devDependencies": {
     "@emotion/react": "^11.13.3",
-    "@puckeditor/core": "^0.21.2",
+    "@puckeditor/core": "workspace:^",
     "@types/minimatch": "3.0.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.0.2",

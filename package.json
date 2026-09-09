@@ -30,15 +30,10 @@
     "turbo": "^2.5.8"
   },
   "name": "puck-repo",
-  "packageManager": "pnpm@9.15.9",
+  "packageManager": "pnpm@11.26.0",
   "version": "0.21.2",
   "engines": {
-    "node": ">=20.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "yaml": ">=2.8.3",
-      "zod-validation-error": "^4.0.0"
-    }
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
   }
 }

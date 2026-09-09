@@ -31,7 +31,7 @@ Start the server
 
 ```
 cd my-app
-yarn dev
+pnpm dev
 ```
 
 ### Set up Puck AI
