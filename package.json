@@ -13,7 +13,7 @@
     "smoke": "node scripts/e2e/smoke.mjs",
     "test": "turbo run test",
     "version": "lerna version --force-publish -y --no-push --no-changelog --no-git-tag-version $npm_package_version",
-    "version:auto": "npm version --no-git-tag-version $1",
+    "version:auto": "pnpm version --no-git-tag-version --no-git-checks $1",
     "changelog": "node scripts/create-changelog"
   },
   "devDependencies": {
