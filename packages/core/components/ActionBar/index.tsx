@@ -1,4 +1,5 @@
 import { forwardRef, ReactNode, SyntheticEvent } from "react";
+import { GripVertical } from "lucide-react";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import styles from "./styles.module.css";
 const getClassName = getClassNameFactory("ActionBar", styles);
@@ -52,6 +53,29 @@ export const Action = forwardRef<
 
 Action.displayName = "Action";
 
+export const DragHandle = forwardRef<
+  HTMLButtonElement,
+  {
+    label?: string;
+    disabled?: boolean;
+  }
+>(({ label, disabled, ...rest }, ref) => (
+  <button
+    type="button"
+    {...rest}
+    ref={ref}
+    className={getActionClassName({ disabled, grab: !disabled })}
+    onClick={(e) => e.stopPropagation()}
+    title={label}
+    tabIndex={0}
+    disabled={disabled}
+  >
+    <GripVertical className={getActionClassName("icon")} />
+  </button>
+));
+
+DragHandle.displayName = "DragHandle";
+
 export const Group = ({ children }: { children: ReactNode }) => (
   <div className={getClassName("group")}>{children}</div>
 );
@@ -66,3 +90,4 @@ ActionBar.Action = Action;
 ActionBar.Label = Label;
 ActionBar.Group = Group;
 ActionBar.Separator = Separator;
+ActionBar.DragHandle = DragHandle;

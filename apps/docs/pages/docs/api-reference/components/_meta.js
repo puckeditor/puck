@@ -1,6 +1,7 @@
 const menu = {
   "action-bar": {},
   "action-bar-action": {},
+  "action-bar-drag-handle": {},
   "action-bar-group": {},
   "action-bar-label": {},
   "action-bar-separator": {},

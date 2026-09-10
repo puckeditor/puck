@@ -21,6 +21,13 @@
   transition: min-height var(--puck-duration-medium) var(--puck-ease-exit);
 }
 
+.DropZone--isCurrDropTarget {
+  background: var(
+    --puck-slot-color-target-bg,
+    var(--puck-color-drop-target-bg)
+  ) !important;
+}
+
 .DropZone--isAreaSelected,
 .DropZone--hoveringOverArea:not(.DropZone--isRootZone) {
   background: var(--puck-slot-color-bg, var(--puck-color-selection-bg));
