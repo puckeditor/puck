@@ -248,6 +248,7 @@ export const Canvas = () => {
         if (
           !el.hasAttribute("data-puck-component") &&
           !el.hasAttribute("data-puck-dropzone") &&
+          !el.hasAttribute("data-puck-overlay-portal") &&
           !el.closest("[data-puck-viewport-controls]")
         ) {
           dispatch({
