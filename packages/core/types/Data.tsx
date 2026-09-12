@@ -7,6 +7,11 @@ export type BaseData<
   Props extends { [key: string]: any } = { [key: string]: any }
 > = {
   readOnly?: Partial<Record<keyof Props, boolean>>;
+  /** Per-instance metadata. The __puck property is removed from all components in the tree when passing data down to the Render component, before the components are actually rendered. This avoids polluting data sent to user pages when doing SSR. */
+  __puck?: {
+    /** User-set custom label for this component instance. */
+    label?: string;
+  };
 };
 
 export type RootDataWithProps<

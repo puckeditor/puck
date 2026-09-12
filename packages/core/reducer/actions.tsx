@@ -74,6 +74,12 @@ export type RegisterZoneAction = {
   zone: string;
 };
 
+export type SetComponentLabelAction = {
+  type: "setComponentLabel";
+  id: string;
+  label: string | undefined;
+};
+
 export type UnregisterZoneAction = {
   type: "unregisterZone";
   zone: string;
@@ -92,4 +98,5 @@ export type PuckAction = { recordHistory?: boolean } & (
   | SetUiAction
   | RegisterZoneAction
   | UnregisterZoneAction
+  | SetComponentLabelAction
 );

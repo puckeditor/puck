@@ -39,6 +39,7 @@ import { LoadedRichTextMenu } from "../RichTextMenu";
 import type { NodeHandle } from "../../store/slices/nodes";
 import { assignRefs } from "../../lib/assign-refs";
 import { useMessage } from "../../lib/use-message";
+import { InlineLabelEdit } from "../InlineLabelEdit";
 
 const getClassName = getClassNameFactory("DraggableComponent", styles);
 
@@ -52,22 +53,26 @@ const actionsTop = -(actionsOverlayTop - 8);
 const actionsSide = space;
 
 const DefaultActionBar = ({
-  label,
+  id,
   children,
   parentAction,
 }: {
-  label: string | undefined;
+  id: string;
   children: ReactNode;
   parentAction: ReactNode;
-}) => (
-  <ActionBar>
-    <ActionBar.Group>
-      {parentAction}
-      {label && <ActionBar.Label label={label} />}
-    </ActionBar.Group>
-    <ActionBar.Group>{children}</ActionBar.Group>
-  </ActionBar>
-);
+}) => {
+  return (
+    <ActionBar>
+      <ActionBar.Group>
+        {parentAction}
+        <InlineLabelEdit componentId={id}>
+          {({ label }) => <ActionBar.Label label={label} />}
+        </InlineLabelEdit>
+      </ActionBar.Group>
+      <ActionBar.Group>{children}</ActionBar.Group>
+    </ActionBar>
+  );
+};
 
 const DefaultOverlay = ({
   children,
@@ -793,6 +798,7 @@ export const DraggableComponent = ({
                 ref={actionBarRef}
               >
                 <CustomActionBar
+                  id={id}
                   parentAction={parentAction}
                   label={DEBUG ? id : label}
                 >
