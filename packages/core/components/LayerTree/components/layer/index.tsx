@@ -100,6 +100,7 @@ export const Layer = forwardRef(function Layer(
         isExpandCandidate,
         isExpanded: shouldBeExpanded,
         isHovering,
+        isHidden: !!node.hidden,
         isSelected,
         isSortable: isDraggable,
       })}
