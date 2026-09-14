@@ -300,15 +300,16 @@ export function AutoField<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(props: FieldProps<FieldType, ValueType> & { value: any }) {
-  const id = useSafeId();
+  const defaultId = useSafeId();
+  const resolvedId = props.id || defaultId;
 
   if (props.field.type === "slot") {
     return null;
   }
 
   return (
-    <fieldContextStore.Provider value={{ [id]: props.value }}>
-      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={id} />
+    <fieldContextStore.Provider value={{ [resolvedId]: props.value }}>
+      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={resolvedId} />
     </fieldContextStore.Provider>
   );
 }
