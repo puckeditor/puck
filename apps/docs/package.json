@@ -13,11 +13,11 @@
     "@types/node": "^17.0.12",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@puckeditor/core": "^0.23.0",
+    "@puckeditor/core": "workspace:*",
     "next": "^15.5.21",
     "next-sitemap": "^4.2.3",
     "nextra": "^3.3.1",

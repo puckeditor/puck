@@ -69,13 +69,13 @@ Puck uses:
 - TypeScript
 - CSS Modules
 - Turborepo for monorepo tooling
-- Yarn for package management and release automation
+- pnpm for package management and release automation
 - Next.js for demo applications
 
 To get setup, first clone the repo and then install the dependencies:
 
 ```sh
-yarn
+pnpm install
 ```
 
 Rather than running the entire monorepo, it's quicker to run the project you need.
@@ -84,7 +84,7 @@ Generally, it's easiest to work in the context of the demo application:
 
 ```sh
 cd apps/demo
-yarn dev
+pnpm dev
 ```
 
 ### Style

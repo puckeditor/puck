@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@puckeditor/cloud-client": "^0",
-    "@puckeditor/core": "*",
+    "@puckeditor/core": "workspace:*",
     "@puckeditor/plugin-ai": "^0",
     "@react-router/node": "^7.18.0",
     "@react-router/serve": "^7.18.0",
