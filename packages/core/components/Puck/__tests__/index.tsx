@@ -348,4 +348,19 @@ describe("Puck", () => {
 
     expect(entry?.getAttribute("data-puck-preview-mode")).toBe("interactive");
   });
+
+  it("marks the canvas entry as non-translatable so browser translation can't break drag-and-drop", async () => {
+    // Browser translators (e.g. Google Translate) wrap text nodes in <font>
+    // elements, which desyncs React's fiber tree and throws removeChild /
+    // insertBefore NotFoundErrors when a drag reconciles the DOM. translate="no"
+    // (inherited) plus the legacy notranslate class opt the canvas subtree out.
+    render(<Puck config={config} data={{}} iframe={{ enabled: false }} />);
+
+    await flush();
+
+    const entry = document.querySelector("[data-puck-entry]");
+
+    expect(entry?.getAttribute("translate")).toBe("no");
+    expect(entry?.classList.contains("notranslate")).toBe(true);
+  });
 });

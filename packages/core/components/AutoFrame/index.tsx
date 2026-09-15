@@ -442,7 +442,7 @@ function AutoFrame({
       {...props}
       className={className}
       id={id}
-      srcDoc='<!DOCTYPE html><html><head></head><body><div id="frame-root" data-puck-entry></div></body></html>'
+      srcDoc='<!DOCTYPE html><html><head></head><body><div id="frame-root" data-puck-entry translate="no" class="notranslate"></div></body></html>'
       ref={frameRef}
       onLoad={() => {
         setLoaded(true);
