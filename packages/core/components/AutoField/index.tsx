@@ -309,7 +309,10 @@ export function AutoField<
 
   return (
     <fieldContextStore.Provider value={{ [resolvedId]: props.value }}>
-      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={resolvedId} />
+      <AutoFieldPublicInternal<ValueType, FieldType>
+        {...props}
+        id={resolvedId}
+      />
     </fieldContextStore.Provider>
   );
 }
