@@ -1,0 +1,34 @@
+
+{
+  "name": "{{appName}}",
+  "private": true,
+  "version": "1.0.0",
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "pnpx srvx --prod -s ../client dist/server/server.js",
+    "prisma-generate": "prisma generate"
+  },
+  "dependencies": {
+    "@puckeditor/core": "{{puckVersion}}",
+    "@tanstack/react-devtools": "^0.9.5",
+    "@tanstack/react-router": "^1.159.5",
+    "@tanstack/react-router-devtools": "^1.159.5",
+    "@tanstack/react-start": "^1.159.5",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@tanstack/devtools-vite": "^0.5.1",
+    "@tanstack/eslint-config": "^0.3.4",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

@@ -100,6 +100,10 @@ program
           name: "React Router",
           value: "react-router",
         },
+        {
+          name: "TanStack",
+          value: "tanstack",
+        },
       ],
     });
 
