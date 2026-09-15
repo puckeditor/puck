@@ -30,3 +30,6 @@ overrides:
   "nx>brace-expansion": "^5.0.9"
   undici: "^6.28.0"
   zod-validation-error: "^4.0.0"
+  qs: "^6.16.0" # GHSA-4mjr-xmp4-gh2g, GHSA-x5fp-wj9c-mxmx (via express)
+  "@xmldom/xmldom": "^0.9.12" # GHSA-6gmq-8vp8-gcm6 (via docs mathjax tooling)
+  pacote: "^21.5.1" # GHSA-w4pp-8pjf-rmxw (via lerna release tooling)
