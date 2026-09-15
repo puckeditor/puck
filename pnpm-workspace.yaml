@@ -1,0 +1,32 @@
+packages:
+  - "apps/*"
+  - "recipes/*"
+  - "packages/*"
+
+shamefullyHoist: true
+autoInstallPeers: true
+
+# Supply-chain mitigation (PUCK-541): pnpm 10+ does not run dependency
+# lifecycle scripts unless explicitly allowed here. Keep this list minimal.
+allowBuilds:
+  esbuild: true # bundler binary for tsup (core/plugin builds)
+  puppeteer: true # downloads Chromium for the e2e smoke test
+  sharp: true # native image optimisation used by Next.js
+  "@parcel/watcher": true # native file watcher used in dev
+  unrs-resolver: true # native binding for the eslint import resolver
+  nx: false # transitive (via lerna); native daemon not needed
+
+# Security pins for vulnerable transitive deps. Translated from main's yarn
+# `resolutions` (pnpm ignores `resolutions`); nested selectors use `>`.
+overrides:
+  yaml: ">=2.8.3"
+  tar: "7.5.21"
+  form-data: "4.0.6"
+  tmp: "0.2.7"
+  "lerna>js-yaml": "4.3.1"
+  postcss: "^8.5.23"
+  sharp: "^0.35.0"
+  axios: "^1.18.0"
+  "nx>brace-expansion": "^5.0.9"
+  undici: "^6.28.0"
+  zod-validation-error: "^4.0.0"
