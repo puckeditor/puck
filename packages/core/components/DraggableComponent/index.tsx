@@ -761,13 +761,14 @@ export const DraggableComponent = ({
         isVisible &&
         createPortal(
           <div
-            className={getClassName({
+            className={`${getClassName({
               isSelected,
               isDragging: thisIsDragging,
               hover: hover || indicativeHover,
-            })}
+            })} notranslate`}
             style={{ ...style }}
             data-puck-overlay
+            translate="no"
           >
             {debug}
             {isLoading && (

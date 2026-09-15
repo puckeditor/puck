@@ -154,9 +154,10 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       ) : (
         <div
           id="preview-frame"
-          className={getClassName("frame")}
+          className={`${getClassName("frame")} notranslate`}
           ref={ref}
           data-puck-entry
+          translate="no"
         >
           {inner}
         </div>
