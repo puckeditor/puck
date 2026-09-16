@@ -299,11 +299,8 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
         hidePlugins: hasLegacySideBarPlugin,
       })}`}
       id={instanceId}
-      // Browser translators (e.g. Google Translate) wrap text nodes in <font>
-      // elements, desyncing React's fiber tree and throwing insertBefore /
-      // removeChild NotFoundErrors whenever the chrome re-renders a keyed list
-      // (breadcrumbs, fields, outline). translate="no" is inherited, so this one
-      // attribute opts the whole editor UI out of translation. See PUCK-569.
+      // Opt out the whole editor UI out of automatic translations.
+      // Browser translators modify the dom and are incompatible with dnd-kit
       translate="no"
       style={{ height, visibility: "hidden" }}
     >

@@ -768,6 +768,8 @@ export const DraggableComponent = ({
             })} notranslate`}
             style={{ ...style }}
             data-puck-overlay
+            // Opt out draggable components out of automatic translations.
+            // Browser translators modify the dom and are incompatible with dnd-kit
             translate="no"
           >
             {debug}

@@ -442,6 +442,8 @@ function AutoFrame({
       {...props}
       className={className}
       id={id}
+      // Opt out the iframe out of automatic translations.
+      // Browser translators modify the dom and are incompatible with dnd-kit
       srcDoc='<!DOCTYPE html><html><head></head><body><div id="frame-root" data-puck-entry translate="no" class="notranslate"></div></body></html>'
       ref={frameRef}
       onLoad={() => {
