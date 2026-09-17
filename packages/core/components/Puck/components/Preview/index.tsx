@@ -154,9 +154,12 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       ) : (
         <div
           id="preview-frame"
-          className={getClassName("frame")}
+          // Opt out the preview out of automatic translations.
+          // Browser translators modify the dom and are incompatible with dnd-kit
+          className={`${getClassName("frame")} notranslate`}
           ref={ref}
           data-puck-entry
+          translate="no"
         >
           {inner}
         </div>

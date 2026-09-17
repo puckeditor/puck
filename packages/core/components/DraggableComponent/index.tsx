@@ -761,13 +761,16 @@ export const DraggableComponent = ({
         isVisible &&
         createPortal(
           <div
-            className={getClassName({
+            className={`${getClassName({
               isSelected,
               isDragging: thisIsDragging,
               hover: hover || indicativeHover,
-            })}
+            })} notranslate`}
             style={{ ...style }}
             data-puck-overlay
+            // Opt out draggable components out of automatic translations.
+            // Browser translators modify the dom and are incompatible with dnd-kit
+            translate="no"
           >
             {debug}
             {isLoading && (
