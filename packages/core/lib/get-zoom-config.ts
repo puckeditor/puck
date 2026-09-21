@@ -28,7 +28,11 @@ export const getZoomConfig = (
     zoom = widthZoom;
 
     if (widthZoom < heightZoom) {
-      rootHeight = viewportHeight / zoom;
+      // An auto height fills the frame at any zoom. An explicit height is a
+      // target resolution, so keep its real value and let it scale with the
+      // width to preserve the aspect ratio (#883).
+      rootHeight =
+        uiViewport.height === "auto" ? viewportHeight / zoom : viewportHeight;
     } else {
       rootHeight = viewportHeight;
       zoom = heightZoom;
