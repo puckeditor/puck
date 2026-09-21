@@ -5,6 +5,10 @@ on:
       - "main"
       - "releases/**"
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   tag-and-publish-to-npm:
     runs-on: ubuntu-latest
@@ -34,7 +38,5 @@ jobs:
 
       - name: Publish all packages
         run: ./scripts/publish.sh canary
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     timeout-minutes: 10
