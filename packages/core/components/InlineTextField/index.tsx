@@ -15,12 +15,14 @@ import styles from "./styles.module.css";
 const getClassName = getClassNameFactory("InlineTextField", styles);
 
 const InlineTextFieldInternal = ({
+  placeholder,
   propPath,
   componentId,
   value,
   isReadOnly,
   opts = {},
 }: {
+  placeholder?: string;
   propPath: string;
   value: string | null | undefined;
   componentId: string;
@@ -47,7 +49,10 @@ const InlineTextFieldInternal = ({
       // args, so passing null/undefined renders the literal text "null"/"undefined".
       const safeValue = value ?? "";
 
-      if (safeValue !== ref.current.innerText) {
+      // Replace when the user has edited the value or when the value is empty to
+      // remove any elements inserted by the browser that would break placeholder
+      // styling (e.g. <br>).
+      if (!safeValue || safeValue !== ref.current.innerText) {
         ref.current.replaceChildren(safeValue);
       }
 
@@ -92,6 +97,7 @@ const InlineTextFieldInternal = ({
   return (
     <span
       className={getClassName()}
+      data-placeholder={placeholder}
       ref={ref}
       contentEditable={isHovering || isFocused ? "plaintext-only" : "false"}
       onClick={(e) => {
