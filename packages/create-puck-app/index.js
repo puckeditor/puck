@@ -192,7 +192,7 @@ program
           puckVersion: `^${packageJson.version}`,
         });
       } else {
-        data = fs.readFileSync(filePath, "utf-8");
+        data = fs.readFileSync(filePath);
       }
 
       const dir = path.dirname(targetPath);
