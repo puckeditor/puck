@@ -37,7 +37,7 @@ export const Route = createFileRoute("/$")({
       {
         title: loaderData?.isEditorRoute
           ? "Puck: " + params._splat
-          : (loaderData?.data?.root?.props?.title ?? ""),
+          : loaderData?.data?.root?.props?.title ?? "",
       },
     ],
   }),

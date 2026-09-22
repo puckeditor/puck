@@ -19,6 +19,10 @@ export default defineConfig({
     }),
     tanstackStart({
       srcDirectory: "src",
+      router: {
+        quoteStyle: "double",
+        semicolons: true,
+      },
     }),
     viteReact(),
   ],
