@@ -30,14 +30,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {children}
       </div>
-      <div className={`${getClassName("resizeHandle")}`}>
-        <ResizeHandle
-          position={position}
-          sidebarRef={sidebarRef}
-          onResize={onResize}
-          onResizeEnd={onResizeEnd}
-        />
-      </div>
+      {isVisible && (
+        <div className={`${getClassName("resizeHandle")}`}>
+          <ResizeHandle
+            position={position}
+            sidebarRef={sidebarRef}
+            onResize={onResize}
+            onResizeEnd={onResizeEnd}
+          />
+        </div>
+      )}
     </>
   );
 };
