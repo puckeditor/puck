@@ -34,6 +34,7 @@ import { blocksPlugin } from "../../../../plugins/blocks";
 import { outlinePlugin } from "../../../../plugins/outline";
 import { fieldsPlugin } from "../../../../plugins/fields";
 import { normalizeIframeConfig } from "../../../../lib/style-config";
+import { getComponentLabel } from "../../../../lib/data/get-component-label";
 
 const getClassName = getClassNameFactory("Puck", styles);
 const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
@@ -45,8 +46,7 @@ const FieldSideBar = () => {
   const pageLabel = useMessage("label-page");
   const title = useAppStore((s) =>
     s.selectedItem
-      ? s.config.components[s.selectedItem.type]?.["label"] ??
-        s.selectedItem.type.toString()
+      ? getComponentLabel(s.selectedItem, s.config)
       : s.config.root?.label
   );
 

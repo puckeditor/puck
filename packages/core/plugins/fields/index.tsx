@@ -7,6 +7,7 @@ import { Breadcrumbs } from "../../components/Breadcrumbs";
 import { Fields } from "../../components/Puck/components/Fields";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../lib";
+import { getComponentLabel } from "../../lib/data/get-component-label";
 
 const getClassName = getClassNameFactory("FieldsPlugin", styles);
 
@@ -15,9 +16,7 @@ const CurrentTitle = () => {
   const label = useAppStore((s) => {
     const selectedItem = s.selectedItem;
 
-    return selectedItem
-      ? s.config.components[selectedItem.type]?.label ?? selectedItem.type
-      : null;
+    return selectedItem ? getComponentLabel(selectedItem, s.config) : null;
   });
 
   return label ?? pageLabel;

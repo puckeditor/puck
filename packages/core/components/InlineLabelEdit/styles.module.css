@@ -1,0 +1,21 @@
+.InlineLabelEdit-label {
+  cursor: pointer;
+}
+
+.InlineLabelEdit-input {
+  background: none;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--puck-color-border);
+  width: 100%;
+  min-width: 0;
+}
+
+.InlineLabelEdit-input:focus {
+  border-bottom-color: var(--puck-color-focus-ring);
+  border-bottom-width: 2px;
+}
