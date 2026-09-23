@@ -32,8 +32,7 @@ describe("monitorHotkeys", () => {
 
   beforeEach(() => {
     // The store is a module singleton, so wipe held keys and registered
-    // triggers between tests for a clean slate. `useHotkey`'s effect never
-    // removes its trigger, so this is the only reliable reset for `triggers`.
+    // triggers between tests for a clean slate.
     useHotkeyStore.setState({ held: {}, triggers: {} });
   });
 
@@ -67,6 +66,20 @@ describe("monitorHotkeys", () => {
     keydown("KeyI", { ctrlKey: true });
 
     expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  it("removes its trigger when the component unmounts", () => {
+    const cb = jest.fn();
+    const { unmount } = renderHook(() => useHotkey({ meta: true, i: true }, cb));
+
+    expect(useHotkeyStore.getState().triggers["meta+i"]).toBeDefined();
+
+    unmount();
+
+    expect(useHotkeyStore.getState().triggers["meta+i"]).toBeUndefined();
+    keydown("MetaLeft", { metaKey: true });
+    keydown("KeyI", { metaKey: true });
+    expect(cb).not.toHaveBeenCalled();
   });
 
   it("does not fire a meta combo when 'i' is pressed alone after meta was left stuck", () => {
