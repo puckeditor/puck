@@ -1,0 +1,122 @@
+import { ConfigPreview } from "@/docs/components/Preview";
+
+# Checkbox
+
+Render a list of `checkbox` inputs, allowing multiple options to be selected. Extends [Base](base).
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      decorations: {
+        type: "checkbox",
+        options: [
+          { label: "Underline", value: "underline" },
+          { label: "Overline", value: "overline" },
+          { label: "Strikethrough", value: "line-through" },
+        ],
+      },
+    },
+    defaultProps: {
+      decorations: ["underline"],
+    },
+    render: ({ decorations }) => {
+      return (
+        <p
+          style={{
+            textDecorationLine: decorations.join(" ") || "none",
+            margin: 0,
+          }}
+        >
+          Hello, world
+        </p>
+      );
+    },
+  }}
+/>
+
+```tsx {5-12} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        decorations: {
+          type: "checkbox",
+          options: [
+            { label: "Underline", value: "underline" },
+            { label: "Overline", value: "overline" },
+            { label: "Strikethrough", value: "line-through" },
+          ],
+        },
+      },
+      defaultProps: {
+        decorations: ["underline"],
+      },
+      render: ({ decorations }) => {
+        return (
+          <p style={{ textDecorationLine: decorations.join(" ") || "none" }}>
+            Hello, world
+          </p>
+        );
+      },
+    },
+  },
+};
+```
+
+## Params
+
+| Param                 | Example                                               | Type       | Status   |
+| --------------------- | ----------------------------------------------------- | ---------- | -------- |
+| [`type`](#type)       | `type: "checkbox"`                                    | "checkbox" | Required |
+| [`options`](#options) | `options: [{ label: "Option 1", value: "option-1" }]` | Object[]   | Required |
+
+## Required params
+
+### `type`
+
+The type of the field. Must be `"checkbox"` for Checkbox fields.
+
+```tsx {6} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        decorations: {
+          type: "checkbox",
+          options: [
+            { label: "Underline", value: "underline" },
+            { label: "Overline", value: "overline" },
+          ],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+### `options`
+
+The options for the checkbox field. The `value` can be a String, Number or Boolean.
+
+The field value is an array of the selected option values, ordered as they appear in `options`. If nothing is selected, the value is an empty array.
+
+```tsx {7-10} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        decorations: {
+          type: "checkbox",
+          options: [
+            { label: "Underline", value: "underline" },
+            { label: "Overline", value: "overline" },
+          ],
+        },
+      },
+      // ...
+    },
+  },
+};
+```
