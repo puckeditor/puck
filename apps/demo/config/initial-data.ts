@@ -33,7 +33,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687298109536",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -52,7 +52,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "8px",
           id: "Space-1687284122744",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -71,7 +71,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "40px",
           id: "Space-1687296179388",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -125,7 +125,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687287070296",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -133,7 +133,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687298110602",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -152,7 +152,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "16px",
           id: "Space-1687284283005",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -172,7 +172,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687297618253",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -192,7 +192,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "120px",
           id: "Space-1687297589663",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -211,7 +211,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "8px",
           id: "Space-1687296602860",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -231,7 +231,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687299311382",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -318,7 +318,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687299315421",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -337,7 +337,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "16px",
           id: "Space-1687299318902",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -356,7 +356,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "24px",
           id: "Space-1687299335149",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
       {
@@ -395,7 +395,7 @@ export const initialData: Record<string, UserData> = {
         props: {
           size: "96px",
           id: "Space-1687284290127",
-          direction: "vertical",
+          direction: ["vertical"],
         },
       },
     ],
