@@ -1,6 +1,7 @@
 {
   "packages": [
     "apps/docs",
+    "packages/cli",
     "packages/core",
     "packages/create-puck-app",
     "packages/field-contentful",

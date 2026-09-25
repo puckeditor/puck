@@ -1,0 +1,49 @@
+{
+  "name": "@puckeditor/cli",
+  "version": "0.23.0",
+  "description": "Set up Puck and Puck Cloud from the command line. Built for coding agents, friendly for humans.",
+  "author": "Chris Villa <chris@puckeditor.com>",
+  "repository": "puckeditor/puck",
+  "bugs": "https://github.com/puckeditor/puck/issues",
+  "homepage": "https://puckeditor.com/docs/cli",
+  "private": false,
+  "license": "MIT",
+  "bin": {
+    "puck": "./dist/bin.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "rm -rf dist && tsup && node scripts/copy-templates.mjs && node scripts/copy-docs.mjs",
+    "test": "jest",
+    "prepare": "pnpm build"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.3",
+    "@inquirer/confirm": "^5.1.21",
+    "@inquirer/input": "^4.3.1",
+    "@inquirer/password": "^4.0.23",
+    "@inquirer/select": "^4.4.2",
+    "picocolors": "^1.1.1",
+    "tinyglobby": "^0.2.16",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@babel/types": "^7.29.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.19.41",
+    "eslint": "^9.0.0",
+    "eslint-config-custom": "workspace:*",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.9",
+    "ts-node": "^10.9.2",
+    "tsconfig": "workspace:*",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}

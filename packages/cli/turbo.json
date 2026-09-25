@@ -1,0 +1,26 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/recipes/next/**",
+        "$TURBO_ROOT$/recipes/react-router/**",
+        "$TURBO_ROOT$/recipes/next-ai/package.json",
+        "$TURBO_ROOT$/apps/docs/pages/docs/**",
+        "$TURBO_ROOT$/apps/docs/scripts/**",
+        "!$TURBO_ROOT$/recipes/**/node_modules/**"
+      ]
+    },
+    "test": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/recipes/**",
+        "$TURBO_ROOT$/apps/docs/pages/docs/**",
+        "$TURBO_ROOT$/apps/docs/scripts/**",
+        "!$TURBO_ROOT$/recipes/**/node_modules/**"
+      ]
+    }
+  }
+}
