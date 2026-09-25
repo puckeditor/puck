@@ -288,6 +288,110 @@ select.Input-input {
   width: 1px;
 }
 
+.Input-checkboxGroupItems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--puck-space-2);
+}
+
+.Input-checkbox {
+  align-items: center;
+  color: var(--puck-field-color-text, var(--puck-color-text));
+  cursor: pointer;
+  display: flex;
+  font-size: var(--puck-field-font-size, var(--puck-font-size-xxs));
+  gap: var(--puck-space-2);
+}
+
+.Input-checkboxInput {
+  --_puck-field-checkbox-color: var(
+    --puck-field-color-text-active,
+    var(--puck-color-interactive)
+  );
+
+  appearance: none;
+  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
+  border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
+    var(--puck-field-color-border, var(--puck-color-border));
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  box-sizing: border-box;
+  cursor: inherit;
+  display: grid;
+  flex-shrink: 0;
+  height: 16px;
+  margin: 0;
+  place-content: center;
+  transition: background-color var(--puck-duration-fast) var(--puck-ease-exit),
+    border-color var(--puck-duration-fast) var(--puck-ease-exit);
+  width: 16px;
+}
+
+.Input-checkboxInput::after {
+  border: solid var(--puck-color-white);
+  border-width: 0 2px 2px 0;
+  content: "";
+  height: 8px;
+  margin-top: -2px;
+  transform: rotate(45deg);
+  visibility: hidden;
+  width: 4px;
+}
+
+.Input-checkboxInput:checked {
+  background-color: var(--_puck-field-checkbox-color);
+  border-color: var(--_puck-field-checkbox-color);
+}
+
+.Input-checkboxInput:checked::after {
+  visibility: visible;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Input-checkbox:hover .Input-checkboxInput:not(:checked, :disabled) {
+    border-color: var(
+      --puck-field-color-border-hover,
+      var(--puck-color-border-hover)
+    );
+    transition: none;
+  }
+}
+
+.Input-checkboxInput:focus-visible {
+  outline: var(--puck-border-width-focus) solid
+    var(--puck-field-color-border-focus, var(--puck-color-focus-ring));
+  outline-offset: var(--puck-border-width-focus);
+}
+
+.Input--readOnly .Input-checkboxInput {
+  background-color: var(
+    --puck-field-color-bg-disabled,
+    var(--puck-color-surface-muted)
+  );
+  border-color: var(
+    --puck-field-color-border-disabled,
+    var(--puck-color-border)
+  );
+}
+
+.Input--readOnly .Input-checkboxInput:checked {
+  background-color: var(
+    --puck-field-color-text-disabled,
+    var(--puck-color-text-secondary)
+  );
+  border-color: var(
+    --puck-field-color-text-disabled,
+    var(--puck-color-text-secondary)
+  );
+}
+
+.Input--readOnly .Input-checkbox {
+  color: var(
+    --puck-field-color-text-disabled,
+    var(--puck-color-text-secondary)
+  );
+  cursor: default;
+}
+
 textarea.Input-input {
   margin-bottom: calc(
     var(--puck-space-1) * -1

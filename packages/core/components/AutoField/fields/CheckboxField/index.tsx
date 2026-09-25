@@ -31,15 +31,15 @@ export const CheckboxField = ({
       readOnly={readOnly}
       el="div"
     >
-      <div className={getClassName("radioGroupItems")} id={id}>
+      <div className={getClassName("checkboxGroupItems")} id={id}>
         {field.options.map((option) => (
           <label
             key={option.label + JSON.stringify(option.value)}
-            className={getClassName("radio")}
+            className={getClassName("checkbox")}
           >
             <input
               type="checkbox"
-              className={getClassName("radioInput")}
+              className={getClassName("checkboxInput")}
               onChange={(e) => {
                 // Keep the value ordered by options, regardless of click order
                 onChange(
@@ -55,9 +55,7 @@ export const CheckboxField = ({
               disabled={readOnly}
               checked={selected.includes(option.value)}
             />
-            <div className={getClassName("radioInner")}>
-              {option.label || option.value?.toString()}
-            </div>
+            <span>{option.label || option.value?.toString()}</span>
           </label>
         ))}
       </div>
