@@ -43,7 +43,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   };
 }
 
-export function meta({ data: loaderData }: Route.MetaArgs) {
+export function meta({ loaderData }: Route.MetaArgs) {
   return [
     {
       title: loaderData.isEditorRoute
