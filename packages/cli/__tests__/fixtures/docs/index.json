@@ -1,0 +1,8 @@
+[
+  { "path": "index", "title": "Introduction" },
+  { "path": "getting-started", "title": "Getting Started" },
+  { "path": "api-reference/components/puck", "title": "<Puck>" },
+  { "path": "api-reference/fields/text", "title": "Text" },
+  { "path": "api-reference/fields/textarea", "title": "Textarea" },
+  { "path": "api-reference/overrides/puck", "title": "puck" }
+]
