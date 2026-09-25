@@ -1,0 +1,19 @@
+{
+  "recipes": [
+    "next",
+    "next-ai",
+    "react-router",
+    "react-router-ai"
+  ],
+  "exclude": [
+    "node_modules/**",
+    ".next/**",
+    ".react-router/**",
+    "build/**",
+    ".turbo/**",
+    "next-env.d.ts",
+    "*.tsbuildinfo",
+    "eslint.config.mjs",
+    ".env*"
+  ]
+}
