@@ -3,7 +3,8 @@
   "version": "0.23.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/generate-llms.mjs && next dev",
+    "prebuild": "node scripts/generate-llms.mjs",
     "build": "next build",
     "postbuild": "next-sitemap",
     "start": "next start",
@@ -14,7 +15,12 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "eslint-config-custom": "workspace:*",
-    "typescript": "^5.5.4"
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "^11.0.0",
+    "typescript": "^5.5.4",
+    "unified": "^11.0.5"
   },
   "dependencies": {
     "@puckeditor/core": "workspace:*",

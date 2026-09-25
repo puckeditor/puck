@@ -6,3 +6,4 @@ CHANGELOG.md
 dist/
 .next/
 build/
+apps/docs/public/docs/
