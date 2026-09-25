@@ -5,6 +5,9 @@ const menu = {
   "getting-started": {
     title: "Getting Started",
   },
+  cli: {
+    title: "CLI",
+  },
   "integrating-puck": {
     title: "Integrating Puck",
   },

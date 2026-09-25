@@ -1,0 +1,168 @@
+# CLI
+
+The Puck CLI sets up Puck and [Puck Cloud](https://cloud.puckeditor.com) in a new or existing app. It's built for coding agents, and works interactively for humans.
+
+```sh copy
+npx @puckeditor/cli init
+```
+
+`init` inspects your project and makes the smallest set of changes needed to reach a working, Cloud-connected Puck app:
+
+- **No app yet**: creates a Next.js or React Router app from the Puck [recipes](https://github.com/puckeditor/puck#recipes)
+- **App without Puck**: installs `@puckeditor/core` and adds an editor at `/edit`
+- **Puck without Cloud**: installs `@puckeditor/cloud-client` and `@puckeditor/plugin-ai`, adds the `/api/puck` route and the Puck AI plugin, and connects your Puck Cloud account
+- **Already set up**: verifies the setup and changes nothing
+
+The only manual step is logging in to Puck Cloud and approving the connection in your browser. When it's done, the CLI starts your dev server and opens the editor.
+
+Puck Cloud is the backend, and Puck AI is the editor plugin that uses it, so `init` sets them up together. Pass `--no-cloud` (or answer no when asked) to set up the editor only.
+
+## Supported projects
+
+- Next.js 15+ using the App Router (`app/` or `src/app/`)
+- React Router 7+ in framework mode
+- npm, pnpm, Yarn and Bun, including workspaces
+- TypeScript projects
+
+When the CLI can't safely change something, like an existing `middleware.ts`, it leaves the file alone and tells you exactly what to add.
+
+## For coding agents
+
+Run with `--yes --json`. The CLI never prompts, and prints exactly one JSON document to stdout.
+
+```sh copy
+npx @puckeditor/cli init --yes --json
+```
+
+When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. For example, the first run asks the developer to log in:
+
+```json
+{
+  "status": "action_required",
+  "message": "Puck Cloud login required. No changes have been made yet.",
+  "actions": [
+    {
+      "type": "browser_login",
+      "url": "https://cloud.puckeditor.com/cli/connect#code=BCDF-GHJK",
+      "userCode": "BCDF-GHJK",
+      "rerun": "npx @puckeditor/cli init --yes --json"
+    }
+  ]
+}
+```
+
+After the developer approves, the same command completes the setup:
+
+```json
+{
+  "status": "success",
+  "project": { "framework": "next", "packageManager": "pnpm" },
+  "puck": { "installed": true, "configured": true },
+  "cloud": { "configured": true, "verified": "remote" },
+  "ai": { "installed": true, "configured": true },
+  "filesModified": [".env.local", "app/api/puck/[...all]/route.ts"]
+}
+```
+
+Start with `npx @puckeditor/cli status --json` to see what's already set up and which command to run next.
+
+### Statuses
+
+| Status            | Meaning                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| `success`         | The project is set up. `changed` is `false` if there was nothing to do.                 |
+| `action_required` | Input or approval is needed. Nothing was changed. Complete `actions`, then run `rerun`. |
+| `partial`         | Changes were applied, but some `actions` must be completed by hand.                     |
+| `error`           | Something went wrong. See `error.code` and `error.message`.                             |
+
+### Actions
+
+| Type                       | What to do                                                          |
+| -------------------------- | ------------------------------------------------------------------- |
+| `browser_login`            | Ask the developer to open `url`, confirm `userCode` and approve     |
+| `provide_api_key`          | Ask for a Puck API key, then re-run with `PUCK_API_KEY` set         |
+| `confirm_plan`             | Review `plan.steps`, then re-run with `--yes`                       |
+| `choose_framework`         | Re-run `init` with `--framework next` or `--framework react-router` |
+| `provide_app_name`         | Re-run `init` with `--name <name>`                                  |
+| `choose_workspace_package` | Re-run with `--workspace <dir>` for one of `choices`                |
+| `manual_edit`              | Apply `snippet` to `file` as described in `instructions`            |
+| `set_environment_variable` | Set `PUCK_API_KEY` wherever the app runs                            |
+
+### Exit codes
+
+| Code | Meaning                              |
+| ---- | ------------------------------------ |
+| 0    | Success                              |
+| 2    | Invalid arguments or API key         |
+| 3    | Unsupported or ambiguous project     |
+| 4    | File conflict                        |
+| 5    | Package manager failure              |
+| 6    | `doctor` found problems              |
+| 7    | Puck Cloud couldn't complete a login |
+| 10   | Action required                      |
+| 11   | Partially set up                     |
+
+### Reading the docs
+
+The CLI includes these docs as markdown, matching its release. Use the version of the CLI that matches the project's `@puckeditor/core`:
+
+```sh copy
+npx @puckeditor/cli docs ls                          # every page
+npx @puckeditor/cli docs find "dynamic fields"       # find pages by title or heading
+npx @puckeditor/cli docs grep resolveData            # search page content
+npx @puckeditor/cli docs cat api-reference/fields/text
+```
+
+The same docs are published at [llms.txt](https://puckeditor.com/llms.txt) and [llms-full.txt](https://puckeditor.com/llms-full.txt), and any page is available as markdown by adding `.md` to its URL. See [agents.md](https://puckeditor.com/agents.md) for agent instructions, or install the skill:
+
+```sh copy
+npx skills add puckeditor/puck
+```
+
+## Commands
+
+| Command      | Description                                                        |
+| ------------ | ------------------------------------------------------------------ |
+| `init`       | Set up Puck, Puck Cloud and Puck AI, creating an app if needed     |
+| `add editor` | Add the Puck editor                                                |
+| `add cloud`  | Connect Puck Cloud (adds the editor first if needed)               |
+| `add ai`     | Add the Puck AI plugin (adds Puck Cloud first if needed)           |
+| `status`     | Show what's installed and configured                               |
+| `doctor`     | Diagnose problems and suggest fixes. Never makes changes           |
+| `docs`       | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>` |
+
+## Flags
+
+| Flag                       | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| `--json`                   | Machine-readable output                                         |
+| `--yes`, `-y`              | Apply the plan without prompting                                |
+| `--dry-run`                | Show the plan without changing anything or logging in           |
+| `--cwd <path>`             | Run against another directory                                   |
+| `--workspace <name\|dir>`  | Choose an app when running from a monorepo root                 |
+| `--api-key <key>`          | Use an existing API key instead of logging in                   |
+| `--no-env-write`           | Don't write `PUCK_API_KEY` to a file                            |
+| `--no-cloud`               | Set up the editor only, without Puck Cloud and Puck AI (`init`) |
+| `--wait`                   | Wait for login approval instead of returning `action_required`  |
+| `--framework <name>`       | Framework for a new app: `next` or `react-router`               |
+| `--name <name>`            | Directory for a new app                                         |
+| `--package-manager <name>` | Override the detected package manager                           |
+| `--offline`                | Skip the Puck Cloud connection check (`doctor`)                 |
+
+## API keys
+
+The CLI writes `PUCK_API_KEY` to `.env.local`, and makes sure it's ignored by git. If a key already exists in `.env.development.local`, it's updated there instead. Keys are never written to `.env`, and never printed.
+
+To use an existing key, prefer the environment over `--api-key`, which is visible in your shell history:
+
+```sh copy
+PUCK_API_KEY=your-key npx @puckeditor/cli add cloud --yes
+```
+
+Remember to set `PUCK_API_KEY` in your production environment too. `react-router-serve` doesn't load `.env` files.
+
+The `/api/puck` route and the editor are public by default. Add authentication before deploying.
+
+## Puck AI
+
+`init` and `add ai` add the Puck AI plugin to the editor, allow design mode in the `/api/puck` route, and wrap your config with `withDynamicConfig` so components designed by Puck AI render on your pages. If your editor has been customised, the CLI leaves it alone and prints the code to add.

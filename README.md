@@ -82,6 +82,35 @@ export function Page() {
 }
 ```
 
+## CLI
+
+Set up Puck and Puck Cloud in a new or existing Next.js or React Router app. Built for coding agents, friendly for humans:
+
+```sh
+npx @puckeditor/cli init
+```
+
+See the [CLI docs](https://puckeditor.com/docs/cli) for agent usage.
+
+## For agents
+
+Puck is built to be set up and used by coding agents as well as people. The CLI sets up Puck without prompting, and ships with the docs for its release, so agents can read the docs for the version a project uses:
+
+```sh
+npx @puckeditor/cli init --yes --json
+npx @puckeditor/cli docs find "dynamic fields"
+npx @puckeditor/cli docs cat api-reference/fields/text
+```
+
+Agents with skill support can install the Puck skill, which routes to the docs for the installed version:
+
+```sh
+npx skills add puckeditor/puck
+```
+
+- [agents.md](https://puckeditor.com/agents.md): how agents should set up and use Puck
+- [llms.txt](https://puckeditor.com/llms.txt) and [llms-full.txt](https://puckeditor.com/llms-full.txt): documentation index and full export for LLMs
+
 ## Recipes
 
 Use `create-puck-app` to quickly spin up a a pre-configured app based on our provided [recipes](https://github.com/puckeditor/puck/tree/main/recipes):
