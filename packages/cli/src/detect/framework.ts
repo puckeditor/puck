@@ -5,19 +5,25 @@ import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 import { findStringProperty } from "../ast/config-literal";
 import { majorOf, resolveInstalledVersion } from "./package-json";
 
-export const FRAMEWORK_IDS = ["next", "react-router", "vinext"] as const;
+export const FRAMEWORK_IDS = [
+  "next",
+  "react-router",
+  "tanstack-start",
+  "vinext",
+] as const;
 
 export type FrameworkId = (typeof FRAMEWORK_IDS)[number];
 
 export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   next: "Next.js",
   "react-router": "React Router",
+  "tanstack-start": "TanStack Start",
   vinext: "vinext",
 };
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */
 export const SUPPORTED_FRAMEWORKS =
-  "Next.js (App Router), React Router 7 framework mode and vinext";
+  "Next.js (App Router), React Router 7 framework mode, TanStack Start and vinext";
 
 export interface NextInfo {
   id: "next";
@@ -50,7 +56,24 @@ export interface VinextInfo extends Omit<NextInfo, "id"> {
 
 export type NextLikeInfo = NextInfo | VinextInfo;
 
-export type FrameworkInfo = NextInfo | ReactRouterInfo | VinextInfo;
+export interface TanStackStartInfo {
+  id: "tanstack-start";
+  version: string | null;
+  major: number | null;
+  /** Project-relative source directory, `srcDirectory` in vite.config */
+  srcDir: string;
+  /** Project-relative file routes directory */
+  routesDir: string;
+  /** Project-relative directory Vite loads .env files from */
+  envDir: string;
+  viteConfig: string | null;
+}
+
+export type FrameworkInfo =
+  | NextInfo
+  | ReactRouterInfo
+  | TanStackStartInfo
+  | VinextInfo;
 
 export type FrameworkDetection =
   | { status: "detected"; info: FrameworkInfo }
@@ -61,6 +84,50 @@ const firstExisting = (vfs: Vfs, root: string, candidates: string[]) =>
   candidates.find((c) => vfs.exists(path.join(root, c))) ?? null;
 
 const CONFIG_EXTENSIONS = ["ts", "mts", "js", "mjs", "cts", "cjs"];
+
+const findViteConfig = (vfs: Vfs, root: string) =>
+  firstExisting(
+    vfs,
+    root,
+    CONFIG_EXTENSIONS.map((ext) => `vite.config.${ext}`)
+  );
+
+const normalizeDir = (dir: string) =>
+  path.posix
+    .normalize(dir)
+    .replace(/^\.\/?$/, "")
+    .replace(/\/+$/, "");
+
+const dynamicConfig = (file: string, what: string): FrameworkDetection => ({
+  status: "unsupported",
+  error: {
+    code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK",
+    message: `${file} sets ${what}`,
+    details: { docs: MANUAL_INTEGRATION_DOCS_URL },
+  },
+});
+
+/** Project-relative directory Vite loads .env files from */
+const readEnvDir = (
+  vfs: Vfs,
+  root: string,
+  viteConfig: string | null
+): string | FrameworkDetection => {
+  if (!viteConfig) return "";
+  const lookup = findStringProperty(
+    vfs.readText(path.join(root, viteConfig)) ?? "",
+    viteConfig,
+    "envDir"
+  );
+  if (lookup.status === "literal") return normalizeDir(lookup.value);
+  if (lookup.status === "dynamic") {
+    return dynamicConfig(
+      viteConfig,
+      "envDir dynamically, so the CLI can't tell where to write PUCK_API_KEY."
+    );
+  }
+  return "";
+};
 
 const detectAppRouter = (
   vfs: Vfs,
@@ -154,11 +221,7 @@ const detectVinext = (
       major: majorOf(version) ?? majorOf(range),
       ...layout,
       proxyKind: hasMiddleware ? "middleware" : "proxy",
-      viteConfig: firstExisting(
-        vfs,
-        root,
-        CONFIG_EXTENSIONS.map((ext) => `vite.config.${ext}`)
-      ),
+      viteConfig: findViteConfig(vfs, root),
     },
   };
 };
@@ -233,34 +296,9 @@ const detectReactRouter = (
     };
   }
 
-  let envDir = "";
-  const viteConfig = firstExisting(
-    vfs,
-    root,
-    CONFIG_EXTENSIONS.map((ext) => `vite.config.${ext}`)
-  );
-  if (viteConfig) {
-    const lookup = findStringProperty(
-      vfs.readText(path.join(root, viteConfig)) ?? "",
-      viteConfig,
-      "envDir"
-    );
-    if (lookup.status === "literal") {
-      envDir = path.posix
-        .normalize(lookup.value)
-        .replace(/^\.\/?$/, "")
-        .replace(/\/+$/, "");
-    } else if (lookup.status === "dynamic") {
-      return {
-        status: "unsupported",
-        error: {
-          code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK",
-          message: `${viteConfig} sets envDir dynamically, so the CLI can't tell where to write PUCK_API_KEY.`,
-          details: { docs: MANUAL_INTEGRATION_DOCS_URL },
-        },
-      };
-    }
-  }
+  const viteConfig = findViteConfig(vfs, root);
+  const envDir = readEnvDir(vfs, root, viteConfig);
+  if (typeof envDir !== "string") return envDir;
 
   return {
     status: "detected",
@@ -271,6 +309,49 @@ const detectReactRouter = (
       appDir,
       routesFile,
       configFile,
+      envDir,
+      viteConfig,
+    },
+  };
+};
+
+const detectTanStackStart = (
+  vfs: Vfs,
+  root: string,
+  range: string
+): FrameworkDetection => {
+  const version = resolveInstalledVersion(vfs, root, "@tanstack/react-start");
+  const viteConfig = findViteConfig(vfs, root);
+  const code = viteConfig
+    ? vfs.readText(path.join(root, viteConfig)) ?? ""
+    : "";
+
+  // Both default in the tanstackStart() Vite plugin options
+  const dirs = { srcDirectory: "src", routesDirectory: "routes" };
+  for (const key of Object.keys(dirs) as (keyof typeof dirs)[]) {
+    if (!viteConfig) break;
+    const lookup = findStringProperty(code, viteConfig, key);
+    if (lookup.status === "literal") dirs[key] = normalizeDir(lookup.value);
+    else if (lookup.status === "dynamic") {
+      return dynamicConfig(
+        viteConfig,
+        `${key} dynamically, so the CLI can't locate your routes.`
+      );
+    }
+  }
+
+  const envDir = readEnvDir(vfs, root, viteConfig);
+  if (typeof envDir !== "string") return envDir;
+
+  const srcDir = dirs.srcDirectory;
+  return {
+    status: "detected",
+    info: {
+      id: "tanstack-start",
+      version,
+      major: majorOf(version) ?? majorOf(range),
+      srcDir,
+      routesDir: path.posix.join(srcDir || ".", dirs.routesDirectory),
       envDir,
       viteConfig,
     },
@@ -289,6 +370,11 @@ interface Detector {
 const DETECTORS: Detector[] = [
   { id: "next", dep: "next", detect: detectNext },
   { id: "react-router", dep: "@react-router/dev", detect: detectReactRouter },
+  {
+    id: "tanstack-start",
+    dep: "@tanstack/react-start",
+    detect: detectTanStackStart,
+  },
   // Projects migrating to vinext usually keep next installed
   { id: "vinext", dep: "vinext", supersedes: ["next"], detect: detectVinext },
 ];

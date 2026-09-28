@@ -4,6 +4,8 @@
     "next-ai",
     "react-router",
     "react-router-ai",
+    "tanstack-start",
+    "tanstack-start-ai",
     "vinext",
     "vinext-ai"
   ],
@@ -11,6 +13,9 @@
     "node_modules/**",
     ".next/**",
     ".react-router/**",
+    ".tanstack/**",
+    ".output/**",
+    ".nitro/**",
     "build/**",
     "dist/**",
     ".turbo/**",

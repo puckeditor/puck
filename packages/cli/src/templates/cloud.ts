@@ -1,7 +1,6 @@
 /**
- * Cloud route templates. These are the routes from the next-ai and
- * react-router-ai recipes without the Puck AI options, which the `cloud`
- * capability doesn't configure.
+ * Cloud route templates. These are the routes from each framework's AI recipe
+ * without the Puck AI options, which the `cloud` capability doesn't configure.
  */
 export const NEXT_CLOUD_ROUTE = `// Handles requests from Puck to Puck Cloud
 // Learn more: https://puckeditor.com/docs/cli
@@ -32,6 +31,28 @@ export async function loader(args: LoaderFunctionArgs) {
 export async function action(args: ActionFunctionArgs) {
   return puckHandler(args.request, options);
 }
+`;
+
+export const TANSTACK_START_CLOUD_ROUTE = `// Handles requests from Puck to Puck Cloud
+// Learn more: https://puckeditor.com/docs/cli
+import { createFileRoute } from "@tanstack/react-router";
+import type { PuckCloudOptions } from "@puckeditor/cloud-client";
+import { puckHandler } from "@puckeditor/cloud-client";
+
+const options: PuckCloudOptions = {};
+
+const handleRequest = ({ request }: { request: Request }) =>
+  puckHandler(request, options);
+
+export const Route = createFileRoute("/api/puck/$")({
+  server: {
+    handlers: {
+      GET: handleRequest,
+      POST: handleRequest,
+      DELETE: handleRequest,
+    },
+  },
+});
 `;
 
 /**

@@ -3,12 +3,14 @@ import type { FrameworkAdapter } from "./adapter";
 import { nextAdapter } from "./next";
 import { vinextAdapter } from "./vinext";
 import { reactRouterAdapter } from "./react-router";
+import { tanstackStartAdapter } from "./tanstack-start";
 
 export const ADAPTERS: {
   [K in FrameworkId]: FrameworkAdapter<Extract<FrameworkInfo, { id: K }>>;
 } = {
   next: nextAdapter,
   "react-router": reactRouterAdapter,
+  "tanstack-start": tanstackStartAdapter,
   vinext: vinextAdapter,
 };
 

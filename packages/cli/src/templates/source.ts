@@ -9,6 +9,8 @@ export type RecipeName =
   | "next-ai"
   | "react-router"
   | "react-router-ai"
+  | "tanstack-start"
+  | "tanstack-start-ai"
   | "vinext"
   | "vinext-ai";
 
