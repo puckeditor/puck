@@ -140,10 +140,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
   }
 
   const framework = values.framework as string | undefined;
-  if (
-    framework !== undefined &&
-    !FRAMEWORKS.includes(framework)
-  ) {
+  if (framework !== undefined && !FRAMEWORKS.includes(framework)) {
     throw new CliError(
       "PUCK-CLI-INVALID-ARGS",
       `--framework must be one of ${FRAMEWORKS.join(", ")}.`
