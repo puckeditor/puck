@@ -84,7 +84,7 @@ export function Page() {
 
 ## CLI
 
-Set up Puck and Puck Cloud in a new or existing Next.js, React Router, TanStack Start or vinext app, or a Hono or Express server. Built for coding agents, friendly for humans:
+Set up Puck and Puck Cloud in a new or existing Next.js, React Router, TanStack Start, vinext or Vite app, or a Hono or Express server. Built for coding agents, friendly for humans:
 
 ```sh
 npx @puckeditor/cli init
@@ -125,6 +125,7 @@ Available recipes include:
 - [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
 - [**tanstack-start**](https://github.com/puckeditor/puck/tree/main/recipes/tanstack-start): [TanStack Start](https://tanstack.com/start) example, using a splat route and server functions to create pages at any level
 - [**hono**](https://github.com/puckeditor/puck/tree/main/recipes/hono) and [**express**](https://github.com/puckeditor/puck/tree/main/recipes/express): Hono and Express servers exposing a pages API, and Puck AI in the `-ai` variants, for an editor in another app
+- [**vite**](https://github.com/puckeditor/puck/tree/main/recipes/vite): Vite React app example, with a small Hono server for pages
 - [**vinext**](https://github.com/puckeditor/puck/tree/main/recipes/vinext): [vinext](https://github.com/cloudflare/vinext) example, running the Next.js App Router on Vite
 
 ## Community
