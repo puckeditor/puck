@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+main {
+  width: min(42rem, calc(100% - 2rem));
+  margin: 4rem auto;
+}
