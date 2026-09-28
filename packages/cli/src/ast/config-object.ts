@@ -171,14 +171,26 @@ export const ensureConfigEntry = (
         };
       }
       const rest = objectPath.slice(i);
-      const edit = insertProperty(code, obj, (indent, singleLine) => {
-        if (singleLine)
-          return rest.reduceRight((inner, s) => `${s}: { ${inner} }`, entry);
-        return rest.reduceRight((inner, s, depth) => {
+      const multiLine = (indent: string) =>
+        rest.reduceRight((inner, s, depth) => {
           const pad = `${indent}${"  ".repeat(depth)}`;
           return `${s}: {\n${pad}  ${inner},\n${pad}}`;
         }, entry);
-      });
+      // An empty `{}` is expanded rather than filled on one line
+      const edit =
+        obj.properties.length === 0
+          ? (() => {
+              const indent = indentationAt(code, obj.start!);
+              return {
+                at: obj.start! + 1,
+                text: `\n${indent}  ${multiLine(`${indent}  `)},\n${indent}`,
+              };
+            })()
+          : insertProperty(code, obj, (indent, singleLine) =>
+              singleLine
+                ? rest.reduceRight((inner, s) => `${s}: { ${inner} }`, entry)
+                : multiLine(indent)
+            );
       const next = code.slice(0, edit.at) + edit.text + code.slice(edit.at);
       return { status: "inserted", code: next, inserted: [edit] };
     }
