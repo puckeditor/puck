@@ -1,4 +1,7 @@
-import { ensureOptimizeDepsInclude } from "../vite-optimize-deps";
+import {
+  ensureOptimizeDepsInclude,
+  ensureSsrExternal,
+} from "../vite-optimize-deps";
 import { readRecipe } from "../../../__tests__/helpers/harness";
 
 const CORE = "@puckeditor/core";
@@ -112,5 +115,37 @@ export default defineConfig({
         status: "manual",
       });
     }
+  });
+});
+
+describe("ensureSsrExternal", () => {
+  const OIDC = ["@vercel/oidc"];
+  const external = (code: string) =>
+    ensureSsrExternal(code, "vite.config.ts", OIDC);
+
+  it("turns the vinext recipe config into the AI recipe byte for byte", () => {
+    const result = external(readRecipe("vinext", "vite.config.ts"));
+    expect(result.status === "inserted" && result.code).toBe(
+      readRecipe("vinext-ai", "vite.config.ts")
+    );
+  });
+
+  it("is a no-op when the package or everything is already external", () => {
+    expect(external(readRecipe("vinext-ai", "vite.config.ts")).status).toBe(
+      "exists"
+    );
+    expect(
+      external(`export default defineConfig({ ssr: { external: true } });\n`)
+        .status
+    ).toBe("exists");
+  });
+
+  it("asks for a manual edit when ssr.external isn't a list", () => {
+    expect(
+      external(`export default defineConfig({ ssr: { external: deps } });\n`)
+    ).toEqual({
+      status: "manual",
+      detail: "ssr.external is not a list of package names",
+    });
   });
 });

@@ -59,43 +59,47 @@ const analyze = (code: string, filename: string): Analysis => {
   return { ok: true, ast, config: exported };
 };
 
-/** Every package in `include`, or null if it can't be read statically */
-const readInclude = (config: ObjectExpression) => {
-  const optimizeDeps = findProperty(config, "optimizeDeps");
-  if (!optimizeDeps) return [];
-  const value = unwrapExpression(optimizeDeps.value);
+type ListPath = [outer: string, inner: string];
+
+/** Every package in the list, "all" for `true`, or null if it can't be read statically */
+const readList = (config: ObjectExpression, [outer, inner]: ListPath) => {
+  const section = findProperty(config, outer);
+  if (!section) return [];
+  const value = unwrapExpression(section.value);
   if (value.type !== "ObjectExpression") return null;
-  const include = findProperty(value, "include");
-  if (!include) return [];
-  const list = unwrapExpression(include.value);
+  const prop = findProperty(value, inner);
+  if (!prop) return [];
+  const list = unwrapExpression(prop.value);
+  // e.g. `ssr: { external: true }` already covers every package
+  if (list.type === "BooleanLiteral" && list.value) return "all" as const;
   if (list.type !== "ArrayExpression") return null;
   if (!list.elements.every((e) => e?.type === "StringLiteral")) return null;
   return list.elements.map((e) => (e as { value: string }).value);
 };
 
 /**
- * Makes sure `optimizeDeps.include` in a Vite config lists `pkgs`, splicing
- * text at AST-derived offsets so the user's formatting is left untouched.
- *
- * React Router only feeds its routes to Vite's dependency scanner behind a
- * future flag, so without this Vite discovers Puck on the first request and
- * re-bundles every dependency mid-load, leaving the page with two copies of
- * react-router.
+ * Makes sure a `outer.inner` package list in a Vite config lists `pkgs`,
+ * splicing text at AST-derived offsets so the user's formatting is left
+ * untouched.
  */
-export const ensureOptimizeDepsInclude = (
+const ensureConfigList = (
   code: string,
   filename: string,
+  listPath: ListPath,
   pkgs: string[]
 ): OptimizeDepsResult => {
+  const [outer, inner] = listPath;
+  const name = `${outer}.${inner}`;
   const analysis = analyze(code, filename);
   if (!analysis.ok) return { status: "manual", detail: analysis.detail };
 
   const { ast, config } = analysis;
-  const existing = readInclude(config);
+  const existing = readList(config, listPath);
+  if (existing === "all") return { status: "exists" };
   if (!existing) {
     return {
       status: "manual",
-      detail: "optimizeDeps.include is not a list of package names",
+      detail: `${name} is not a list of package names`,
     };
   }
 
@@ -110,39 +114,36 @@ export const ensureOptimizeDepsInclude = (
   });
   const quoted = missing.map((pkg) => `${q}${pkg}${q}`);
 
-  const optimizeDeps = findProperty(config, "optimizeDeps");
-  const include = optimizeDeps
-    ? findProperty(
-        unwrapExpression(optimizeDeps.value) as ObjectExpression,
-        "include"
-      )
+  const section = findProperty(config, outer);
+  const list = section
+    ? findProperty(unwrapExpression(section.value) as ObjectExpression, inner)
     : undefined;
 
   let edit: { at: number; text: string };
 
-  if (include) {
+  if (list) {
     edit = appendToArray(
       code,
-      unwrapExpression(include.value) as ArrayExpression,
+      unwrapExpression(list.value) as ArrayExpression,
       quoted
     );
-  } else if (optimizeDeps) {
+  } else if (section) {
     edit = insertProperty(
       code,
-      unwrapExpression(optimizeDeps.value) as ObjectExpression,
-      () => `include: [${quoted.join(", ")}]`
+      unwrapExpression(section.value) as ObjectExpression,
+      () => `${inner}: [${quoted.join(", ")}]`
     );
   } else {
     if (config.properties.some((p) => p.type === "SpreadElement")) {
       return {
         status: "manual",
-        detail: "The config spreads another object that may set optimizeDeps",
+        detail: `The config spreads another object that may set ${outer}`,
       };
     }
     edit = insertProperty(code, config, (indent, singleLine) =>
       singleLine
-        ? `optimizeDeps: { include: [${quoted.join(", ")}] }`
-        : `optimizeDeps: {\n${indent}  include: [${quoted.join(
+        ? `${outer}: { ${inner}: [${quoted.join(", ")}] }`
+        : `${outer}: {\n${indent}  ${inner}: [${quoted.join(
             ", "
           )}],\n${indent}}`
     );
@@ -153,16 +154,40 @@ export const ensureOptimizeDepsInclude = (
   ]);
 
   const verify = analyze(next, filename);
-  const after = verify.ok ? readInclude(verify.config) : null;
-  if (!after || !pkgs.every((pkg) => after.includes(pkg))) {
+  const after = verify.ok ? readList(verify.config, listPath) : null;
+  if (!Array.isArray(after) || !pkgs.every((pkg) => after.includes(pkg))) {
     return {
       status: "manual",
-      detail: "Could not verify optimizeDeps.include after editing",
+      detail: `Could not verify ${name} after editing`,
     };
   }
 
   return { status: "inserted", code: next, ...edit };
 };
+
+/**
+ * Makes sure `optimizeDeps.include` in a Vite config lists `pkgs`.
+ *
+ * React Router only feeds its routes to Vite's dependency scanner behind a
+ * future flag, so without this Vite discovers Puck on the first request and
+ * re-bundles every dependency mid-load, leaving the page with two copies of
+ * react-router.
+ */
+export const ensureOptimizeDepsInclude = (
+  code: string,
+  filename: string,
+  pkgs: string[]
+) => ensureConfigList(code, filename, ["optimizeDeps", "include"], pkgs);
+
+/**
+ * Makes sure `ssr.external` in a Vite config lists `pkgs`, so Node loads them
+ * instead of Vite's module runner.
+ */
+export const ensureSsrExternal = (
+  code: string,
+  filename: string,
+  pkgs: string[]
+) => ensureConfigList(code, filename, ["ssr", "external"], pkgs);
 
 /** Where and how a new last entry goes, matching the list's layout */
 const appendAfterLast = (
