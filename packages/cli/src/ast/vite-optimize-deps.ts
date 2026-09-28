@@ -40,6 +40,21 @@ const analyze = (code: string, filename: string): Analysis => {
   }
 
   let exported = unwrapExpression(exportDefault.declaration as Node);
+  // e.g. `const config = defineConfig({...}); export default config`
+  if (exported.type === "Identifier") {
+    const name = exported.name;
+    for (const statement of ast.program.body) {
+      if (
+        statement.type !== "VariableDeclaration" ||
+        statement.kind !== "const"
+      )
+        continue;
+      const declarator = statement.declarations.find(
+        (d) => d.id.type === "Identifier" && d.id.name === name
+      );
+      if (declarator?.init) exported = unwrapExpression(declarator.init);
+    }
+  }
   if (
     exported.type === "CallExpression" &&
     exported.callee.type === "Identifier" &&

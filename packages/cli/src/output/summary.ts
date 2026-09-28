@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { ProjectContext } from "../detect/project";
 import type { ProjectState } from "../detect/state";
+import { adapterFor } from "../frameworks";
 import type {
   AiSummary,
   CloudSummary,
@@ -23,7 +24,9 @@ export const projectSummary = (
   root: ctx.root,
   framework: ctx.framework?.id ?? null,
   frameworkVersion: ctx.framework?.version ?? null,
-  appDir: ctx.framework?.appDir ?? null,
+  appDir: ctx.framework
+    ? adapterFor(ctx.framework).appDir(ctx.framework)
+    : null,
   packageManager: ctx.packageManager.name,
   typescript: ctx.typescript,
   workspace,

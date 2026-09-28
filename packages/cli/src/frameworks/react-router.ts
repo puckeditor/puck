@@ -3,11 +3,14 @@ import type { ReactRouterInfo } from "../detect/framework";
 import type { Planner } from "../plan/planner";
 import type { CapabilityId } from "../result";
 import { hasRoute, insertRoute, RouteEntry } from "../ast/react-router-routes";
-import { ensureOptimizeDepsInclude } from "../ast/vite-optimize-deps";
 import { REACT_ROUTER_CLOUD_ROUTE, withCloudHost } from "../templates/cloud";
 import type { FrameworkAdapter } from "./adapter";
 import { findCloudRoute } from "./adapter";
-import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
+import {
+  CORE_PACKAGE,
+  MANUAL_INTEGRATION_DOCS_URL,
+  PLUGIN_AI_PACKAGE,
+} from "../constants";
 import { templateText } from "../templates/source";
 import { parseModule } from "../ast/parse";
 import { getExportShape } from "../ast/exports";
@@ -21,6 +24,7 @@ import {
   upgradeTemplateFile,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
+import { planOptimizeDeps } from "./vite";
 
 export const REACT_ROUTER_CLOUD_ROUTE_FILE = (appDir: string) =>
   `${appDir}/routes/api.puck.ts`;
@@ -138,53 +142,6 @@ const registerRoute = (
   });
 };
 
-const CORE_PACKAGE = "@puckeditor/core";
-const AI_PACKAGE = "@puckeditor/plugin-ai";
-
-/**
- * Pre-bundles Puck so Vite doesn't discover it on the first request and
- * re-bundle mid-load, which leaves the page with two copies of react-router
- */
-const planOptimizeDeps = (
-  p: Planner,
-  info: ReactRouterInfo,
-  pkgs: string[],
-  capability: CapabilityId
-) => {
-  const file = info.viteConfig ?? "vite.config.ts";
-  const manual = (detail: string) =>
-    p.manual({
-      id: `${capability}:vite-optimize-deps`,
-      type: "manual_edit",
-      capability,
-      required: false,
-      file,
-      reason: "unsupported_shape",
-      message: `Couldn't add Puck to optimizeDeps.include automatically: ${detail}.`,
-      instructions: `Add ${pkgs.join(
-        " and "
-      )} to optimizeDeps.include in ${file}, or the first page load after starting the dev server may crash while Vite re-bundles dependencies.`,
-      snippet: `optimizeDeps: {\n  include: [${pkgs
-        .map((pkg) => `"${pkg}"`)
-        .join(", ")}],\n},`,
-    });
-
-  if (!info.viteConfig) return manual("no vite.config file was found");
-
-  const code = p.vfs.readText(p.abs(info.viteConfig)) ?? "";
-  const result = ensureOptimizeDepsInclude(code, info.viteConfig, pkgs);
-
-  if (result.status === "exists") return;
-  if (result.status === "manual")
-    return manual(result.detail.replace(/\.$/, ""));
-
-  p.modifyFile(info.viteConfig, result.code, {
-    capability,
-    summary: `Pre-bundle Puck in ${info.viteConfig}`,
-    inserted: [{ at: result.at, text: result.text }],
-  });
-};
-
 export const planReactRouterEditor = (
   p: Planner,
   info: ReactRouterInfo,
@@ -238,7 +195,7 @@ export const planReactRouterEditor = (
   planOptimizeDeps(
     p,
     info,
-    withAi ? [CORE_PACKAGE, AI_PACKAGE] : [CORE_PACKAGE],
+    withAi ? [CORE_PACKAGE, PLUGIN_AI_PACKAGE] : [CORE_PACKAGE],
     "editor"
   );
   planCoreDependency(p);
@@ -344,7 +301,7 @@ export const planReactRouterAi = (p: Planner, info: ReactRouterInfo) => {
     summary: `Add the Puck AI plugin to ${A}/routes/puck-splat.tsx`,
   });
 
-  planOptimizeDeps(p, info, [CORE_PACKAGE, AI_PACKAGE], "ai");
+  planOptimizeDeps(p, info, [CORE_PACKAGE, PLUGIN_AI_PACKAGE], "ai");
 
   if (editor === "upgraded" || editor === "already") {
     const render = upgradeTemplateFile(p, {
@@ -390,6 +347,7 @@ export const planReactRouterAi = (p: Planner, info: ReactRouterInfo) => {
 export const reactRouterAdapter: FrameworkAdapter<ReactRouterInfo> = {
   recipe: (withAi) => (withAi ? "react-router-ai" : "react-router"),
   recipeCloudRoute: REACT_ROUTER_CLOUD_ROUTE_FILE("app"),
+  appDir: (info) => info.appDir,
   configDirs: (info) => ["", "src", info.appDir],
   envDir: (info) => info.envDir,
   detectCloudRoute: (info, vfs, root, scan) => {

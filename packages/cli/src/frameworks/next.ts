@@ -367,6 +367,7 @@ export const planNextAi = (p: Planner, info: NextLikeInfo) => {
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   recipe: (withAi) => (withAi ? "next-ai" : "next"),
   recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
+  appDir: (info) => info.appDir,
   configDirs: () => ["", "src"],
   envDir: () => "",
   detectCloudRoute: (info, _vfs, _root, scan) => {

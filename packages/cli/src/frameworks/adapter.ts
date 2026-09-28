@@ -17,6 +17,8 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
   recipe: (withAi: boolean) => RecipeName;
   /** Recipe-relative path of the Puck Cloud route, pointed at PUCK_CLOUD_URL when scaffolding */
   recipeCloudRoute: string;
+  /** Project-relative directory the app's source lives in, for the JSON output */
+  appDir: (info: I) => string;
   /** Project-relative directories searched for puck.config, in order */
   configDirs: (info: I) => string[];
   /** Project-relative directory env files are loaded from */
@@ -35,14 +37,14 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
   deployEnvWarning: string;
 }
 
-/** Prefers the expected route file, then any handler inside the app directory */
+/** Prefers the expected route file, then any handler inside the app directory ("" for the project root) */
 export const findCloudRoute = (
   scan: SourceScan,
   appDir: string,
   expected: string
 ) => {
-  const inAppDir = scan.cloudHandlerFiles.filter((f) =>
-    f.startsWith(`${appDir}/`)
+  const inAppDir = scan.cloudHandlerFiles.filter(
+    (f) => !appDir || f.startsWith(`${appDir}/`)
   );
   return inAppDir.includes(expected) ? expected : inAppDir[0] ?? null;
 };
