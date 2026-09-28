@@ -496,3 +496,55 @@ createRoot(document.getElementById("root")!).render(
 }
 `,
 });
+
+/** What `create astro --template minimal` produces, optionally after `astro add react node` */
+export const astroMinimal = (
+  overrides: { withAdapter?: boolean } = {}
+): Tree => ({
+  "package.json": pkg({
+    name: "astro-minimal",
+    type: "module",
+    scripts: { dev: "astro dev", build: "astro build", astro: "astro" },
+    dependencies: {
+      astro: "^7.3.5",
+      ...(overrides.withAdapter
+        ? {
+            "@astrojs/node": "^11.1.6",
+            "@astrojs/react": "^7.0.0",
+            react: "^19.2.0",
+            "react-dom": "^19.2.0",
+          }
+        : {}),
+    },
+  }),
+  "package-lock.json": "{}\n",
+  "tsconfig.json": pkg({
+    extends: "astro/tsconfigs/strict",
+    include: [".astro/types.d.ts", "**/*"],
+    exclude: ["dist"],
+  }),
+  ".gitignore": "dist/\n.astro/\nnode_modules/\n.env\n",
+  "astro.config.mjs": overrides.withAdapter
+    ? `// @ts-check
+import { defineConfig } from 'astro/config';
+
+import react from '@astrojs/react';
+import node from '@astrojs/node';
+
+// https://astro.build/config
+export default defineConfig({
+  integrations: [react()],
+
+  adapter: node({
+    mode: 'standalone'
+  })
+});
+`
+    : `// @ts-check
+import { defineConfig } from 'astro/config';
+
+// https://astro.build/config
+export default defineConfig({});
+`,
+  "src/pages/index.astro": "---\n---\n\n<h1>Astro</h1>\n",
+});
