@@ -8,6 +8,13 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  // Keep the editor and AI plugin on the same Puck instance in the workspace.
+  optimizeDeps: {
+    include: ["@puckeditor/core"],
+  },
+  ssr: {
+    external: ["@puckeditor/core"],
+  },
   plugins: [
     devtools(),
     tsConfigPaths({
