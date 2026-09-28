@@ -1,6 +1,7 @@
 import type { CommandResult } from "./result";
 import { emptyResult } from "./result";
 import { CANONICAL_INVOCATION, DOCS_URL } from "./constants";
+import { FRAMEWORK_IDS } from "./detect/framework";
 
 export const COMMANDS = [
   {
@@ -49,7 +50,7 @@ Flags:
   --ai                    Also set up Puck AI and Puck Cloud (init)
   --no-ai                 Set up the editor only, without asking about Puck AI (init)
   --wait                  Wait for Puck Cloud login approval instead of returning
-  --framework <next|react-router>  Framework for new apps (init)
+  --framework <${FRAMEWORK_IDS.join("|")}>  Framework for new apps (init)
   --name <name>           Directory name for new apps (init)
   --package-manager <pnpm|npm|yarn|bun>
 

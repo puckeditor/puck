@@ -5,7 +5,9 @@ import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 import { findStringProperty } from "../ast/config-literal";
 import { majorOf, resolveInstalledVersion } from "./package-json";
 
-export type FrameworkId = "next" | "react-router";
+export const FRAMEWORK_IDS = ["next", "react-router"] as const;
+
+export type FrameworkId = (typeof FRAMEWORK_IDS)[number];
 
 export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   next: "Next.js",
@@ -221,27 +223,40 @@ const detectReactRouter = (
   };
 };
 
+interface Detector {
+  id: FrameworkId;
+  /** The package whose presence marks the framework */
+  dep: string;
+  detect: (vfs: Vfs, root: string, range: string) => FrameworkDetection;
+}
+
+const DETECTORS: Detector[] = [
+  { id: "next", dep: "next", detect: detectNext },
+  { id: "react-router", dep: "@react-router/dev", detect: detectReactRouter },
+];
+
 export const detectFramework = (
   vfs: Vfs,
   root: string,
   deps: Record<string, string>
 ): FrameworkDetection => {
-  const hasNext = "next" in deps;
-  const hasRRDev = "@react-router/dev" in deps;
+  const matches = DETECTORS.filter((d) => d.dep in deps);
 
-  if (hasNext && hasRRDev) {
+  if (matches.length > 1) {
+    const [a, b] = matches.map((d) => FRAMEWORK_LABELS[d.id]);
     return {
       status: "unsupported",
       error: {
         code: "PUCK-CLI-AMBIGUOUS-FRAMEWORK",
-        message:
-          "Both Next.js and React Router are installed, so the CLI can't tell which one to integrate with.",
+        message: `Both ${a} and ${b} are installed, so the CLI can't tell which one to integrate with.`,
       },
     };
   }
 
-  if (hasNext) return detectNext(vfs, root, deps.next);
-  if (hasRRDev) return detectReactRouter(vfs, root, deps["@react-router/dev"]);
+  if (matches.length === 1) {
+    const [match] = matches;
+    return match.detect(vfs, root, deps[match.dep]);
+  }
 
   const remix = Object.keys(deps).find((d) => d.startsWith("@remix-run/"));
   if (remix) {

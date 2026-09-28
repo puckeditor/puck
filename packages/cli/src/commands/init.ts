@@ -5,7 +5,7 @@ import type { FrameworkId } from "../detect/framework";
 import { Vfs } from "../io/vfs";
 import { CliError } from "../errors";
 import { emptyResult } from "../result";
-import { FRAMEWORK_LABELS } from "../detect/framework";
+import { FRAMEWORK_IDS, FRAMEWORK_LABELS } from "../detect/framework";
 import { isEmptyDir } from "../detect/project";
 import { appsDirFor } from "../detect/workspace";
 import { APP_NAME, sanitizeAppName } from "../plan/bootstrap";
@@ -16,10 +16,8 @@ import { runMutation } from "./mutate";
 import { depsOf, readPackageJson } from "../detect/package-json";
 import { CLOUD_CLIENT_PACKAGE, PLUGIN_AI_PACKAGE } from "../constants";
 
-const FRAMEWORK_CHOICES: { value: FrameworkId; label: string }[] = [
-  { value: "next", label: FRAMEWORK_LABELS.next },
-  { value: "react-router", label: FRAMEWORK_LABELS["react-router"] },
-];
+const FRAMEWORK_CHOICES: { value: FrameworkId; label: string }[] =
+  FRAMEWORK_IDS.map((value) => ({ value, label: FRAMEWORK_LABELS[value] }));
 
 const validateName = (name: string) => {
   if (!APP_NAME.test(name) || name.includes("..")) {
@@ -181,7 +179,7 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
   if (missing.length > 0) {
     const flags = missing.map((a) =>
       a.type === "choose_framework"
-        ? "--framework <next|react-router>"
+        ? `--framework <${FRAMEWORK_IDS.join("|")}>`
         : a.type === "choose_ai"
         ? AI_CHOICE_FLAGS
         : "--name <name>"

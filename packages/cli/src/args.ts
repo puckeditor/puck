@@ -2,6 +2,7 @@ import { parseArgs } from "node:util";
 import { CliError } from "./errors";
 import type { CommandName } from "./result";
 import type { FrameworkId } from "./detect/framework";
+import { FRAMEWORK_IDS } from "./detect/framework";
 import { PACKAGE_MANAGERS, PackageManagerName } from "./detect/package-manager";
 
 export interface Flags {
@@ -86,7 +87,7 @@ const COMMANDS: CommandName[] = [
   "docs",
   "help",
 ];
-const FRAMEWORKS: FrameworkId[] = ["next", "react-router"];
+const FRAMEWORKS: readonly string[] = FRAMEWORK_IDS;
 
 export const parseCliArgs = (argv: string[]): ParsedArgs => {
   let parsed;
@@ -141,7 +142,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
   const framework = values.framework as string | undefined;
   if (
     framework !== undefined &&
-    !FRAMEWORKS.includes(framework as FrameworkId)
+    !FRAMEWORKS.includes(framework)
   ) {
     throw new CliError(
       "PUCK-CLI-INVALID-ARGS",
