@@ -1,0 +1,31 @@
+{
+  "name": "vite-ai-recipe",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "start": "tsx server/prod.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@puckeditor/cloud-client": "^0",
+    "@puckeditor/core": "workspace:*",
+    "@puckeditor/plugin-ai": "^0",
+    "hono": "^4.13.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@hono/vite-dev-server": "^0.26.1",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0"
+  }
+}
