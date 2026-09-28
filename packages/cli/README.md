@@ -1,6 +1,6 @@
 # @puckeditor/cli
 
-Set up [Puck](https://puckeditor.com) and Puck Cloud in a new or existing Next.js or React Router app. Built for coding agents, friendly for humans.
+Set up [Puck](https://puckeditor.com), and optionally Puck AI and Puck Cloud, in a new or existing Next.js or React Router app. Built for coding agents, friendly for humans.
 
 ## Usage
 
@@ -11,7 +11,7 @@ npx @puckeditor/cli init
 For coding agents:
 
 ```sh
-npx @puckeditor/cli init --yes --json
+npx @puckeditor/cli init --yes --json --ai     # or --no-ai for the editor only
 ```
 
 Other commands:

@@ -6,7 +6,7 @@ This page is for coding agents. For humans, start at [puckeditor.com/docs](https
 
 ## Set up Puck
 
-Use the CLI. It inspects the project, then makes the smallest set of changes needed to reach a working editor connected to Puck Cloud and Puck AI. It creates a new app if there isn't one.
+Use the CLI. It inspects the project, then makes the smallest set of changes needed to reach a working editor, optionally with Puck AI and Puck Cloud. It creates a new app if there isn't one.
 
 ```sh
 npx @puckeditor/cli status --json    # see what's already set up
@@ -20,7 +20,7 @@ With `--yes --json` the CLI never prompts, and prints exactly one JSON document 
 - `partial`: changes were applied, but some `actions` must be completed by hand.
 - `error`: see `error.code` and `error.message`.
 
-Pass `--no-cloud` to set up the editor only. The full contract, actions and exit codes are in the [CLI docs](https://puckeditor.com/docs/cli.md).
+Puck AI is optional and includes Puck Cloud. Unless you pass `--ai` or `--no-ai`, `init` returns a `choose_ai` action: ask the developer whether they want Puck AI, then run its `rerun` command with their choice. The full contract, actions and exit codes are in the [CLI docs](https://puckeditor.com/docs/cli.md).
 
 ## Read the docs
 

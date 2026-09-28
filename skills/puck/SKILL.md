@@ -24,6 +24,8 @@ Then run `init` (or the `nextSteps` command that `status` suggests):
 npx @puckeditor/cli init --yes --json
 ```
 
+Puck AI (which includes Puck Cloud) is optional. Unless the developer has already said whether they want it, let `init` return its `choose_ai` action and ask them, then rerun with `--ai` or `--no-ai`.
+
 The CLI prints exactly one JSON document. When `status` is `action_required`, nothing has changed yet: show each entry in `actions` to the developer (for example, a Puck Cloud login URL and code), wait for them, then run its `rerun` command. When `status` is `partial`, complete the remaining `actions`. Don't retry an `error` without reading `error.message`.
 
 ## Find the version
