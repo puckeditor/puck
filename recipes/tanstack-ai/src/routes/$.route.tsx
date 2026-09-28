@@ -8,8 +8,8 @@ import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 import config from "@/puck.config";
 import type { UserData } from "@/puck.config";
 import { PuckRender } from "@/components/puck-render";
-import "@puckeditor/core/puck.css";
-import "@puckeditor/plugin-ai/styles.css";
+import editorStyles from "@puckeditor/core/puck.css?url";
+import pluginStyles from "@puckeditor/plugin-ai/styles.css?url";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -17,11 +17,10 @@ export const Route = createFileRoute("/$")({
     const { isEditorRoute, path } = resolvePuckPath(pathname);
     let page = await getPageServerFn({ data: path });
 
-    if (!isEditorRoute && !page) {
-      throw notFound();
-    }
-    // Empty shell for new pages
-    if (isEditorRoute && !page) {
+    if (!page) {
+      if (!isEditorRoute) throw notFound();
+
+      // Empty shell for new pages
       page = {
         content: [],
         root: {
@@ -37,11 +36,17 @@ export const Route = createFileRoute("/$")({
       data: page,
     };
   },
-  head: ({ params, loaderData }) => ({
+  head: ({ loaderData }) => ({
+    links: loaderData?.isEditorRoute
+      ? [
+          { rel: "stylesheet", href: editorStyles },
+          { rel: "stylesheet", href: pluginStyles },
+        ]
+      : [],
     meta: [
       {
         title: loaderData?.isEditorRoute
-          ? "Puck: " + params._splat
+          ? "Edit: " + loaderData.path
           : loaderData?.data?.root?.props?.title ?? "",
       },
     ],

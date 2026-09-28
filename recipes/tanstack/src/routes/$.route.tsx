@@ -4,7 +4,7 @@ import { Puck, Render } from "@puckeditor/core";
 import { resolvePuckPath } from "@/lib";
 import { useServerFn } from "@tanstack/react-start";
 import config from "@/puck.config";
-import "@puckeditor/core/puck.css";
+import editorStyles from "@puckeditor/core/puck.css?url";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -12,11 +12,10 @@ export const Route = createFileRoute("/$")({
     const { isEditorRoute, path } = resolvePuckPath(pathname);
     let page = await getPageServerFn({ data: path });
 
-    if (!isEditorRoute && !page) {
-      throw notFound();
-    }
-    // Empty shell for new pages
-    if (isEditorRoute && !page) {
+    if (!page) {
+      if (!isEditorRoute) throw notFound();
+
+      // Empty shell for new pages
       page = {
         content: [],
         root: {
@@ -32,11 +31,14 @@ export const Route = createFileRoute("/$")({
       data: page,
     };
   },
-  head: ({ params, loaderData }) => ({
+  head: ({ loaderData }) => ({
+    links: loaderData?.isEditorRoute
+      ? [{ rel: "stylesheet", href: editorStyles }]
+      : [],
     meta: [
       {
         title: loaderData?.isEditorRoute
-          ? "Puck: " + params._splat
+          ? "Edit: " + loaderData.path
           : loaderData?.data?.root?.props?.title ?? "",
       },
     ],
