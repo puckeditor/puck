@@ -16,6 +16,8 @@ import config from "../../config";
 import { useDemoData } from "../../lib/use-demo-data";
 import { useEffect, useMemo, useState } from "react";
 import { Type } from "lucide-react";
+import { withSignIn } from "../../plugins/sign-in-plugin";
+import { DocsBarCta } from "../../components/docs-bar-cta";
 
 const aiPlugin = createAiPlugin({
   designMode: {
@@ -28,6 +30,18 @@ const blocksPluginInstance = blocksPlugin();
 const outlinePluginInstance = outlinePlugin();
 
 export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
+  const [authenticated, setAuthenticated] = useState(false);
+
+  const authedAiPlugin = useMemo(
+    () =>
+      withSignIn(aiPlugin, authenticated, () => {
+        // TODO: Replace with Puck oauth
+        alert("Signing in with cloud");
+        setAuthenticated(true);
+      }),
+    [authenticated]
+  );
+
   const metadata = {
     example: "Hello, world",
   };
@@ -73,7 +87,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
             blocksPluginInstance,
             outlinePluginInstance,
             headingAnalyzer,
-            aiPlugin,
+            authedAiPlugin,
           ]}
           headerPath={path}
           iframe={{
@@ -87,6 +101,12 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           }}
           _experimentalVirtualization
           overrides={{
+            header: ({ children }) => (
+              <>
+                <DocsBarCta />
+                {children}
+              </>
+            ),
             fieldTypes: {
               // Example of user field provided via overrides
               userField: ({ readOnly, field, name, value, onChange }) => (

@@ -1,0 +1,62 @@
+.SignInCta {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--puck-space-2);
+  padding: var(--puck-space-5);
+  background: var(--puck-color-surface);
+  text-align: center;
+}
+
+.SignInCta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--puck-space-3);
+  margin-bottom: var(--puck-space-1);
+  border-radius: var(--puck-radius-round);
+  background-color: var(--puck-color-interactive-soft);
+  color: var(--puck-color-interactive);
+}
+
+.SignInCta-title {
+  color: var(--puck-color-text);
+  font-size: var(--puck-font-size-s);
+}
+
+.SignInCta-description {
+  color: var(--puck-color-text-secondary);
+  font-size: var(--puck-font-size-xxs);
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.SignInCta-actions {
+  margin-top: var(--puck-space-2);
+}
+
+.SignInCta-action {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid var(--puck-color-interactive);
+  border-radius: var(--puck-radius-pill);
+  padding: var(--puck-space-2) 14px;
+  background: var(--puck-color-interactive);
+  color: var(--puck-button-primary-color-text, var(--puck-color-text-inverse));
+  font-family: inherit;
+  font-size: var(--puck-font-size-xxs);
+  font-weight: var(--puck-font-weight-semibold);
+}
+
+.SignInCta-action:hover {
+  background: var(--puck-color-interactive-hover);
+  border-color: var(--puck-color-interactive-hover);
+}
+
+.SignInCta-action:focus-visible {
+  outline: 2px solid var(--puck-color-focus-ring);
+  outline-offset: 2px;
+}

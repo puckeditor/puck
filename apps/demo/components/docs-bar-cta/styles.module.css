@@ -1,0 +1,30 @@
+.DemoBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--puck-space-2);
+  padding: var(--puck-space-2) var(--puck-space-4);
+  background: var(--puck-color-interactive-soft);
+  border-bottom: 1px solid var(--puck-color-border);
+  color: var(--puck-color-text-secondary);
+  font-size: var(--puck-font-size-xxs);
+}
+
+.DemoBar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--puck-color-interactive);
+  font-weight: var(--puck-font-weight-semibold);
+  text-decoration: none;
+}
+
+.DemoBar-link:hover {
+  color: var(--puck-color-interactive-hover);
+  text-decoration: underline;
+}
+
+.DemoBar-link:focus-visible {
+  outline: 2px solid var(--puck-color-focus-ring);
+  outline-offset: 2px;
+}

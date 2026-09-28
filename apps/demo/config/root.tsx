@@ -15,6 +15,9 @@ export const Root: RootConfig<{
       disallow: ["Button", "Card"],
     },
   },
+  fields: {
+    title: { type: "text" },
+  },
   defaultProps: {
     title: "My Page",
   },

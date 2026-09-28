@@ -79,20 +79,22 @@ export const Hero: PuckComponent<HeroProps> = ({
           </div>
         </div>
 
-        {align !== "center" && image?.mode === "inline" && image?.source?.src && (
-          <div
-            style={{
-              backgroundImage: `url('${image?.source?.src}')`,
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              borderRadius: 24,
-              height: 356,
-              marginLeft: "auto",
-              width: "100%",
-            }}
-          />
-        )}
+        {align !== "center" &&
+          image?.mode === "inline" &&
+          image?.source?.src && (
+            <div
+              style={{
+                backgroundImage: `url('${image?.source?.src}')`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                borderRadius: 24,
+                height: 356,
+                marginLeft: "auto",
+                width: "100%",
+              }}
+            />
+          )}
 
         {align !== "center" && image?.mode === "custom" && image.content && (
           <image.content
