@@ -21,6 +21,7 @@ import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
 import { planEnvWrite, planGitignore } from "../plan/env";
 import { scaffoldApp } from "../plan/bootstrap";
 import { formatCommand, installCommand } from "../plan/install";
+import { resolveBackend } from "../plan/backend";
 import { resolveCredential, CredentialResolution } from "../auth/credentials";
 import { applyPlan } from "../apply/applier";
 import {
@@ -62,7 +63,7 @@ const serializeSteps = (base: string, steps: PlanStep[]): SerializedStep[] =>
       out.packages = step.packages.map((p) => `${p.name}@${p.range}`);
       out.command = formatCommand(step.run);
     }
-    if (step.kind === "install_dependencies")
+    if (step.kind === "install_dependencies" || step.kind === "run_command")
       out.command = formatCommand(step.run);
     if (step.kind === "modify_file") out.edits = step.edits;
     if (step.kind === "scaffold_app") {
@@ -177,10 +178,6 @@ export const runMutation = async (
 
   for (const warning of ctx.warnings)
     planner.warn("PUCK-CLI-W-DETECTION", warning);
-  planCapabilities(planner, capabilities);
-  planner.finalize();
-
-  if (scaffoldStep) planner.steps.unshift(scaffoldStep);
 
   const summaries = () => {
     result.project = projectSummary(ctx, input.workspace ?? null);
@@ -202,6 +199,31 @@ export const runMutation = async (
     result.warnings = planner.warnings;
     return result;
   };
+
+  const adapter = adapterFor(ctx.framework!);
+  if (adapter.backend) {
+    const status = capabilityStatus(state);
+    const resolution = await resolveBackend(
+      rc,
+      adapter.backend(ctx.framework!),
+      capabilities,
+      {
+        editor: capabilities.includes("editor") && !status.editor.satisfied,
+        cloud: !status.cloud.satisfied,
+      }
+    );
+    if (resolution.kind === "action") {
+      return finishWithoutChanges("action_required", resolution.message, [
+        resolution.action,
+      ]);
+    }
+    planner.backend = resolution.backend;
+  }
+
+  planCapabilities(planner, capabilities);
+  planner.finalize();
+
+  if (scaffoldStep) planner.steps.unshift(scaffoldStep);
 
   const wantsCloud = capabilities.includes("cloud");
   const needsConsent =

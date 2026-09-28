@@ -57,6 +57,14 @@ const actionLines = (action: RequiredAction): string[] => {
         )
       );
       break;
+    case "choose_backend":
+      lines.push(
+        ...action.choices.map(
+          (c) =>
+            `    ${`${action.flag} ${c.value}`.padEnd(20)} ${pc.dim(c.label)}`
+        )
+      );
+      break;
     case "manual_edit":
       lines.push(`    ${action.instructions}`);
       if (action.snippet) lines.push(pc.dim(indent(action.snippet, "      ")));

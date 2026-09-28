@@ -6,9 +6,11 @@ import { toPosix } from "../detect/scan";
 /** `add` command for the target app, scoped to it when inside a workspace */
 export const addCommand = (
   ctx: ProjectContext,
-  specs: string[]
+  packages: string[],
+  { dev = false }: { dev?: boolean } = {}
 ): CommandSpec => {
   const pm = ctx.packageManager.name;
+  const specs = dev ? [pm === "bun" ? "-d" : "-D", ...packages] : packages;
   const ws = ctx.workspace && !ctx.workspace.isRoot ? ctx.workspace : null;
   const name = ctx.packageJson?.name;
 

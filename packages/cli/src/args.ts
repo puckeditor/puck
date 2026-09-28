@@ -23,7 +23,14 @@ export interface Flags {
   offline: boolean;
   ai: boolean;
   noAi: boolean;
+  backend?: BackendChoice;
+  backendUrl?: string;
 }
+
+/** Where a client-only app (Vite, static Astro) gets its server from */
+export type BackendChoice = "add" | "external" | "none";
+
+export const BACKEND_CHOICES: BackendChoice[] = ["add", "external", "none"];
 
 export interface ParsedArgs {
   command: CommandName | null;
@@ -49,6 +56,8 @@ const OPTIONS = {
   offline: { type: "boolean" },
   ai: { type: "boolean" },
   "no-ai": { type: "boolean" },
+  backend: { type: "string" },
+  "backend-url": { type: "string" },
 } as const;
 
 type OptionName = keyof typeof OPTIONS;
@@ -68,6 +77,8 @@ const MUTATING: OptionName[] = [
   "config",
   "package-manager",
   "wait",
+  "backend",
+  "backend-url",
 ];
 
 export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
@@ -147,6 +158,24 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     );
   }
 
+  const backend = values.backend as string | undefined;
+  if (
+    backend !== undefined &&
+    !BACKEND_CHOICES.includes(backend as BackendChoice)
+  ) {
+    throw new CliError(
+      "PUCK-CLI-INVALID-ARGS",
+      `--backend must be one of ${BACKEND_CHOICES.join(", ")}.`
+    );
+  }
+  const backendUrl = values["backend-url"] as string | undefined;
+  if (backendUrl !== undefined && !/^https?:\/\/[^/]/.test(backendUrl)) {
+    throw new CliError(
+      "PUCK-CLI-INVALID-ARGS",
+      "--backend-url must be an http(s) URL, e.g. http://localhost:3000."
+    );
+  }
+
   if (values.ai && values["no-ai"]) {
     throw new CliError(
       "PUCK-CLI-INVALID-ARGS",
@@ -175,6 +204,8 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       offline: Boolean(values.offline),
       ai: Boolean(values.ai),
       noAi: Boolean(values["no-ai"]),
+      backend: backend as BackendChoice | undefined,
+      backendUrl: backendUrl?.replace(/\/+$/, ""),
     },
   };
 };

@@ -1,6 +1,7 @@
 import type { CliErrorPayload } from "./errors";
 import type { PackageManagerName } from "./detect/package-manager";
 import type { FrameworkId } from "./detect/framework";
+import type { BackendChoice } from "./args";
 import type { DocEntry } from "./docs/source";
 
 export type CommandName =
@@ -63,6 +64,11 @@ export type RequiredAction = ActionBase &
     | {
         type: "choose_ai";
         choices: { value: "--ai" | "--no-ai"; label: string }[];
+      }
+    | {
+        type: "choose_backend";
+        flag: "--backend";
+        choices: { value: BackendChoice; label: string }[];
       }
     | { type: "confirm_plan"; flag: "--yes" }
     | {

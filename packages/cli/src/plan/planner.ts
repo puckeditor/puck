@@ -4,7 +4,15 @@ import type { ProjectContext } from "../detect/project";
 import type { ProjectState } from "../detect/state";
 import type { TemplateSource } from "../templates/source";
 import type { CapabilityId, RequiredAction, Warning } from "../result";
-import type { PlanStep } from "./types";
+import type { CommandSpec, PlanStep } from "./types";
+import type { BackendChoice } from "../args";
+
+/** "local" when the app already has its server (e.g. an Astro adapter) */
+export interface ResolvedBackend {
+  mode: BackendChoice | "local";
+  /** For "external": the server's origin */
+  url?: string;
+}
 import { toPosix } from "../detect/scan";
 import { addCommand, formatCommand, installCommand } from "./install";
 import { addDependencies } from "../templates/transform";
@@ -23,10 +31,16 @@ export class Planner {
   steps: PlanStep[] = [];
   actions: RequiredAction[] = [];
   warnings: Warning[] = [];
-  #dependencies: { name: string; range: string; capability: CapabilityId }[] =
-    [];
+  #dependencies: {
+    name: string;
+    range: string;
+    capability: CapabilityId;
+    dev?: boolean;
+  }[] = [];
   /** Set when the app itself is being scaffolded in this run */
   scaffolded = false;
+  /** Where a client-only app gets its server, once resolved */
+  backend?: ResolvedBackend;
   /** Puck Cloud API host for puckHandler, when not the default */
   cloudHost?: string;
 
@@ -123,10 +137,29 @@ export class Planner {
       this.warnings.push({ code, message });
   }
 
-  addDependency(name: string, range: string, capability: CapabilityId) {
+  addDependency(
+    name: string,
+    range: string,
+    capability: CapabilityId,
+    opts: { dev?: boolean } = {}
+  ) {
     if (!this.#dependencies.some((d) => d.name === name)) {
-      this.#dependencies.push({ name, range, capability });
+      this.#dependencies.push({ name, range, capability, dev: opts.dev });
     }
+  }
+
+  /** Runs a framework's own setup command, e.g. `astro add react` */
+  runCommand(
+    run: CommandSpec,
+    opts: { capability: CapabilityId; summary: string }
+  ) {
+    this.steps.push({
+      id: `${opts.capability}:run:${[run.command, ...run.args].join(" ")}`,
+      kind: "run_command",
+      capability: opts.capability,
+      summary: opts.summary,
+      run,
+    });
   }
 
   /** Turns collected dependencies into one install, or folds them into a scaffolded or edited package.json */
@@ -159,13 +192,18 @@ export class Planner {
       return;
     }
 
-    this.steps.unshift({
-      id: `install:${this.#dependencies.map((d) => d.name).join(",")}`,
-      kind: "install_package",
-      capability: this.#dependencies[0].capability,
-      summary: `Install ${specs.join(", ")}`,
-      packages: this.#dependencies.map(({ name, range }) => ({ name, range })),
-      run: addCommand(this.ctx, specs),
-    });
+    for (const dev of [true, false]) {
+      const deps = this.#dependencies.filter((d) => Boolean(d.dev) === dev);
+      if (deps.length === 0) continue;
+      const depSpecs = deps.map((d) => `${d.name}@${d.range}`);
+      this.steps.unshift({
+        id: `install:${deps.map((d) => d.name).join(",")}`,
+        kind: "install_package",
+        capability: deps[0].capability,
+        summary: `Install ${depSpecs.join(", ")}${dev ? " (dev)" : ""}`,
+        packages: deps.map(({ name, range }) => ({ name, range })),
+        run: addCommand(this.ctx, depSpecs, { dev }),
+      });
+    }
   }
 }

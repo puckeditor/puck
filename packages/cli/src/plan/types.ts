@@ -26,6 +26,8 @@ export type PlanStep =
       run: CommandSpec;
     })
   | (StepBase & { kind: "install_dependencies"; run: CommandSpec })
+  /** A framework's own setup command, run after installs and before writes */
+  | (StepBase & { kind: "run_command"; run: CommandSpec })
   | (StepBase & { kind: "create_file"; path: string })
   | (StepBase & {
       kind: "modify_file";

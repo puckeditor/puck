@@ -41,15 +41,21 @@ export const transformTsconfig = (text: string) => {
 
 export const addDependencies = (
   text: string,
-  packages: { name: string; range: string }[]
+  packages: { name: string; range: string; dev?: boolean }[]
 ) => {
   const pkg = JSON.parse(text);
-  pkg.dependencies = pkg.dependencies ?? {};
-  for (const { name, range } of packages) pkg.dependencies[name] = range;
-  pkg.dependencies = Object.fromEntries(
-    Object.entries(pkg.dependencies as Record<string, string>).sort(
-      ([a], [b]) => a.localeCompare(b)
-    )
-  );
+  for (const field of ["dependencies", "devDependencies"] as const) {
+    const add = packages.filter(
+      (p) => Boolean(p.dev) === (field !== "dependencies")
+    );
+    if (add.length === 0) continue;
+    pkg[field] = pkg[field] ?? {};
+    for (const { name, range } of add) pkg[field][name] = range;
+    pkg[field] = Object.fromEntries(
+      Object.entries(pkg[field] as Record<string, string>).sort(([a], [b]) =>
+        a.localeCompare(b)
+      )
+    );
+  }
   return JSON.stringify(pkg, null, 2) + "\n";
 };

@@ -49,6 +49,9 @@ Flags:
   --no-env-write          Don't write PUCK_API_KEY to .env.local
   --ai                    Also set up Puck AI and Puck Cloud (init)
   --no-ai                 Set up the editor only, without asking about Puck AI (init)
+  --backend <add|external|none>  Where a Vite or static Astro app gets its server:
+                          add one, use one elsewhere, or none (editor only)
+  --backend-url <url>     The server for --backend external, e.g. http://localhost:3000
   --wait                  Wait for Puck Cloud login approval instead of returning
   --framework <${FRAMEWORK_IDS.join("|")}>  Framework for new apps (init)
   --name <name>           Directory name for new apps (init)

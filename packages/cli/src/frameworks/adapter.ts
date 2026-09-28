@@ -3,6 +3,7 @@ import type { FrameworkInfo } from "../detect/framework";
 import type { SourceScan } from "../detect/scan";
 import type { Planner } from "../plan/planner";
 import type { RecipeName } from "../templates/source";
+import type { BackendOptions } from "../plan/backend";
 
 export interface CloudRouteDetection {
   /** Project-relative path the CLI creates the Puck Cloud route at */
@@ -41,6 +42,8 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
     root: string,
     scan: SourceScan
   ) => CloudRouteDetection;
+  /** For client-only apps, which need a server chosen by the developer */
+  backend?: (info: I) => BackendOptions;
   /** For servers, the pages API that stands in for the editor */
   detectPages?: (info: I, vfs: Vfs, root: string) => PagesDetection | null;
   planEditor: (p: Planner, info: I, withAi: boolean) => void;

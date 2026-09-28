@@ -95,6 +95,11 @@ export const applyPlan = async (
     packagesInstalled.push(...step.packages.map((p) => `${p.name}@${p.range}`));
   }
 
+  for (const step of steps) {
+    if (step.kind !== "run_command") continue;
+    await run(rc, step.run);
+  }
+
   const created: string[] = [];
   const modified: string[] = [];
   for (const write of pending) {
