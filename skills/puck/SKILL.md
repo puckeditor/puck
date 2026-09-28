@@ -2,7 +2,7 @@
 name: puck
 description: >-
   Set up, build with, and debug Puck, the visual editor for React (@puckeditor/core), and Puck Cloud and Puck AI.
-  Use for adding Puck to a Next.js, React Router, TanStack Start, vinext or Vite app (or a Hono or Express server for one), writing component configs, fields, slots, root config,
+  Use for adding Puck to a Next.js, React Router, TanStack Start, vinext, Vite or Astro app (or a Hono or Express server for one), writing component configs, fields, slots, root config,
   overrides, plugins, theming, data migrations, and questions about the Puck API.
 ---
 

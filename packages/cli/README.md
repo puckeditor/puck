@@ -1,6 +1,6 @@
 # @puckeditor/cli
 
-Set up [Puck](https://puckeditor.com), and optionally Puck AI and Puck Cloud, in a new or existing Next.js, React Router, TanStack Start, vinext or Vite app, or a Hono or Express server. Built for coding agents, friendly for humans.
+Set up [Puck](https://puckeditor.com), and optionally Puck AI and Puck Cloud, in a new or existing Next.js, React Router, TanStack Start, vinext, Vite or Astro app, or a Hono or Express server. Built for coding agents, friendly for humans.
 
 ## Usage
 
