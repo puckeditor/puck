@@ -1,78 +1,17 @@
-import type {
-  ArrayExpression,
-  File,
-  Node,
-  ObjectExpression,
-} from "@babel/types";
-import { tryParseModule, unwrapExpression, walk } from "./parse";
-import { applyEdits, indentationAt, lineOf } from "./splice";
+import type { ArrayExpression, Node, ObjectExpression } from "@babel/types";
+import { unwrapExpression, walk } from "./parse";
+import { applyEdits } from "./splice";
+import {
+  analyzeConfig,
+  appendAfterLast,
+  findProperty,
+  insertProperty,
+} from "./config-object";
 
 export type OptimizeDepsResult =
   | { status: "exists" }
   | { status: "inserted"; code: string; at: number; text: string }
   | { status: "manual"; detail: string };
-
-type Analysis =
-  | { ok: true; ast: File; config: ObjectExpression }
-  | { ok: false; detail: string };
-
-const keyName = (node: Node) => {
-  if (node.type !== "ObjectProperty" || node.computed) return null;
-  if (node.key.type === "Identifier") return node.key.name;
-  if (node.key.type === "StringLiteral") return node.key.value;
-  return null;
-};
-
-const findProperty = (obj: ObjectExpression, key: string) =>
-  obj.properties.find((p) => keyName(p) === key) as
-    | (Node & { type: "ObjectProperty" })
-    | undefined;
-
-const analyze = (code: string, filename: string): Analysis => {
-  const ast = tryParseModule(code, filename);
-  if (!ast) return { ok: false, detail: `Could not parse ${filename}` };
-
-  const exportDefault = ast.program.body.find(
-    (s) => s.type === "ExportDefaultDeclaration"
-  );
-  if (!exportDefault || exportDefault.type !== "ExportDefaultDeclaration") {
-    return { ok: false, detail: "No default export" };
-  }
-
-  let exported = unwrapExpression(exportDefault.declaration as Node);
-  // e.g. `const config = defineConfig({...}); export default config`
-  if (exported.type === "Identifier") {
-    const name = exported.name;
-    for (const statement of ast.program.body) {
-      if (
-        statement.type !== "VariableDeclaration" ||
-        statement.kind !== "const"
-      )
-        continue;
-      const declarator = statement.declarations.find(
-        (d) => d.id.type === "Identifier" && d.id.name === name
-      );
-      if (declarator?.init) exported = unwrapExpression(declarator.init);
-    }
-  }
-  if (
-    exported.type === "CallExpression" &&
-    exported.callee.type === "Identifier" &&
-    exported.callee.name === "defineConfig" &&
-    exported.arguments.length === 1
-  ) {
-    exported = unwrapExpression(exported.arguments[0] as Node);
-  }
-
-  if (exported.type !== "ObjectExpression") {
-    return {
-      ok: false,
-      detail: "The config is not an object literal (e.g. it's a function)",
-    };
-  }
-
-  return { ok: true, ast, config: exported };
-};
 
 type ListPath = [outer: string, inner: string];
 
@@ -105,7 +44,7 @@ const ensureConfigList = (
 ): OptimizeDepsResult => {
   const [outer, inner] = listPath;
   const name = `${outer}.${inner}`;
-  const analysis = analyze(code, filename);
+  const analysis = analyzeConfig(code, filename);
   if (!analysis.ok) return { status: "manual", detail: analysis.detail };
 
   const { ast, config } = analysis;
@@ -168,7 +107,7 @@ const ensureConfigList = (
     { start: edit.at, end: edit.at, text: edit.text },
   ]);
 
-  const verify = analyze(next, filename);
+  const verify = analyzeConfig(next, filename);
   const after = verify.ok ? readList(verify.config, listPath) : null;
   if (!Array.isArray(after) || !pkgs.every((pkg) => after.includes(pkg))) {
     return {
@@ -203,50 +142,6 @@ export const ensureSsrExternal = (
   filename: string,
   pkgs: string[]
 ) => ensureConfigList(code, filename, ["ssr", "external"], pkgs);
-
-/** Where and how a new last entry goes, matching the list's layout */
-const appendAfterLast = (
-  code: string,
-  node: { start?: number | null; end?: number | null },
-  items: Node[],
-  entry: (indent: string, singleLine: boolean) => string
-) => {
-  const singleLine = lineOf(code, node.start!) === lineOf(code, node.end!);
-
-  if (items.length === 0) {
-    const indent = `${indentationAt(code, node.start!)}  `;
-    return {
-      at: node.start! + 1,
-      text: singleLine
-        ? entry(indent, true)
-        : `\n${indent}${entry(indent, false)},`,
-    };
-  }
-
-  const last = items[items.length - 1];
-  const indent = indentationAt(code, last.start!);
-  const between = code.slice(last.end!, node.end! - 1);
-  const commaIndex = between.indexOf(",");
-  const hasTrailingComma =
-    commaIndex !== -1 && between.slice(0, commaIndex).trim() === "";
-
-  if (singleLine) {
-    return { at: last.end!, text: `, ${entry(indent, true)}` };
-  }
-  if (hasTrailingComma) {
-    return {
-      at: last.end! + commaIndex + 1,
-      text: `\n${indent}${entry(indent, false)},`,
-    };
-  }
-  return { at: last.end!, text: `,\n${indent}${entry(indent, false)}` };
-};
-
-const insertProperty = (
-  code: string,
-  obj: ObjectExpression,
-  property: (indent: string, singleLine: boolean) => string
-) => appendAfterLast(code, obj, obj.properties as Node[], property);
 
 const appendToArray = (
   code: string,
