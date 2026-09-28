@@ -1,6 +1,6 @@
 # Puck for agents
 
-Puck is a modular, open-source visual editor for React. Developers use it to build drag-and-drop page editors from their own React components. It's a React component (`<Puck>`), so it runs in any React app, including Next.js and React Router.
+Puck is a modular, open-source visual editor for React. Developers use it to build drag-and-drop page editors from their own React components. It's a React component (`<Puck>`), so it runs in any React app, including Next.js, React Router and vinext.
 
 This page is for coding agents. For humans, start at [puckeditor.com/docs](https://puckeditor.com/docs).
 

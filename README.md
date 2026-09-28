@@ -84,7 +84,7 @@ export function Page() {
 
 ## CLI
 
-Set up Puck and Puck Cloud in a new or existing Next.js or React Router app. Built for coding agents, friendly for humans:
+Set up Puck and Puck Cloud in a new or existing Next.js, React Router or vinext app. Built for coding agents, friendly for humans:
 
 ```sh
 npx @puckeditor/cli init
@@ -123,6 +123,7 @@ Available recipes include:
 
 - [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
 - [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
+- [**vinext**](https://github.com/puckeditor/puck/tree/main/recipes/vinext): [vinext](https://github.com/cloudflare/vinext) example, running the Next.js App Router on Vite
 
 ## Community
 
