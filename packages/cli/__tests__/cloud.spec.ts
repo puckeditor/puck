@@ -46,6 +46,23 @@ describe("add cloud", () => {
     expect(json.filesCreated).toEqual([".env.local", route]);
   });
 
+  it("matches the tanstack-start-ai recipe's cloud integration on the tanstack-start recipe", async () => {
+    const root = tmpProject({ recipe: "tanstack-start" });
+    const { json } = await run(
+      ["add", "cloud", "--yes", "--json", "--api-key", KEY],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    const route = "src/routes/api/puck/$.ts";
+    expect(normalizeModule(read(root, route), route)).toBe(
+      normalizeModule(readRecipe("tanstack-start-ai", route), route, {
+        dropProperties: ["ai"],
+      })
+    );
+    expect(json.cloud).toMatchObject({ configured: true });
+  });
+
   it("matches the react-router-ai recipe's cloud integration on the react-router recipe", async () => {
     const root = tmpProject({ recipe: "react-router" });
     const { json } = await run(
@@ -152,6 +169,7 @@ describe("PUCK_CLOUD_URL", () => {
   const routes = {
     next: "app/api/puck/[...all]/route.ts",
     "react-router": "app/routes/api.puck.ts",
+    "tanstack-start": "src/routes/api/puck/$.ts",
   } as const;
 
   it.each([
@@ -159,6 +177,8 @@ describe("PUCK_CLOUD_URL", () => {
     ["next", "ai"],
     ["react-router", "cloud"],
     ["react-router", "ai"],
+    ["tanstack-start", "cloud"],
+    ["tanstack-start", "ai"],
   ] as const)(
     "points the %s %s route at the configured host",
     async (recipe, capability) => {
@@ -182,7 +202,7 @@ describe("PUCK_CLOUD_URL", () => {
     }
   );
 
-  it.each(["next", "react-router"] as const)(
+  it.each(["next", "react-router", "tanstack-start"] as const)(
     "points the route of a scaffolded %s app at the configured host",
     async (framework) => {
       const root = tmpProject("empty");

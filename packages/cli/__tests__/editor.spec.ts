@@ -11,6 +11,7 @@ import {
   rrMinimal,
   viteSpa,
   vinextMinimal,
+  tanstackMinimal,
 } from "./helpers/fixtures";
 import { normalizeModule } from "./helpers/semantic";
 
@@ -43,6 +44,94 @@ const EDITOR_FILES = [
   "app/puck/page.tsx",
   "lib/get-page.ts",
 ];
+
+const TANSTACK_EDITOR_FILES = [
+  "src/routes/$.tsx",
+  "src/lib/pages.ts",
+  "src/lib/pages.server.ts",
+  "src/lib/resolve-puck-path.ts",
+  "src/components/puck-render.tsx",
+];
+
+describe("add editor (TanStack Start)", () => {
+  it("integrates into a tanstack create --blank project", async () => {
+    const root = tmpProject({ tree: tanstackMinimal() });
+    const indexBefore = read(root, "src/routes/index.tsx");
+
+    const { json, runner } = await run(["add", "editor", "--yes", "--json"], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.project).toMatchObject({
+      framework: "tanstack-start",
+      appDir: "src",
+    });
+    expect(runner.calls[0].args).toEqual([
+      "install",
+      "@puckeditor/core@^0.23.0",
+    ]);
+    for (const file of TANSTACK_EDITOR_FILES) {
+      expect({ file, content: read(root, file) }).toEqual({
+        file,
+        content: readRecipe("tanstack-start", file),
+      });
+    }
+    expect(read(root, "puck.config.tsx")).toBe(
+      readRecipe("tanstack-start", "puck.config.tsx")
+    );
+    expect(exists(root, "database.json")).toBe(true);
+    // The existing home page is kept
+    expect(read(root, "src/routes/index.tsx")).toBe(indexBefore);
+    expect(json.warnings.map((w) => w.code)).toContain(
+      "PUCK-CLI-W-HOME-NOT-MANAGED"
+    );
+    expect(json.puck).toMatchObject({ installed: true, configured: true });
+    expect(json.nextSteps).toContain("# then open http://localhost:3000/edit");
+    // Matches the scaffold's quote style
+    expect(read(root, "vite.config.ts")).toContain(
+      "  optimizeDeps: {\n    include: ['@puckeditor/core'],\n  },"
+    );
+    expectImportsResolve(root, TANSTACK_EDITOR_FILES);
+  });
+
+  it("follows a custom srcDirectory and fixes up imports", async () => {
+    const root = tmpProject({ tree: tanstackMinimal({ srcDirectory: "app" }) });
+    const { json } = await run(["add", "editor", "--yes", "--json"], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    const files = TANSTACK_EDITOR_FILES.map((f) => f.replace(/^src\//, "app/"));
+    for (const file of files) expect(exists(root, file)).toBe(true);
+    expect(exists(root, "src")).toBe(false);
+    expectImportsResolve(root, files);
+  });
+
+  it("adds the Cloud route with AI and leaves an existing splat route alone", async () => {
+    const tree = {
+      ...tanstackMinimal(),
+      "src/routes/$.tsx": "export const Route = null;\n",
+    };
+    const root = tmpProject({ tree });
+    const { json } = await run(
+      ["init", "--yes", "--json", "--ai", "--api-key", "sk-valid-key"],
+      { cwd: root }
+    );
+
+    expect(read(root, "src/routes/$.tsx")).toBe("export const Route = null;\n");
+    expect(json.actions).toContainEqual(
+      expect.objectContaining({
+        type: "manual_edit",
+        file: "src/routes/$.tsx",
+        reason: "conflict",
+      })
+    );
+    expect(read(root, "src/routes/api/puck/$.ts")).toBe(
+      readRecipe("tanstack-start-ai", "src/routes/api/puck/$.ts")
+    );
+  });
+});
 
 describe("add editor (vinext)", () => {
   it("integrates the Next.js App Router files into a vinext app", async () => {

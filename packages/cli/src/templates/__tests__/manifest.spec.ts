@@ -5,6 +5,12 @@ import {
   NEXT_EDITOR_MAPPED,
 } from "../../frameworks/next";
 import {
+  TANSTACK_START_AI_EDITOR_EXCLUDED,
+  TANSTACK_START_AI_EDITOR_MAPPED,
+  TANSTACK_START_EDITOR_EXCLUDED,
+  TANSTACK_START_EDITOR_MAPPED,
+} from "../../frameworks/tanstack-start";
+import {
   VINEXT_AI_EDITOR_EXCLUDED,
   VINEXT_AI_EDITOR_MAPPED,
   VINEXT_EDITOR_EXCLUDED,
@@ -28,6 +34,16 @@ describe("recipe coverage", () => {
       "react-router-ai",
       REACT_ROUTER_AI_EDITOR_MAPPED,
       REACT_ROUTER_AI_EDITOR_EXCLUDED,
+    ],
+    [
+      "tanstack-start",
+      TANSTACK_START_EDITOR_MAPPED,
+      TANSTACK_START_EDITOR_EXCLUDED,
+    ],
+    [
+      "tanstack-start-ai",
+      TANSTACK_START_AI_EDITOR_MAPPED,
+      TANSTACK_START_AI_EDITOR_EXCLUDED,
     ],
     ["vinext", VINEXT_EDITOR_MAPPED, VINEXT_EDITOR_EXCLUDED],
     ["vinext-ai", VINEXT_AI_EDITOR_MAPPED, VINEXT_AI_EDITOR_EXCLUDED],

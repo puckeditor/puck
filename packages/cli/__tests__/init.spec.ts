@@ -32,10 +32,11 @@ describe("init", () => {
       choices: [
         { value: "next" },
         { value: "react-router" },
+        { value: "tanstack-start" },
         { value: "vinext" },
       ],
       rerun: expect.stringContaining(
-        "--framework <next|react-router|vinext> --name <name> <--ai|--no-ai>"
+        "--framework <next|react-router|tanstack-start|vinext> --name <name> <--ai|--no-ai>"
       ),
     });
     expect(json.actions[2]).toMatchObject({
@@ -46,7 +47,7 @@ describe("init", () => {
     expect(cloud.networkCalls).toBe(0);
   });
 
-  it.each(["next", "react-router", "vinext"] as const)(
+  it.each(["next", "react-router", "tanstack-start", "vinext"] as const)(
     "bootstraps a %s app with Puck Cloud and Puck AI from the AI recipe",
     async (framework) => {
       const root = tmpProject("empty");
@@ -95,6 +96,8 @@ describe("init", () => {
           app,
           framework === "react-router"
             ? "app/routes/api.puck.ts"
+            : framework === "tanstack-start"
+            ? "src/routes/api/puck/$.ts"
             : "app/api/puck/[...all]/route.ts"
         )
       ).toBe(true);

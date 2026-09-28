@@ -47,6 +47,29 @@ describe("add ai", () => {
     }
   );
 
+  it("turns the tanstack-start recipe into the tanstack-start-ai recipe", async () => {
+    const root = tmpProject({ recipe: "tanstack-start" });
+    const { json } = await run(["add", "ai", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.ai).toEqual({ installed: true, configured: true });
+    for (const file of [
+      "puck.config.tsx",
+      "src/routes/$.tsx",
+      "src/routes/index.tsx",
+      "src/components/puck-render.tsx",
+      "src/routes/api/puck/$.ts",
+      "vite.config.ts",
+    ]) {
+      expect({ file, content: read(root, file) }).toEqual({
+        file,
+        content: readRecipe("tanstack-start-ai", file),
+      });
+    }
+  });
+
   it("turns the react-router recipe into the react-router-ai recipe", async () => {
     const root = tmpProject({ recipe: "react-router" });
     const { json } = await run(["add", "ai", "--yes", "--json", ...KEY], {

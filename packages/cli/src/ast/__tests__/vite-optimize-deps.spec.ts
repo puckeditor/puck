@@ -38,6 +38,19 @@ describe("ensureOptimizeDepsInclude", () => {
     ).toBe(readRecipe("react-router-ai", "vite.config.ts"));
   });
 
+  it("follows `export default config` in the tanstack create config", () => {
+    const blank = readRecipe("tanstack-start", "vite.config.ts").replace(
+      /  optimizeDeps: \{\n.*\n  \},\n/,
+      ""
+    );
+    expect(codeOf(ensure(blank))).toBe(
+      readRecipe("tanstack-start", "vite.config.ts")
+    );
+    expect(
+      codeOf(ensure(readRecipe("tanstack-start", "vite.config.ts"), [CORE, AI]))
+    ).toBe(readRecipe("tanstack-start-ai", "vite.config.ts"));
+  });
+
   it("is a no-op when every package is already included", () => {
     expect(
       ensure(readRecipe("react-router-ai", "vite.config.ts"), [CORE, AI]).status
@@ -104,7 +117,7 @@ export default defineConfig({
   it("asks for a manual edit when the config can't be edited safely", () => {
     for (const code of [
       `export default defineConfig(() => ({ plugins: [] }));\n`,
-      `const config = {};\nexport default config;\n`,
+      `let config = {};\nexport default config;\n`,
       `export default defineConfig({ ...base });\n`,
       `export default defineConfig({ optimizeDeps: shared });\n`,
       `export default defineConfig({ optimizeDeps: { include: deps } });\n`,
