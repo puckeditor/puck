@@ -170,6 +170,8 @@ describe("PUCK_CLOUD_URL", () => {
     next: "app/api/puck/[...all]/route.ts",
     "react-router": "app/routes/api.puck.ts",
     "tanstack-start": "src/routes/api/puck/$.ts",
+    hono: "src/puck/cloud.ts",
+    express: "src/puck/cloud.ts",
   } as const;
 
   it.each([
@@ -179,6 +181,8 @@ describe("PUCK_CLOUD_URL", () => {
     ["react-router", "ai"],
     ["tanstack-start", "cloud"],
     ["tanstack-start", "ai"],
+    ["hono", "cloud"],
+    ["express", "ai"],
   ] as const)(
     "points the %s %s route at the configured host",
     async (recipe, capability) => {
@@ -202,7 +206,7 @@ describe("PUCK_CLOUD_URL", () => {
     }
   );
 
-  it.each(["next", "react-router", "tanstack-start"] as const)(
+  it.each(["next", "react-router", "tanstack-start", "express"] as const)(
     "points the route of a scaffolded %s app at the configured host",
     async (framework) => {
       const root = tmpProject("empty");

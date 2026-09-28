@@ -327,3 +327,112 @@ function Home() {
 `,
   };
 };
+
+const HONO_NODE_ENTRY = `import { serve } from '@hono/node-server'
+import { Hono } from 'hono'
+
+const app = new Hono()
+
+app.get('/', (c) => {
+  return c.text('Hello Hono!')
+})
+
+serve({
+  fetch: app.fetch,
+  port: 3000
+}, (info) => {
+  console.log(\`Server is running on http://localhost:\${info.port}\`)
+})
+`;
+
+/** What `create-hono --template nodejs|bun|cloudflare-workers` produces */
+export const honoMinimal = (
+  runtime: "node" | "bun" | "workers" = "node"
+): Tree => ({
+  "package.json": pkg({
+    name: "hono-minimal",
+    type: "module",
+    scripts: {
+      dev:
+        runtime === "node"
+          ? "tsx watch src/index.ts"
+          : runtime === "bun"
+          ? "bun run --hot src/index.ts"
+          : "wrangler dev",
+    },
+    dependencies: {
+      ...(runtime === "node" ? { "@hono/node-server": "^2.1.1" } : {}),
+      hono: "^4.13.9",
+    },
+    devDependencies: {
+      ...(runtime === "workers" ? { wrangler: "^4.0.0" } : {}),
+      ...(runtime === "node" ? { tsx: "^4.23.0" } : {}),
+      typescript: "^5.9.3",
+    },
+  }),
+  "package-lock.json": "{}\n",
+  "tsconfig.json": `{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": ${runtime === "node" ? '"NodeNext"' : '"ESNext"'},
+    // Comments are allowed in tsconfig.json
+    "strict": true,
+  },
+}
+`,
+  ".gitignore": "node_modules/\n.env\n",
+  "src/index.ts":
+    runtime === "node"
+      ? HONO_NODE_ENTRY
+      : `import { Hono } from 'hono'
+
+const app = new Hono()
+
+app.get('/', (c) => c.text('Hello Hono!'))
+
+export default app
+`,
+});
+
+/** A TypeScript Express 5 server with a global JSON body parser */
+export const expressMinimal = (
+  overrides: { entry?: string | null } = {}
+): Tree => {
+  const entry =
+    overrides.entry === undefined ? "src/index.ts" : overrides.entry;
+  return {
+    "package.json": pkg({
+      name: "express-minimal",
+      type: "module",
+      scripts: { dev: "tsx watch src/index.ts", start: "node dist/index.js" },
+      dependencies: { express: "^5.2.1" },
+      devDependencies: {
+        "@types/express": "^5.0.3",
+        tsx: "^4.23.0",
+        typescript: "^5.9.3",
+      },
+    }),
+    "package-lock.json": "{}\n",
+    "tsconfig.json": pkg({
+      compilerOptions: { module: "NodeNext", moduleResolution: "NodeNext" },
+    }),
+    ".gitignore": "node_modules\n.env*\n",
+    ...(entry
+      ? {
+          [entry]: `import express from "express";
+
+const app = express();
+app.use(express.json());
+
+app.get("/", (_req, res) => {
+  res.send("Hello Express!");
+});
+
+app.listen(3000, () => {
+  console.log("Listening on http://localhost:3000");
+});
+`,
+        }
+      : {}),
+  };
+};
