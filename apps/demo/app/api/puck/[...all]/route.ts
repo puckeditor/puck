@@ -292,6 +292,19 @@ const handleRequest = (request: NextRequest) => {
         - Low numbers are dark, high numbers are light. Pair them for contrast,
         e.g. azure-04 text on azure-11, or text-inverse on azure-04.
         - Keep text at WCAG AA contrast against its background.
+
+        ### Font
+
+        The page font comes from the \`--puck-font-family\` css variable, which is
+        Inter by default. The built-in components use it too. To change the
+        font, set the variable on :root in the global stylesheet, for
+        example \`:root { --puck-font-family: "Font Name", sans-serif; }\`. If
+        it isn't a system font, load it at the top of the global
+        stylesheet. In component styles, use
+        \`font-family: var(--puck-font-family)\` or leave font-family unset so
+        text inherits it. Don't set font-family to a font name anywhere
+        else, so every component keeps the same font. For code, use
+        \`var(--puck-font-family-monospaced)\`.
   `,
       },
     },
