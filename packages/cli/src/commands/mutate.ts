@@ -25,6 +25,7 @@ import { resolveCredential, CredentialResolution } from "../auth/credentials";
 import { applyPlan } from "../apply/applier";
 import {
   aiSummary,
+  capabilityLabels,
   cloudSummary,
   displayPath,
   projectSummary,
@@ -33,12 +34,6 @@ import {
 import { baseDir } from "./target";
 import { rerunCommand } from "../context";
 import { ENV_KEY, MANUAL_INTEGRATION_DOCS_URL } from "../constants";
-
-const CAPABILITY_LABELS: Record<CapabilityId, string> = {
-  editor: "Puck Editor",
-  cloud: "Puck Cloud",
-  ai: "Puck AI",
-};
 
 export interface MutationInput {
   command: "init" | "add";
@@ -378,7 +373,7 @@ export const runMutation = async (
       }`
     : result.changed
     ? `Set up ${done
-        .map((c) => CAPABILITY_LABELS[c])
+        .map((c) => capabilityLabels(state.target === "server")[c])
         .join(", ")
         .replace(/, ([^,]*)$/, " and $1")}.`
     : "Already set up. Nothing changed.";

@@ -4,12 +4,20 @@ import type { CliErrorPayload } from "../errors";
 import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 import { findStringProperty } from "../ast/config-literal";
 import { majorOf, resolveInstalledVersion } from "./package-json";
+import type { ServerRuntime } from "./server";
+import {
+  detectRuntime,
+  findServerEntry,
+  relativeImportExtension,
+} from "./server";
 
 export const FRAMEWORK_IDS = [
   "next",
   "react-router",
   "tanstack-start",
   "vinext",
+  "hono",
+  "express",
 ] as const;
 
 export type FrameworkId = (typeof FRAMEWORK_IDS)[number];
@@ -19,11 +27,13 @@ export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   "react-router": "React Router",
   "tanstack-start": "TanStack Start",
   vinext: "vinext",
+  hono: "Hono",
+  express: "Express",
 };
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */
 export const SUPPORTED_FRAMEWORKS =
-  "Next.js (App Router), React Router 7 framework mode, TanStack Start and vinext";
+  "Next.js (App Router), React Router 7 framework mode, TanStack Start and vinext, or a Hono or Express server";
 
 export interface NextInfo {
   id: "next";
@@ -69,11 +79,28 @@ export interface TanStackStartInfo {
   viteConfig: string | null;
 }
 
+/** A server that serves Puck's APIs for an editor elsewhere */
+export interface ServerInfo<Id extends "hono" | "express"> {
+  id: Id;
+  version: string | null;
+  major: number | null;
+  /** Project-relative entry module that creates the app, if found */
+  entry: string | null;
+  /** ".js" when relative imports need an extension (module: nodenext) */
+  importExtension: "" | ".js";
+  runtime: ServerRuntime;
+}
+
+export type HonoInfo = ServerInfo<"hono">;
+export type ExpressInfo = ServerInfo<"express">;
+
 export type FrameworkInfo =
   | NextInfo
   | ReactRouterInfo
   | TanStackStartInfo
-  | VinextInfo;
+  | VinextInfo
+  | HonoInfo
+  | ExpressInfo;
 
 export type FrameworkDetection =
   | { status: "detected"; info: FrameworkInfo }
@@ -358,13 +385,42 @@ const detectTanStackStart = (
   };
 };
 
+const detectServer =
+  (id: "hono" | "express") =>
+  (
+    vfs: Vfs,
+    root: string,
+    range: string,
+    deps: Record<string, string>
+  ): FrameworkDetection => {
+    const version = resolveInstalledVersion(vfs, root, id);
+    return {
+      status: "detected",
+      info: {
+        id,
+        version,
+        major: majorOf(version) ?? majorOf(range),
+        entry: findServerEntry(vfs, root),
+        importExtension: relativeImportExtension(vfs, root),
+        runtime: detectRuntime(vfs, root, deps),
+      },
+    };
+  };
+
 interface Detector {
   id: FrameworkId;
   /** The package whose presence marks the framework */
   dep: string;
   /** Frameworks this one runs on top of or replaces, e.g. vinext over next */
   supersedes?: FrameworkId[];
-  detect: (vfs: Vfs, root: string, range: string) => FrameworkDetection;
+  /** Only used when no other framework is found, e.g. a server next to a React app */
+  fallback?: boolean;
+  detect: (
+    vfs: Vfs,
+    root: string,
+    range: string,
+    deps: Record<string, string>
+  ) => FrameworkDetection;
 }
 
 const DETECTORS: Detector[] = [
@@ -377,6 +433,13 @@ const DETECTORS: Detector[] = [
   },
   // Projects migrating to vinext usually keep next installed
   { id: "vinext", dep: "vinext", supersedes: ["next"], detect: detectVinext },
+  { id: "hono", dep: "hono", fallback: true, detect: detectServer("hono") },
+  {
+    id: "express",
+    dep: "express",
+    fallback: true,
+    detect: detectServer("express"),
+  },
 ];
 
 export const detectFramework = (
@@ -386,7 +449,10 @@ export const detectFramework = (
 ): FrameworkDetection => {
   const present = DETECTORS.filter((d) => d.dep in deps);
   const superseded = present.flatMap((d) => d.supersedes ?? []);
-  const matches = present.filter((d) => !superseded.includes(d.id));
+  const primary = present.filter((d) => !d.fallback);
+  const matches = (primary.length ? primary : present).filter(
+    (d) => !superseded.includes(d.id)
+  );
 
   if (matches.length > 1) {
     const [a, b] = matches.map((d) => FRAMEWORK_LABELS[d.id]);
@@ -401,7 +467,7 @@ export const detectFramework = (
 
   if (matches.length === 1) {
     const [match] = matches;
-    return match.detect(vfs, root, deps[match.dep]);
+    return match.detect(vfs, root, deps[match.dep], deps);
   }
 
   const remix = Object.keys(deps).find((d) => d.startsWith("@remix-run/"));

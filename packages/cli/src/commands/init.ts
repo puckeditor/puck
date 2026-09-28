@@ -5,7 +5,12 @@ import type { FrameworkId } from "../detect/framework";
 import { Vfs } from "../io/vfs";
 import { CliError } from "../errors";
 import { emptyResult } from "../result";
-import { FRAMEWORK_IDS, FRAMEWORK_LABELS } from "../detect/framework";
+import {
+  detectFramework,
+  FRAMEWORK_IDS,
+  FRAMEWORK_LABELS,
+} from "../detect/framework";
+import { ADAPTERS } from "../frameworks";
 import { isEmptyDir } from "../detect/project";
 import { appsDirFor } from "../detect/workspace";
 import { APP_NAME, sanitizeAppName } from "../plan/bootstrap";
@@ -17,7 +22,13 @@ import { depsOf, readPackageJson } from "../detect/package-json";
 import { CLOUD_CLIENT_PACKAGE, PLUGIN_AI_PACKAGE } from "../constants";
 
 const FRAMEWORK_CHOICES: { value: FrameworkId; label: string }[] =
-  FRAMEWORK_IDS.map((value) => ({ value, label: FRAMEWORK_LABELS[value] }));
+  FRAMEWORK_IDS.map((value) => ({
+    value,
+    label:
+      ADAPTERS[value].kind === "server"
+        ? `${FRAMEWORK_LABELS[value]} server (Puck APIs for an editor elsewhere)`
+        : FRAMEWORK_LABELS[value],
+  }));
 
 const validateName = (name: string) => {
   if (!APP_NAME.test(name) || name.includes("..")) {
@@ -35,14 +46,17 @@ const validateName = (name: string) => {
  */
 const chooseCapabilities = async (
   rc: RunContext,
-  alreadySetUp: boolean
+  alreadySetUp: boolean,
+  server: boolean
 ): Promise<CapabilityId[] | null> => {
   if (rc.flags.ai) return ["editor", "ai"];
   if (rc.flags.noAi) return ["editor"];
   if (alreadySetUp) return ["editor", "ai"];
   if (!rc.interactive) return null;
   const withAi = await rc.prompter.confirm(
-    "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
+    server
+      ? "Serve Puck AI from this server? (sets up Puck Cloud, requires a Puck Cloud account)"
+      : "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
     false
   );
   return withAi ? ["editor", "ai"] : ["editor"];
@@ -50,16 +64,22 @@ const chooseCapabilities = async (
 
 const AI_CHOICE_FLAGS = "<--ai|--no-ai>";
 
-const aiChoiceAction = (): RequiredAction => ({
+const aiChoiceAction = (server = false): RequiredAction => ({
   id: "init:ai",
   type: "choose_ai",
   required: true,
-  message:
-    "Choose whether to add Puck AI. It includes Puck Cloud and requires a Puck Cloud account.",
-  choices: [
-    { value: "--ai", label: "Add Puck AI and Puck Cloud" },
-    { value: "--no-ai", label: "Editor only" },
-  ],
+  message: server
+    ? "Choose whether this server should serve Puck AI for your editor. It sets up Puck Cloud and requires a Puck Cloud account."
+    : "Choose whether to add Puck AI. It includes Puck Cloud and requires a Puck Cloud account.",
+  choices: server
+    ? [
+        { value: "--ai", label: "Pages API, Puck Cloud and Puck AI" },
+        { value: "--no-ai", label: "Pages API only" },
+      ]
+    : [
+        { value: "--ai", label: "Add Puck AI and Puck Cloud" },
+        { value: "--no-ai", label: "Editor only" },
+      ],
 });
 
 export const runInit = async (rc: RunContext): Promise<CommandResult> => {
@@ -100,12 +120,17 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
     if (vfs.exists(path.join(target.root, "package.json"))) {
       const read = readPackageJson(vfs, target.root);
       const deps = depsOf(read.status === "ok" ? read.pkg : null);
+      const detection = detectFramework(vfs, target.root, deps);
+      const server =
+        detection.status === "detected" &&
+        ADAPTERS[detection.info.id].kind === "server";
       const requested = await chooseCapabilities(
         rc,
-        CLOUD_CLIENT_PACKAGE in deps && PLUGIN_AI_PACKAGE in deps
+        CLOUD_CLIENT_PACKAGE in deps && (server || PLUGIN_AI_PACKAGE in deps),
+        server
       );
       if (!requested) {
-        const action = aiChoiceAction();
+        const action = aiChoiceAction(server);
         action.rerun = `${rerunCommand(rc)} ${AI_CHOICE_FLAGS}`;
         const result = emptyResult("init", rc.flags.dryRun);
         result.status = "action_required";
@@ -213,7 +238,11 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
   return runMutation(rc, {
     command: "init",
     // Non-null: a missing choice was returned as an action above
-    requested: (await chooseCapabilities(rc, false))!,
+    requested: (await chooseCapabilities(
+      rc,
+      false,
+      ADAPTERS[framework!].kind === "server"
+    ))!,
     root: dir,
     bootstrap: {
       framework: framework!,

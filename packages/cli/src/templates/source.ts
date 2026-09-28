@@ -12,7 +12,11 @@ export type RecipeName =
   | "tanstack-start"
   | "tanstack-start-ai"
   | "vinext"
-  | "vinext-ai";
+  | "vinext-ai"
+  | "hono"
+  | "hono-ai"
+  | "express"
+  | "express-ai";
 
 export interface TemplateManifest {
   cloudClientRange: string;

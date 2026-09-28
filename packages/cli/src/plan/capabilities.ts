@@ -60,6 +60,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
     }
 
     if (id === "ai") {
+      if (adapter.kind === "server") continue;
       if (!p.state.ai.installed) {
         p.addDependency(
           PLUGIN_AI_PACKAGE,

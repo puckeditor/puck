@@ -7,7 +7,11 @@
     "tanstack-start",
     "tanstack-start-ai",
     "vinext",
-    "vinext-ai"
+    "vinext-ai",
+    "hono",
+    "hono-ai",
+    "express",
+    "express-ai"
   ],
   "exclude": [
     "node_modules/**",

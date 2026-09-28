@@ -4,6 +4,7 @@ import type { ProjectState } from "../detect/state";
 import { adapterFor } from "../frameworks";
 import type {
   AiSummary,
+  CapabilityId,
   CloudSummary,
   ProjectSummary,
   PuckSummary,
@@ -16,6 +17,15 @@ export const displayPath = (base: string, abs: string) => {
   const rel = toPosix(path.relative(base, abs));
   return rel === "" ? "." : rel;
 };
+
+/** Servers expose a pages API in place of the editor */
+export const capabilityLabels = (
+  server: boolean
+): Record<CapabilityId, string> => ({
+  editor: server ? "Puck pages API" : "Puck Editor",
+  cloud: "Puck Cloud",
+  ai: "Puck AI",
+});
 
 export const projectSummary = (
   ctx: ProjectContext,

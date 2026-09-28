@@ -56,6 +56,21 @@ export const Route = createFileRoute("/api/puck/$")({
 `;
 
 /**
+ * An AI recipe's Cloud route without the Puck AI options, for recipes whose
+ * route has more than the handler (e.g. Express's request conversion)
+ */
+export const withoutAiOptions = (route: string) =>
+  route
+    .replace(
+      /^\/\/ Handles all requests for Puck AI\n\/\/ Learn more: .*\n/,
+      "// Handles requests from Puck to Puck Cloud\n// Learn more: https://puckeditor.com/docs/cli\n"
+    )
+    .replace(
+      /const options: PuckCloudOptions = \{\n[\s\S]*?\n\};/,
+      "const options: PuckCloudOptions = {};"
+    );
+
+/**
  * Points puckHandler at a non-default Puck Cloud, e.g. when PUCK_CLOUD_URL
  * is set for a local or staging cloud.
  */

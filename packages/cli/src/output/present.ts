@@ -3,6 +3,8 @@ import type { CommandResult, RequiredAction } from "../result";
 import type { OutputStream } from "../deps";
 import type { SecretRegistry } from "../secret";
 import { FRAMEWORK_LABELS } from "../detect/framework";
+import { ADAPTERS } from "../frameworks";
+import { capabilityLabels } from "./summary";
 
 export const presentJson = (
   out: OutputStream,
@@ -87,8 +89,11 @@ const statusTable = (result: CommandResult) => {
     rows.push(["Package manager", p.packageManager]);
   }
   if (result.puck) {
+    const server =
+      result.project?.framework &&
+      ADAPTERS[result.project.framework].kind === "server";
     rows.push([
-      "Puck Editor",
+      capabilityLabels(Boolean(server)).editor,
       result.puck.configured
         ? pc.green("configured")
         : result.puck.installed

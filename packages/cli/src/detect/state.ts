@@ -13,6 +13,7 @@ import { scanSources, SourceScan, toPosix } from "./scan";
 import { tryParseModule } from "../ast/parse";
 import { ExportShape, getExportShape } from "../ast/exports";
 import { adapterFor } from "../frameworks";
+import type { PagesDetection } from "../frameworks/adapter";
 import { findApiKey, KeyLocation } from "../env/files";
 import { isIgnored } from "../env/gitignore";
 
@@ -21,6 +22,10 @@ export const CONFIG_CANDIDATES = ["tsx", "ts", "jsx", "js"].map(
 );
 
 export interface ProjectState {
+  /** "server" when the project only serves Puck's APIs, e.g. Hono or Express */
+  target: "app" | "server";
+  /** The pages API a server exposes in place of an editor */
+  pages: PagesDetection | null;
   scan: SourceScan;
   puck: {
     installed: boolean;
@@ -88,6 +93,7 @@ export const detectState = (
     configExports = ast ? getExportShape(ast) : null;
   }
 
+  const adapter = ctx.framework ? adapterFor(ctx.framework) : null;
   const route = ctx.framework
     ? adapterFor(ctx.framework).detectCloudRoute(
         ctx.framework,
@@ -102,6 +108,11 @@ export const detectState = (
   const gitignoreRoot = ctx.gitRoot ?? ctx.workspace?.root ?? ctx.root;
 
   return {
+    target: adapter?.kind === "server" ? "server" : "app",
+    pages:
+      ctx.framework && adapter?.detectPages
+        ? adapter.detectPages(ctx.framework, vfs, ctx.root)
+        : null,
     scan,
     puck: {
       installed: CORE_PACKAGE in ctx.deps,
@@ -134,10 +145,16 @@ export const capabilityStatus = (
   state: ProjectState
 ): Record<CapabilityId, { satisfied: boolean; missing: string[] }> => {
   const editorMissing: string[] = [];
-  if (!state.puck.installed)
-    editorMissing.push(`${CORE_PACKAGE} is not installed`);
-  if (state.scan.editorFiles.length === 0)
-    editorMissing.push("No Puck editor found");
+  if (state.target === "server") {
+    if (!state.pages) editorMissing.push("No Puck pages API found");
+    else if (!state.pages.mounted)
+      editorMissing.push(`${state.pages.file} isn't mounted on the app`);
+  } else {
+    if (!state.puck.installed)
+      editorMissing.push(`${CORE_PACKAGE} is not installed`);
+    if (state.scan.editorFiles.length === 0)
+      editorMissing.push("No Puck editor found");
+  }
 
   const cloudMissing: string[] = [];
   if (!state.cloud.clientInstalled)
@@ -145,14 +162,22 @@ export const capabilityStatus = (
   if (!state.cloud.routeFile)
     cloudMissing.push("No Puck Cloud API route found");
   if (state.cloud.routeRegistered === false)
-    cloudMissing.push("The Puck Cloud API route isn't registered in routes.ts");
+    cloudMissing.push(
+      state.target === "server"
+        ? "The Puck Cloud API route isn't mounted on the app"
+        : "The Puck Cloud API route isn't registered in routes.ts"
+    );
   if (!state.cloud.apiKey.present) cloudMissing.push("PUCK_API_KEY is not set");
 
-  const aiMissing: string[] = [];
-  if (!state.ai.installed)
-    aiMissing.push(`${PLUGIN_AI_PACKAGE} is not installed`);
-  if (state.scan.aiPluginFiles.length === 0)
-    aiMissing.push("The Puck AI plugin isn't added to the editor");
+  // A server only enables AI in its Cloud route; the plugin is in the editor
+  const aiMissing: string[] =
+    state.target === "server" ? [...cloudMissing] : [];
+  if (state.target === "app") {
+    if (!state.ai.installed)
+      aiMissing.push(`${PLUGIN_AI_PACKAGE} is not installed`);
+    if (state.scan.aiPluginFiles.length === 0)
+      aiMissing.push("The Puck AI plugin isn't added to the editor");
+  }
 
   return {
     editor: { satisfied: editorMissing.length === 0, missing: editorMissing },

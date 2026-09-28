@@ -11,6 +11,12 @@ import {
   TANSTACK_START_EDITOR_MAPPED,
 } from "../../frameworks/tanstack-start";
 import {
+  SERVER_AI_EXCLUDED,
+  SERVER_AI_MAPPED,
+  SERVER_EXCLUDED,
+  SERVER_MAPPED,
+} from "../../frameworks/server";
+import {
   VINEXT_AI_EDITOR_EXCLUDED,
   VINEXT_AI_EDITOR_MAPPED,
   VINEXT_EDITOR_EXCLUDED,
@@ -46,6 +52,10 @@ describe("recipe coverage", () => {
       TANSTACK_START_AI_EDITOR_EXCLUDED,
     ],
     ["vinext", VINEXT_EDITOR_MAPPED, VINEXT_EDITOR_EXCLUDED],
+    ["hono", SERVER_MAPPED, SERVER_EXCLUDED],
+    ["hono-ai", SERVER_AI_MAPPED, SERVER_AI_EXCLUDED],
+    ["express", SERVER_MAPPED, SERVER_EXCLUDED],
+    ["express-ai", SERVER_AI_MAPPED, SERVER_AI_EXCLUDED],
     ["vinext-ai", VINEXT_AI_EDITOR_MAPPED, VINEXT_AI_EDITOR_EXCLUDED],
   ] as const)(
     "every %s recipe file is mapped or excluded",

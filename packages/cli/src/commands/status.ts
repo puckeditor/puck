@@ -5,6 +5,7 @@ import { emptyResult } from "../result";
 import { detectProject } from "../detect/project";
 import { capabilityStatus, detectState } from "../detect/state";
 import {
+  capabilityLabels,
   aiSummary,
   cloudSummary,
   displayPath,
@@ -86,18 +87,18 @@ export const runStatus = async (rc: RunContext): Promise<CommandResult> => {
     target.root === rc.deps.cwd
       ? ""
       : ` --cwd ${displayPath(rc.deps.cwd, target.root)}`;
+  const label = capabilityLabels(state.target === "server");
   if (!status.editor.satisfied) {
     result.message = "Puck isn't set up yet.";
     result.nextSteps = [`${CANONICAL_INVOCATION} init${where}`];
   } else if (!status.cloud.satisfied) {
-    result.message = "Puck Editor is set up. Puck Cloud isn't connected.";
+    result.message = `${label.editor} is set up. Puck Cloud isn't connected.`;
     result.nextSteps = [`${CANONICAL_INVOCATION} add ai${where}`];
   } else if (!status.ai.satisfied) {
-    result.message =
-      "Puck Editor and Puck Cloud are set up. Puck AI isn't added to the editor.";
+    result.message = `${label.editor} and Puck Cloud are set up. Puck AI isn't added to the editor.`;
     result.nextSteps = [`${CANONICAL_INVOCATION} add ai${where}`];
   } else {
-    result.message = "Puck Editor, Puck Cloud and Puck AI are set up.";
+    result.message = `${label.editor}, Puck Cloud and Puck AI are set up.`;
     result.nextSteps = [`${CANONICAL_INVOCATION} doctor${where}`];
   }
 

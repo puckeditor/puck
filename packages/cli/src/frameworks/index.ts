@@ -4,6 +4,7 @@ import { nextAdapter } from "./next";
 import { vinextAdapter } from "./vinext";
 import { reactRouterAdapter } from "./react-router";
 import { tanstackStartAdapter } from "./tanstack-start";
+import { expressAdapter, honoAdapter } from "./server";
 
 export const ADAPTERS: {
   [K in FrameworkId]: FrameworkAdapter<Extract<FrameworkInfo, { id: K }>>;
@@ -12,6 +13,8 @@ export const ADAPTERS: {
   "react-router": reactRouterAdapter,
   "tanstack-start": tanstackStartAdapter,
   vinext: vinextAdapter,
+  hono: honoAdapter,
+  express: expressAdapter,
 };
 
 export const adapterFor = <I extends FrameworkInfo>(info: I) =>

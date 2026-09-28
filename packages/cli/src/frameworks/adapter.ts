@@ -12,8 +12,20 @@ export interface CloudRouteDetection {
   routeRegistered: boolean | "n/a";
 }
 
+export interface PagesDetection {
+  /** Project-relative module serving the pages API */
+  file: string;
+  mounted: boolean;
+}
+
 /** Everything the CLI does differently per framework */
 export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
+  /**
+   * "server" frameworks serve Puck's APIs for an editor that lives elsewhere:
+   * the editor capability is the pages API, and Puck AI only configures the
+   * Cloud route
+   */
+  kind?: "server";
   recipe: (withAi: boolean) => RecipeName;
   /** Recipe-relative path of the Puck Cloud route, pointed at PUCK_CLOUD_URL when scaffolding */
   recipeCloudRoute: string;
@@ -29,6 +41,8 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
     root: string,
     scan: SourceScan
   ) => CloudRouteDetection;
+  /** For servers, the pages API that stands in for the editor */
+  detectPages?: (info: I, vfs: Vfs, root: string) => PagesDetection | null;
   planEditor: (p: Planner, info: I, withAi: boolean) => void;
   planCloudRoute: (p: Planner, info: I, withAi: boolean) => void;
   /** Adds Puck AI to an editor that was set up before */

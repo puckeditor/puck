@@ -198,69 +198,84 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
   const status = capabilityStatus(state);
   const pm = ctx.packageManager.name;
 
-  findings.push(
-    state.puck.installed
-      ? finding(
-          "puck.core_installed",
-          "ok",
-          `@puckeditor/core ${state.puck.declaredRange}`
-        )
-      : finding(
-          "puck.core_installed",
-          "fail",
-          "@puckeditor/core is not a dependency",
-          `${CANONICAL_INVOCATION} add editor${where}`
-        )
-  );
-  if (state.puck.installed && !state.puck.resolvedVersion) {
+  if (state.target === "server") {
     findings.push(
-      finding(
-        "puck.core_resolvable",
-        "warn",
-        "@puckeditor/core isn't installed in node_modules",
-        `${pm} install`
-      )
+      state.pages?.mounted
+        ? finding("puck.pages_api", "ok", state.pages.file)
+        : finding(
+            "puck.pages_api",
+            "fail",
+            state.pages
+              ? `${state.pages.file} isn't mounted on the app`
+              : "No Puck pages API found",
+            `${CANONICAL_INVOCATION} add editor${where}`
+          )
     );
-  }
-  if (state.puck.legacy) {
+  } else {
     findings.push(
-      finding(
-        "puck.legacy_package",
-        "warn",
-        "@measured/puck is installed. It was renamed to @puckeditor/core.",
-        "https://puckeditor.com/docs/guides/migrations"
-      )
+      state.puck.installed
+        ? finding(
+            "puck.core_installed",
+            "ok",
+            `@puckeditor/core ${state.puck.declaredRange}`
+          )
+        : finding(
+            "puck.core_installed",
+            "fail",
+            "@puckeditor/core is not a dependency",
+            `${CANONICAL_INVOCATION} add editor${where}`
+          )
     );
-  }
-  findings.push(
-    state.puck.configFile
-      ? finding("puck.config", "ok", state.puck.configFile)
-      : finding(
-          "puck.config",
+    if (state.puck.installed && !state.puck.resolvedVersion) {
+      findings.push(
+        finding(
+          "puck.core_resolvable",
           "warn",
-          "No puck.config file found",
-          `${CANONICAL_INVOCATION} add editor${where}`
+          "@puckeditor/core isn't installed in node_modules",
+          `${pm} install`
         )
-  );
-  findings.push(
-    state.scan.editorFiles.length
-      ? finding("puck.editor", "ok", state.scan.editorFiles.join(", "))
-      : finding(
-          "puck.editor",
-          "fail",
-          "No <Puck> editor found",
-          `${CANONICAL_INVOCATION} add editor${where}`
+      );
+    }
+    if (state.puck.legacy) {
+      findings.push(
+        finding(
+          "puck.legacy_package",
+          "warn",
+          "@measured/puck is installed. It was renamed to @puckeditor/core.",
+          "https://puckeditor.com/docs/guides/migrations"
         )
-  );
-  if (state.scan.editorFiles.length && !state.scan.cssImported) {
+      );
+    }
     findings.push(
-      finding(
-        "puck.css_import",
-        "warn",
-        "@puckeditor/core/puck.css is never imported",
-        'Import "@puckeditor/core/puck.css" in your editor page'
-      )
+      state.puck.configFile
+        ? finding("puck.config", "ok", state.puck.configFile)
+        : finding(
+            "puck.config",
+            "warn",
+            "No puck.config file found",
+            `${CANONICAL_INVOCATION} add editor${where}`
+          )
     );
+    findings.push(
+      state.scan.editorFiles.length
+        ? finding("puck.editor", "ok", state.scan.editorFiles.join(", "))
+        : finding(
+            "puck.editor",
+            "fail",
+            "No <Puck> editor found",
+            `${CANONICAL_INVOCATION} add editor${where}`
+          )
+    );
+    if (state.scan.editorFiles.length && !state.scan.cssImported) {
+      findings.push(
+        finding(
+          "puck.css_import",
+          "warn",
+          "@puckeditor/core/puck.css is never imported",
+          'Import "@puckeditor/core/puck.css" in your editor page'
+        )
+      );
+    }
   }
 
   findings.push(
@@ -293,12 +308,16 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
         ? finding(
             "cloud.route_registered",
             "ok",
-            'route("api/puck/*") is registered'
+            state.target === "server"
+              ? "The Puck Cloud route is mounted on the app"
+              : 'route("api/puck/*") is registered'
           )
         : finding(
             "cloud.route_registered",
             "fail",
-            "The Puck Cloud route isn't registered in routes.ts",
+            state.target === "server"
+              ? "The Puck Cloud route isn't mounted on the app"
+              : "The Puck Cloud route isn't registered in routes.ts",
             `${CANONICAL_INVOCATION} add cloud${where}`
           )
     );
@@ -337,7 +356,11 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
     );
   }
 
-  if (state.cloud.clientInstalled || state.ai.installed) {
+  // A server's AI plugin lives in the editor app
+  if (
+    state.target === "app" &&
+    (state.cloud.clientInstalled || state.ai.installed)
+  ) {
     findings.push(
       state.ai.installed
         ? finding(
