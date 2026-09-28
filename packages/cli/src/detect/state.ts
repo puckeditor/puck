@@ -12,19 +12,13 @@ import { resolveInstalledVersion } from "./package-json";
 import { scanSources, SourceScan, toPosix } from "./scan";
 import { tryParseModule } from "../ast/parse";
 import { ExportShape, getExportShape } from "../ast/exports";
-import { hasRoute } from "../ast/react-router-routes";
+import { adapterFor } from "../frameworks";
 import { findApiKey, KeyLocation } from "../env/files";
 import { isIgnored } from "../env/gitignore";
 
 export const CONFIG_CANDIDATES = ["tsx", "ts", "jsx", "js"].map(
   (ext) => `puck.config.${ext}`
 );
-
-export const CLOUD_ROUTE = {
-  next: (appDir: string) => `${appDir}/api/puck/[...all]/route.ts`,
-  reactRouter: (appDir: string) => `${appDir}/routes/api.puck.ts`,
-  reactRouterEntry: { path: "api/puck/*", file: "routes/api.puck.ts" },
-};
 
 export interface ProjectState {
   scan: SourceScan;
@@ -60,8 +54,9 @@ const findConfig = (vfs: Vfs, ctx: ProjectContext, configFlag?: string) => {
     return vfs.exists(abs) ? toPosix(path.relative(ctx.root, abs)) : null;
   }
 
-  const dirs = ["", "src"];
-  if (ctx.framework?.id === "react-router") dirs.push(ctx.framework.appDir);
+  const dirs = ctx.framework
+    ? adapterFor(ctx.framework).configDirs(ctx.framework)
+    : ["", "src"];
 
   for (const dir of dirs) {
     for (const candidate of CONFIG_CANDIDATES) {
@@ -73,8 +68,8 @@ const findConfig = (vfs: Vfs, ctx: ProjectContext, configFlag?: string) => {
 };
 
 export const envDirFor = (ctx: ProjectContext) =>
-  ctx.framework?.id === "react-router"
-    ? path.join(ctx.root, ctx.framework.envDir)
+  ctx.framework
+    ? path.join(ctx.root, adapterFor(ctx.framework).envDir(ctx.framework))
     : ctx.root;
 
 export const detectState = (
@@ -93,39 +88,14 @@ export const detectState = (
     configExports = ast ? getExportShape(ast) : null;
   }
 
-  let routeFile: string | null = null;
-  let expectedRouteFile: string | null = null;
-  let routeRegistered: boolean | "n/a" = "n/a";
-
-  const fw = ctx.framework;
-  if (fw?.id === "next") {
-    expectedRouteFile = CLOUD_ROUTE.next(fw.appDir);
-    const inAppDir = scan.cloudHandlerFiles.filter((f) =>
-      f.startsWith(`${fw.appDir}/`)
-    );
-    routeFile = inAppDir.includes(expectedRouteFile)
-      ? expectedRouteFile
-      : inAppDir[0] ?? null;
-  } else if (fw?.id === "react-router") {
-    expectedRouteFile = CLOUD_ROUTE.reactRouter(fw.appDir);
-    const inAppDir = scan.cloudHandlerFiles.filter((f) =>
-      f.startsWith(`${fw.appDir}/`)
-    );
-    routeFile = inAppDir.includes(expectedRouteFile)
-      ? expectedRouteFile
-      : inAppDir[0] ?? null;
-    routeRegistered = false;
-    if (fw.routesFile) {
-      const code = vfs.readText(path.join(ctx.root, fw.routesFile)) ?? "";
-      const registeredFile = routeFile
-        ? path.posix.relative(fw.appDir, routeFile)
-        : CLOUD_ROUTE.reactRouterEntry.file;
-      routeRegistered = hasRoute(code, fw.routesFile, {
-        path: CLOUD_ROUTE.reactRouterEntry.path,
-        file: registeredFile,
-      });
-    }
-  }
+  const route = ctx.framework
+    ? adapterFor(ctx.framework).detectCloudRoute(
+        ctx.framework,
+        vfs,
+        ctx.root,
+        scan
+      )
+    : null;
 
   const envDir = envDirFor(ctx);
   const apiKey = findApiKey(vfs, envDir, env);
@@ -144,9 +114,9 @@ export const detectState = (
     cloud: {
       clientInstalled: CLOUD_CLIENT_PACKAGE in ctx.deps,
       declaredRange: ctx.deps[CLOUD_CLIENT_PACKAGE] ?? null,
-      routeFile,
-      expectedRouteFile,
-      routeRegistered,
+      routeFile: route?.routeFile ?? null,
+      expectedRouteFile: route?.expectedRouteFile ?? null,
+      routeRegistered: route?.routeRegistered ?? "n/a",
       envDir,
       apiKey,
       envGitignored: apiKey.file

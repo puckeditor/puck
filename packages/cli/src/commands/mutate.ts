@@ -9,13 +9,13 @@ import type {
 } from "../result";
 import type { FrameworkId } from "../detect/framework";
 import type { PlanStep } from "../plan/types";
-import type { RecipeName } from "../templates/source";
 import { Vfs } from "../io/vfs";
 import { CliError } from "../errors";
 import { emptyResult } from "../result";
 import { detectProject, ProjectContext } from "../detect/project";
 import { capabilityStatus, detectState } from "../detect/state";
 import { FRAMEWORK_LABELS } from "../detect/framework";
+import { ADAPTERS, adapterFor } from "../frameworks";
 import { Planner } from "../plan/planner";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
 import { planEnvWrite, planGitignore } from "../plan/env";
@@ -141,9 +141,9 @@ export const runMutation = async (
   let scaffoldStep: PlanStep | null = null;
   if (bootstrap) {
     // With Puck Cloud, start from the AI recipe: the known-good editor + Cloud + AI setup
-    const recipe: RecipeName = input.requested.includes("ai")
-      ? `${bootstrap.framework}-ai`
-      : bootstrap.framework;
+    const recipe = ADAPTERS[bootstrap.framework].recipe(
+      input.requested.includes("ai")
+    );
     const { files } = scaffoldApp(vfs, deps.templates, {
       recipe,
       dir: bootstrap.dir,
@@ -390,11 +390,7 @@ export const runMutation = async (
   result.nextSteps = [
     ...(input.notes ?? []).map((n) => `# ${n}`),
     `${cdPrefix}${devCommand}`,
-    `# then open ${
-      verifiedCtx.framework?.id === "react-router"
-        ? "http://localhost:5173/edit"
-        : "http://localhost:3000/edit"
-    }`,
+    `# then open ${adapterFor(verifiedCtx.framework ?? ctx.framework!).devUrl}`,
   ];
 
   if (wantsCloud && !capabilities.includes("ai") && !status.ai.satisfied) {

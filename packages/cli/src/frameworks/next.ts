@@ -4,7 +4,8 @@ import { parseModule } from "../ast/parse";
 import { applyEdits } from "../ast/splice";
 import { templateText } from "../templates/source";
 import { NEXT_CLOUD_ROUTE, withCloudHost } from "../templates/cloud";
-import { CLOUD_ROUTE } from "../detect/state";
+import type { FrameworkAdapter } from "./adapter";
+import { findCloudRoute } from "./adapter";
 import {
   configModuleTarget,
   configRelocation,
@@ -16,6 +17,9 @@ import {
   upgradeTemplateFile,
 } from "./shared";
 import { AI_SNIPPET, RENDER_AI_SNIPPET } from "./ai";
+
+export const NEXT_CLOUD_ROUTE_FILE = (appDir: string) =>
+  `${appDir}/api/puck/[...all]/route.ts`;
 
 const PROXY_FILES = ["proxy", "middleware"].flatMap((name) =>
   ["ts", "js", "mjs", "tsx", "jsx"].map((ext) => `${name}.${ext}`)
@@ -234,7 +238,7 @@ export const planNextCloudRoute = (
   info: NextInfo,
   withAi = false
 ) => {
-  const rel = CLOUD_ROUTE.next(info.appDir);
+  const rel = NEXT_CLOUD_ROUTE_FILE(info.appDir);
   const cloudRoute = withCloudHost(NEXT_CLOUD_ROUTE, p.cloudHost);
   const route = withAi
     ? withCloudHost(
@@ -354,4 +358,25 @@ export const planNextAi = (p: Planner, info: NextInfo) => {
       snippet: RENDER_AI_SNIPPET,
     });
   }
+};
+
+export const nextAdapter: FrameworkAdapter<NextInfo> = {
+  recipe: (withAi) => (withAi ? "next-ai" : "next"),
+  recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
+  configDirs: () => ["", "src"],
+  envDir: () => "",
+  detectCloudRoute: (info, _vfs, _root, scan) => {
+    const expectedRouteFile = NEXT_CLOUD_ROUTE_FILE(info.appDir);
+    return {
+      expectedRouteFile,
+      routeFile: findCloudRoute(scan, info.appDir, expectedRouteFile),
+      routeRegistered: "n/a",
+    };
+  },
+  planEditor: planNextEditor,
+  planCloudRoute: planNextCloudRoute,
+  planAi: planNextAi,
+  devUrl: "http://localhost:3000/edit",
+  deployEnvWarning:
+    "Set PUCK_API_KEY in your hosting provider's environment variables before deploying.",
 };

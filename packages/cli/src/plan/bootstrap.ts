@@ -6,9 +6,11 @@ import {
   transformTsconfig,
 } from "../templates/transform";
 import { withCloudHost } from "../templates/cloud";
-import { CLOUD_ROUTE } from "../detect/state";
+import { ADAPTERS } from "../frameworks";
 
-const CLOUD_ROUTES = [CLOUD_ROUTE.next("app"), CLOUD_ROUTE.reactRouter("app")];
+const CLOUD_ROUTES: string[] = Object.values(ADAPTERS).map(
+  (a) => a.recipeCloudRoute
+);
 
 export const APP_NAME = /^[a-z0-9][a-z0-9._-]*$/;
 

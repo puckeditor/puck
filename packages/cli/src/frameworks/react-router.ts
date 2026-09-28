@@ -2,10 +2,11 @@ import path from "node:path";
 import type { ReactRouterInfo } from "../detect/framework";
 import type { Planner } from "../plan/planner";
 import type { CapabilityId } from "../result";
-import { insertRoute, RouteEntry } from "../ast/react-router-routes";
+import { hasRoute, insertRoute, RouteEntry } from "../ast/react-router-routes";
 import { ensureOptimizeDepsInclude } from "../ast/vite-optimize-deps";
 import { REACT_ROUTER_CLOUD_ROUTE, withCloudHost } from "../templates/cloud";
-import { CLOUD_ROUTE } from "../detect/state";
+import type { FrameworkAdapter } from "./adapter";
+import { findCloudRoute } from "./adapter";
 import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 import { templateText } from "../templates/source";
 import { parseModule } from "../ast/parse";
@@ -20,6 +21,11 @@ import {
   upgradeTemplateFile,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
+
+export const REACT_ROUTER_CLOUD_ROUTE_FILE = (appDir: string) =>
+  `${appDir}/routes/api.puck.ts`;
+
+const CLOUD_ROUTE_ENTRY = { path: "api/puck/*", file: "routes/api.puck.ts" };
 
 export const REACT_ROUTER_EDITOR_EXCLUDED = [
   ".gitignore",
@@ -247,7 +253,7 @@ export const planReactRouterCloudRoute = (
   info: ReactRouterInfo,
   withAi = false
 ) => {
-  const entry = CLOUD_ROUTE.reactRouterEntry;
+  const entry = CLOUD_ROUTE_ENTRY;
   const cloudRoute = withCloudHost(REACT_ROUTER_CLOUD_ROUTE, p.cloudHost);
   const route = withAi
     ? withCloudHost(
@@ -271,7 +277,7 @@ export const planReactRouterCloudRoute = (
       );
     }
   } else {
-    routeFile = CLOUD_ROUTE.reactRouter(info.appDir);
+    routeFile = REACT_ROUTER_CLOUD_ROUTE_FILE(info.appDir);
     const outcome = p.createFile(routeFile, route, {
       capability: "cloud",
       summary: `Create ${routeFile} (Puck Cloud API route)`,
@@ -379,4 +385,32 @@ export const planReactRouterAi = (p: Planner, info: ReactRouterInfo) => {
     instructions: `Add the Puck AI plugin to the <Puck> editor in ${file}, load "@puckeditor/plugin-ai/styles.css?url" as a stylesheet, and wrap the config with withDynamicConfig wherever you <Render> Puck pages.`,
     snippet: AI_SNIPPET,
   });
+};
+
+export const reactRouterAdapter: FrameworkAdapter<ReactRouterInfo> = {
+  recipe: (withAi) => (withAi ? "react-router-ai" : "react-router"),
+  recipeCloudRoute: REACT_ROUTER_CLOUD_ROUTE_FILE("app"),
+  configDirs: (info) => ["", "src", info.appDir],
+  envDir: (info) => info.envDir,
+  detectCloudRoute: (info, vfs, root, scan) => {
+    const expectedRouteFile = REACT_ROUTER_CLOUD_ROUTE_FILE(info.appDir);
+    const routeFile = findCloudRoute(scan, info.appDir, expectedRouteFile);
+    let routeRegistered = false;
+    if (info.routesFile) {
+      const code = vfs.readText(path.join(root, info.routesFile)) ?? "";
+      routeRegistered = hasRoute(code, info.routesFile, {
+        path: CLOUD_ROUTE_ENTRY.path,
+        file: routeFile
+          ? path.posix.relative(info.appDir, routeFile)
+          : CLOUD_ROUTE_ENTRY.file,
+      });
+    }
+    return { expectedRouteFile, routeFile, routeRegistered };
+  },
+  planEditor: planReactRouterEditor,
+  planCloudRoute: planReactRouterCloudRoute,
+  planAi: planReactRouterAi,
+  devUrl: "http://localhost:5173/edit",
+  deployEnvWarning:
+    "react-router-serve doesn't load .env files. Set PUCK_API_KEY in the environment wherever the app runs in production.",
 };

@@ -1,16 +1,7 @@
 import type { CapabilityId } from "../result";
 import type { Planner } from "./planner";
 import { capabilityStatus } from "../detect/state";
-import {
-  planNextAi,
-  planNextCloudRoute,
-  planNextEditor,
-} from "../frameworks/next";
-import {
-  planReactRouterAi,
-  planReactRouterCloudRoute,
-  planReactRouterEditor,
-} from "../frameworks/react-router";
+import { adapterFor } from "../frameworks";
 import { CLOUD_CLIENT_PACKAGE, PLUGIN_AI_PACKAGE } from "../constants";
 
 export const CAPABILITY_IDS: CapabilityId[] = ["editor", "cloud", "ai"];
@@ -38,6 +29,7 @@ export const resolveCapabilities = (
 
 export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
   const framework = p.ctx.framework!;
+  const adapter = adapterFor(framework);
   const status = capabilityStatus(p.state);
   const withAi = capabilities.includes("ai");
   // When the editor is created in this run, it's created with AI already
@@ -47,8 +39,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
     if (id === "editor") {
       if (status.editor.satisfied) continue;
       editorPlanned = true;
-      if (framework.id === "next") planNextEditor(p, framework, withAi);
-      else planReactRouterEditor(p, framework, withAi);
+      adapter.planEditor(p, framework, withAi);
     }
 
     if (id === "cloud") {
@@ -59,15 +50,9 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
           "cloud"
         );
       }
-      if (framework.id === "next") planNextCloudRoute(p, framework, withAi);
-      else planReactRouterCloudRoute(p, framework, withAi);
+      adapter.planCloudRoute(p, framework, withAi);
 
-      p.warn(
-        "PUCK-CLI-W-DEPLOY-ENV",
-        framework.id === "react-router"
-          ? "react-router-serve doesn't load .env files. Set PUCK_API_KEY in the environment wherever the app runs in production."
-          : "Set PUCK_API_KEY in your hosting provider's environment variables before deploying."
-      );
+      p.warn("PUCK-CLI-W-DEPLOY-ENV", adapter.deployEnvWarning);
       p.warn(
         "PUCK-CLI-W-PUBLIC-ROUTE",
         "The /api/puck route forwards requests to Puck Cloud using your API key. Add authentication before deploying."
@@ -83,8 +68,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
         );
       }
       if (editorPlanned || p.state.scan.aiPluginFiles.length > 0) continue;
-      if (framework.id === "next") planNextAi(p, framework);
-      else planReactRouterAi(p, framework);
+      adapter.planAi(p, framework);
     }
   }
 };
