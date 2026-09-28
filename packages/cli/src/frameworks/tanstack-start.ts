@@ -71,13 +71,13 @@ const tanstackRelocation = (
   info: TanStackStartInfo
 ): RelocateContext => {
   const to = locate(info);
-  const module = (id: string) => to(`${id}.ts`).replace(/\.ts$/, "");
+  const moduleId = (id: string) => to(`${id}.ts`).replace(/\.ts$/, "");
   return {
     moduleMap: {
-      "src/lib/pages": module("src/lib/pages"),
-      "src/lib/pages.server": module("src/lib/pages.server"),
-      "src/lib/resolve-puck-path": module("src/lib/resolve-puck-path"),
-      "src/components/puck-render": module("src/components/puck-render"),
+      "src/lib/pages": moduleId("src/lib/pages"),
+      "src/lib/pages.server": moduleId("src/lib/pages.server"),
+      "src/lib/resolve-puck-path": moduleId("src/lib/resolve-puck-path"),
+      "src/components/puck-render": moduleId("src/components/puck-render"),
       "puck.config": configModuleTarget(p),
     },
     config: configRelocation(p),
