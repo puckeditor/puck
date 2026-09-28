@@ -5,14 +5,19 @@ import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 import { findStringProperty } from "../ast/config-literal";
 import { majorOf, resolveInstalledVersion } from "./package-json";
 
-export const FRAMEWORK_IDS = ["next", "react-router"] as const;
+export const FRAMEWORK_IDS = ["next", "react-router", "vinext"] as const;
 
 export type FrameworkId = (typeof FRAMEWORK_IDS)[number];
 
 export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   next: "Next.js",
   "react-router": "React Router",
+  vinext: "vinext",
 };
+
+/** For error messages, kept in sync with FRAMEWORK_IDS */
+export const SUPPORTED_FRAMEWORKS =
+  "Next.js (App Router), React Router 7 framework mode and vinext";
 
 export interface NextInfo {
   id: "next";
@@ -37,7 +42,15 @@ export interface ReactRouterInfo {
   viteConfig: string | null;
 }
 
-export type FrameworkInfo = NextInfo | ReactRouterInfo;
+/** vinext runs the Next.js App Router API on Vite, so it shares Next's layout */
+export interface VinextInfo extends Omit<NextInfo, "id"> {
+  id: "vinext";
+  viteConfig: string | null;
+}
+
+export type NextLikeInfo = NextInfo | VinextInfo;
+
+export type FrameworkInfo = NextInfo | ReactRouterInfo | VinextInfo;
 
 export type FrameworkDetection =
   | { status: "detected"; info: FrameworkInfo }
@@ -49,15 +62,11 @@ const firstExisting = (vfs: Vfs, root: string, candidates: string[]) =>
 
 const CONFIG_EXTENSIONS = ["ts", "mts", "js", "mjs", "cts", "cjs"];
 
-const detectNext = (
+const detectAppRouter = (
   vfs: Vfs,
   root: string,
-  range: string
-): FrameworkDetection => {
-  const version = resolveInstalledVersion(vfs, root, "next");
-  // Unknown ranges like "latest" or "canary" are treated as the newest major
-  const major = majorOf(version) ?? majorOf(range) ?? 16;
-
+  label: string
+): Pick<NextInfo, "appDir" | "baseDir"> | FrameworkDetection => {
   const hasApp = vfs.isDir(path.join(root, "app"));
   const hasSrcApp = vfs.isDir(path.join(root, "src", "app"));
 
@@ -70,12 +79,29 @@ const detectNext = (
       error: {
         code: "PUCK-CLI-UNSUPPORTED-ROUTER",
         message: hasPages
-          ? "This Next.js project uses the Pages Router. The CLI can only integrate Puck with the App Router."
-          : "No app/ directory found. The CLI can only integrate Puck with the Next.js App Router.",
+          ? `This ${label} project uses the Pages Router. The CLI can only integrate Puck with the App Router.`
+          : `No app/ directory found. The CLI can only integrate Puck with the ${label} App Router.`,
         details: { docs: MANUAL_INTEGRATION_DOCS_URL },
       },
     };
   }
+
+  // Next.js resolves app/ before src/app/
+  const appDir = hasApp ? "app" : "src/app";
+  return { appDir, baseDir: appDir === "app" ? "" : "src" };
+};
+
+const detectNext = (
+  vfs: Vfs,
+  root: string,
+  range: string
+): FrameworkDetection => {
+  const version = resolveInstalledVersion(vfs, root, "next");
+  // Unknown ranges like "latest" or "canary" are treated as the newest major
+  const major = majorOf(version) ?? majorOf(range) ?? 16;
+
+  const layout = detectAppRouter(vfs, root, "Next.js");
+  if ("status" in layout) return layout;
 
   if (major < 15) {
     return {
@@ -93,18 +119,46 @@ const detectNext = (
     };
   }
 
-  // Next.js resolves app/ before src/app/
-  const appDir = hasApp ? "app" : "src/app";
-
   return {
     status: "detected",
     info: {
       id: "next",
       version,
       major,
-      appDir,
-      baseDir: appDir === "app" ? "" : "src",
+      ...layout,
       proxyKind: major >= 16 ? "proxy" : "middleware",
+    },
+  };
+};
+
+const detectVinext = (
+  vfs: Vfs,
+  root: string,
+  range: string
+): FrameworkDetection => {
+  const version = resolveInstalledVersion(vfs, root, "vinext");
+  const layout = detectAppRouter(vfs, root, "vinext");
+  if ("status" in layout) return layout;
+
+  // vinext supports both; keep an existing middleware file's convention
+  const base = layout.baseDir ? `${layout.baseDir}/` : "";
+  const hasMiddleware = ["ts", "js", "mjs", "tsx", "jsx"].some((ext) =>
+    vfs.exists(path.join(root, `${base}middleware.${ext}`))
+  );
+
+  return {
+    status: "detected",
+    info: {
+      id: "vinext",
+      version,
+      major: majorOf(version) ?? majorOf(range),
+      ...layout,
+      proxyKind: hasMiddleware ? "middleware" : "proxy",
+      viteConfig: firstExisting(
+        vfs,
+        root,
+        CONFIG_EXTENSIONS.map((ext) => `vite.config.${ext}`)
+      ),
     },
   };
 };
@@ -227,12 +281,16 @@ interface Detector {
   id: FrameworkId;
   /** The package whose presence marks the framework */
   dep: string;
+  /** Frameworks this one runs on top of or replaces, e.g. vinext over next */
+  supersedes?: FrameworkId[];
   detect: (vfs: Vfs, root: string, range: string) => FrameworkDetection;
 }
 
 const DETECTORS: Detector[] = [
   { id: "next", dep: "next", detect: detectNext },
   { id: "react-router", dep: "@react-router/dev", detect: detectReactRouter },
+  // Projects migrating to vinext usually keep next installed
+  { id: "vinext", dep: "vinext", supersedes: ["next"], detect: detectVinext },
 ];
 
 export const detectFramework = (
@@ -240,7 +298,9 @@ export const detectFramework = (
   root: string,
   deps: Record<string, string>
 ): FrameworkDetection => {
-  const matches = DETECTORS.filter((d) => d.dep in deps);
+  const present = DETECTORS.filter((d) => d.dep in deps);
+  const superseded = present.flatMap((d) => d.supersedes ?? []);
+  const matches = present.filter((d) => !superseded.includes(d.id));
 
   if (matches.length > 1) {
     const [a, b] = matches.map((d) => FRAMEWORK_LABELS[d.id]);
@@ -276,8 +336,7 @@ export const detectFramework = (
       status: "unsupported",
       error: {
         code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK",
-        message:
-          "React Router is used as a library (no @react-router/dev). The CLI supports React Router 7 framework mode and Next.js.",
+        message: `React Router is used as a library (no @react-router/dev). The CLI supports ${SUPPORTED_FRAMEWORKS}.`,
         details: { docs: MANUAL_INTEGRATION_DOCS_URL },
       },
     };
@@ -288,8 +347,7 @@ export const detectFramework = (
       status: "unsupported",
       error: {
         code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK",
-        message:
-          "Found a React project without a supported framework. The CLI supports Next.js (App Router) and React Router 7 framework mode.",
+        message: `Found a React project without a supported framework. The CLI supports ${SUPPORTED_FRAMEWORKS}.`,
         details: { docs: MANUAL_INTEGRATION_DOCS_URL },
       },
     };

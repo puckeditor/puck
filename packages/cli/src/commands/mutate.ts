@@ -14,7 +14,7 @@ import { CliError } from "../errors";
 import { emptyResult } from "../result";
 import { detectProject, ProjectContext } from "../detect/project";
 import { capabilityStatus, detectState } from "../detect/state";
-import { FRAMEWORK_LABELS } from "../detect/framework";
+import { FRAMEWORK_LABELS, SUPPORTED_FRAMEWORKS } from "../detect/framework";
 import { ADAPTERS, adapterFor } from "../frameworks";
 import { Planner } from "../plan/planner";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
@@ -103,7 +103,7 @@ const assertSupported = (rc: RunContext, ctx: ProjectContext) => {
   if (!ctx.framework) {
     throw new CliError(
       "PUCK-CLI-UNSUPPORTED-FRAMEWORK",
-      "No React framework found. The CLI supports Next.js (App Router) and React Router 7 framework mode.",
+      `No React framework found. The CLI supports ${SUPPORTED_FRAMEWORKS}.`,
       { docs: MANUAL_INTEGRATION_DOCS_URL }
     );
   }

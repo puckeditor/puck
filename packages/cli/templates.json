@@ -3,13 +3,16 @@
     "next",
     "next-ai",
     "react-router",
-    "react-router-ai"
+    "react-router-ai",
+    "vinext",
+    "vinext-ai"
   ],
   "exclude": [
     "node_modules/**",
     ".next/**",
     ".react-router/**",
     "build/**",
+    "dist/**",
     ".turbo/**",
     "next-env.d.ts",
     "*.tsbuildinfo",

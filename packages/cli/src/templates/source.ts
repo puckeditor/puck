@@ -8,7 +8,9 @@ export type RecipeName =
   | "next"
   | "next-ai"
   | "react-router"
-  | "react-router-ai";
+  | "react-router-ai"
+  | "vinext"
+  | "vinext-ai";
 
 export interface TemplateManifest {
   cloudClientRange: string;

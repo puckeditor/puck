@@ -1,4 +1,4 @@
-import type { NextInfo } from "../detect/framework";
+import type { NextLikeInfo } from "../detect/framework";
 import type { Planner } from "../plan/planner";
 import { parseModule } from "../ast/parse";
 import { applyEdits } from "../ast/splice";
@@ -84,7 +84,7 @@ export const NEXT_AI_EDITOR_MAPPED = [
 const NEXT_AI_ROUTE = "app/api/puck/[...all]/route.ts";
 
 /** Recipe module ids → project module ids for a Next.js app */
-const nextRelocation = (p: Planner, info: NextInfo): RelocateContext => {
+const nextRelocation = (p: Planner, info: NextLikeInfo): RelocateContext => {
   const A = info.appDir;
   const lib = `${info.baseDir ? `${info.baseDir}/` : ""}lib`;
   return {
@@ -117,7 +117,7 @@ const conflictingSegments = (p: Planner, appDir: string) => {
   return found;
 };
 
-const proxySource = (p: Planner, info: NextInfo) => {
+const proxySource = (p: Planner, info: NextLikeInfo) => {
   const code = templateText(p.templates, "next", "proxy.ts");
   if (info.proxyKind === "proxy") return code;
 
@@ -137,7 +137,11 @@ const proxySource = (p: Planner, info: NextInfo) => {
   return code;
 };
 
-export const planNextEditor = (p: Planner, info: NextInfo, withAi = false) => {
+export const planNextEditor = (
+  p: Planner,
+  info: NextLikeInfo,
+  withAi = false
+) => {
   const A = info.appDir;
   const base = info.baseDir ? `${info.baseDir}/` : "";
   const lib = `${base}lib`;
@@ -235,7 +239,7 @@ export const planNextEditor = (p: Planner, info: NextInfo, withAi = false) => {
 
 export const planNextCloudRoute = (
   p: Planner,
-  info: NextInfo,
+  info: NextLikeInfo,
   withAi = false
 ) => {
   const rel = NEXT_CLOUD_ROUTE_FILE(info.appDir);
@@ -291,7 +295,7 @@ export const planNextCloudRoute = (
 };
 
 /** Adds Puck AI to an editor that was set up before, by the CLI or by hand */
-export const planNextAi = (p: Planner, info: NextInfo) => {
+export const planNextAi = (p: Planner, info: NextLikeInfo) => {
   const A = info.appDir;
   const opts = nextRelocation(p, info);
   const upgrade = (from: string, summary: string) =>
@@ -360,7 +364,7 @@ export const planNextAi = (p: Planner, info: NextInfo) => {
   }
 };
 
-export const nextAdapter: FrameworkAdapter<NextInfo> = {
+export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   recipe: (withAi) => (withAi ? "next-ai" : "next"),
   recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
   configDirs: () => ["", "src"],
