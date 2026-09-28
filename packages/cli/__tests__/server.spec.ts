@@ -87,7 +87,7 @@ describe("servers (Hono and Express)", () => {
     );
     // After the user's routes, before listen
     expect(read(root, "src/index.ts")).toContain(
-      '});\n\napp.use(puckPages);\n\napp.listen('
+      "});\n\napp.use(puckPages);\n\napp.listen("
     );
     expect(exists(root, "src/puck/cloud.ts")).toBe(false);
     expect(runner.calls).toEqual([]);

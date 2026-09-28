@@ -436,3 +436,63 @@ app.listen(3000, () => {
       : {}),
   };
 };
+
+/** What `create-vite --template react-ts` produces, formatted like the recipes */
+export const viteMinimal = (): Tree => ({
+  "package.json": pkg({
+    name: "vite-minimal",
+    private: true,
+    type: "module",
+    scripts: {
+      dev: "vite",
+      build: "tsc -b && vite build",
+      preview: "vite preview",
+    },
+    dependencies: { react: "^19.2.8", "react-dom": "^19.2.8" },
+    devDependencies: {
+      "@types/react": "^19.2.18",
+      "@vitejs/plugin-react": "^6.1.1",
+      typescript: "~6.0.2",
+      vite: "^8.3.0",
+    },
+  }),
+  "package-lock.json": "{}\n",
+  "tsconfig.json": pkg({
+    files: [],
+    references: [
+      { path: "./tsconfig.app.json" },
+      { path: "./tsconfig.node.json" },
+    ],
+  }),
+  "index.html": `<!doctype html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+`,
+  ".gitignore": "node_modules\ndist\n*.local\n",
+  "vite.config.ts": `import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+});
+`,
+  "src/main.tsx": `import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+`,
+  "src/App.tsx": `export default function App() {
+  return <h1>Hello Vite</h1>;
+}
+`,
+});

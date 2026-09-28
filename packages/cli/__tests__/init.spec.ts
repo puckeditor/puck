@@ -34,11 +34,12 @@ describe("init", () => {
         { value: "react-router" },
         { value: "tanstack-start" },
         { value: "vinext" },
+        { value: "vite" },
         { value: "hono" },
         { value: "express" },
       ],
       rerun: expect.stringContaining(
-        "--framework <next|react-router|tanstack-start|vinext|hono|express> --name <name> <--ai|--no-ai>"
+        "--framework <next|react-router|tanstack-start|vinext|vite|hono|express> --name <name> <--ai|--no-ai>"
       ),
     });
     expect(json.actions[2]).toMatchObject({
