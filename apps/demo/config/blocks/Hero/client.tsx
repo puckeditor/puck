@@ -6,6 +6,8 @@ import { AutoField, FieldLabel, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
+import { sectionBackgroundField } from "../../components/Section";
+import { sectionHeaderFields } from "../../components/SectionHeader";
 
 export const Hero: ComponentConfig<{
   props: HeroProps;
@@ -85,12 +87,27 @@ export const Hero: ComponentConfig<{
       },
       getItemSummary: (item) => item.label,
     },
-    title: { type: "text", contentEditable: true },
+    layout: {
+      type: "radio",
+      options: [
+        { label: "Split", value: "split" },
+        { label: "Centered", value: "centered" },
+        { label: "Cinematic", value: "cinematic" },
+        { label: "Browser", value: "browser" },
+      ],
+      ai: {
+        instructions:
+          "Use 'split' by default. Use 'cinematic' for visual subjects such as cars, travel, food, fashion or events. Use 'centered' for bold statements. Use 'browser' only for software, apps or websites.",
+      },
+    },
+    eyebrow: sectionHeaderFields.eyebrow,
+    title: sectionHeaderFields.title,
     description: {
       ...heroRenderFields.description,
       contentEditable: true,
       ai: {
-        instructions: "Supporting rich text shown below the Hero title.",
+        instructions:
+          "Supporting rich text shown below the title, 30 words or fewer.",
       },
       options: {
         heading: false,
@@ -119,47 +136,17 @@ export const Hero: ComponentConfig<{
         );
       },
     },
-    buttons: {
-      type: "array",
-      min: 1,
-      max: 4,
-      getItemSummary: (item) => item.label || "Button",
-      arrayFields: {
-        label: { type: "text", contentEditable: true },
-        href: {
-          type: "text",
-          ai: {
-            instructions:
-              "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
-          },
-        },
-        variant: {
-          type: "select",
-          ai: {
-            instructions:
-              "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
-          },
-          options: [
-            { label: "primary", value: "primary" },
-            { label: "secondary", value: "secondary" },
-          ],
-        },
+    buttons: sectionHeaderFields.buttons,
+    highlight: {
+      type: "object",
+      objectFields: {
+        value: { type: "text" },
+        label: { type: "text" },
       },
-      defaultItemProps: {
-        label: "Button",
-        href: "#",
-      },
-    },
-    align: {
-      type: "radio",
       ai: {
         instructions:
-          "Use 'left' to show the image. Use 'center' to center the text and hide the image.",
+          "Optional fact shown on a card over the photo in the split layout, such as '4.9★' with 'from 2,000 reviews'.",
       },
-      options: [
-        { label: "left", value: "left" },
-        { label: "center", value: "center" },
-      ],
     },
     image: {
       ...heroRenderFields.image,
@@ -182,8 +169,8 @@ export const Hero: ComponentConfig<{
             >
               <AutoField
                 field={{ type: "text" }}
-                value={value}
-                onChange={onChange}
+                value={value?.src}
+                onChange={(src) => onChange({ ...value, src })}
                 readOnly={readOnly}
               />
             </FieldLabel>
@@ -192,15 +179,21 @@ export const Hero: ComponentConfig<{
         mode: {
           type: "radio",
           ai: {
-            instructions:
-              "Use 'inline' to display the image beside the text or 'background' to place it behind the content. NEVER use 'custom'.",
+            required: false,
+            instructions: "Use 'image'. Never use 'custom'.",
           },
           options: [
-            { label: "inline", value: "inline" },
-            { label: "bg", value: "background" },
+            { label: "image", value: "image" },
             { label: "custom", value: "custom" },
           ],
         },
+      },
+    },
+    background: {
+      ...sectionBackgroundField,
+      ai: {
+        instructions:
+          "Use 'default' unless the page calls for a dark, dramatic hero, then use 'inverse'. The cinematic layout ignores it.",
       },
     },
     padding: {
@@ -213,8 +206,9 @@ export const Hero: ComponentConfig<{
     },
   },
   defaultProps: {
+    layout: "split",
+    background: "default",
     title: "Hero",
-    align: "left",
     description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],
     padding: "64px",
@@ -223,7 +217,7 @@ export const Hero: ComponentConfig<{
         src: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
         alt: "Hero image",
       },
-      mode: "inline",
+      mode: "image",
     },
   },
   /**
@@ -255,16 +249,12 @@ export const Hero: ComponentConfig<{
       readOnly: { title: true, description: true },
     };
   },
-  resolveFields: async (data, { fields }) => {
-    if (data.props.align === "center") {
-      return {
-        ...fields,
-        image: undefined,
-      };
-    }
-
-    return fields;
-  },
+  resolveFields: async (data, { fields }) => ({
+    ...fields,
+    background:
+      data.props.layout === "cinematic" ? undefined : fields.background,
+    highlight: data.props.layout === "split" ? fields.highlight : undefined,
+  }),
   resolvePermissions: async (data, params) => {
     if (!params.changed.quote) return params.lastPermissions;
 

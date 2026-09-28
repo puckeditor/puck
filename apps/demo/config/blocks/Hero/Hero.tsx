@@ -2,108 +2,111 @@
 import React, { ReactNode } from "react";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
-import { Button } from "@/core/components/Button";
-import { Section } from "../../components/Section";
+import { Section, type SectionBackground } from "../../components/Section";
+import {
+  SectionHeader,
+  type SectionHeaderButton,
+} from "../../components/SectionHeader";
 import { PuckComponent, RichText, Slot } from "@/core/types";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
 export type HeroProps = {
   quote?: { index: number; label: string };
+  layout: "split" | "centered" | "cinematic" | "browser";
+  background?: SectionBackground;
+  eyebrow?: string;
   title: string | ReactNode;
   description: RichText;
-  align?: string;
-  padding: string;
+  buttons: SectionHeaderButton[];
   image?: {
     content?: Slot;
-    mode?: "inline" | "background" | "custom";
+    mode?: "image" | "custom";
     source?: {
       src?: string;
       alt?: string;
     };
   };
-  buttons: {
-    label: string;
-    href: string;
-    variant?: "primary" | "secondary";
-  }[];
+  highlight?: {
+    value?: string;
+    label?: string;
+  };
+  padding: string;
 };
 
 export const Hero: PuckComponent<HeroProps> = ({
-  align,
+  layout = "split",
+  background,
+  eyebrow,
   title,
   description,
   buttons,
-  padding,
   image,
+  highlight,
+  padding,
   puck,
 }) => {
+  const isCinematic = layout === "cinematic";
+  const src = image?.source?.src;
+  const alt = image?.source?.alt ?? "";
+
+  const media =
+    image?.mode === "custom" && image.content ? (
+      <image.content className={getClassName("slot")} />
+    ) : src ? (
+      <img className={getClassName("image")} src={src} alt={alt} />
+    ) : null;
+
   return (
     <Section
-      className={getClassName({
-        left: align === "left",
-        center: align === "center",
-        hasImageBackground: image?.mode === "background",
-      })}
+      className={getClassName({ [layout]: true })}
+      background={isCinematic ? "default" : background}
+      glow={!isCinematic}
       style={{ paddingTop: padding, paddingBottom: padding }}
     >
-      {image?.mode === "background" && (
-        <>
-          <div
-            className={getClassName("image")}
-            style={{
-              backgroundImage: `url("${image?.source?.src}")`,
-            }}
-          ></div>
-
-          <div className={getClassName("imageOverlay")}></div>
-        </>
+      {isCinematic && src && (
+        <img className={getClassName("backdrop")} src={src} alt={alt} />
       )}
 
       <div className={getClassName("inner")}>
-        <div className={getClassName("content")}>
-          <h1>{title}</h1>
-          <div className={getClassName("subtitle")}>{description}</div>
-          <div className={getClassName("actions")}>
-            {buttons.map((button, i) => (
-              <Button
-                key={i}
-                href={button.href}
-                variant={button.variant}
-                size="large"
-                tabIndex={puck.isEditing ? -1 : undefined}
-              >
-                {button.label}
-              </Button>
-            ))}
+        <SectionHeader
+          align={
+            layout === "centered" || layout === "browser" ? "center" : "start"
+          }
+          size="display"
+          titleAs="h1"
+          eyebrow={eyebrow}
+          title={title}
+          description={description}
+          buttons={buttons}
+          isEditing={puck.isEditing}
+        />
+
+        {!isCinematic && media && (
+          <div className={getClassName("media")}>
+            {layout === "browser" && (
+              <div className={getClassName("browserBar")} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            )}
+
+            {media}
+
+            {layout === "split" && highlight?.value && (
+              <div className={getClassName("highlight")}>
+                <strong className={getClassName("highlightValue")}>
+                  {highlight.value}
+                </strong>
+                {highlight.label && (
+                  <span className={getClassName("highlightLabel")}>
+                    {highlight.label}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
-        </div>
-
-        {align !== "center" &&
-          image?.mode === "inline" &&
-          image?.source?.src && (
-            <div
-              style={{
-                backgroundImage: `url('${image?.source?.src}')`,
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-                borderRadius: 24,
-                height: 356,
-                marginLeft: "auto",
-                width: "100%",
-              }}
-            />
-          )}
-
-        {align !== "center" && image?.mode === "custom" && image.content && (
-          <image.content
-            style={{
-              height: 356,
-              marginLeft: "auto",
-              width: "100%",
-            }}
-          />
         )}
       </div>
     </Section>

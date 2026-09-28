@@ -7,6 +7,9 @@ export const initialData: Record<string, UserData> = {
       {
         type: "Hero",
         props: {
+          layout: "split",
+          background: "default",
+          eyebrow: "Open-source",
           title: "This page was built with Puck",
           description:
             "<p>Puck is the self-hosted visual editor for React. Bring your own components and make site changes instantly, without a deploy.</p>",
@@ -14,6 +17,7 @@ export const initialData: Record<string, UserData> = {
             {
               label: "Visit GitHub",
               href: "https://github.com/puckeditor/puck",
+              variant: "primary",
             },
             { label: "Edit this page", href: "/edit", variant: "secondary" },
           ],
@@ -23,11 +27,11 @@ export const initialData: Record<string, UserData> = {
               src: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
               alt: "City illustration",
             },
-            mode: "inline",
+            mode: "image",
             content: [],
           },
+          highlight: { value: "1M+", label: "Monthly downloads on NPM" },
           padding: "128px",
-          align: "left",
         },
         readOnly: { title: false, description: false },
       },

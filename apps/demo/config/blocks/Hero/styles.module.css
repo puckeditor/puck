@@ -1,129 +1,171 @@
 .Hero {
-  background-image: linear-gradient(
-    rgba(255, 255, 255, 0),
-    rgb(247, 250, 255) 100%
-  );
-  display: flex;
   align-items: center;
-  position: relative;
-}
-
-@media (prefers-color-scheme: dark) {
-  .Hero {
-    background-image: linear-gradient(
-      rgba(255, 255, 255, 0),
-      rgb(28, 29, 31) 100%
-    );
-  }
+  display: flex;
 }
 
 .Hero-inner {
   display: flex;
-  align-items: center;
-  position: relative;
-  gap: 48px;
-  flex-wrap: wrap;
-  z-index: 1;
-}
-
-@media (min-width: 1024px) {
-  .Hero-inner {
-    flex-wrap: nowrap;
-  }
-}
-
-.Hero h1 {
-  line-height: 1.1;
-  font-size: 48px;
-  margin: 0;
-}
-
-@media (min-width: 768px) {
-  .Hero h1 {
-    font-size: 64px;
-  }
-}
-
-.Hero-subtitle {
-  color: var(--puck-color-text-muted);
-  font-size: var(--puck-font-size-m);
-  line-height: 1.5;
-  margin: 0;
-  margin-bottom: var(--puck-space-2);
-  font-weight: 300;
-}
-
-.Hero-subtitle strong {
-  font-weight: var(--puck-font-weight-medium);
-}
-
-.Hero--hasImageBackground .Hero-subtitle {
-  color: var(--puck-color-grey-03);
-}
-
-.Hero-image {
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.Hero-imageOverlay {
-  background-image: linear-gradient(
-    -90deg,
-    rgb(247, 250, 255, 0.7) 0%,
-    rgb(247, 250, 255, 0.7) 80%
-  );
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  left: 0;
-}
-
-@media (min-width: 768px) {
-  .Hero--left .Hero-imageOverlay {
-    background-image: linear-gradient(
-      -90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgb(247, 250, 255) 70%
-    );
-  }
-}
-
-.Hero-bg img {
-  height: 100%;
-}
-
-.Hero-content {
-  display: flex;
   flex-direction: column;
-  gap: var(--puck-space-4);
+  gap: 48px;
+}
+
+.Hero-media {
+  position: relative;
   width: 100%;
 }
 
-@media (min-width: 768px) {
-  .Hero--hasImageBackground .Hero-content {
-    max-width: 50%;
+.Hero-image,
+.Hero-slot {
+  border-radius: calc(var(--puck-radius-l) * 2);
+  display: block;
+  width: 100%;
+}
+
+.Hero-image {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.Hero-slot {
+  min-height: 356px;
+}
+
+/* Split: text beside a photo, with an optional fact card over its corner */
+@media (min-width: 1024px) {
+  .Hero--split .Hero-inner {
+    align-items: center;
+    display: grid;
+    gap: 64px;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-.Hero--center .Hero-inner {
-  justify-content: center;
-  text-align: center;
+.Hero--split .Hero-image {
+  aspect-ratio: 4 / 3;
 }
 
-.Hero--center .Hero-content {
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-}
-
-.Hero-actions {
+.Hero-highlight {
+  background: var(--puck-color-surface);
+  border: 1px solid var(--puck-color-border);
+  border-radius: calc(var(--puck-radius-l) * 1.5);
+  bottom: var(--puck-space-5);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 14%);
+  color: var(--puck-color-text);
   display: flex;
-  gap: var(--puck-space-4);
+  flex-direction: column;
+  gap: 2px;
+  left: var(--puck-space-4);
+  padding: var(--puck-space-3) var(--puck-space-4);
+  position: absolute;
+}
+
+@media (min-width: 1024px) {
+  .Hero-highlight {
+    left: calc(var(--puck-space-5) * -1);
+  }
+}
+
+.Hero-highlightValue {
+  font-size: var(--puck-font-size-xl);
+  font-weight: var(--puck-font-weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.Hero-highlightLabel {
+  color: var(--puck-color-text-muted);
+  font-size: var(--puck-font-size-xxs);
+}
+
+/* Centered and browser: the photo sits below the text */
+.Hero--centered .Hero-inner,
+.Hero--browser .Hero-inner {
+  align-items: center;
+}
+
+.Hero--centered .Hero-media,
+.Hero--browser .Hero-media {
+  max-width: 1080px;
+}
+
+/* Centered: the photo fades into the page */
+.Hero--centered .Hero-image {
+  mask-image: linear-gradient(to bottom, black 55%, transparent);
+}
+
+/* Browser: the photo is framed like a screenshot, for software and websites */
+.Hero--browser .Hero-media {
+  background: var(--puck-color-surface);
+  border: 1px solid var(--puck-color-border);
+  border-radius: calc(var(--puck-radius-l) * 2);
+  box-shadow: 0 24px 48px rgb(0 0 0 / 10%);
+  overflow: hidden;
+}
+
+.Hero--browser .Hero-image,
+.Hero--browser .Hero-slot {
+  border-radius: 0;
+}
+
+.Hero-browserBar {
+  border-bottom: 1px solid var(--puck-color-border);
+  display: flex;
+  gap: 6px;
+  padding: var(--puck-space-3) var(--puck-space-4);
+}
+
+.Hero-browserBar span {
+  background: var(--puck-color-border);
+  border-radius: var(--puck-radius-round);
+  height: 10px;
+  width: 10px;
+}
+
+/* Cinematic: a full-width photo, with the text over a dark gradient. The
+   photo and the gradient sit behind the content inside an isolated stack */
+.Hero--cinematic {
+  align-items: flex-end;
+  color: var(--puck-color-white);
+  isolation: isolate;
+  min-height: clamp(480px, 32vw, 760px);
+  overflow: hidden;
+  position: relative;
+}
+
+.Hero--cinematic::after {
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--puck-color-black) 80%, transparent),
+    color-mix(in srgb, var(--puck-color-black) 25%, transparent) 60%,
+    transparent
+  );
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.Hero-backdrop {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .Hero-backdrop {
+    animation: zoom 20s ease-out both;
+  }
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(1.08);
+  }
+
+  to {
+    transform: scale(1);
+  }
 }

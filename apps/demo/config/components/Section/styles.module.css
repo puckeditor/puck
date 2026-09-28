@@ -21,3 +21,36 @@
   margin-inline-start: 0;
   margin-inline-end: 0;
 }
+
+.Section--subtle {
+  background: var(--puck-color-surface-subtle);
+}
+
+.Section--inverse {
+  background: var(--puck-color-surface-inverse);
+  color: var(--puck-color-text-inverse);
+}
+
+/* A soft azure and rose glow behind the content */
+.Section--glow {
+  isolation: isolate;
+  position: relative;
+}
+
+.Section--glow::before {
+  background: radial-gradient(
+      40% 55% at 72% 30%,
+      color-mix(in srgb, var(--puck-color-interactive) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      35% 50% at 22% 70%,
+      color-mix(in srgb, var(--puck-color-rose-06) 12%, transparent),
+      transparent 70%
+    );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}

@@ -1,0 +1,66 @@
+.SectionHeader {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--puck-space-4);
+}
+
+.SectionHeader--center {
+  align-items: center;
+  text-align: center;
+}
+
+.SectionHeader-eyebrow {
+  color: currentColor;
+  font-family: var(--puck-font-family-monospaced);
+  font-size: var(--puck-font-size-xxxs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.SectionHeader--display .SectionHeader-eyebrow {
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-radius: var(--puck-radius-pill);
+  font-family: inherit;
+  font-size: var(--puck-font-size-xxs);
+  letter-spacing: normal;
+  padding: var(--puck-space-1) var(--puck-space-3);
+  text-transform: none;
+}
+
+.SectionHeader-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: var(--puck-font-weight-medium);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.SectionHeader--display .SectionHeader-title {
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1;
+}
+
+.SectionHeader-description {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  font-size: var(--puck-font-size-s);
+  line-height: 1.5;
+  max-width: 40rem;
+  text-wrap: pretty;
+}
+
+.SectionHeader--display .SectionHeader-description {
+  font-size: var(--puck-font-size-m);
+}
+
+.SectionHeader-description p {
+  margin: 0;
+}
+
+.SectionHeader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--puck-space-3);
+  margin-top: var(--puck-space-2);
+}
