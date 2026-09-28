@@ -15,6 +15,7 @@ allowBuilds:
   "@parcel/watcher": true # native file watcher used in dev
   unrs-resolver: true # native binding for the eslint import resolver
   nx: false # transitive (via lerna); native daemon not needed
+  core-js: false # transitive (via posthog-js in demo); postinstall only prints a funding banner
 
 # Security pins for vulnerable transitive deps. Translated from main's yarn
 # `resolutions` (pnpm ignores `resolutions`); nested selectors use `>`.
