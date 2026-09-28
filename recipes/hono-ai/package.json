@@ -1,0 +1,22 @@
+{
+  "name": "hono-ai-recipe",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env.local src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@puckeditor/cloud-client": "^0",
+    "hono": "^4.13.9",
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.3"
+  }
+}
