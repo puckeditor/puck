@@ -8,7 +8,7 @@ npx @puckeditor/cli init
 
 `init` inspects your project and makes the smallest set of changes needed to reach a working Puck app, with Puck AI if you choose it:
 
-- **No app yet**: creates a Next.js, React Router or vinext app from the Puck [recipes](https://github.com/puckeditor/puck#recipes)
+- **No app yet**: creates a Next.js, React Router, TanStack Start or vinext app from the Puck [recipes](https://github.com/puckeditor/puck#recipes)
 - **App without Puck**: installs `@puckeditor/core` and adds an editor at `/edit`
 - **Puck without Puck AI** (when you choose it): installs `@puckeditor/cloud-client` and `@puckeditor/plugin-ai`, adds the `/api/puck` route and the Puck AI plugin, and connects your Puck Cloud account
 - **Already set up**: verifies the setup and changes nothing
@@ -21,6 +21,7 @@ Puck AI is optional. It's the editor plugin that uses Puck Cloud as its backend,
 
 - Next.js 15+ using the App Router (`app/` or `src/app/`)
 - React Router 7+ in framework mode
+- [TanStack Start](https://tanstack.com/start) 1.x
 - [vinext](https://github.com/cloudflare/vinext) using the App Router
 - npm, pnpm, Yarn and Bun, including workspaces
 - TypeScript projects
@@ -78,17 +79,17 @@ Start with `npx @puckeditor/cli status --json` to see what's already set up and 
 
 ### Actions
 
-| Type                       | What to do                                                                                |
-| -------------------------- | ----------------------------------------------------------------------------------------- |
-| `browser_login`            | Ask the developer to open `url`, confirm `userCode` and approve                           |
-| `provide_api_key`          | Ask for a Puck API key, then re-run with `PUCK_API_KEY` set                               |
-| `confirm_plan`             | Review `plan.steps`, then re-run with `--yes`                                             |
-| `choose_ai`                | Ask the developer, then re-run `init` with `--ai` or `--no-ai`                            |
-| `choose_framework`         | Re-run `init` with `--framework next`, `--framework react-router` or `--framework vinext` |
-| `provide_app_name`         | Re-run `init` with `--name <name>`                                                        |
-| `choose_workspace_package` | Re-run with `--workspace <dir>` for one of `choices`                                      |
-| `manual_edit`              | Apply `snippet` to `file` as described in `instructions`                                  |
-| `set_environment_variable` | Set `PUCK_API_KEY` wherever the app runs                                                  |
+| Type                       | What to do                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| `browser_login`            | Ask the developer to open `url`, confirm `userCode` and approve                                  |
+| `provide_api_key`          | Ask for a Puck API key, then re-run with `PUCK_API_KEY` set                                      |
+| `confirm_plan`             | Review `plan.steps`, then re-run with `--yes`                                                    |
+| `choose_ai`                | Ask the developer, then re-run `init` with `--ai` or `--no-ai`                                   |
+| `choose_framework`         | Re-run `init` with `--framework` and one of `next`, `react-router`, `tanstack-start` or `vinext` |
+| `provide_app_name`         | Re-run `init` with `--name <name>`                                                               |
+| `choose_workspace_package` | Re-run with `--workspace <dir>` for one of `choices`                                             |
+| `manual_edit`              | Apply `snippet` to `file` as described in `instructions`                                         |
+| `set_environment_variable` | Set `PUCK_API_KEY` wherever the app runs                                                         |
 
 ### Exit codes
 
@@ -135,22 +136,22 @@ npx skills add puckeditor/puck
 
 ## Flags
 
-| Flag                       | Description                                                    |
-| -------------------------- | -------------------------------------------------------------- |
-| `--json`                   | Machine-readable output                                        |
-| `--yes`, `-y`              | Apply the plan without prompting                               |
-| `--dry-run`                | Show the plan without changing anything or logging in          |
-| `--cwd <path>`             | Run against another directory                                  |
-| `--workspace <name\|dir>`  | Choose an app when running from a monorepo root                |
-| `--api-key <key>`          | Use an existing API key instead of logging in                  |
-| `--no-env-write`           | Don't write `PUCK_API_KEY` to a file                           |
-| `--ai`                     | Also set up Puck AI and Puck Cloud (`init`)                    |
-| `--no-ai`                  | Set up the editor only, without asking about Puck AI (`init`)  |
-| `--wait`                   | Wait for login approval instead of returning `action_required` |
-| `--framework <name>`       | Framework for a new app: `next`, `react-router` or `vinext`    |
-| `--name <name>`            | Directory for a new app                                        |
-| `--package-manager <name>` | Override the detected package manager                          |
-| `--offline`                | Skip the Puck Cloud connection check (`doctor`)                |
+| Flag                       | Description                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| `--json`                   | Machine-readable output                                                       |
+| `--yes`, `-y`              | Apply the plan without prompting                                              |
+| `--dry-run`                | Show the plan without changing anything or logging in                         |
+| `--cwd <path>`             | Run against another directory                                                 |
+| `--workspace <name\|dir>`  | Choose an app when running from a monorepo root                               |
+| `--api-key <key>`          | Use an existing API key instead of logging in                                 |
+| `--no-env-write`           | Don't write `PUCK_API_KEY` to a file                                          |
+| `--ai`                     | Also set up Puck AI and Puck Cloud (`init`)                                   |
+| `--no-ai`                  | Set up the editor only, without asking about Puck AI (`init`)                 |
+| `--wait`                   | Wait for login approval instead of returning `action_required`                |
+| `--framework <name>`       | Framework for a new app: `next`, `react-router`, `tanstack-start` or `vinext` |
+| `--name <name>`            | Directory for a new app                                                       |
+| `--package-manager <name>` | Override the detected package manager                                         |
+| `--offline`                | Skip the Puck Cloud connection check (`doctor`)                               |
 
 ## API keys
 
