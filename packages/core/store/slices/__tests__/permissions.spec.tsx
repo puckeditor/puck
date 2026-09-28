@@ -370,6 +370,224 @@ describe("permissions slice", () => {
       expect(perms.globalTest).toBe(true);
     });
 
+    it("provides correct nested keys in changed record to component.resolvePermissions on nested changes", async () => {
+      const resolvePermissions = jest.fn().mockReturnValue({
+        resolved: true,
+      });
+
+      const config = {
+        components: {
+          MyComponent: {
+            render: () => <div />,
+            permissions: { base: true },
+            resolvePermissions,
+          },
+        },
+      };
+
+      appStore.setState({
+        config,
+        state: walkAppState(
+          {
+            ...defaultAppState,
+            data: {
+              ...defaultAppState.data,
+              content: [
+                {
+                  type: "MyComponent",
+                  props: {
+                    id: "comp-nested",
+                    FirstLevel: {
+                      SecondLevel: {
+                        ThirdLevel: {
+                          SomeString: "original",
+                          OtherString: "unchanged",
+                        },
+                      },
+                    },
+                    foo: {
+                      bar: {
+                        id: "bar-1",
+                        value: "initial",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          config
+        ),
+      });
+
+      renderHook(() =>
+        useRegisterPermissionsSlice(appStore, { globalTest: true })
+      );
+
+      await act(async () => {
+        await appStore.getState().permissions.resolvePermissions();
+
+        const { dispatch } = appStore.getState();
+
+        dispatch({
+          type: "replace",
+          data: {
+            props: {
+              id: "comp-nested",
+              FirstLevel: {
+                SecondLevel: {
+                  ThirdLevel: {
+                    SomeString: "modified",
+                    OtherString: "unchanged",
+                  },
+                },
+              },
+              foo: {
+                bar: {
+                  id: "bar-1",
+                  value: "updated",
+                },
+              },
+            },
+            type: "MyComponent",
+          },
+          destinationIndex: 0,
+          destinationZone: rootDroppableId,
+        });
+      });
+
+      expect(resolvePermissions).toHaveBeenLastCalledWith(
+        {
+          props: {
+            id: "comp-nested",
+            FirstLevel: {
+              SecondLevel: {
+                ThirdLevel: {
+                  SomeString: "modified",
+                  OtherString: "unchanged",
+                },
+              },
+            },
+            foo: {
+              bar: {
+                id: "bar-1",
+                value: "updated",
+              },
+            },
+          },
+          type: "MyComponent",
+        },
+        expect.objectContaining({
+          changed: {
+            id: false,
+            FirstLevel: true,
+            "FirstLevel.SecondLevel": true,
+            "FirstLevel.SecondLevel.ThirdLevel": true,
+            "FirstLevel.SecondLevel.ThirdLevel.SomeString": true,
+            "FirstLevel.SecondLevel.ThirdLevel.OtherString": false,
+            foo: true,
+            "foo.bar": true,
+            "foo.bar.id": false,
+            "foo.bar.value": true,
+          },
+        })
+      );
+    });
+
+    it("provides correct nested keys in changed record to root.resolvePermissions on nested changes", async () => {
+      const mockResolvePermissions = jest.fn().mockReturnValue({
+        rootResolved: true,
+      });
+
+      const config: Config = {
+        root: {
+          render: () => <div />,
+          resolvePermissions: mockResolvePermissions,
+        },
+        components: {},
+      };
+
+      appStore.setState({
+        config,
+        state: {
+          ...defaultAppState,
+          data: {
+            content: [],
+            root: {
+              props: {
+                title: "Site",
+                nav: {
+                  item: {
+                    label: "Home",
+                    visible: true,
+                  },
+                },
+              },
+            },
+            zones: {},
+          },
+        },
+      });
+
+      renderHook(() => useRegisterPermissionsSlice(appStore, {}));
+
+      await waitFor(() => {
+        expect(mockResolvePermissions).toHaveBeenCalledTimes(1);
+        expect(appStore.getState().permissions.cache["root"]).toBeDefined();
+      });
+
+      // Update root data - auto-resolves via state.data subscription
+      appStore.setState({
+        ...appStore.getState(),
+        state: {
+          ...appStore.getState().state,
+          data: {
+            ...appStore.getState().state.data,
+            root: {
+              props: {
+                title: "Site",
+                nav: {
+                  item: {
+                    label: "Dashboard",
+                    visible: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      await waitFor(() => {
+        expect(mockResolvePermissions).toHaveBeenCalledTimes(2);
+      });
+      expect(mockResolvePermissions).toHaveBeenLastCalledWith(
+        {
+          type: "root",
+          props: {
+            id: "root",
+            title: "Site",
+            nav: {
+              item: {
+                label: "Dashboard",
+                visible: true,
+              },
+            },
+          },
+        },
+        expect.objectContaining({
+          changed: {
+            id: false,
+            title: false,
+            nav: true,
+            "nav.item": true,
+            "nav.item.label": true,
+            "nav.item.visible": false,
+          },
+        })
+      );
+    });
+
     it("updates if item changes or if force = true", async () => {
       let resolveCalls = 0;
       appStore.setState({

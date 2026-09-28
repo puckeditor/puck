@@ -7,7 +7,7 @@ import { BaseField, Field, Fields } from "./Fields";
 import { AsFieldProps, WithChildren, WithId, WithPuckProps } from "./Utils";
 import { AppState } from "./AppState";
 import { DefaultComponentProps, WithDefaultRootFieldProps } from "./Props";
-import { Permissions } from "./API";
+import { Permissions, Slot } from "./API";
 import {
   AssertHasValue,
   FieldsExtension,
@@ -43,6 +43,18 @@ type WithPartialProps<T, Props extends DefaultComponentProps> = Omit<
 
 export interface ComponentConfigExtensions {}
 
+type NestedKeyOf<T> =
+  // Skip going through Slot and ReactNode types
+  T extends Slot | ReactNode
+    ? never
+    : T extends readonly (infer ElementType)[]
+    ? `[${number}]` | `[${number}].${NestedKeyOf<ElementType>}`
+    : T extends object
+    ? {
+        [K in keyof T & string]: `${K}` | `${K}.${NestedKeyOf<T[K]>}`;
+      }[keyof T & string]
+    : never;
+
 type ComponentConfigInternal<
   RenderProps extends DefaultComponentProps,
   FieldProps extends DefaultComponentProps,
@@ -58,7 +70,9 @@ type ComponentConfigInternal<
   resolveFields?: (
     data: DataShape,
     params: {
-      changed: Partial<Record<keyof FieldProps, boolean> & { id: string }>;
+      changed: Partial<
+        Record<NestedKeyOf<FieldProps>, boolean> & { id: string }
+      >;
       fields: Fields<FieldProps>;
       lastFields: Fields<FieldProps>;
       lastData: DataShape | null;
@@ -70,7 +84,9 @@ type ComponentConfigInternal<
   resolveData?: (
     data: DataShape,
     params: {
-      changed: Partial<Record<keyof FieldProps, boolean> & { id: string }>;
+      changed: Partial<
+        Record<NestedKeyOf<FieldProps>, boolean> & { id: string }
+      >;
       lastData: DataShape | null;
       metadata: ComponentMetadata;
       trigger: ResolveDataTrigger;
@@ -83,7 +99,9 @@ type ComponentConfigInternal<
   resolvePermissions?: (
     data: DataShape,
     params: {
-      changed: Partial<Record<keyof FieldProps, boolean> & { id: string }>;
+      changed: Partial<
+        Record<NestedKeyOf<FieldProps>, boolean> & { id: string }
+      >;
       lastPermissions: Partial<Permissions>;
       permissions: Partial<Permissions>;
       appState: AppState;
