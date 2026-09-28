@@ -208,14 +208,20 @@ export const ensurePlugin = (
   {
     importName,
     source,
-    call,
-  }: { importName: string; source: string; call: string }
+    call: callFor,
+  }: {
+    importName: string;
+    source: string;
+    /** The plugin call, given the file's quote */
+    call: string | ((quote: string) => string);
+  }
 ): ConfigEditResult => {
   const analysis = analyzeConfig(code, filename);
   if (!analysis.ok) return { status: "manual", detail: analysis.detail };
   const { ast, config } = analysis;
   const q = quoteOf(code);
   const semi = semicolonsIn(ast, code) ? ";" : "";
+  const call = typeof callFor === "string" ? callFor : callFor(q);
 
   const imported = ast.program.body.some(
     (s) =>

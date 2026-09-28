@@ -11,6 +11,8 @@ export interface CloudRouteDetection {
   routeFile: string | null;
   /** Whether the route is registered, for frameworks with a routes file */
   routeRegistered: boolean | "n/a";
+  /** Served by another server the app proxies to, so nothing is needed here */
+  external?: boolean;
 }
 
 export interface PagesDetection {

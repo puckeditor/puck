@@ -13,6 +13,8 @@ export type RecipeName =
   | "tanstack-start-ai"
   | "vinext"
   | "vinext-ai"
+  | "vite"
+  | "vite-ai"
   | "hono"
   | "hono-ai"
   | "express"

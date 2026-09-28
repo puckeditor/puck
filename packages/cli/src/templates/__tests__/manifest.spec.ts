@@ -17,6 +17,12 @@ import {
   SERVER_MAPPED,
 } from "../../frameworks/server";
 import {
+  VITE_AI_EXCLUDED,
+  VITE_AI_MAPPED,
+  VITE_EXCLUDED,
+  VITE_MAPPED,
+} from "../../frameworks/vite-app";
+import {
   VINEXT_AI_EDITOR_EXCLUDED,
   VINEXT_AI_EDITOR_MAPPED,
   VINEXT_EDITOR_EXCLUDED,
@@ -52,6 +58,8 @@ describe("recipe coverage", () => {
       TANSTACK_START_AI_EDITOR_EXCLUDED,
     ],
     ["vinext", VINEXT_EDITOR_MAPPED, VINEXT_EDITOR_EXCLUDED],
+    ["vite", VITE_MAPPED, VITE_EXCLUDED],
+    ["vite-ai", VITE_AI_MAPPED, VITE_AI_EXCLUDED],
     ["hono", SERVER_MAPPED, SERVER_EXCLUDED],
     ["hono-ai", SERVER_AI_MAPPED, SERVER_AI_EXCLUDED],
     ["express", SERVER_MAPPED, SERVER_EXCLUDED],

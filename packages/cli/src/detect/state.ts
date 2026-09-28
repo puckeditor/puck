@@ -42,6 +42,8 @@ export interface ProjectState {
     routeFile: string | null;
     expectedRouteFile: string | null;
     routeRegistered: boolean | "n/a";
+    /** The Cloud route is served by another server the app proxies to */
+    external: boolean;
     /** Absolute directory env files are loaded from */
     envDir: string;
     apiKey: KeyLocation;
@@ -128,6 +130,7 @@ export const detectState = (
       routeFile: route?.routeFile ?? null,
       expectedRouteFile: route?.expectedRouteFile ?? null,
       routeRegistered: route?.routeRegistered ?? "n/a",
+      external: Boolean(route?.external),
       envDir,
       apiKey,
       envGitignored: apiKey.file
@@ -157,17 +160,21 @@ export const capabilityStatus = (
   }
 
   const cloudMissing: string[] = [];
-  if (!state.cloud.clientInstalled)
-    cloudMissing.push(`${CLOUD_CLIENT_PACKAGE} is not installed`);
-  if (!state.cloud.routeFile)
-    cloudMissing.push("No Puck Cloud API route found");
-  if (state.cloud.routeRegistered === false)
-    cloudMissing.push(
-      state.target === "server"
-        ? "The Puck Cloud API route isn't mounted on the app"
-        : "The Puck Cloud API route isn't registered in routes.ts"
-    );
-  if (!state.cloud.apiKey.present) cloudMissing.push("PUCK_API_KEY is not set");
+  // Otherwise it's set up on the server the app proxies to
+  if (!state.cloud.external) {
+    if (!state.cloud.clientInstalled)
+      cloudMissing.push(`${CLOUD_CLIENT_PACKAGE} is not installed`);
+    if (!state.cloud.routeFile)
+      cloudMissing.push("No Puck Cloud API route found");
+    if (state.cloud.routeRegistered === false)
+      cloudMissing.push(
+        state.target === "server"
+          ? "The Puck Cloud API route isn't mounted on the app"
+          : "The Puck Cloud API route isn't registered in routes.ts"
+      );
+    if (!state.cloud.apiKey.present)
+      cloudMissing.push("PUCK_API_KEY is not set");
+  }
 
   // A server only enables AI in its Cloud route; the plugin is in the editor
   const aiMissing: string[] =

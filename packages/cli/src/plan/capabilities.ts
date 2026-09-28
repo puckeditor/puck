@@ -43,6 +43,15 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
     }
 
     if (id === "cloud") {
+      if (p.backend?.mode === "external") {
+        p.warn(
+          "PUCK-CLI-W-EXTERNAL-BACKEND",
+          `Puck Cloud runs on ${
+            p.backend.url ?? "the server /api is proxied to"
+          }. Run \`npx @puckeditor/cli init --ai\` in that server's project to set it up.`
+        );
+        continue;
+      }
       if (!p.state.cloud.clientInstalled) {
         p.addDependency(
           CLOUD_CLIENT_PACKAGE,

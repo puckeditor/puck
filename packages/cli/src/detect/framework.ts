@@ -16,6 +16,7 @@ export const FRAMEWORK_IDS = [
   "react-router",
   "tanstack-start",
   "vinext",
+  "vite",
   "hono",
   "express",
 ] as const;
@@ -27,13 +28,14 @@ export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   "react-router": "React Router",
   "tanstack-start": "TanStack Start",
   vinext: "vinext",
+  vite: "Vite",
   hono: "Hono",
   express: "Express",
 };
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */
 export const SUPPORTED_FRAMEWORKS =
-  "Next.js (App Router), React Router 7 framework mode, TanStack Start and vinext, or a Hono or Express server";
+  "Next.js (App Router), React Router 7 framework mode, TanStack Start, vinext and Vite React apps, or a Hono or Express server";
 
 export interface NextInfo {
   id: "next";
@@ -79,6 +81,24 @@ export interface TanStackStartInfo {
   viteConfig: string | null;
 }
 
+/** A client-only React app built with Vite */
+export interface ViteInfo {
+  id: "vite";
+  version: string | null;
+  major: number | null;
+  viteConfig: string | null;
+  /** Project-relative module that renders the app, e.g. src/main.tsx */
+  entry: string | null;
+  /** Project-relative directory the app's source lives in */
+  srcDir: string;
+  /** The server the app already uses for Puck, if any */
+  backend: ExistingBackend | null;
+}
+
+export type ExistingBackend =
+  | { mode: "local" }
+  | { mode: "external"; url: string | null };
+
 /** A server that serves Puck's APIs for an editor elsewhere */
 export interface ServerInfo<Id extends "hono" | "express"> {
   id: Id;
@@ -99,6 +119,7 @@ export type FrameworkInfo =
   | ReactRouterInfo
   | TanStackStartInfo
   | VinextInfo
+  | ViteInfo
   | HonoInfo
   | ExpressInfo;
 
@@ -385,6 +406,57 @@ const detectTanStackStart = (
   };
 };
 
+const ENTRY_SCRIPT =
+  /<script[^>]*type=["']module["'][^>]*src=["']\/?([^"']+)["']/;
+
+/** Where a Vite app gets Puck's APIs: its own Hono dev server, or a proxy */
+export const detectViteBackend = (
+  code: string,
+  file: string
+): ExistingBackend | null => {
+  if (code.includes("@hono/vite-dev-server")) return { mode: "local" };
+  const proxy = findStringProperty(code, file, "/api");
+  if (proxy.status === "literal") return { mode: "external", url: proxy.value };
+  if (proxy.status === "dynamic") return { mode: "external", url: null };
+  return null;
+};
+
+const detectVite = (
+  vfs: Vfs,
+  root: string,
+  range: string,
+  deps: Record<string, string>
+): FrameworkDetection | null => {
+  if (!("@vitejs/plugin-react" in deps || "@vitejs/plugin-react-swc" in deps))
+    return null;
+
+  const html = vfs.readText(path.join(root, "index.html")) ?? "";
+  const scripted = html.match(ENTRY_SCRIPT)?.[1] ?? null;
+  const entry =
+    [scripted, "src/main.tsx", "src/main.jsx", "src/index.tsx"].find(
+      (f): f is string => Boolean(f) && vfs.exists(path.join(root, f!))
+    ) ?? null;
+
+  const version = resolveInstalledVersion(vfs, root, "vite");
+  const viteConfig = findViteConfig(vfs, root);
+  const code = viteConfig
+    ? vfs.readText(path.join(root, viteConfig)) ?? ""
+    : "";
+
+  return {
+    status: "detected",
+    info: {
+      id: "vite",
+      version,
+      major: majorOf(version) ?? majorOf(range),
+      viteConfig,
+      entry,
+      srcDir: entry ? path.posix.dirname(entry).replace(/^\.$/, "") : "src",
+      backend: viteConfig ? detectViteBackend(code, viteConfig) : null,
+    },
+  };
+};
+
 const detectServer =
   (id: "hono" | "express") =>
   (
@@ -415,24 +487,37 @@ interface Detector {
   supersedes?: FrameworkId[];
   /** Only used when no other framework is found, e.g. a server next to a React app */
   fallback?: boolean;
+  /** null when the dependency is there but it isn't this framework */
   detect: (
     vfs: Vfs,
     root: string,
     range: string,
     deps: Record<string, string>
-  ) => FrameworkDetection;
+  ) => FrameworkDetection | null;
 }
 
 const DETECTORS: Detector[] = [
   { id: "next", dep: "next", detect: detectNext },
-  { id: "react-router", dep: "@react-router/dev", detect: detectReactRouter },
+  {
+    id: "react-router",
+    dep: "@react-router/dev",
+    supersedes: ["vite"],
+    detect: detectReactRouter,
+  },
   {
     id: "tanstack-start",
     dep: "@tanstack/react-start",
+    supersedes: ["vite"],
     detect: detectTanStackStart,
   },
   // Projects migrating to vinext usually keep next installed
-  { id: "vinext", dep: "vinext", supersedes: ["next"], detect: detectVinext },
+  {
+    id: "vinext",
+    dep: "vinext",
+    supersedes: ["next", "vite"],
+    detect: detectVinext,
+  },
+  { id: "vite", dep: "vite", detect: detectVite },
   { id: "hono", dep: "hono", fallback: true, detect: detectServer("hono") },
   {
     id: "express",
@@ -447,7 +532,12 @@ export const detectFramework = (
   root: string,
   deps: Record<string, string>
 ): FrameworkDetection => {
-  const present = DETECTORS.filter((d) => d.dep in deps);
+  const present = DETECTORS.filter(
+    (d) =>
+      d.dep in deps &&
+      // e.g. Vite without its React plugin isn't a Vite React app
+      (d.id !== "vite" || detectVite(vfs, root, deps[d.dep], deps) !== null)
+  );
   const superseded = present.flatMap((d) => d.supersedes ?? []);
   const primary = present.filter((d) => !d.fallback);
   const matches = (primary.length ? primary : present).filter(
@@ -467,7 +557,7 @@ export const detectFramework = (
 
   if (matches.length === 1) {
     const [match] = matches;
-    return match.detect(vfs, root, deps[match.dep], deps);
+    return match.detect(vfs, root, deps[match.dep], deps)!;
   }
 
   const remix = Object.keys(deps).find((d) => d.startsWith("@remix-run/"));

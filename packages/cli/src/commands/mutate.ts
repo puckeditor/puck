@@ -225,7 +225,11 @@ export const runMutation = async (
 
   if (scaffoldStep) planner.steps.unshift(scaffoldStep);
 
-  const wantsCloud = capabilities.includes("cloud");
+  // A server the app proxies to holds the Cloud route and its key
+  const wantsCloud =
+    capabilities.includes("cloud") &&
+    planner.backend?.mode !== "external" &&
+    !state.cloud.external;
   const needsConsent =
     planner.steps.length > 0 || (wantsCloud && !state.cloud.apiKey.present);
 

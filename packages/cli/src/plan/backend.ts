@@ -6,8 +6,8 @@ import { CliError } from "../errors";
 import { rerunCommand } from "../context";
 
 export interface BackendOptions {
-  /** A server Puck can already use, e.g. an Astro adapter */
-  local: boolean;
+  /** A server the app already uses for Puck, e.g. an Astro adapter or a proxy */
+  existing: ResolvedBackend | null;
   /** What "add" sets up, e.g. "Add a Hono server to this app" */
   addLabel: string;
 }
@@ -45,7 +45,7 @@ export const resolveBackend = async (
   capabilities: CapabilityId[],
   planned: { editor: boolean; cloud: boolean }
 ): Promise<BackendResolution> => {
-  if (options.local) return { kind: "resolved", backend: { mode: "local" } };
+  if (options.existing) return { kind: "resolved", backend: options.existing };
 
   const wantsCloud = capabilities.includes("cloud");
   // Nothing that needs a server will be planned

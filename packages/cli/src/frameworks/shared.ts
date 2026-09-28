@@ -151,24 +151,24 @@ export const upgradeTemplateFile = (
 };
 
 /** Maps recipe module ids for the config, preferring the project's existing config */
-export const configModuleTarget = (p: Planner) =>
-  stripExtension(p.state.puck.configFile ?? "puck.config.tsx");
+export const configModuleTarget = (p: Planner, created = "puck.config.tsx") =>
+  stripExtension(p.state.puck.configFile ?? created);
 
 export const configRelocation = (p: Planner) =>
   p.state.puck.configExports
     ? { module: "puck.config", shape: p.state.puck.configExports }
     : undefined;
 
-export const planPuckConfig = (p: Planner, recipe: RecipeName) => {
+export const planPuckConfig = (
+  p: Planner,
+  recipe: RecipeName,
+  { from = "puck.config.tsx", to = "puck.config.tsx" } = {}
+) => {
   if (p.state.puck.configFile) return;
-  p.createFile(
-    "puck.config.tsx",
-    templateText(p.templates, recipe, "puck.config.tsx"),
-    {
-      capability: "editor",
-      summary: "Create puck.config.tsx",
-    }
-  );
+  p.createFile(to, templateText(p.templates, recipe, from), {
+    capability: "editor",
+    summary: `Create ${to}`,
+  });
 };
 
 export const planCoreDependency = (p: Planner) => {
