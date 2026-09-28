@@ -65,3 +65,19 @@ export const formatCommand = (spec: CommandSpec) =>
   [spec.command, ...spec.args]
     .map((a) => (/[\s"'$]/.test(a) ? JSON.stringify(a) : a))
     .join(" ");
+
+/** Runs a package's binary from the target app, e.g. `astro add react` */
+export const execCommand = (
+  ctx: ProjectContext,
+  bin: string,
+  args: string[]
+): CommandSpec => {
+  const pm = ctx.packageManager.name;
+  if (pm === "pnpm")
+    return { command: "pnpm", args: ["exec", bin, ...args], cwd: ctx.root };
+  if (pm === "yarn")
+    return { command: "yarn", args: [bin, ...args], cwd: ctx.root };
+  if (pm === "bun")
+    return { command: "bunx", args: [bin, ...args], cwd: ctx.root };
+  return { command: "npx", args: [bin, ...args], cwd: ctx.root };
+};

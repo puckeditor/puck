@@ -63,7 +63,8 @@ const writeFile = (file: string, content: Buffer, mode?: number) => {
 
 /**
  * Executes a plan: verifies nothing changed since planning, installs
- * packages, flushes the overlay to disk, then runs any full install.
+ * packages, flushes the overlay to disk, runs framework setup commands, then
+ * runs any full install.
  */
 export const applyPlan = async (
   rc: RunContext,
@@ -95,11 +96,6 @@ export const applyPlan = async (
     packagesInstalled.push(...step.packages.map((p) => `${p.name}@${p.range}`));
   }
 
-  for (const step of steps) {
-    if (step.kind !== "run_command") continue;
-    await run(rc, step.run);
-  }
-
   const created: string[] = [];
   const modified: string[] = [];
   for (const write of pending) {
@@ -112,6 +108,12 @@ export const applyPlan = async (
       );
     }
     (write.existed ? modified : created).push(write.path);
+  }
+
+  // Framework setup commands (e.g. `astro add`) edit the files as written
+  for (const step of steps) {
+    if (step.kind !== "run_command") continue;
+    await run(rc, step.run);
   }
 
   for (const step of steps) {
