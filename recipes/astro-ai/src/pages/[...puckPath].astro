@@ -1,0 +1,25 @@
+---
+import { getPage } from "../lib/pages";
+import { resolvePuckPath } from "../lib/resolve-puck-path";
+import Editor from "../puck/editor";
+import PuckRender from "../puck/render";
+
+// Pages are loaded when requested, so published changes show up immediately
+export const prerender = false;
+
+const { isEditorRoute, path } = resolvePuckPath(Astro.url.pathname);
+const page = isEditorRoute ? null : await getPage(path);
+
+if (!isEditorRoute && !page) return new Response(null, { status: 404 });
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{isEditorRoute ? `Edit: ${path}` : page?.root.props?.title}</title>
+  </head>
+  <body style={isEditorRoute ? "margin: 0" : undefined}>
+    {isEditorRoute ? <Editor client:only="react" path={path} /> : <PuckRender data={page!} />}
+  </body>
+</html>
