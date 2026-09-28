@@ -295,10 +295,13 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
   return (
     <div
-      className={`Puck ${getClassName({
+      className={`Puck notranslate ${getClassName({
         hidePlugins: hasLegacySideBarPlugin,
       })}`}
       id={instanceId}
+      // Opt out the whole editor UI out of automatic translations.
+      // Browser translators modify the dom and are incompatible with dnd-kit
+      translate="no"
       style={{ height, visibility: "hidden" }}
     >
       <DragDropContext

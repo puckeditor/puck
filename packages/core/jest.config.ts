@@ -14,7 +14,7 @@ const config: Config = {
 
   // Re-enable transform *inside* selected node_modules
   transformIgnorePatterns: [
-    "/node_modules/(?!(?:@preact/signals-core|@preact/signals-react|@dnd-kit)/)",
+    "/node_modules/(?!(?:\\.pnpm|@preact/signals-core|@preact/signals-react|@dnd-kit)/)",
   ],
 
   moduleNameMapper: {
