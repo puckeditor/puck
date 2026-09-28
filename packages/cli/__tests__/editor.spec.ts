@@ -10,6 +10,7 @@ import {
   nextWithMiddleware,
   rrMinimal,
   viteSpa,
+  vinextMinimal,
 } from "./helpers/fixtures";
 import { normalizeModule } from "./helpers/semantic";
 
@@ -42,6 +43,57 @@ const EDITOR_FILES = [
   "app/puck/page.tsx",
   "lib/get-page.ts",
 ];
+
+describe("add editor (vinext)", () => {
+  it("integrates the Next.js App Router files into a vinext app", async () => {
+    const root = tmpProject({ tree: vinextMinimal() });
+    const { json } = await run(["add", "editor", "--yes", "--json"], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.project?.framework).toBe("vinext");
+    for (const file of EDITOR_FILES) {
+      expect(normalizeModule(read(root, file), file)).toBe(
+        normalizeModule(readRecipe("vinext", file), file)
+      );
+    }
+    expect(read(root, "proxy.ts")).toBe(readRecipe("vinext", "proxy.ts"));
+    expect(json.nextSteps).toContain("# then open http://localhost:3000/edit");
+  });
+
+  it("loads @vercel/oidc with Node when the editor is created with AI", async () => {
+    const root = tmpProject({ tree: vinextMinimal() });
+    const { json } = await run(
+      ["init", "--yes", "--json", "--ai", "--api-key", "sk-valid-key"],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(read(root, "vite.config.ts")).toContain(
+      'ssr: { external: ["@vercel/oidc"] }'
+    );
+  });
+
+  it("wins over next when a migrated project keeps both", async () => {
+    const root = tmpProject({ tree: vinextMinimal({ withNext: true }) });
+    const { json } = await run(["status", "--json"], { cwd: root });
+
+    expect(json.project?.framework).toBe("vinext");
+  });
+
+  it("keeps the middleware convention when middleware.ts exists", async () => {
+    const root = tmpProject({ tree: vinextMinimal({ middleware: true }) });
+    const { json } = await run(["add", "editor", "--yes", "--json"], {
+      cwd: root,
+    });
+
+    expect(exists(root, "proxy.ts")).toBe(false);
+    expect(json.actions).toContainEqual(
+      expect.objectContaining({ type: "manual_edit", file: "middleware.ts" })
+    );
+  });
+});
 
 describe("add editor (Next.js)", () => {
   it("integrates into a create-next-app project", async () => {

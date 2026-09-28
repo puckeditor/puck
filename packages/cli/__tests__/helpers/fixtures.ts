@@ -52,6 +52,44 @@ export const nextMinimal = (
   "app/page.tsx": home,
 });
 
+/** A vinext App Router app, as `vinext init` leaves a migrated create-next-app */
+export const vinextMinimal = (
+  overrides: { withNext?: boolean; middleware?: boolean } = {}
+): Tree => ({
+  "package.json": pkg({
+    name: "vinext-minimal",
+    private: true,
+    type: "module",
+    scripts: { dev: "vinext dev", build: "vinext build" },
+    dependencies: {
+      ...(overrides.withNext ? { next: "^16.2.0" } : {}),
+      react: "^19.2.6",
+      "react-dom": "^19.2.6",
+      "react-server-dom-webpack": "^19.2.6",
+      vinext: "^1.0.0",
+    },
+    devDependencies: {
+      typescript: "^5",
+      "@types/react": "^19",
+      "@vitejs/plugin-rsc": "^0.5.34",
+      vite: "^8.0.0",
+    },
+  }),
+  "package-lock.json": "{}\n",
+  "tsconfig.json": nextTsconfig,
+  "vite.config.ts": `import { defineConfig } from "vite";
+import vinext from "vinext";
+
+export default defineConfig({ plugins: [vinext()] });
+`,
+  ".gitignore": "/node_modules\n/dist/\n.env*\n",
+  "app/layout.tsx": layout,
+  "app/page.tsx": home,
+  ...(overrides.middleware
+    ? { "middleware.ts": "export function middleware() {}\n" }
+    : {}),
+});
+
 export const nextSrc = (): Tree => {
   const tree = nextMinimal({ name: "next-src" });
   delete tree["app/layout.tsx"];

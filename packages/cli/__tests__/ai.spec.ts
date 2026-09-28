@@ -13,35 +13,39 @@ import { nextMinimal, rrMinimal } from "./helpers/fixtures";
 const KEY = ["--api-key", "sk-valid-key"];
 
 describe("add ai", () => {
-  it("turns the next recipe into the next-ai recipe", async () => {
-    const root = tmpProject({ recipe: "next" });
-    const { json, runner } = await run(
-      ["add", "ai", "--yes", "--json", ...KEY],
-      { cwd: root }
-    );
+  it.each(["next", "vinext"] as const)(
+    "turns the %s recipe into the %s-ai recipe",
+    async (recipe) => {
+      const root = tmpProject({ recipe });
+      const { json, runner } = await run(
+        ["add", "ai", "--yes", "--json", ...KEY],
+        { cwd: root }
+      );
 
-    expect(json.status).toBe("success");
-    expect(json.message).toBe("Set up Puck Cloud and Puck AI.");
-    expect(json.ai).toEqual({ installed: true, configured: true });
-    expect(runner.calls[0].args).toEqual([
-      "install",
-      "@puckeditor/cloud-client@^0",
-      "@puckeditor/plugin-ai@^0",
-    ]);
+      expect(json.status).toBe("success");
+      expect(json.message).toBe("Set up Puck Cloud and Puck AI.");
+      expect(json.ai).toEqual({ installed: true, configured: true });
+      expect(runner.calls[0].args).toEqual([
+        "install",
+        "@puckeditor/cloud-client@^0",
+        "@puckeditor/plugin-ai@^0",
+      ]);
 
-    for (const file of [
-      "app/puck/[...puckPath]/client.tsx",
-      "app/puck/[...puckPath]/page.tsx",
-      "app/[...puckPath]/client.tsx",
-      "app/api/pages/route.ts",
-      "app/api/puck/[...all]/route.ts",
-    ]) {
-      expect({ file, content: read(root, file) }).toEqual({
-        file,
-        content: readRecipe("next-ai", file),
-      });
+      for (const file of [
+        "app/puck/[...puckPath]/client.tsx",
+        "app/puck/[...puckPath]/page.tsx",
+        "app/[...puckPath]/client.tsx",
+        "app/api/pages/route.ts",
+        "app/api/puck/[...all]/route.ts",
+        ...(recipe === "vinext" ? ["vite.config.ts"] : []),
+      ]) {
+        expect({ file, content: read(root, file) }).toEqual({
+          file,
+          content: readRecipe(`${recipe}-ai`, file),
+        });
+      }
     }
-  });
+  );
 
   it("turns the react-router recipe into the react-router-ai recipe", async () => {
     const root = tmpProject({ recipe: "react-router" });
