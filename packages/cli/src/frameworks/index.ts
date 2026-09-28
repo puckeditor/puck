@@ -6,6 +6,7 @@ import { reactRouterAdapter } from "./react-router";
 import { tanstackStartAdapter } from "./tanstack-start";
 import { expressAdapter, honoAdapter } from "./server";
 import { viteAdapter } from "./vite-app";
+import { astroAdapter } from "./astro";
 
 export const ADAPTERS: {
   [K in FrameworkId]: FrameworkAdapter<Extract<FrameworkInfo, { id: K }>>;
@@ -15,6 +16,7 @@ export const ADAPTERS: {
   "tanstack-start": tanstackStartAdapter,
   vinext: vinextAdapter,
   vite: viteAdapter,
+  astro: astroAdapter,
   hono: honoAdapter,
   express: expressAdapter,
 };

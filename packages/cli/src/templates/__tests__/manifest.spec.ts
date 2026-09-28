@@ -17,6 +17,12 @@ import {
   SERVER_MAPPED,
 } from "../../frameworks/server";
 import {
+  ASTRO_AI_EXCLUDED,
+  ASTRO_AI_MAPPED,
+  ASTRO_EXCLUDED,
+  ASTRO_MAPPED,
+} from "../../frameworks/astro";
+import {
   VITE_AI_EXCLUDED,
   VITE_AI_MAPPED,
   VITE_EXCLUDED,
@@ -59,6 +65,8 @@ describe("recipe coverage", () => {
     ],
     ["vinext", VINEXT_EDITOR_MAPPED, VINEXT_EDITOR_EXCLUDED],
     ["vite", VITE_MAPPED, VITE_EXCLUDED],
+    ["astro", ASTRO_MAPPED, ASTRO_EXCLUDED],
+    ["astro-ai", ASTRO_AI_MAPPED, ASTRO_AI_EXCLUDED],
     ["vite-ai", VITE_AI_MAPPED, VITE_AI_EXCLUDED],
     ["hono", SERVER_MAPPED, SERVER_EXCLUDED],
     ["hono-ai", SERVER_AI_MAPPED, SERVER_AI_EXCLUDED],

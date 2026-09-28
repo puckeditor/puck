@@ -17,6 +17,7 @@ export const FRAMEWORK_IDS = [
   "tanstack-start",
   "vinext",
   "vite",
+  "astro",
   "hono",
   "express",
 ] as const;
@@ -29,13 +30,14 @@ export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   "tanstack-start": "TanStack Start",
   vinext: "vinext",
   vite: "Vite",
+  astro: "Astro",
   hono: "Hono",
   express: "Express",
 };
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */
 export const SUPPORTED_FRAMEWORKS =
-  "Next.js (App Router), React Router 7 framework mode, TanStack Start, vinext and Vite React apps, or a Hono or Express server";
+  "Next.js (App Router), React Router 7 framework mode, TanStack Start, vinext, Astro and Vite React apps, or a Hono or Express server";
 
 export interface NextInfo {
   id: "next";
@@ -95,6 +97,18 @@ export interface ViteInfo {
   backend: ExistingBackend | null;
 }
 
+export interface AstroInfo {
+  id: "astro";
+  version: string | null;
+  major: number | null;
+  config: string | null;
+  /** @astrojs/react is installed, so React islands can render */
+  react: boolean;
+  /** The server adapter, e.g. @astrojs/node, which on-demand routes need */
+  adapter: string | null;
+  backend: ExistingBackend | null;
+}
+
 export type ExistingBackend =
   | { mode: "local" }
   | { mode: "external"; url: string | null };
@@ -120,6 +134,7 @@ export type FrameworkInfo =
   | TanStackStartInfo
   | VinextInfo
   | ViteInfo
+  | AstroInfo
   | HonoInfo
   | ExpressInfo;
 
@@ -457,6 +472,52 @@ const detectVite = (
   };
 };
 
+const ASTRO_ADAPTERS = [
+  "@astrojs/node",
+  "@astrojs/vercel",
+  "@astrojs/netlify",
+  "@astrojs/cloudflare",
+  "@deno/astro-adapter",
+];
+
+const detectAstro = (
+  vfs: Vfs,
+  root: string,
+  range: string,
+  deps: Record<string, string>
+): FrameworkDetection => {
+  const version = resolveInstalledVersion(vfs, root, "astro");
+  const config = firstExisting(
+    vfs,
+    root,
+    ["mjs", "ts", "js", "mts", "cjs"].map((ext) => `astro.config.${ext}`)
+  );
+  const adapter = ASTRO_ADAPTERS.find((a) => a in deps) ?? null;
+  const code = config ? vfs.readText(path.join(root, config)) ?? "" : "";
+  const proxy = config
+    ? findStringProperty(code, config, "/api")
+    : { status: "absent" as const };
+
+  return {
+    status: "detected",
+    info: {
+      id: "astro",
+      version,
+      major: majorOf(version) ?? majorOf(range),
+      config,
+      react: "@astrojs/react" in deps,
+      adapter,
+      backend: adapter
+        ? { mode: "local" }
+        : proxy.status === "literal"
+        ? { mode: "external", url: proxy.value }
+        : proxy.status === "dynamic"
+        ? { mode: "external", url: null }
+        : null,
+    },
+  };
+};
+
 const detectServer =
   (id: "hono" | "express") =>
   (
@@ -518,6 +579,7 @@ const DETECTORS: Detector[] = [
     detect: detectVinext,
   },
   { id: "vite", dep: "vite", detect: detectVite },
+  { id: "astro", dep: "astro", supersedes: ["vite"], detect: detectAstro },
   { id: "hono", dep: "hono", fallback: true, detect: detectServer("hono") },
   {
     id: "express",

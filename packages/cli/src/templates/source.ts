@@ -15,6 +15,8 @@ export type RecipeName =
   | "vinext-ai"
   | "vite"
   | "vite-ai"
+  | "astro"
+  | "astro-ai"
   | "hono"
   | "hono-ai"
   | "express"
