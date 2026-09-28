@@ -3,6 +3,7 @@
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
     "NEXT_PUBLIC_PLAUSIBLE_DATA_DOMAIN",
+    "NEXT_PUBLIC_POSTHOG_KEY",
     "NEXT_PUBLIC_IS_LATEST",
     "NEXT_PUBLIC_IS_CANARY",
     "VERCEL_GIT_COMMIT_REF",
