@@ -17,7 +17,10 @@ export type HeroProps = {
   image?: {
     content?: Slot;
     mode?: "inline" | "background" | "custom";
-    url?: string;
+    source?: {
+      src?: string;
+      alt?: string;
+    };
   };
   buttons: {
     label: string;
@@ -49,7 +52,7 @@ export const Hero: PuckComponent<HeroProps> = ({
           <div
             className={getClassName("image")}
             style={{
-              backgroundImage: `url("${image?.url}")`,
+              backgroundImage: `url("${image?.source?.src}")`,
             }}
           ></div>
 
@@ -76,10 +79,10 @@ export const Hero: PuckComponent<HeroProps> = ({
           </div>
         </div>
 
-        {align !== "center" && image?.mode === "inline" && image?.url && (
+        {align !== "center" && image?.mode === "inline" && image?.source?.src && (
           <div
             style={{
-              backgroundImage: `url('${image?.url}')`,
+              backgroundImage: `url('${image?.source?.src}')`,
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",

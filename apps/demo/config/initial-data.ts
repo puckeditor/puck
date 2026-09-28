@@ -19,7 +19,10 @@ export const initialData: Record<string, UserData> = {
           ],
           id: "Hero-1687283596554",
           image: {
-            url: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+            source: {
+              src: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+              alt: "City illustration",
+            },
             mode: "inline",
             content: [],
           },
@@ -59,7 +62,7 @@ export const initialData: Record<string, UserData> = {
         type: "Text",
         props: {
           align: "center",
-          text: "Configure Puck with your own components to make change for your marketing pages without a developer.",
+          text: "Configure Puck with your own components to make changes to your marketing pages without a developer.",
           layout: { padding: "0px" },
           size: "m",
           id: "Text-1687297621556",
@@ -277,39 +280,6 @@ export const initialData: Record<string, UserData> = {
                 id: "Card-9c3b0acc-ee42-4a4a-8cc7-1b22d98493f1",
               },
             },
-            {
-              type: "Card",
-              props: {
-                title: "Title",
-                description: "Description",
-                icon: "Feather",
-                mode: "card",
-                layout: { grow: false, spanCol: 1, spanRow: 1, padding: "0px" },
-                id: "Card-dbec4ae9-8208-49bf-8910-3347ff13d957",
-              },
-            },
-            {
-              type: "Card",
-              props: {
-                title: "Title",
-                description: "Description",
-                icon: "Feather",
-                mode: "card",
-                layout: { grow: false, spanCol: 1, spanRow: 1, padding: "0px" },
-                id: "Card-e807464c-4974-4dbb-b1c9-989deabce58d",
-              },
-            },
-            {
-              type: "Card",
-              props: {
-                title: "Title",
-                description: "Description",
-                icon: "Feather",
-                mode: "card",
-                layout: { grow: false, spanCol: 1, spanRow: 1, padding: "0px" },
-                id: "Card-3b4b7d53-2124-4d7a-a67e-36b24fd765b4",
-              },
-            },
           ],
         },
       },
@@ -362,6 +332,7 @@ export const initialData: Record<string, UserData> = {
       {
         type: "Flex",
         props: {
+          alignItems: "center",
           justifyContent: "center",
           direction: "row",
           gap: 24,

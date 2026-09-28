@@ -13,9 +13,14 @@ export type FlexProps = WithLayout<{
   gap: number;
   wrap: "wrap" | "nowrap";
   items: Slot;
+  alignItems: "start" | "center" | "end";
 }>;
 
 const FlexInternal: ComponentConfig<FlexProps> = {
+  ai: {
+    instructions:
+      "Lays out children in a flexible row or column. Containers can be nested for more complex layouts.",
+  },
   fields: {
     direction: {
       label: "Direction",
@@ -33,15 +38,39 @@ const FlexInternal: ComponentConfig<FlexProps> = {
         { label: "Center", value: "center" },
         { label: "End", value: "end" },
       ],
+      ai: {
+        instructions:
+          "Controls how the flex container distributes space along the main axis (horizontal for row, vertical for column).",
+      },
+    },
+    alignItems: {
+      label: "Align Items",
+      type: "radio",
+      options: [
+        { label: "Start", value: "start" },
+        { label: "Center", value: "center" },
+        { label: "End", value: "end" },
+      ],
+      ai: {
+        instructions:
+          "Controls how the flex container aligns items along the cross axis (vertical for row, horizontal for column).",
+      },
     },
     gap: {
       label: "Gap",
       type: "number",
       min: 0,
+      ai: {
+        instructions: "The gap between children, in pixels.",
+      },
     },
     wrap: {
       label: "Wrap",
       type: "radio",
+      ai: {
+        instructions:
+          "Use 'wrap' to move children onto new lines when needed, or 'nowrap' to keep them on one line.",
+      },
       options: [
         { label: "true", value: "wrap" },
         { label: "false", value: "nowrap" },
@@ -49,10 +78,12 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     items: {
       type: "slot",
+      disallow: ["Hero", "Stats"],
     },
   },
   defaultProps: {
     justifyContent: "start",
+    alignItems: "start",
     direction: "row",
     gap: 24,
     wrap: "wrap",
@@ -61,7 +92,14 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     items: [],
   },
-  render: ({ justifyContent, direction, gap, wrap, items: Items }) => {
+  render: ({
+    justifyContent,
+    direction,
+    gap,
+    wrap,
+    alignItems,
+    items: Items,
+  }) => {
     return (
       <Section style={{ height: "100%" }}>
         <Items
@@ -71,8 +109,8 @@ const FlexInternal: ComponentConfig<FlexProps> = {
             flexDirection: direction,
             gap,
             flexWrap: wrap,
+            alignItems,
           }}
-          disallow={["Hero", "Stats"]}
         />
       </Section>
     );

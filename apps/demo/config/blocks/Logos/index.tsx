@@ -15,6 +15,10 @@ export type LogosProps = {
 };
 
 export const Logos: ComponentConfig<LogosProps> = {
+  ai: {
+    instructions:
+      "Displays a collection of brand logos on the page as white silhouettes.",
+  },
   fields: {
     logos: {
       type: "array",
@@ -24,37 +28,48 @@ export const Logos: ComponentConfig<LogosProps> = {
         imageUrl: "",
       },
       arrayFields: {
-        alt: { type: "text" },
-        imageUrl: { type: "text" },
+        alt: {
+          type: "text",
+          ai: {
+            instructions: "Describe the organization represented by the logo.",
+          },
+        },
+        imageUrl: {
+          type: "text",
+          ai: {
+            instructions:
+              "Use a placehold.co wordmark for a fictional company, such as https://placehold.co/200x64/transparent/333333?text=Acme&font=montserrat. Change the text (use + for spaces) and optionally the font: montserrat, poppins, oswald, playfair-display, lora, or raleway. Keep the transparent background and 333333 color so the logo renders as a white wordmark.",
+          },
+        },
       },
     },
   },
   defaultProps: {
     logos: [
       {
-        alt: "google",
+        alt: "Acme",
         imageUrl:
-          "https://logolook.net/wp-content/uploads/2021/06/Google-Logo.png",
+          "https://placehold.co/200x64/transparent/333333?text=Acme&font=montserrat",
       },
       {
-        alt: "google",
+        alt: "Bluepeak",
         imageUrl:
-          "https://logolook.net/wp-content/uploads/2021/06/Google-Logo.png",
+          "https://placehold.co/200x64/transparent/333333?text=Bluepeak&font=poppins",
       },
       {
-        alt: "google",
+        alt: "Oakline",
         imageUrl:
-          "https://logolook.net/wp-content/uploads/2021/06/Google-Logo.png",
+          "https://placehold.co/200x64/transparent/333333?text=Oakline&font=playfair-display",
       },
       {
-        alt: "google",
+        alt: "Brightfield",
         imageUrl:
-          "https://logolook.net/wp-content/uploads/2021/06/Google-Logo.png",
+          "https://placehold.co/200x64/transparent/333333?text=Brightfield&font=raleway",
       },
       {
-        alt: "google",
+        alt: "Novara",
         imageUrl:
-          "https://logolook.net/wp-content/uploads/2021/06/Google-Logo.png",
+          "https://placehold.co/200x64/transparent/333333?text=Novara&font=oswald",
       },
     ],
   },

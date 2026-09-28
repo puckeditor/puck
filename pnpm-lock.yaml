@@ -58,6 +58,12 @@ importers:
 
   apps/demo:
     dependencies:
+      '@puckeditor/cloud-client':
+        specifier: ^0.8.2
+        version: 0.8.2
+      '@puckeditor/plugin-ai':
+        specifier: ^0.8.2
+        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@3.25.76)
       classnames:
         specifier: ^2.3.2
         version: 2.5.1

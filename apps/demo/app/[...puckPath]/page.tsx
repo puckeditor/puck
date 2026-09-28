@@ -1,4 +1,5 @@
 import "@/core/styles.css";
+import "@puckeditor/plugin-ai/styles.css";
 
 import resolvePuckPath from "../../lib/resolve-puck-path";
 import { Metadata } from "next";

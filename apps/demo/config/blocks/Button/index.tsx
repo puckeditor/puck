@@ -16,9 +16,19 @@ export const Button: ComponentConfig<ButtonProps> = {
       placeholder: "Lorem ipsum...",
       contentEditable: true,
     },
-    href: { type: "text" },
+    href: {
+      type: "text",
+      ai: {
+        instructions:
+          "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
+      },
+    },
     variant: {
       type: "radio",
+      ai: {
+        instructions:
+          "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
+      },
       options: [
         { label: "primary", value: "primary" },
         { label: "secondary", value: "secondary" },

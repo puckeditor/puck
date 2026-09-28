@@ -16,11 +16,15 @@ export const Hero: ComponentConfig<{
     };
   };
 }> = {
+  ai: {
+    instructions: "A page hero whose title renders as the page's h1.",
+  },
   fields: {
     quote: {
       type: "external",
       placeholder: "Select a quote",
       showSearch: false,
+      ai: { exclude: true },
       renderFooter: ({ items }) => {
         return (
           <div>
@@ -85,6 +89,9 @@ export const Hero: ComponentConfig<{
     description: {
       ...heroRenderFields.description,
       contentEditable: true,
+      ai: {
+        instructions: "Supporting rich text shown below the Hero title.",
+      },
       options: {
         heading: false,
         textAlign: false,
@@ -119,9 +126,19 @@ export const Hero: ComponentConfig<{
       getItemSummary: (item) => item.label || "Button",
       arrayFields: {
         label: { type: "text", contentEditable: true },
-        href: { type: "text" },
+        href: {
+          type: "text",
+          ai: {
+            instructions:
+              "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
+          },
+        },
         variant: {
           type: "select",
+          ai: {
+            instructions:
+              "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
+          },
           options: [
             { label: "primary", value: "primary" },
             { label: "secondary", value: "secondary" },
@@ -135,6 +152,10 @@ export const Hero: ComponentConfig<{
     },
     align: {
       type: "radio",
+      ai: {
+        instructions:
+          "Use 'left' to show the image. Use 'center' to center the text and hide the image.",
+      },
       options: [
         { label: "left", value: "left" },
         { label: "center", value: "center" },
@@ -144,8 +165,15 @@ export const Hero: ComponentConfig<{
       ...heroRenderFields.image,
       objectFields: {
         ...heroRenderFields.image.objectFields,
-        url: {
+        source: {
           type: "custom",
+          ai: {
+            bind: "puck:unsplash",
+            schema: {
+              type: "object",
+              properties: { src: { type: "string" }, alt: { type: "string" } },
+            },
+          },
           render: ({ value, field, name, onChange, readOnly }) => (
             <FieldLabel
               label={field.label || name}
@@ -163,6 +191,10 @@ export const Hero: ComponentConfig<{
         },
         mode: {
           type: "radio",
+          ai: {
+            instructions:
+              "Use 'inline' to display the image beside the text or 'background' to place it behind the content. NEVER use 'custom'.",
+          },
           options: [
             { label: "inline", value: "inline" },
             { label: "bg", value: "background" },
@@ -171,7 +203,14 @@ export const Hero: ComponentConfig<{
         },
       },
     },
-    padding: { type: "userField", option: true },
+    padding: {
+      type: "userField",
+      option: true,
+      ai: {
+        instructions: "Vertical padding above and below the Hero content.",
+        schema: { type: "string", pattern: "^\\d+(px|em|rem|%)$" },
+      },
+    },
   },
   defaultProps: {
     title: "Hero",
@@ -179,6 +218,13 @@ export const Hero: ComponentConfig<{
     description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],
     padding: "64px",
+    image: {
+      source: {
+        src: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+        alt: "Hero image",
+      },
+      mode: "inline",
+    },
   },
   /**
    * The resolveData method allows us to modify component data after being

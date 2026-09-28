@@ -8,6 +8,8 @@ export type RichTextProps = WithLayout<{
 }>;
 
 const RichTextInner: ComponentConfig<RichTextProps> = {
+  // This is just RTE demo, so no need to use it by itself.
+  ai: { exclude: true },
   fields: {
     richtext: {
       type: "richtext",

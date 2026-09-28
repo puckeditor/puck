@@ -9,18 +9,46 @@ import { withLayout, WithLayout } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("Card", styles);
 
-const icons = Object.keys(dynamicIconImports).reduce<
-  Record<string, ReactElement>
->((acc, iconName) => {
-  const El = dynamic((dynamicIconImports as any)[iconName]);
+const cardIconNames = [
+  "align-left",
+  "feather",
+  "git-merge",
+  "github",
+  "pen-tool",
+  "plug",
+  "activity",
+  "badge-check",
+  "book-open",
+  "briefcase",
+  "building-2",
+  "chart-no-axes-column-increasing",
+  "circle-check",
+  "cloud",
+  "code",
+  "database",
+  "globe",
+  "heart",
+  "lightbulb",
+  "lock",
+  "rocket",
+  "shield-check",
+  "sparkles",
+  "users",
+] as const satisfies readonly (keyof typeof dynamicIconImports)[];
 
-  return {
-    ...acc,
-    [iconName]: <El />,
-  };
-}, {});
+const icons = cardIconNames.reduce<Record<string, ReactElement>>(
+  (acc, iconName) => {
+    const El = dynamic(dynamicIconImports[iconName]);
 
-const iconOptions = Object.keys(dynamicIconImports).map((iconName) => ({
+    return {
+      ...acc,
+      [iconName]: <El />,
+    };
+  },
+  {}
+);
+
+const iconOptions = cardIconNames.map((iconName) => ({
   label: iconName,
   value: iconName,
 }));
@@ -33,6 +61,10 @@ export type CardProps = WithLayout<{
 }>;
 
 const CardInner: ComponentConfig<CardProps> = {
+  ai: {
+    instructions:
+      "Use Cards to enumerate related features or items. Keep every Card in the same container on the same mode.",
+  },
   fields: {
     title: {
       type: "text",
@@ -47,6 +79,11 @@ const CardInner: ComponentConfig<CardProps> = {
       options: iconOptions,
     },
     mode: {
+      ai: {
+        instructions:
+          "Use 'flat' for a transparent, center-aligned appearance or 'card' for an elevated, left-aligned appearance.",
+        required: false,
+      },
       type: "radio",
       options: [
         { label: "card", value: "card" },
@@ -57,7 +94,7 @@ const CardInner: ComponentConfig<CardProps> = {
   defaultProps: {
     title: "Title",
     description: "Description",
-    icon: "Feather",
+    icon: "feather",
     mode: "flat",
   },
   render: ({ title, icon, description, mode }) => {

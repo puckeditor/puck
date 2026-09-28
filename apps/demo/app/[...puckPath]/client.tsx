@@ -1,11 +1,31 @@
 "use client";
 
-import { AutoField, Button, FieldLabel, Puck, Render } from "@/core";
+import {
+  AutoField,
+  Button,
+  FieldLabel,
+  Puck,
+  Render,
+  outlinePlugin,
+  blocksPlugin,
+} from "@/core";
+import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
+import type { Data } from "@/core/types";
 import headingAnalyzer from "@/plugin-heading-analyzer/src/HeadingAnalyzer";
 import config from "../../config";
 import { useDemoData } from "../../lib/use-demo-data";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Type } from "lucide-react";
+
+const aiPlugin = createAiPlugin({
+  designMode: {
+    visible: true,
+  },
+  defaultMode: "design",
+});
+
+const blocksPluginInstance = blocksPlugin();
+const outlinePluginInstance = outlinePlugin();
 
 export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
   const metadata = {
@@ -19,6 +39,11 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
   });
 
   const [isClient, setIsClient] = useState(false);
+
+  const dynamicConfig = useMemo(
+    () => withDynamicConfig(config, data as Data),
+    [data]
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -39,12 +64,17 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
     return (
       <div>
         <Puck
-          config={config}
+          config={dynamicConfig}
           data={data}
           onPublish={async (data) => {
             localStorage.setItem(key, JSON.stringify(data));
           }}
-          plugins={[headingAnalyzer]}
+          plugins={[
+            blocksPluginInstance,
+            outlinePluginInstance,
+            headingAnalyzer,
+            aiPlugin,
+          ]}
           headerPath={path}
           iframe={{
             enabled: params.get("disableIframe") === "true" ? false : true,
@@ -92,7 +122,9 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
   }
 
   if (data.content) {
-    return <Render config={config} data={resolvedData} metadata={metadata} />;
+    return (
+      <Render config={dynamicConfig} data={resolvedData} metadata={metadata} />
+    );
   }
 
   return (
