@@ -95,6 +95,9 @@ describe("arguments", () => {
     [["add", "--json"], "PUCK-CLI-INVALID-ARGS"],
     [["add", "views", "--json"], "PUCK-CLI-UNKNOWN-CAPABILITY"],
     [["init", "--json", "--framework", "vue"], "PUCK-CLI-INVALID-ARGS"],
+    [["init", "--json", "--ai", "--no-ai"], "PUCK-CLI-INVALID-ARGS"],
+    [["init", "--json", "--no-cloud"], "PUCK-CLI-INVALID-ARGS"],
+    [["add", "ai", "--json", "--ai"], "PUCK-CLI-INVALID-ARGS"],
     [
       ["status", "--json", "--cwd", "/definitely/missing"],
       "PUCK-CLI-CWD-NOT-FOUND",

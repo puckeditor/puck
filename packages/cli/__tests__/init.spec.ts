@@ -26,12 +26,16 @@ describe("init", () => {
     expect(json.actions.map((a) => a.type)).toEqual([
       "choose_framework",
       "provide_app_name",
+      "choose_ai",
     ]);
     expect(json.actions[0]).toMatchObject({
       choices: [{ value: "next" }, { value: "react-router" }],
       rerun: expect.stringContaining(
-        "--framework <next|react-router> --name <name>"
+        "--framework <next|react-router> --name <name> <--ai|--no-ai>"
       ),
+    });
+    expect(json.actions[2]).toMatchObject({
+      choices: [{ value: "--ai" }, { value: "--no-ai" }],
     });
     expect(treeSnapshot(root)).toEqual(before);
     expect(runner.calls).toEqual([]);
@@ -49,6 +53,7 @@ describe("init", () => {
           "init",
           "--yes",
           "--json",
+          "--ai",
           "--framework",
           framework,
           "--name",
@@ -114,6 +119,7 @@ describe("init", () => {
         "init",
         "--yes",
         "--json",
+        "--ai",
         "--framework",
         "next",
         "--api-key",
@@ -129,9 +135,12 @@ describe("init", () => {
 
   it("verifies an app that's already fully set up without changing it", async () => {
     const root = tmpProject({ recipe: "next" });
-    await run(["init", "--yes", "--json", "--api-key", "sk-valid-key"], {
-      cwd: root,
-    });
+    await run(
+      ["init", "--yes", "--json", "--ai", "--api-key", "sk-valid-key"],
+      {
+        cwd: root,
+      }
+    );
     const before = treeSnapshot(root);
 
     const { json, code, runner } = await run(["init", "--yes", "--json"], {
@@ -151,7 +160,15 @@ describe("init", () => {
   it("rejects invalid names and non-empty targets", async () => {
     const root = tmpProject("empty");
     const bad = await run(
-      ["init", "--json", "--framework", "next", "--name", "../escape"],
+      [
+        "init",
+        "--json",
+        "--no-ai",
+        "--framework",
+        "next",
+        "--name",
+        "../escape",
+      ],
       { cwd: root }
     );
     expect(bad.json.error?.code).toBe("PUCK-CLI-INVALID-APP-NAME");
@@ -159,7 +176,7 @@ describe("init", () => {
     fs.mkdirSync(path.join(root, "taken"));
     fs.writeFileSync(path.join(root, "taken", "file"), "x");
     const taken = await run(
-      ["init", "--json", "--framework", "next", "--name", "taken"],
+      ["init", "--json", "--no-ai", "--framework", "next", "--name", "taken"],
       { cwd: root }
     );
     expect(taken.json.error?.code).toBe("PUCK-CLI-TARGET-DIR-NOT-EMPTY");
@@ -169,7 +186,7 @@ describe("init", () => {
   it("rejects a --framework that contradicts the project", async () => {
     const root = tmpProject({ recipe: "next" });
     const { json } = await run(
-      ["init", "--yes", "--json", "--framework", "react-router"],
+      ["init", "--yes", "--json", "--no-ai", "--framework", "react-router"],
       { cwd: root }
     );
     expect(json.error?.code).toBe("PUCK-CLI-FRAMEWORK-MISMATCH");
@@ -182,7 +199,7 @@ describe("Puck Cloud login (connect flow)", () => {
     const cloud = new FakeCloud();
     const home = path.join(root, "..", "home");
 
-    const first = await run(["init", "--yes", "--json"], {
+    const first = await run(["init", "--yes", "--json", "--ai"], {
       cwd: root,
       cloud,
       env: { HOME: home },
@@ -194,7 +211,7 @@ describe("Puck Cloud login (connect flow)", () => {
       type: "browser_login",
       url: expect.stringContaining("/cli/connect#code="),
       userCode: expect.stringMatching(/^[A-Z]{4}-[A-Z0-9]{4}$/),
-      rerun: "npx @puckeditor/cli init --yes --json",
+      rerun: "npx @puckeditor/cli init --yes --json --ai",
     });
     expect(first.runner.calls).toEqual([]);
     expect(exists(root, "app/api/puck/[...all]/route.ts")).toBe(false);
@@ -205,7 +222,7 @@ describe("Puck Cloud login (connect flow)", () => {
     });
 
     // Still pending: same session, no new one
-    const pending = await run(["init", "--yes", "--json"], {
+    const pending = await run(["init", "--yes", "--json", "--ai"], {
       cwd: root,
       cloud,
       env: { HOME: home },
@@ -220,7 +237,7 @@ describe("Puck Cloud login (connect flow)", () => {
     expect(cloud.sessions.size).toBe(1);
 
     cloud.approveAll();
-    const done = await run(["init", "--yes", "--json"], {
+    const done = await run(["init", "--yes", "--json", "--ai"], {
       cwd: root,
       cloud,
       env: { HOME: home },

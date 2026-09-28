@@ -20,7 +20,8 @@ export interface Flags {
   framework?: FrameworkId;
   name?: string;
   offline: boolean;
-  noCloud: boolean;
+  ai: boolean;
+  noAi: boolean;
 }
 
 export interface ParsedArgs {
@@ -45,7 +46,8 @@ const OPTIONS = {
   framework: { type: "string" },
   name: { type: "string" },
   offline: { type: "boolean" },
-  "no-cloud": { type: "boolean" },
+  ai: { type: "boolean" },
+  "no-ai": { type: "boolean" },
 } as const;
 
 type OptionName = keyof typeof OPTIONS;
@@ -68,7 +70,7 @@ const MUTATING: OptionName[] = [
 ];
 
 export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
-  init: [...GLOBAL, ...MUTATING, "framework", "name", "no-cloud"],
+  init: [...GLOBAL, ...MUTATING, "framework", "name", "ai", "no-ai"],
   add: [...GLOBAL, ...MUTATING],
   status: ["json", "help", "version", "cwd", "workspace", "config"],
   doctor: ["json", "help", "version", "cwd", "workspace", "config", "offline"],
@@ -147,6 +149,13 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     );
   }
 
+  if (values.ai && values["no-ai"]) {
+    throw new CliError(
+      "PUCK-CLI-INVALID-ARGS",
+      "--ai and --no-ai can't be used together."
+    );
+  }
+
   return {
     command,
     positionals,
@@ -166,7 +175,8 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       framework: framework as FrameworkId | undefined,
       name: values.name as string | undefined,
       offline: Boolean(values.offline),
-      noCloud: Boolean(values["no-cloud"]),
+      ai: Boolean(values.ai),
+      noAi: Boolean(values["no-ai"]),
     },
   };
 };

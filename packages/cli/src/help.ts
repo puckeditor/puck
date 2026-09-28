@@ -6,7 +6,7 @@ export const COMMANDS = [
   {
     name: "init",
     description:
-      "Set up Puck and Puck Cloud in this project, or create a new app",
+      "Set up Puck in this project or create a new app, optionally with Puck AI",
   },
   {
     name: "add <editor|cloud|ai>",
@@ -46,7 +46,8 @@ Flags:
   --workspace <name|dir>  Choose an app when run from a monorepo root
   --api-key <key>         Use an existing Puck API key (prefer PUCK_API_KEY=… in the environment)
   --no-env-write          Don't write PUCK_API_KEY to .env.local
-  --no-cloud              Set up the editor only, without Puck Cloud and Puck AI (init)
+  --ai                    Also set up Puck AI and Puck Cloud (init)
+  --no-ai                 Set up the editor only, without asking about Puck AI (init)
   --wait                  Wait for Puck Cloud login approval instead of returning
   --framework <next|react-router>  Framework for new apps (init)
   --name <name>           Directory name for new apps (init)

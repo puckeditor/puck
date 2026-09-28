@@ -48,6 +48,13 @@ const actionLines = (action: RequiredAction): string[] => {
     case "provide_app_name":
       lines.push(`    ${action.flag} ${action.suggested}`);
       break;
+    case "choose_ai":
+      lines.push(
+        ...action.choices.map(
+          (c) => `    ${c.value.padEnd(8)} ${pc.dim(c.label)}`
+        )
+      );
+      break;
     case "manual_edit":
       lines.push(`    ${action.instructions}`);
       if (action.snippet) lines.push(pc.dim(indent(action.snippet, "      ")));

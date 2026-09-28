@@ -1,6 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { exists, read, readRecipe, run, tmpProject } from "./helpers/harness";
+import {
+  exists,
+  read,
+  readRecipe,
+  run,
+  tmpProject,
+  treeSnapshot,
+} from "./helpers/harness";
 import { nextMinimal, rrMinimal } from "./helpers/fixtures";
 
 const KEY = ["--api-key", "sk-valid-key"];
@@ -108,9 +115,35 @@ describe("add ai", () => {
 });
 
 describe("init with Puck AI", () => {
+  it("asks whether to add Puck AI without changing anything", async () => {
+    const root = tmpProject({ tree: nextMinimal() });
+    const before = treeSnapshot(root);
+    const { json, code, runner, cloud } = await run(
+      ["init", "--yes", "--json"],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("action_required");
+    expect(code).toBe(10);
+    expect(json.actions).toEqual([
+      expect.objectContaining({
+        type: "choose_ai",
+        required: true,
+        choices: [
+          { value: "--ai", label: "Add Puck AI and Puck Cloud" },
+          { value: "--no-ai", label: "Editor only" },
+        ],
+        rerun: "npx @puckeditor/cli init --yes --json <--ai|--no-ai>",
+      }),
+    ]);
+    expect(treeSnapshot(root)).toEqual(before);
+    expect(runner.calls).toEqual([]);
+    expect(cloud.networkCalls).toBe(0);
+  });
+
   it("adds the AI editor to an existing Next.js app", async () => {
     const root = tmpProject({ tree: nextMinimal() });
-    const { json } = await run(["init", "--yes", "--json", ...KEY], {
+    const { json } = await run(["init", "--yes", "--json", "--ai", ...KEY], {
       cwd: root,
     });
 
@@ -130,7 +163,7 @@ describe("init with Puck AI", () => {
         "puck.config.tsx": `import type { Config } from "@puckeditor/core";\n\nexport const config: Config = { components: {} };\n`,
       },
     });
-    const { json } = await run(["init", "--yes", "--json", ...KEY], {
+    const { json } = await run(["init", "--yes", "--json", "--ai", ...KEY], {
       cwd: root,
     });
 
@@ -141,10 +174,10 @@ describe("init with Puck AI", () => {
     expect(exists(root, "app/components/puck-render.tsx")).toBe(true);
   });
 
-  it("sets up only the editor with --no-cloud", async () => {
+  it("sets up only the editor with --no-ai", async () => {
     const root = tmpProject({ tree: nextMinimal() });
     const { json, runner, cloud } = await run(
-      ["init", "--yes", "--json", "--no-cloud"],
+      ["init", "--yes", "--json", "--no-ai"],
       { cwd: root }
     );
 
@@ -160,10 +193,10 @@ describe("init with Puck AI", () => {
     );
   });
 
-  it("scaffolds the plain recipe with --no-cloud", async () => {
+  it("scaffolds the plain recipe with --no-ai", async () => {
     const root = tmpProject("empty");
     const { json } = await run(
-      ["init", "--yes", "--json", "--no-cloud", "--framework", "react-router"],
+      ["init", "--yes", "--json", "--no-ai", "--framework", "react-router"],
       { cwd: root }
     );
 

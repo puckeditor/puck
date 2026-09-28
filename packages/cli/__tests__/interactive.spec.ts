@@ -45,7 +45,7 @@ describe("interactive", () => {
 
     expect(asked).toEqual([
       "Which framework?",
-      "Set up Puck Cloud and Puck AI? (requires a Puck Cloud account)",
+      "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
       "Apply these changes?",
       "How do you want to connect to Puck Cloud?",
     ]);
@@ -144,8 +144,8 @@ describe("interactive", () => {
   });
 });
 
-describe("interactive Cloud choice", () => {
-  it("sets up only the editor when Puck Cloud is declined", async () => {
+describe("interactive AI choice", () => {
+  it("sets up only the editor when Puck AI is declined", async () => {
     const { nextMinimal } = await import("./helpers/fixtures");
     const root = tmpProject({ tree: nextMinimal() });
     const { prompter, asked } = scripted([false, true]);
@@ -157,7 +157,7 @@ describe("interactive Cloud choice", () => {
     });
 
     expect(asked[0]).toBe(
-      "Set up Puck Cloud and Puck AI? (requires a Puck Cloud account)"
+      "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)"
     );
     expect(code).toBe(0);
     expect(stdout).toContain("Set up Puck Editor.");

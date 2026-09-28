@@ -60,6 +60,10 @@ export type RequiredAction = ActionBase &
         choices: { value: string; label: string }[];
       }
     | { type: "provide_app_name"; flag: "--name"; suggested: string }
+    | {
+        type: "choose_ai";
+        choices: { value: "--ai" | "--no-ai"; label: string }[];
+      }
     | { type: "confirm_plan"; flag: "--yes" }
     | {
         type: "manual_edit";

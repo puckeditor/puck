@@ -12,9 +12,12 @@ const KEY = ["--api-key", "sk-valid-key"];
 describe("workspaces", () => {
   it("auto-targets the only app from the workspace root", async () => {
     const root = tmpProject({ tree: pnpmMonorepo(["web"]) });
-    const { json, runner } = await run(["init", "--yes", "--json", ...KEY], {
-      cwd: root,
-    });
+    const { json, runner } = await run(
+      ["init", "--yes", "--json", "--ai", ...KEY],
+      {
+        cwd: root,
+      }
+    );
 
     expect(json.status).toBe("success");
     expect(runner.calls[0]).toEqual({
@@ -55,9 +58,12 @@ describe("workspaces", () => {
   it("asks which app to use when there are several", async () => {
     const root = tmpProject({ tree: pnpmMonorepo() });
     const before = treeSnapshot(root);
-    const { json, code } = await run(["init", "--yes", "--json", ...KEY], {
-      cwd: root,
-    });
+    const { json, code } = await run(
+      ["init", "--yes", "--json", "--ai", ...KEY],
+      {
+        cwd: root,
+      }
+    );
 
     expect(code).toBe(10);
     expect(json.actions).toEqual([
@@ -73,7 +79,7 @@ describe("workspaces", () => {
     expect(treeSnapshot(root)).toEqual(before);
 
     const chosen = await run(
-      ["init", "--yes", "--json", "--workspace", "apps/admin", ...KEY],
+      ["init", "--yes", "--json", "--ai", "--workspace", "apps/admin", ...KEY],
       { cwd: root }
     );
     expect(chosen.json.status).toBe("success");
@@ -165,9 +171,12 @@ describe("workspaces", () => {
     ],
   ])("uses %s workspaces", async (lockfile, expected) => {
     const root = tmpProject({ tree: packageJsonMonorepo(lockfile) });
-    const { json, runner } = await run(["init", "--yes", "--json", ...KEY], {
-      cwd: root,
-    });
+    const { json, runner } = await run(
+      ["init", "--yes", "--json", "--ai", ...KEY],
+      {
+        cwd: root,
+      }
+    );
     expect(json.status).toBe("success");
     expect(runner.calls[0]).toMatchObject({
       ...expected,
@@ -179,7 +188,7 @@ describe("workspaces", () => {
     const root = tmpProject({ tree: emptyPnpmMonorepo() });
 
     const missing = await run(
-      ["init", "--yes", "--json", "--framework", "next"],
+      ["init", "--yes", "--json", "--ai", "--framework", "next"],
       { cwd: root }
     );
     expect(missing.json.actions.map((a) => a.type)).toEqual([
@@ -191,6 +200,7 @@ describe("workspaces", () => {
         "init",
         "--yes",
         "--json",
+        "--ai",
         "--framework",
         "next",
         "--name",

@@ -31,23 +31,38 @@ const validateName = (name: string) => {
 };
 
 /**
- * Puck Cloud is the backend and Puck AI the editor plugin that uses it, so
- * they're offered together. Agents get both unless they pass --no-cloud.
+ * Puck AI is optional. It needs Puck Cloud (its backend), which
+ * resolveCapabilities pulls in, so Cloud isn't offered on its own. Returns
+ * null when the developer has to choose and can't be prompted.
  */
 const chooseCapabilities = async (
   rc: RunContext,
   alreadySetUp: boolean
-): Promise<CapabilityId[]> => {
-  if (rc.flags.noCloud) return ["editor"];
-  if (rc.interactive && !alreadySetUp) {
-    const withCloud = await rc.prompter.confirm(
-      "Set up Puck Cloud and Puck AI? (requires a Puck Cloud account)",
-      true
-    );
-    if (!withCloud) return ["editor"];
-  }
-  return ["editor", "cloud", "ai"];
+): Promise<CapabilityId[] | null> => {
+  if (rc.flags.ai) return ["editor", "ai"];
+  if (rc.flags.noAi) return ["editor"];
+  if (alreadySetUp) return ["editor", "ai"];
+  if (!rc.interactive) return null;
+  const withAi = await rc.prompter.confirm(
+    "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
+    false
+  );
+  return withAi ? ["editor", "ai"] : ["editor"];
 };
+
+const AI_CHOICE_FLAGS = "<--ai|--no-ai>";
+
+const aiChoiceAction = (): RequiredAction => ({
+  id: "init:ai",
+  type: "choose_ai",
+  required: true,
+  message:
+    "Choose whether to add Puck AI. It includes Puck Cloud and requires a Puck Cloud account.",
+  choices: [
+    { value: "--ai", label: "Add Puck AI and Puck Cloud" },
+    { value: "--no-ai", label: "Editor only" },
+  ],
+});
 
 export const runInit = async (rc: RunContext): Promise<CommandResult> => {
   const base = baseDir(rc);
@@ -87,12 +102,23 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
     if (vfs.exists(path.join(target.root, "package.json"))) {
       const read = readPackageJson(vfs, target.root);
       const deps = depsOf(read.status === "ok" ? read.pkg : null);
+      const requested = await chooseCapabilities(
+        rc,
+        CLOUD_CLIENT_PACKAGE in deps && PLUGIN_AI_PACKAGE in deps
+      );
+      if (!requested) {
+        const action = aiChoiceAction();
+        action.rerun = `${rerunCommand(rc)} ${AI_CHOICE_FLAGS}`;
+        const result = emptyResult("init", rc.flags.dryRun);
+        result.status = "action_required";
+        result.message =
+          "Choose whether to add Puck AI; no changes have been made.";
+        result.actions = [action];
+        return result;
+      }
       return runMutation(rc, {
         command: "init",
-        requested: await chooseCapabilities(
-          rc,
-          CLOUD_CLIENT_PACKAGE in deps && PLUGIN_AI_PACKAGE in deps
-        ),
+        requested,
         root: target.root,
         notes: target.note ? [target.note] : [],
         workspace: target.workspace,
@@ -148,10 +174,16 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
     }
   }
 
+  if (!rc.interactive && !rc.flags.ai && !rc.flags.noAi) {
+    missing.push(aiChoiceAction());
+  }
+
   if (missing.length > 0) {
     const flags = missing.map((a) =>
       a.type === "choose_framework"
         ? "--framework <next|react-router>"
+        : a.type === "choose_ai"
+        ? AI_CHOICE_FLAGS
         : "--name <name>"
     );
     for (const action of missing)
@@ -182,7 +214,8 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
 
   return runMutation(rc, {
     command: "init",
-    requested: await chooseCapabilities(rc, false),
+    // Non-null: a missing choice was returned as an action above
+    requested: (await chooseCapabilities(rc, false))!,
     root: dir,
     bootstrap: {
       framework: framework!,

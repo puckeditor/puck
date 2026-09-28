@@ -191,6 +191,7 @@ describe("PUCK_CLOUD_URL", () => {
           "init",
           "--yes",
           "--json",
+          "--ai",
           "--framework",
           framework,
           "--name",

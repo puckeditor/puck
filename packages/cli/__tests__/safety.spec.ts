@@ -15,11 +15,11 @@ describe("--dry-run", () => {
   it.each([
     ["add cloud on a recipe", { recipe: "react-router" }, ["add", "cloud"]],
     ["add editor on a new app", { tree: nextMinimal() }, ["add", "editor"]],
-    ["init on a new app", { tree: nextMinimal() }, ["init"]],
+    ["init on a new app", { tree: nextMinimal() }, ["init", "--ai"]],
     [
       "init in an empty dir",
       "empty",
-      ["init", "--framework", "next", "--name", "x"],
+      ["init", "--ai", "--framework", "next", "--name", "x"],
     ],
   ] as const)(
     "%s changes nothing and uses no network",
@@ -50,13 +50,15 @@ describe("consent", () => {
   it("never mutates or starts a login without --yes when not interactive", async () => {
     const root = tmpProject({ recipe: "next" });
     const before = treeSnapshot(root);
-    const { json, code, cloud } = await run(["init", "--json"], { cwd: root });
+    const { json, code, cloud } = await run(["init", "--json", "--ai"], {
+      cwd: root,
+    });
 
     expect(json.status).toBe("action_required");
     expect(code).toBe(10);
     expect(json.actions[0]).toMatchObject({
       type: "confirm_plan",
-      rerun: "npx @puckeditor/cli init --json --yes",
+      rerun: "npx @puckeditor/cli init --json --ai --yes",
     });
     expect(cloud.networkCalls).toBe(0);
     expect(treeSnapshot(root)).toEqual(before);
