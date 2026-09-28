@@ -6,7 +6,7 @@ import type { TemplateSource } from "../templates/source";
 import type { CapabilityId, RequiredAction, Warning } from "../result";
 import type { PlanStep } from "./types";
 import { toPosix } from "../detect/scan";
-import { addCommand } from "./install";
+import { addCommand, formatCommand, installCommand } from "./install";
 import { addDependencies } from "../templates/transform";
 import { lineOf } from "../ast/splice";
 
@@ -129,19 +129,36 @@ export class Planner {
     }
   }
 
-  /** Turns collected dependencies into one install, or folds them into a scaffolded package.json */
+  /** Turns collected dependencies into one install, or folds them into a scaffolded or edited package.json */
   finalize() {
     if (this.#dependencies.length === 0) return;
 
+    const specs = this.#dependencies.map((d) => `${d.name}@${d.range}`);
+    const pkgPath = this.abs("package.json");
+
     if (this.scaffolded) {
-      const pkgPath = this.abs("package.json");
       const text = this.vfs.readText(pkgPath);
       if (text)
         this.vfs.write(pkgPath, addDependencies(text, this.#dependencies));
       return;
     }
 
-    const specs = this.#dependencies.map((d) => `${d.name}@${d.range}`);
+    // Installing a package rewrites package.json before the plan's own edit
+    // to it is written, so write both at once and run a full install after
+    if (this.vfs.isPending(pkgPath)) {
+      const text = this.vfs.readText(pkgPath)!;
+      this.vfs.write(pkgPath, addDependencies(text, this.#dependencies));
+      const run = installCommand(this.ctx);
+      this.steps.push({
+        id: `install:${this.#dependencies.map((d) => d.name).join(",")}`,
+        kind: "install_dependencies",
+        capability: this.#dependencies[0].capability,
+        summary: `Install ${specs.join(", ")} (${formatCommand(run)})`,
+        run,
+      });
+      return;
+    }
+
     this.steps.unshift({
       id: `install:${this.#dependencies.map((d) => d.name).join(",")}`,
       kind: "install_package",
