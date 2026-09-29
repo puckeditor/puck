@@ -31,7 +31,6 @@ export const initialData: Record<string, UserData> = {
             content: [],
           },
           highlight: { value: "1M+", label: "Monthly downloads on NPM" },
-          padding: "128px",
         },
         readOnly: { title: false, description: false },
       },
@@ -144,52 +143,18 @@ export const initialData: Record<string, UserData> = {
         },
       },
       {
-        type: "Heading",
-        props: {
-          align: "center",
-          level: "2",
-          text: "The numbers",
-          layout: { padding: "0px" },
-          size: "xxl",
-          id: "Heading-1687296574110",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "16px",
-          id: "Space-1687284283005",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Text",
-        props: {
-          align: "center",
-          text: 'This page demonstrates Puck configured with a custom component library. This component is called "Stats", and contains some made-up numbers. You can configure any page by adding "/edit" onto the URL.',
-          layout: { padding: "0px" },
-          size: "m",
-          id: "Text-1687284565722",
-          color: "muted",
-          maxWidth: "916px",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "96px",
-          id: "Space-1687297618253",
-          direction: "vertical",
-        },
-      },
-      {
         type: "Stats",
         props: {
+          layout: "row",
+          background: "inverse",
+          title: "The numbers",
+          description:
+            'This page demonstrates Puck configured with a custom component library. This component is called "Stats", and contains some made-up numbers. You can configure any page by adding "/edit" onto the URL.',
           items: [
-            { title: "Users reached", description: "20M+" },
-            { title: "Cost savings", description: "$1.5M" },
-            { title: "Another stat", description: "5M kg" },
-            { title: "Final fake stat", description: "15K" },
+            { value: "20M+", label: "Users reached" },
+            { value: "$1.5M", label: "Cost savings" },
+            { value: "5M kg", label: "Another stat" },
+            { value: "15K", label: "Final fake stat" },
           ],
           id: "Stats-1687297239724",
         },

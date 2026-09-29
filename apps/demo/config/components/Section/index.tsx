@@ -23,7 +23,24 @@ export type SectionProps = {
    * Whether to apply a soft azure and rose glow behind the section content.
    */
   glow?: boolean;
+  /** Whether to add the default vertical padding.   */
+  spaced?: boolean;
 };
+
+/**
+ * Field for overriding a section's vertical padding.
+ */
+export const sectionPaddingField = {
+  type: "userField",
+  option: true,
+  label: "Vertical padding",
+  ai: {
+    instructions:
+      "Optional vertical padding above and below the section, as a CSS length such as '96px'. Leave it empty to use the default spacing.",
+    schema: { type: "string", pattern: "^\\d+(px|em|rem|%)$" },
+    required: false,
+  },
+} as const;
 
 /** Field for the section background options */
 export const sectionBackgroundField: RadioField = {
@@ -49,6 +66,7 @@ export const Section = forwardRef<HTMLDivElement, SectionProps>(
       style = {},
       background = "default",
       glow = false,
+      spaced = false,
     },
     ref
   ) => {
@@ -58,6 +76,7 @@ export const Section = forwardRef<HTMLDivElement, SectionProps>(
           subtle: background === "subtle",
           inverse: background === "inverse",
           glow,
+          spaced,
         })}${className ? ` ${className}` : ""}`}
         style={{
           ...style,

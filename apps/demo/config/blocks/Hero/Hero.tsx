@@ -18,7 +18,7 @@ export type HeroProps = {
   eyebrow?: string;
   title: string | ReactNode;
   description: RichText;
-  buttons: SectionHeaderButton[];
+  buttons?: SectionHeaderButton[];
   image?: {
     content?: Slot;
     mode?: "image" | "custom";
@@ -31,7 +31,7 @@ export type HeroProps = {
     value?: string;
     label?: string;
   };
-  padding: string;
+  padding?: string;
 };
 
 export const Hero: PuckComponent<HeroProps> = ({
@@ -44,7 +44,6 @@ export const Hero: PuckComponent<HeroProps> = ({
   image,
   highlight,
   padding,
-  puck,
 }) => {
   const isCinematic = layout === "cinematic";
   const src = image?.source?.src;
@@ -62,6 +61,7 @@ export const Hero: PuckComponent<HeroProps> = ({
       className={getClassName({ [layout]: true })}
       background={isCinematic ? "default" : background}
       glow={!isCinematic}
+      spaced
       style={{ paddingTop: padding, paddingBottom: padding }}
     >
       {isCinematic && src && (
@@ -79,7 +79,6 @@ export const Hero: PuckComponent<HeroProps> = ({
           title={title}
           description={description}
           buttons={buttons}
-          isEditing={puck.isEditing}
         />
 
         {!isCinematic && media && (

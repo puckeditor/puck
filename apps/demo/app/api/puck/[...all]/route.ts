@@ -53,7 +53,7 @@ Example component sequence:
 - Space
 - Brand motto: Heading, Text, Flex with Buttons
 - Space
-- Statistics: Heading, Text, Stats
+- Statistics: Stats
 - Space
 - Call to action: Heading, Text, Flex with centered Buttons
 
@@ -208,7 +208,7 @@ const handleRequest = (request: NextRequest) => {
   return puckHandler(request, {
     ai: {
       context,
-      model: "openai/gpt-6-luna",
+      model: "openai/gpt-5.6-luna",
       designMode: {
         allowed: true,
         model: "openai/gpt-6-luna",

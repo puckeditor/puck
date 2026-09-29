@@ -6,7 +6,10 @@ import { AutoField, FieldLabel, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
-import { sectionBackgroundField } from "../../components/Section";
+import {
+  sectionBackgroundField,
+  sectionPaddingField,
+} from "../../components/Section";
 import { sectionHeaderFields } from "../../components/SectionHeader";
 
 export const Hero: ComponentConfig<{
@@ -159,6 +162,7 @@ export const Hero: ComponentConfig<{
             schema: {
               type: "object",
               properties: { src: { type: "string" }, alt: { type: "string" } },
+              stream: false,
             },
           },
           render: ({ value, field, name, onChange, readOnly }) => (
@@ -196,14 +200,7 @@ export const Hero: ComponentConfig<{
           "Use 'default' unless the page calls for a dark, dramatic hero, then use 'inverse'. The cinematic layout ignores it.",
       },
     },
-    padding: {
-      type: "userField",
-      option: true,
-      ai: {
-        instructions: "Vertical padding above and below the Hero content.",
-        schema: { type: "string", pattern: "^\\d+(px|em|rem|%)$" },
-      },
-    },
+    padding: sectionPaddingField,
   },
   defaultProps: {
     layout: "split",
@@ -211,7 +208,6 @@ export const Hero: ComponentConfig<{
     title: "Hero",
     description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],
-    padding: "64px",
     image: {
       source: {
         src: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",

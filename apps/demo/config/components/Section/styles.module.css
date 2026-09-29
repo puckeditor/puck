@@ -22,6 +22,11 @@
   margin-inline-end: 0;
 }
 
+/* The shared vertical spacing for sectional components, on every background */
+.Section--spaced {
+  padding-block: clamp(64px, 8vw, 112px);
+}
+
 .Section--subtle {
   background: var(--puck-color-surface-subtle);
 }

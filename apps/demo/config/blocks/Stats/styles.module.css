@@ -1,64 +1,213 @@
-.Stats-items {
-  background-image: linear-gradient(
-    120deg,
-    var(--puck-color-azure-03) 0%,
-    var(--puck-color-azure-05) 100%
-  );
-  border-radius: 24px;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-gap: 72px;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 auto;
-  max-width: 768px;
-  padding: 64px var(--puck-space-4);
-}
-
-@media (min-width: 768px) {
-  .Stats-items {
-    padding: 64px var(--puck-space-5);
-  }
-}
-
-@media (min-width: 1024px) {
-  .Stats-items {
-    grid-template-columns: 1fr 1fr;
-    padding: 128px var(--puck-space-5);
-    max-width: 100%;
-  }
-}
-
-.Stats-item {
+.Stats-inner {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  color: white;
-  gap: var(--puck-space-2);
-  width: 100%;
-  text-align: center;
-}
-
-.Stats-icon {
-  border-radius: 256px;
-  background: var(--puck-color-azure-09);
-  color: var(--puck-color-azure-06);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 64px;
-  height: 64px;
-}
-
-.Stats-label {
-  font-size: 22px;
-  text-align: center;
-  font-weight: var(--puck-font-weight-semibold);
-  opacity: 0.8;
+  gap: 64px;
 }
 
 .Stats-value {
-  font-size: 72px;
+  font-size: clamp(32px, 6vw, 72px);
+  font-weight: var(--puck-font-weight-medium);
+  letter-spacing: -0.04em;
   line-height: 1;
-  font-weight: var(--puck-font-weight-bold);
+}
+
+.Stats-label {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  font-size: var(--puck-font-size-xs);
+  margin-top: var(--puck-space-2);
+}
+
+/* Row: two columns on small screens. From 768px, one row where each stat
+   takes the width of its value with no wrapping. */
+.Stats--row .Stats-items {
+  display: grid;
+  gap: 40px var(--puck-space-5);
+  grid-template-columns: repeat(2, 1fr);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .Stats--row .Stats-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 48px;
+    justify-content: space-evenly;
+  }
+
+  .Stats--row .Stats-value {
+    white-space: nowrap;
+  }
+}
+
+/* Split: the header on the left and a grid of stats on the right, divided by
+   hairlines, with a small label above each value */
+@media (min-width: 1024px) {
+  .Stats--split .Stats-inner {
+    align-items: start;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.Stats--split .Stats-items {
+  column-gap: var(--puck-space-5);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.Stats--split .Stats-item {
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--puck-space-3);
+  padding-block: var(--puck-space-5);
+}
+
+.Stats--split .Stats-label {
+  font-family: var(--puck-font-family-monospaced);
+  font-size: var(--puck-font-size-xxxs);
+  letter-spacing: 0.12em;
+  margin-top: 0;
+  text-transform: uppercase;
+}
+
+.Stats--split .Stats-value {
+  font-size: clamp(32px, 4vw, 56px);
+}
+
+/* Bento: the first stat gets a large tile in the brand color, or over a
+   photo, and the others sit in smaller tiles beside it */
+.Stats--bento .Stats-items {
+  display: grid;
+  gap: var(--puck-space-4);
+}
+
+@media (min-width: 768px) {
+  .Stats--bento .Stats-items {
+    grid-auto-rows: minmax(160px, auto);
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .Stats--bento .Stats-item:first-child {
+    /* Set in the inline style from the component */
+    grid-row: span var(--stats-featured-rows);
+  }
+}
+
+.Stats--bento .Stats-item {
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  border-radius: calc(var(--puck-radius-l) * 2);
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: var(--puck-space-5);
+  position: relative;
+}
+
+.Stats--bento .Stats-item:first-child {
+  background: var(--puck-color-interactive);
+  border-color: transparent;
+  color: var(--puck-button-primary-color-text, var(--puck-color-text-inverse));
+  min-height: 280px;
+}
+
+.Stats--bento .Stats-item:first-child .Stats-value {
+  font-size: clamp(56px, 8vw, 104px);
+}
+
+.Stats--bento .Stats-item:not(:first-child) .Stats-value {
+  font-size: clamp(32px, 4vw, 48px);
+}
+
+/* Dark behind the photo, so no brand color shows at the rounded edges */
+.Stats--bento.Stats--hasImage .Stats-item:first-child {
+  background: var(--puck-color-black);
+  color: var(--puck-color-white);
+}
+
+.Stats--bento.Stats--hasImage .Stats-item:first-child::after {
+  /* Image overlay */
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--puck-color-black) 70%, transparent),
+    transparent 70%
+  );
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.Stats-itemImage {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  /* Ensure the image is behind the overlay */
+  z-index: -2;
+}
+
+/* Glass: frosted cards over a full-width photo */
+.Stats--glass.Stats--hasImage {
+  color: var(--puck-color-white);
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+.Stats--glass.Stats--hasImage::after {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--puck-color-black) 45%, transparent),
+    color-mix(in srgb, var(--puck-color-black) 70%, transparent)
+  );
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.Stats-backdrop {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+
+.Stats--glass .Stats-items {
+  display: grid;
+  gap: var(--puck-space-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .Stats--glass .Stats-items {
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    /* Let cards flow horizontally beyond 2 columns */
+    grid-template-columns: none;
+  }
+}
+
+.Stats--glass .Stats-item {
+  box-shadow: 0 4px 30px
+      color-mix(in srgb, var(--puck-color-black) 10%, transparent),
+    inset 0 1px 1px 0
+      color-mix(in srgb, var(--puck-color-white) 20%, transparent);
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border: 0.25px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: calc(var(--puck-radius-l) * 2);
+  padding: var(--puck-space-5);
+  text-align: center;
+}
+
+.Stats--glass .Stats-value {
+  font-size: clamp(28px, 3.6vw, 48px);
 }

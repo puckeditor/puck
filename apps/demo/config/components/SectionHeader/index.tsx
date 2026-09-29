@@ -30,51 +30,52 @@ export type SectionHeaderProps = {
 /**
  * Fields for the SectionHeader component
  */
-export const sectionHeaderFields: ObjectField<SectionHeaderProps>["objectFields"] =
-  {
-    eyebrow: {
-      type: "text",
-      ai: {
-        instructions:
-          "Optional short label above the title, 2 to 4 words, such as a category or an announcement.",
-      },
+export const sectionHeaderFields: Required<
+  ObjectField<SectionHeaderProps>["objectFields"]
+> = {
+  eyebrow: {
+    type: "text",
+    ai: {
+      instructions:
+        "Optional short label above the title, 2 to 4 words, such as a category or an announcement.",
     },
-    title: { type: "text", contentEditable: true },
-    description: {
-      type: "textarea",
-      contentEditable: true,
-    },
-    buttons: {
-      type: "array",
-      max: 2,
-      getItemSummary: (item) => item.label || "Button",
-      arrayFields: {
-        label: { type: "text", contentEditable: true },
-        href: {
-          type: "text",
-          ai: {
-            instructions:
-              "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
-          },
-        },
-        variant: {
-          type: "select",
-          ai: {
-            instructions:
-              "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
-          },
-          options: [
-            { label: "primary", value: "primary" },
-            { label: "secondary", value: "secondary" },
-          ],
+  },
+  title: { type: "text", contentEditable: true },
+  description: {
+    type: "textarea",
+    contentEditable: true,
+  },
+  buttons: {
+    type: "array",
+    max: 2,
+    getItemSummary: (item) => item.label || "Button",
+    arrayFields: {
+      label: { type: "text", contentEditable: true },
+      href: {
+        type: "text",
+        ai: {
+          instructions:
+            "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
         },
       },
-      defaultItemProps: {
-        label: "Button",
-        href: "#",
+      variant: {
+        type: "select",
+        ai: {
+          instructions:
+            "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
+        },
+        options: [
+          { label: "primary", value: "primary" },
+          { label: "secondary", value: "secondary" },
+        ],
       },
     },
-  };
+    defaultItemProps: {
+      label: "Button",
+      href: "#",
+    },
+  },
+};
 
 /**
  * Renders the SectionHeader component for a section of the page.
@@ -87,18 +88,16 @@ export const SectionHeader = ({
   align = "start",
   size = "section",
   titleAs: Title = "h2",
-  isEditing = false,
 }: SectionHeaderProps & {
   /** Alignment of the section header content. */
   align?: "start" | "center";
-  /** 
+  /**
    * Size of the section header:
-   * - 
+   * -
    */
   size?: "section" | "display";
 
   titleAs?: ElementType;
-  isEditing?: boolean;
 }) => (
   <div
     className={getClassName({
@@ -119,7 +118,6 @@ export const SectionHeader = ({
             href={button.href}
             variant={button.variant}
             size="large"
-            tabIndex={isEditing ? -1 : undefined}
           >
             {button.label}
           </Button>
