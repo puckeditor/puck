@@ -49,8 +49,8 @@ export const MIN_VERSIONS: Record<FrameworkId, string> = {
   astro: "7",
   // @hono/node-server 2 needs Hono 4
   hono: "4",
-  // The generated routes are async, and only Express 5 catches their errors
-  express: "5",
+  // express.json() arrived in 4.16
+  express: "4.16",
 };
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */

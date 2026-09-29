@@ -42,7 +42,7 @@ const FRAMEWORKS: [FrameworkId, string, () => Tree, string, string][] = [
   ["vite", "vite", viteMinimal, "5.4.0", "6.0.0"],
   ["astro", "astro", astroMinimal, "6.3.0", "7.0.0"],
   ["hono", "hono", honoMinimal, "3.12.0", "4.0.0"],
-  ["express", "express", expressMinimal, "4.21.2", "5.0.0"],
+  ["express", "express", expressMinimal, "4.15.5", "4.16.0"],
 ];
 
 const detect = (tree: Tree) =>
