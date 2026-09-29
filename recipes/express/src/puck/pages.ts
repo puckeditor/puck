@@ -27,13 +27,18 @@ puckPages.get("/api/pages", async (req, res) => {
 puckPages.post(
   "/api/pages",
   express.json({ limit: "10mb" }),
-  async (req, res) => {
-    const { path, data } = req.body;
-    const pages = await readPages();
+  async (req, res, next) => {
+    // Express 4 doesn't pass errors from async handlers to next()
+    try {
+      const { path, data } = req.body;
+      const pages = await readPages();
 
-    pages[path] = data;
-    await fs.writeFile(databasePath, JSON.stringify(pages));
+      pages[path] = data;
+      await fs.writeFile(databasePath, JSON.stringify(pages));
 
-    res.json({ status: "ok" });
+      res.json({ status: "ok" });
+    } catch (error) {
+      next(error);
+    }
   }
 );
