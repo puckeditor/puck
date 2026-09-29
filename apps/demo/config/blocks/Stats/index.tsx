@@ -108,7 +108,7 @@ export const Stats: ComponentConfig<{
         bind: "puck:unsplash",
         instructions:
           "A photo for the featured tile in the bento layout and the background of the glass layout. Other layouts ignore it.",
-          stream: false,
+        stream: false,
       },
     },
     padding: sectionPaddingField,
