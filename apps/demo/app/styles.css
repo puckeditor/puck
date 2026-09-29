@@ -70,5 +70,7 @@ body {
     /* The primary (Publish) button fills with the bright azure, so its label
        flips to a dark neutral to stay readable on top. */
     --puck-button-primary-color-text: #161618;
+
+    --puck-field-checkbox-color-check: var(--puck-button-primary-color-text);
   }
 }
