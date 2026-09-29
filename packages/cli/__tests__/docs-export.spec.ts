@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { REPO_ROOT, tmpDir } from "./helpers/harness";
 
 // Exports the real docs site, so new MDX components that don't convert to
-// markdown fail here instead of leaking into `puck docs` and llms.txt
+// markdown fail here instead of leaking into `puck docs`
 const pagesDir = path.join(REPO_ROOT, "apps", "docs", "pages", "docs");
 const outDir = path.join(tmpDir(), "docs");
 

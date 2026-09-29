@@ -3,8 +3,7 @@
   "version": "0.23.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/generate-llms.mjs && next dev",
-    "prebuild": "node scripts/generate-llms.mjs",
+    "dev": "next dev",
     "build": "next build",
     "postbuild": "next-sitemap",
     "start": "next start",

@@ -1,5 +1,5 @@
-// Converts the docs pages to plain markdown for agents: the CLI bundles the
-// output (`puck docs`) and the site serves it (`/llms.txt`, `/docs/*.md`).
+// Converts the docs pages to plain markdown for agents, bundled with the CLI
+// for `puck docs`.
 //
 // Edits are spliced into the original source by node position rather than
 // re-serialized, so the markdown keeps its hand-written formatting.
