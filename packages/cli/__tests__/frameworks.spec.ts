@@ -108,3 +108,42 @@ describe("framework versions", () => {
     );
   });
 });
+
+describe("frameworks", () => {
+  it("lists every framework", async () => {
+    const { json, code } = await run(["frameworks", "--json"], {
+      cwd: tmpProject("empty"),
+    });
+    expect(code).toBe(0);
+    expect(json.frameworks?.map((f) => f.id)).toEqual([...FRAMEWORK_IDS]);
+    expect(json.frameworks).toContainEqual({
+      id: "vite",
+      name: "Vite",
+      minVersion: "6",
+      kind: "app",
+      needsServer: true,
+      notes: expect.any(String),
+    });
+    expect(json.frameworks?.find((f) => f.id === "express")).toMatchObject({
+      kind: "server",
+      needsServer: false,
+    });
+  });
+
+  it("prints a table", async () => {
+    const { stdout } = await run(["frameworks"], { cwd: tmpProject("empty") });
+    expect(stdout).toMatch(/^Framework\s+ID\s+Versions\s+Editor/);
+    expect(stdout).toMatch(/TanStack Start\s+tanstack-start\s+1\.132\+/);
+    expect(stdout).toMatch(/Hono\s+hono\s+4\+\s+API only/);
+    expect(stdout).toContain("* Vite and Astro need a server");
+    expect(stdout).not.toContain("Next:");
+  });
+
+  it("takes no arguments", async () => {
+    const { json, code } = await run(["frameworks", "next", "--json"], {
+      cwd: tmpProject("empty"),
+    });
+    expect(code).toBe(2);
+    expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+  });
+});

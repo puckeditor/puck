@@ -10,6 +10,7 @@ export type CommandName =
   | "status"
   | "doctor"
   | "docs"
+  | "frameworks"
   | "help";
 
 export type ResultStatus = "success" | "action_required" | "partial" | "error";
@@ -155,6 +156,22 @@ export interface AiSummary {
   configured: boolean;
 }
 
+export interface FrameworkSupport {
+  /** The value for `--framework` */
+  id: FrameworkId;
+  name: string;
+  /** Oldest supported version, as "major" or "major.minor" */
+  minVersion: string;
+  /**
+   * "app" frameworks get the editor. "server" frameworks serve the pages and
+   * Puck Cloud APIs for an editor in another app.
+   */
+  kind: "app" | "server";
+  /** Puck Cloud and Puck AI need a server, chosen with `--backend` */
+  needsServer: boolean;
+  notes: string;
+}
+
 export interface CommandResult {
   schemaVersion: 1;
   command: CommandName;
@@ -178,6 +195,8 @@ export interface CommandResult {
   error?: CliErrorPayload;
   /** Present on `puck` / `puck --help` */
   commands?: { name: string; description: string }[];
+  /** Present on `puck frameworks` */
+  frameworks?: FrameworkSupport[];
   /** Present on `puck docs` */
   docs?: {
     pages?: DocEntry[];

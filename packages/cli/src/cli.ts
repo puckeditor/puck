@@ -12,6 +12,7 @@ import { runAdd } from "./commands/add";
 import { runStatus } from "./commands/status";
 import { runDoctor } from "./commands/doctor";
 import { runDocs } from "./commands/docs";
+import { runFrameworks } from "./commands/frameworks";
 
 const exitCodeFor = (result: CommandResult) => {
   if (result.status === "error")
@@ -87,6 +88,8 @@ export const runCli = async (
     else if (command === "add") result = await runAdd(rc, positionals);
     else if (command === "status") result = await runStatus(rc);
     else if (command === "docs") result = await runDocs(rc, positionals);
+    else if (command === "frameworks")
+      result = await runFrameworks(rc, positionals);
     else result = await runDoctor(rc);
   } catch (err) {
     result = errorResult(command, err, flags.dryRun);

@@ -1,5 +1,9 @@
 import pc from "picocolors";
-import type { CommandResult, RequiredAction } from "../result";
+import type {
+  CommandResult,
+  FrameworkSupport,
+  RequiredAction,
+} from "../result";
 import type { OutputStream } from "../deps";
 import type { SecretRegistry } from "../secret";
 import { FRAMEWORK_LABELS } from "../detect/framework";
@@ -133,6 +137,30 @@ const statusTable = (result: CommandResult) => {
   return rows.map(([k, v]) => `${k.padEnd(width)}${v}`);
 };
 
+const frameworksTable = (frameworks: FrameworkSupport[]) => {
+  const rows = [
+    ["Framework", "ID", "Versions", "Editor", "Puck Cloud & AI", "Notes"],
+    ...frameworks.map((f) => [
+      f.name,
+      f.id,
+      `${f.minVersion}+`,
+      f.kind === "server" ? "API only" : "✓",
+      f.needsServer ? "needs a server*" : "✓",
+      f.notes,
+    ]),
+  ];
+  const widths = rows[0].map((_, i) =>
+    Math.max(...rows.map((row) => row[i].length))
+  );
+  return rows.map((row, r) => {
+    const line = row
+      .map((cell, i) => (i === row.length - 1 ? cell : cell.padEnd(widths[i])))
+      .join("  ")
+      .trimEnd();
+    return r === 0 ? pc.bold(line) : line;
+  });
+};
+
 export const presentHuman = (
   out: OutputStream,
   result: CommandResult,
@@ -177,6 +205,20 @@ export const presentHuman = (
         lines.push(`  ${" ".repeat(24)} ${pc.cyan(f.fix)}`);
     }
     lines.push("", result.message);
+  } else if (result.command === "frameworks" && result.status !== "error") {
+    lines.push(...frameworksTable(result.frameworks ?? []));
+    const needServer = (result.frameworks ?? []).filter((f) => f.needsServer);
+    if (needServer.length) {
+      lines.push(
+        "",
+        `* ${needServer
+          .map((f) => f.name)
+          .join(
+            " and "
+          )} need a server for Puck Cloud and Puck AI, unless they already have one. Choose one with --backend.`
+      );
+    }
+    lines.push("", pc.dim(result.message));
   } else if (result.command === "docs" && result.status !== "error") {
     const { page, pages, matches } = result.docs ?? {};
     if (page) lines.push(page.content.trimEnd());
@@ -245,6 +287,7 @@ export const presentHuman = (
     result.status !== "error" &&
     result.command !== "doctor" &&
     result.command !== "docs" &&
+    result.command !== "frameworks" &&
     result.nextSteps.length
   ) {
     lines.push(

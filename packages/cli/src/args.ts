@@ -87,6 +87,7 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
   status: ["json", "help", "version", "cwd", "workspace", "config"],
   doctor: ["json", "help", "version", "cwd", "workspace", "config", "offline"],
   docs: ["json", "help", "version"],
+  frameworks: ["json", "help", "version"],
   help: GLOBAL,
 };
 
@@ -96,6 +97,7 @@ const COMMANDS: CommandName[] = [
   "status",
   "doctor",
   "docs",
+  "frameworks",
   "help",
 ];
 const FRAMEWORKS: readonly string[] = FRAMEWORK_IDS;

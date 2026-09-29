@@ -20,6 +20,10 @@ export const COMMANDS = [
     description: "Diagnose problems and suggest fixes (read-only)",
   },
   {
+    name: "frameworks",
+    description: "Show the supported frameworks and versions",
+  },
+  {
     name: "docs <command>",
     description:
       "Read the docs for this version: ls, cat <page>, find <query>, grep <text>",
