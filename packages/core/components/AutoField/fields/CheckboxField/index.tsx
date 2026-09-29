@@ -1,6 +1,6 @@
 import getClassNameFactory from "../../../../lib/get-class-name-factory";
 import styles from "../../styles.module.css";
-import { SquareCheck } from "lucide-react";
+import { ListCheck } from "lucide-react";
 import { FieldPropsInternal } from "../..";
 import { useDeepField } from "../../lib/use-deep-field";
 
@@ -26,7 +26,7 @@ export const CheckboxField = ({
 
   return (
     <Label
-      icon={labelIcon || <SquareCheck size={16} />}
+      icon={labelIcon || <ListCheck size={16} />}
       label={label || name}
       readOnly={readOnly}
       el="div"
@@ -55,7 +55,9 @@ export const CheckboxField = ({
               disabled={readOnly}
               checked={selected.includes(option.value)}
             />
-            <span>{option.label || option.value?.toString()}</span>
+            <span className={getClassName("checkboxLabel")}>
+              {option.label || option.value?.toString()}
+            </span>
           </label>
         ))}
       </div>

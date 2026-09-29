@@ -291,7 +291,7 @@ select.Input-input {
 .Input-checkboxGroupItems {
   display: flex;
   flex-direction: column;
-  gap: var(--puck-space-2);
+  gap: var(--puck-space-3);
 }
 
 .Input-checkbox {
@@ -304,13 +304,15 @@ select.Input-input {
 }
 
 .Input-checkboxInput {
-  --_puck-field-checkbox-color: var(
-    --puck-field-color-text-active,
+  --_puck-field-checkbox-color-bg: var(
+    --puck-field-checkbox-color-bg,
     var(--puck-color-interactive)
   );
-
+  --_puck-field-checkbox-color-check: var(
+    --puck-field-checkbox-color-check,
+    var(--puck-color-text-inverse)
+  );
   appearance: none;
-  background-color: var(--puck-field-color-bg, var(--puck-color-surface));
   border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
     var(--puck-field-color-border, var(--puck-color-border));
   border-radius: var(--puck-field-radius, var(--puck-radius-m));
@@ -327,7 +329,7 @@ select.Input-input {
 }
 
 .Input-checkboxInput::after {
-  border: solid var(--puck-color-white);
+  border: solid var(--_puck-field-checkbox-color-check);
   border-width: 0 2px 2px 0;
   content: "";
   height: 8px;
@@ -338,8 +340,8 @@ select.Input-input {
 }
 
 .Input-checkboxInput:checked {
-  background-color: var(--_puck-field-checkbox-color);
-  border-color: var(--_puck-field-checkbox-color);
+  background-color: var(--_puck-field-checkbox-color-bg);
+  border-color: var(--_puck-field-checkbox-color-bg);
 }
 
 .Input-checkboxInput:checked::after {
