@@ -8,6 +8,7 @@ import { FlexProps } from "./blocks/Flex";
 import { LogosProps } from "./blocks/Logos";
 import { StatsProps } from "./blocks/Stats";
 import { FeatureGridProps } from "./blocks/FeatureGrid";
+import { CTAProps } from "./blocks/CTA";
 import { TemplateProps } from "./blocks/Template";
 import { TextProps } from "./blocks/Text";
 import { SpaceProps } from "./blocks/Space";
@@ -27,6 +28,7 @@ export type Components = {
   Logos: LogosProps;
   Stats: StatsProps;
   FeatureGrid: FeatureGridProps;
+  CTA: CTAProps;
   Template: TemplateProps;
   Text: TextProps;
   Space: SpaceProps;

@@ -7,6 +7,7 @@ import { Flex } from "./blocks/Flex";
 import { Logos } from "./blocks/Logos";
 import { Stats } from "./blocks/Stats";
 import { FeatureGrid } from "./blocks/FeatureGrid";
+import { CTA } from "./blocks/CTA";
 import { Template } from "./blocks/Template/server";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
@@ -18,11 +19,23 @@ import { UserConfig } from "./types";
 const conf: UserConfig = {
   root: Root,
   categories: {
+    introduction: {
+      title: "Introduction",
+      components: ["Hero"],
+    },
+    content: {
+      title: "Content",
+      components: ["FeatureGrid", "Card", "CTA"],
+    },
+    socialProof: {
+      title: "Social Proof",
+      components: ["Logos", "Stats"],
+    },
     layout: {
       components: ["Grid", "Flex", "Space"],
     },
     typography: {
-      components: ["Heading", "Text"],
+      components: ["Heading", "Text", "RichText"],
     },
     interactive: {
       title: "Actions",
@@ -30,7 +43,7 @@ const conf: UserConfig = {
     },
     other: {
       title: "Other",
-      components: ["Card", "FeatureGrid", "Hero", "Logos", "Stats", "Template"],
+      components: ["Template"],
     },
   },
   components: {
@@ -43,6 +56,7 @@ const conf: UserConfig = {
     Logos,
     Stats,
     FeatureGrid,
+    CTA,
     Template,
     Text,
     Space,

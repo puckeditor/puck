@@ -35,14 +35,6 @@ export const initialData: Record<string, UserData> = {
         readOnly: { title: false, description: false },
       },
       {
-        type: "Space",
-        props: {
-          size: "96px",
-          id: "Space-1687298109536",
-          direction: "vertical",
-        },
-      },
-      {
         type: "FeatureGrid",
         props: {
           background: "default",
@@ -93,22 +85,6 @@ export const initialData: Record<string, UserData> = {
         },
       },
       {
-        type: "Space",
-        props: {
-          size: "96px",
-          id: "Space-1687287070296",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "96px",
-          id: "Space-1687298110602",
-          direction: "vertical",
-        },
-      },
-      {
         type: "Stats",
         props: {
           layout: "row",
@@ -123,14 +99,6 @@ export const initialData: Record<string, UserData> = {
             { value: "15K", label: "Final fake stat" },
           ],
           id: "Stats-1687297239724",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "120px",
-          id: "Space-1687297589663",
-          direction: "vertical",
         },
       },
       {
@@ -184,89 +152,22 @@ export const initialData: Record<string, UserData> = {
         },
       },
       {
-        type: "Space",
+        type: "CTA",
         props: {
-          size: "96px",
-          id: "Space-1687299315421",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Heading",
-        props: {
-          align: "center",
-          level: "2",
-          text: "Get started",
-          layout: { padding: "0px" },
-          size: "xxl",
-          id: "Heading-1687299303766",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "16px",
-          id: "Space-1687299318902",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Text",
-        props: {
-          align: "center",
-          text: "Browse the Puck GitHub to get started, or try editing this page",
-          layout: { padding: "0px" },
-          size: "m",
-          id: "Text-1687299305686",
-          color: "muted",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "24px",
-          id: "Space-1687299335149",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Flex",
-        props: {
-          alignItems: "center",
-          justifyContent: "center",
-          direction: "row",
-          gap: 24,
-          wrap: "wrap",
-          layout: { spanCol: 1, spanRow: 1, padding: "0px" },
-          id: "Flex-7d63d5ff-bd42-4354-b05d-681b16436fd6",
-          items: [
+          layout: "centered",
+          background: "default",
+          title: "Get started",
+          description:
+            "Browse the Puck GitHub to get started, or try editing this page",
+          buttons: [
             {
-              type: "Button",
-              props: {
-                label: "Visit GitHub",
-                href: "https://github.com/puckeditor/puck",
-                variant: "primary",
-                id: "Button-bd41007c-6627-414d-839a-e261d470d8f9",
-              },
+              label: "Visit GitHub",
+              href: "https://github.com/puckeditor/puck",
+              variant: "primary",
             },
-            {
-              type: "Button",
-              props: {
-                label: "Edit this page",
-                href: "/edit",
-                variant: "secondary",
-                id: "Button-6a5fa26c-8a2d-4b08-a756-c46079877127",
-              },
-            },
+            { label: "Edit this page", href: "/edit", variant: "secondary" },
           ],
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "96px",
-          id: "Space-1687284290127",
-          direction: "vertical",
+          id: "CTA-d3794e27-5901-4a62-8b09-f74a80ef81ec",
         },
       },
     ],

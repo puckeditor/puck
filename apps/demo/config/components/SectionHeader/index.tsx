@@ -78,6 +78,23 @@ export const sectionHeaderFields: Required<
 };
 
 /**
+ * Renders a section's buttons.
+ */
+export const SectionHeaderActions = ({
+  buttons,
+}: {
+  buttons: SectionHeaderButton[];
+}) => (
+  <div className={getClassName("actions")}>
+    {buttons.map((button, i) => (
+      <Button key={i} href={button.href} variant={button.variant} size="large">
+        {button.label}
+      </Button>
+    ))}
+  </div>
+);
+
+/**
  * Renders the SectionHeader component for a section of the page.
  */
 export const SectionHeader = ({
@@ -110,19 +127,6 @@ export const SectionHeader = ({
     {description && (
       <div className={getClassName("description")}>{description}</div>
     )}
-    {buttons.length > 0 && (
-      <div className={getClassName("actions")}>
-        {buttons.map((button, i) => (
-          <Button
-            key={i}
-            href={button.href}
-            variant={button.variant}
-            size="large"
-          >
-            {button.label}
-          </Button>
-        ))}
-      </div>
-    )}
+    {buttons.length > 0 && <SectionHeaderActions buttons={buttons} />}
   </div>
 );

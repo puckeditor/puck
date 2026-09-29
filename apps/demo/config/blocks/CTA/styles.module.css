@@ -1,0 +1,71 @@
+/* Panel: a dark card with the title and buttons on one side and the
+   description on the other */
+.CTA-panel {
+  background: var(--puck-color-surface-inverse);
+  border-radius: calc(var(--puck-radius-l) * 2);
+  color: var(--puck-color-text-inverse);
+  display: grid;
+  gap: var(--puck-space-4);
+  grid-template-areas:
+    "header"
+    "description"
+    "actions";
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(32px, 6vw, 64px);
+  position: relative;
+}
+
+/* A soft azure glow behind the description */
+.CTA-panel::before {
+  background: radial-gradient(
+    50% 90% at 80% 50%,
+    color-mix(in srgb, var(--puck-color-interactive) 28%, transparent),
+    transparent 70%
+  );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+.CTA-panelHeader {
+  grid-area: header;
+}
+
+.CTA-panelDescription {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  font-size: var(--puck-font-size-s);
+  grid-area: description;
+  line-height: 1.5;
+  max-width: 32rem;
+  text-wrap: pretty;
+}
+
+.CTA-panelActions {
+  grid-area: actions;
+}
+
+@media (min-width: 1024px) {
+  .CTA-panel {
+    column-gap: 64px;
+    grid-template-areas:
+      "header description"
+      "actions description";
+    grid-template-columns: 3fr 2fr;
+  }
+
+  /* Keep the title and buttons together, level with the description */
+  .CTA-panelHeader {
+    align-self: end;
+  }
+
+  .CTA-panelActions {
+    align-self: start;
+  }
+
+  .CTA-panelDescription {
+    align-self: center;
+  }
+}

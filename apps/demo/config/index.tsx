@@ -7,6 +7,7 @@ import { Flex } from "./blocks/Flex";
 import { Logos } from "./blocks/Logos";
 import { Stats } from "./blocks/Stats";
 import { FeatureGrid } from "./blocks/FeatureGrid";
+import { CTA } from "./blocks/CTA";
 import { Template } from "./blocks/Template";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
@@ -26,7 +27,7 @@ export const conf: UserConfig = {
     },
     content: {
       title: "Content",
-      components: ["FeatureGrid", "Card"],
+      components: ["FeatureGrid", "Card", "CTA"],
     },
     socialProof: {
       title: "Social Proof",
@@ -57,6 +58,7 @@ export const conf: UserConfig = {
     Logos,
     Stats,
     FeatureGrid,
+    CTA,
     Template,
     Text,
     Space,
