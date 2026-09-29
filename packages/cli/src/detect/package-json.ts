@@ -63,12 +63,17 @@ export const resolveInstalledVersion = (
   }
 };
 
+/** The major and minor version from a version or range, e.g. "^16.2.1" → [16, 2] */
+export const versionOf = (
+  versionOrRange: string | null | undefined
+): [major: number, minor: number] | null => {
+  if (!versionOrRange) return null;
+  const cleaned = versionOrRange.replace(/^(workspace:|npm:[^@]+@)/, "");
+  const match = /(\d+)(?:\.(\d+))?/.exec(cleaned);
+  return match ? [Number(match[1]), Number(match[2] ?? 0)] : null;
+};
+
 /** The major version from a version or range, e.g. "^16.2.1" → 16 */
 export const majorOf = (
   versionOrRange: string | null | undefined
-): number | null => {
-  if (!versionOrRange) return null;
-  const cleaned = versionOrRange.replace(/^(workspace:|npm:[^@]+@)/, "");
-  const match = /(\d+)(?:\.\d+)?/.exec(cleaned);
-  return match ? Number(match[1]) : null;
-};
+): number | null => versionOf(versionOrRange)?.[0] ?? null;

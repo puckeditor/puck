@@ -3,7 +3,7 @@ import type { Vfs } from "../io/vfs";
 import type { CliErrorPayload } from "../errors";
 import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 import { findStringProperty } from "../ast/config-literal";
-import { majorOf, resolveInstalledVersion } from "./package-json";
+import { majorOf, resolveInstalledVersion, versionOf } from "./package-json";
 import type { ServerRuntime } from "./server";
 import {
   detectRuntime,
@@ -33,6 +33,24 @@ export const FRAMEWORK_LABELS: Record<FrameworkId, string> = {
   astro: "Astro",
   hono: "Hono",
   express: "Express",
+};
+
+/** The oldest supported version of each framework, as "major" or "major.minor" */
+export const MIN_VERSIONS: Record<FrameworkId, string> = {
+  next: "15",
+  "react-router": "7",
+  // Server route handlers on createFileRoute arrived in the Start RC
+  "tanstack-start": "1.132",
+  // vinext 1.0 moved to Vite 8, which the recipe uses
+  vinext: "1",
+  // @hono/vite-dev-server is built and tested against Vite 6
+  vite: "6",
+  // @astrojs/node 11, which `astro add node` installs, needs Astro 7
+  astro: "7",
+  // @hono/node-server 2 needs Hono 4
+  hono: "4",
+  // The generated routes are async, and only Express 5 catches their errors
+  express: "5",
 };
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */
@@ -143,6 +161,39 @@ export type FrameworkDetection =
   | { status: "unsupported"; error: CliErrorPayload }
   | { status: "none" };
 
+/**
+ * Refuses versions older than MIN_VERSIONS. Unknown versions, like "latest",
+ * are allowed.
+ */
+const unsupportedVersion = (
+  id: FrameworkId,
+  version: string | null,
+  range: string
+): FrameworkDetection | null => {
+  const found = versionOf(version) ?? versionOf(range);
+  const [major, minor] = versionOf(MIN_VERSIONS[id])!;
+  if (!found || found[0] > major || (found[0] === major && found[1] >= minor))
+    return null;
+
+  const label = FRAMEWORK_LABELS[id];
+  return {
+    status: "unsupported",
+    error: {
+      code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK-VERSION",
+      message: `${label} ${
+        version ?? range
+      } is not supported. Upgrade to ${label} ${
+        MIN_VERSIONS[id]
+      } or later, or integrate Puck manually.`,
+      details: {
+        docs: MANUAL_INTEGRATION_DOCS_URL,
+        version: version ?? range,
+        minVersion: MIN_VERSIONS[id],
+      },
+    },
+  };
+};
+
 const firstExisting = (vfs: Vfs, root: string, candidates: string[]) =>
   candidates.find((c) => vfs.exists(path.join(root, c))) ?? null;
 
@@ -233,21 +284,8 @@ const detectNext = (
   const layout = detectAppRouter(vfs, root, "Next.js");
   if ("status" in layout) return layout;
 
-  if (major < 15) {
-    return {
-      status: "unsupported",
-      error: {
-        code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK-VERSION",
-        message: `Next.js ${
-          version ?? range
-        } is not supported. Upgrade to Next.js 15 or later, or integrate Puck manually.`,
-        details: {
-          docs: MANUAL_INTEGRATION_DOCS_URL,
-          version: version ?? range,
-        },
-      },
-    };
-  }
+  const tooOld = unsupportedVersion("next", version, range);
+  if (tooOld) return tooOld;
 
   return {
     status: "detected",
@@ -267,6 +305,9 @@ const detectVinext = (
   range: string
 ): FrameworkDetection => {
   const version = resolveInstalledVersion(vfs, root, "vinext");
+  const tooOld = unsupportedVersion("vinext", version, range);
+  if (tooOld) return tooOld;
+
   const layout = detectAppRouter(vfs, root, "vinext");
   if ("status" in layout) return layout;
 
@@ -299,18 +340,8 @@ const detectReactRouter = (
     resolveInstalledVersion(vfs, root, "react-router");
   const major = majorOf(version) ?? majorOf(range);
 
-  if (major !== null && major < 7) {
-    return {
-      status: "unsupported",
-      error: {
-        code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK-VERSION",
-        message: `React Router ${
-          version ?? range
-        } is not supported. Upgrade to React Router 7 framework mode.`,
-        details: { docs: MANUAL_INTEGRATION_DOCS_URL },
-      },
-    };
-  }
+  const tooOld = unsupportedVersion("react-router", version, range);
+  if (tooOld) return tooOld;
 
   const configFile = firstExisting(
     vfs,
@@ -384,6 +415,9 @@ const detectTanStackStart = (
   range: string
 ): FrameworkDetection => {
   const version = resolveInstalledVersion(vfs, root, "@tanstack/react-start");
+  const tooOld = unsupportedVersion("tanstack-start", version, range);
+  if (tooOld) return tooOld;
+
   const viteConfig = findViteConfig(vfs, root);
   const code = viteConfig
     ? vfs.readText(path.join(root, viteConfig)) ?? ""
@@ -453,6 +487,9 @@ const detectVite = (
     ) ?? null;
 
   const version = resolveInstalledVersion(vfs, root, "vite");
+  const tooOld = unsupportedVersion("vite", version, range);
+  if (tooOld) return tooOld;
+
   const viteConfig = findViteConfig(vfs, root);
   const code = viteConfig
     ? vfs.readText(path.join(root, viteConfig)) ?? ""
@@ -487,6 +524,9 @@ const detectAstro = (
   deps: Record<string, string>
 ): FrameworkDetection => {
   const version = resolveInstalledVersion(vfs, root, "astro");
+  const tooOld = unsupportedVersion("astro", version, range);
+  if (tooOld) return tooOld;
+
   const config = firstExisting(
     vfs,
     root,
@@ -527,6 +567,9 @@ const detectServer =
     deps: Record<string, string>
   ): FrameworkDetection => {
     const version = resolveInstalledVersion(vfs, root, id);
+    const tooOld = unsupportedVersion(id, version, range);
+    if (tooOld) return tooOld;
+
     return {
       status: "detected",
       info: {
