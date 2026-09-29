@@ -39,7 +39,7 @@ export const GridInternal: ComponentConfig<GridProps> = {
     },
     items: {
       type: "slot",
-      disallow: ["Hero", "Stats"],
+      disallow: ["Hero", "Stats", "Logos"],
     },
   },
   defaultProps: {

@@ -1,13 +1,85 @@
-.Logos {
-  background-color: var(--puck-color-grey-02);
+.Logos-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 }
 
-.Logos-items {
+/* Logos fade out at both edges instead of being cut off */
+.Logos-viewport {
+  --logos-gap: 64px;
+
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  overflow: hidden;
+}
+
+.Logos-track {
+  /* --logos-duration is set in the component based on the number of logos */
+  animation: scroll var(--logos-duration) linear infinite;
   display: flex;
-  justify-content: space-between;
-  padding-bottom: 64px;
-  padding-top: 64px;
-  gap: var(--puck-space-5);
-  filter: grayscale(1) brightness(100);
-  opacity: 0.8;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: max-content;
+}
+
+.Logos-viewport:hover .Logos-track {
+  animation-play-state: paused;
+}
+
+/* Half the gap on each side gives both copies the exact same width, so the
+ loop has no visible seam. It also keeps wrapped rows centered. */
+.Logos-item {
+  padding-inline: calc(var(--logos-gap) / 2);
+}
+
+.Logos-logo {
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
+  background: color-mix(in srgb, currentColor 60%, transparent);
+  display: block;
+  height: 48px;
+  width: 160px;
+}
+
+/* Smaller logos on phones, so a few fit on screen at once */
+@media (max-width: 767px) {
+  .Logos-viewport {
+    --logos-gap: 40px;
+  }
+
+  .Logos-logo {
+    height: 36px;
+    width: 120px;
+  }
+}
+
+@keyframes scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Without motion, show each logo once, in centered rows that wrap */
+@media (prefers-reduced-motion: reduce) {
+  .Logos-viewport {
+    mask-image: none;
+  }
+
+  .Logos-track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: calc(var(--logos-gap) / 2);
+    width: auto;
+  }
+
+  .Logos-item[aria-hidden] {
+    display: none;
+  }
 }
