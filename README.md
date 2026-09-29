@@ -102,14 +102,13 @@ npx @puckeditor/cli docs find "dynamic fields"
 npx @puckeditor/cli docs cat api-reference/fields/text
 ```
 
-Agents with skill support can install the Puck skill, which routes to the docs for the installed version:
+Agents with skill support can install the [Puck skill](https://github.com/puckeditor/skills):
 
 ```sh
-npx skills add puckeditor/puck
+npx skills add puckeditor/skills --skill puck
 ```
 
-- [agents.md](https://puckeditor.com/agents.md): how agents should set up and use Puck
-- [llms.txt](https://puckeditor.com/llms.txt) and [llms-full.txt](https://puckeditor.com/llms-full.txt): documentation index and full export for LLMs
+The latest docs are indexed at [llms.txt](https://puckeditor.com/llms.txt), and any page is available as markdown by adding `.md` to its URL.
 
 ## Recipes
 
