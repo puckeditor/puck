@@ -16,17 +16,13 @@ export type SpaceProps = {
 export const Space: ComponentConfig<SpaceProps> = {
   ai: {
     instructions:
-      "Adds separation between adjacent components in the page's top-level `content` array. Inside Flex or Grid, use the container's gap instead.",
+      "Inside Flex or Grid, use the container's gap instead of a Space.",
   },
   label: "Space",
   fields: {
     size: {
       type: "select",
       options: spacingOptions,
-      ai: {
-        instructions:
-          "Use 8px to 16px between a heading and text, 24px to 96px between related content, and 96px to 120px between sections.",
-      },
     },
     direction: {
       type: "radio",
@@ -37,7 +33,7 @@ export const Space: ComponentConfig<SpaceProps> = {
       ],
       ai: {
         instructions:
-          "Use 'vertical' in a column or between top-level page components, 'horizontal' in a row, or the empty value when both axes need spacing.",
+          "Use 'vertical' in a column, 'horizontal' in a row, or the empty value when both axes need spacing.",
       },
     },
   },

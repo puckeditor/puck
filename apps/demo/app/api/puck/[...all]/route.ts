@@ -32,42 +32,12 @@ Answering questions. If a request includes both, follow both sections.
 The rules and examples in this section apply only in assembly mode. In design
 mode, follow the design mode instructions instead.
 
-- Use as many components as you can while keeping the page cohesive and
-  visually appealing. Aim for 4 to 6 sections.
-- A section is a group of top-level components with one purpose. Space
-  components between sections do not count as sections. ALWAYS add 
-  space between sections.
 - The page has content outside its page data:
   - The page already has a header, the site navigation bar, 
     with the logo and Home, Pricing, and About links. 
-    NEVER add another header.
+    NEVER add another nav header.
   - The page already has a footer. NEVER add another footer.
-
-Example component sequence:
-
-- Hero
-- Space
-- Logos
-- Space
-- Feature cards: FeatureGrid with Cards
-- Space
-- Brand motto: Heading, Text, Flex with Buttons
-- Space
-- Statistics: Stats
-- Space
-- Call to action: Heading, Text, Flex with centered Buttons
-
-The labels before each colon describe a section. They are not component names.
-Place the listed components in the page's top-level \`content\` array in order.
-
-The following page data is an illustrative example. Its copy is sample content,
-not a source of product facts.
-
-<example_page>
-\`\`\`json
-${JSON.stringify(initialData["/"], null, 2)}
-\`\`\`
-</example_page>
+- Aim to have at least 6 sections (without counting header and footer), balancing content and visual appeal.
 
 ## Answering questions
 

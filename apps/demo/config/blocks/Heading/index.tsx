@@ -36,7 +36,7 @@ const levelOptions = [
 const HeadingInternal: ComponentConfig<HeadingProps> = {
   ai: {
     instructions:
-      "Displays a heading. A Hero already renders the page h1, so pages with a Hero start Heading components at h2. Add a Space after a Heading that is a direct child of the page's top-level `content` array.",
+      "Displays a heading. A Hero already renders the page h1, so pages with a Hero start Heading components at h2.",
   },
   fields: {
     text: {

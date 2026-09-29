@@ -20,6 +20,18 @@ import { initialData } from "./initial-data";
 export const conf: UserConfig = {
   root: Root,
   categories: {
+    introduction: {
+      title: "Introduction",
+      components: ["Hero"],
+    },
+    content: {
+      title: "Content",
+      components: ["FeatureGrid", "Card"],
+    },
+    socialProof: {
+      title: "Social Proof",
+      components: ["Logos", "Stats"],
+    },
     layout: {
       components: ["Grid", "Flex", "Space"],
     },
@@ -32,7 +44,7 @@ export const conf: UserConfig = {
     },
     other: {
       title: "Other",
-      components: ["Card", "FeatureGrid", "Hero", "Logos", "Stats", "Template"],
+      components: ["Template"],
     },
   },
   components: {

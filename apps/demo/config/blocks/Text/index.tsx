@@ -44,10 +44,6 @@ const TextInner: ComponentConfig<TextProps> = {
         { label: "Center", value: "center" },
         { label: "Right", value: "right" },
       ],
-      ai: {
-        instructions:
-          "When placing this component after a Heading, match the heading's alignment unless the user asks otherwise.",
-      },
     },
     color: {
       type: "radio",

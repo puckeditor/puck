@@ -72,7 +72,7 @@ export const layoutField: ObjectField<LayoutFieldProps> = {
       ai: {
         required: false,
         instructions:
-          "Vertical padding inside this component. Use Space between top-level siblings or a container's gap between children, and avoid padding both a parent and its child.",
+          "Vertical padding inside this component. Avoid padding both a parent and its child.",
       },
     },
   },
