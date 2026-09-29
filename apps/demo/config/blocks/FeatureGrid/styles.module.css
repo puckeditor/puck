@@ -1,0 +1,24 @@
+.FeatureGrid-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.FeatureGrid-cards {
+  display: grid;
+  gap: var(--puck-space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .FeatureGrid-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .FeatureGrid-cards {
+    /* --feature-grid-columns is set by the FeatureGrid component */
+    grid-template-columns: repeat(var(--feature-grid-columns), 1fr);
+  }
+}

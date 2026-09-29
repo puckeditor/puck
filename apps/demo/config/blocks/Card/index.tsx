@@ -57,7 +57,7 @@ export type CardProps = WithLayout<{
   title: string;
   description: string;
   icon?: string;
-  mode: "flat" | "card";
+  mode?: "flat" | "card";
 }>;
 
 const CardInner: ComponentConfig<CardProps> = {
@@ -81,7 +81,7 @@ const CardInner: ComponentConfig<CardProps> = {
     mode: {
       ai: {
         instructions:
-          "Use 'flat' for a transparent, center-aligned appearance or 'card' for an elevated, left-aligned appearance.",
+          "Optional. Use 'flat' for a transparent, center-aligned appearance or 'card' for an elevated, left-aligned appearance. Inside a Feature Grid, set this for all cards in the grid's cardMode.",
         required: false,
       },
       type: "radio",
@@ -97,7 +97,25 @@ const CardInner: ComponentConfig<CardProps> = {
     icon: "feather",
     mode: "flat",
   },
-  render: ({ title, icon, description, mode }) => {
+  // Inside a Feature Grid, the grid sets the style of all its Cards, so the
+  // Card hides its own mode field and takes the grid's style
+  resolveFields: (_, { fields, parent }) => ({
+    ...fields,
+    mode: parent?.type === "FeatureGrid" ? undefined : fields.mode,
+  }),
+  resolveData: (data, { parent }) => {
+    const gridMode =
+      parent?.type === "FeatureGrid" ? parent.props.cardMode : undefined;
+
+    const newProps = { ...data.props };
+
+    if (gridMode) {
+      newProps.mode = gridMode;
+    }
+
+    return { ...data, props: newProps };
+  },
+  render: ({ title, icon, description, mode = "flat" }) => {
     return (
       <div className={getClassName({ [mode]: mode })}>
         <div className={getClassName("inner")}>

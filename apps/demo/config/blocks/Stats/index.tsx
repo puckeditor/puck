@@ -45,7 +45,7 @@ export const Stats: ComponentConfig<{
   },
   fields: {
     layout: {
-      type: "select",
+      type: "radio",
       options: [
         { label: "Row", value: "row" },
         { label: "Split", value: "split" },
@@ -101,13 +101,14 @@ export const Stats: ComponentConfig<{
     image: {
       type: "object",
       objectFields: {
-        src: { type: "text", ai: { stream: false } },
+        src: { type: "text" },
         alt: { type: "text" },
       },
       ai: {
         bind: "puck:unsplash",
         instructions:
           "A photo for the featured tile in the bento layout and the background of the glass layout. Other layouts ignore it.",
+          stream: false,
       },
     },
     padding: sectionPaddingField,

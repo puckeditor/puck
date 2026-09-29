@@ -2,59 +2,58 @@
   height: 100%;
 }
 
+.Card-inner {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--puck-space-3);
+}
+
+/* Card: a bordered surface */
 .Card--card {
   background: var(--puck-color-surface);
-  box-shadow: rgba(140, 152, 164, 0.25) 0px 3px 6px 0px;
-  border-radius: var(--puck-radius-l);
+  border: 1px solid var(--puck-color-border);
+  border-radius: calc(var(--puck-radius-l) * 2);
+  color: var(--puck-color-text);
   max-width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  .Card--card {
-    box-shadow: rgba(24, 31, 41, 0.25) 0px 3px 6px 0px;
-  }
-}
-
-.Card-inner {
-  align-items: center;
-  display: flex;
-  gap: var(--puck-space-4);
-  flex-direction: column;
-}
-
 .Card--card .Card-inner {
-  align-items: flex-start;
   padding: var(--puck-space-5);
 }
 
-.Card-icon {
-  border-radius: 256px;
-  background: var(--puck-color-azure-09);
-  color: var(--puck-color-azure-06);
-  display: flex;
-  justify-content: center;
+/* Flat: no surface, centered, and takes the section's text color */
+.Card--flat .Card-inner {
   align-items: center;
-  width: 64px;
-  height: 64px;
+  text-align: center;
+}
+
+.Card-icon {
+  align-items: center;
+  background: var(--puck-color-interactive-subtle);
+  border-radius: var(--puck-radius-l);
+  color: var(--puck-color-interactive);
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  margin-bottom: var(--puck-space-2);
+  width: 44px;
+}
+
+.Card--flat .Card-icon {
+  border-radius: var(--puck-radius-round);
+  height: 56px;
+  width: 56px;
 }
 
 .Card-title {
-  font-size: 22px;
-  text-align: center;
-}
-
-.Card--card .Card-title {
-  text-align: left;
+  font-size: var(--puck-font-size-m);
+  font-weight: var(--puck-font-weight-medium);
+  letter-spacing: -0.02em;
 }
 
 .Card-description {
+  color: color-mix(in srgb, currentColor 60%, transparent);
   font-size: var(--puck-font-size-xs);
   line-height: 1.5;
-  color: var(--puck-color-text-muted);
-  text-align: center;
-  font-weight: 300;
-}
-
-.Card--card .Card-description {
-  text-align: left;
 }

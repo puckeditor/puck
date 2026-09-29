@@ -43,50 +43,16 @@ export const initialData: Record<string, UserData> = {
         },
       },
       {
-        type: "Heading",
+        type: "FeatureGrid",
         props: {
-          align: "center",
-          level: "2",
-          text: "Drag-and-drop your own React components",
-          layout: { padding: "0px" },
-          size: "xxl",
-          id: "Heading-1687297593514",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "8px",
-          id: "Space-1687284122744",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Text",
-        props: {
-          align: "center",
-          text: "Configure Puck with your own components to make changes to your marketing pages without a developer.",
-          layout: { padding: "0px" },
-          size: "m",
-          id: "Text-1687297621556",
-          color: "muted",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "40px",
-          id: "Space-1687296179388",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Grid",
-        props: {
-          id: "Grid-c4cd99ae-8c5e-4cdb-87d2-35a639f5163e",
-          gap: 24,
-          numColumns: 3,
-          items: [
+          background: "default",
+          columns: 3,
+          title: "Drag-and-drop your own React components",
+          description:
+            "Configure Puck with your own components to make changes to your marketing pages without a developer.",
+          id: "FeatureGrid-c4cd99ae-8c5e-4cdb-87d2-35a639f5163e",
+          cardMode: "flat",
+          cards: [
             {
               type: "Card",
               props: {
@@ -168,51 +134,16 @@ export const initialData: Record<string, UserData> = {
         },
       },
       {
-        type: "Heading",
+        type: "FeatureGrid",
         props: {
-          align: "center",
-          level: "2",
-          text: "Extending Puck",
-          layout: { padding: "0px" },
-          size: "xxl",
-          id: "Heading-1687296184321",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "8px",
-          id: "Space-1687296602860",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Text",
-        props: {
-          align: "center",
-          text: "Puck can also be extended with plugins and headless CMS content fields, transforming Puck into the perfect tool for your Content Ops.",
-          layout: { padding: "0px" },
-          size: "m",
-          id: "Text-1687296579834",
-          color: "muted",
-          maxWidth: "916px",
-        },
-      },
-      {
-        type: "Space",
-        props: {
-          size: "96px",
-          id: "Space-1687299311382",
-          direction: "vertical",
-        },
-      },
-      {
-        type: "Grid",
-        props: {
-          gap: 24,
-          numColumns: 3,
-          id: "Grid-2da28e88-7b7b-4152-9da0-9f93f41213b6",
-          items: [
+          background: "default",
+          columns: 3,
+          title: "Extending Puck",
+          description:
+            "Puck can also be extended with plugins and headless CMS content fields, transforming Puck into the perfect tool for your Content Ops.",
+          id: "FeatureGrid-2da28e88-7b7b-4152-9da0-9f93f41213b6",
+          cardMode: "card",
+          cards: [
             {
               type: "Card",
               props: {

@@ -7,6 +7,7 @@ import { HeadingProps } from "./blocks/Heading";
 import { FlexProps } from "./blocks/Flex";
 import { LogosProps } from "./blocks/Logos";
 import { StatsProps } from "./blocks/Stats";
+import { FeatureGridProps } from "./blocks/FeatureGrid";
 import { TemplateProps } from "./blocks/Template";
 import { TextProps } from "./blocks/Text";
 import { SpaceProps } from "./blocks/Space";
@@ -25,6 +26,7 @@ export type Components = {
   Flex: FlexProps;
   Logos: LogosProps;
   Stats: StatsProps;
+  FeatureGrid: FeatureGridProps;
   Template: TemplateProps;
   Text: TextProps;
   Space: SpaceProps;

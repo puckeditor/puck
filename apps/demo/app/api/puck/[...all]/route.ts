@@ -49,7 +49,7 @@ Example component sequence:
 - Space
 - Logos
 - Space
-- Feature cards: Heading, Text, Grid with Cards
+- Feature cards: FeatureGrid with Cards
 - Space
 - Brand motto: Heading, Text, Flex with Buttons
 - Space
