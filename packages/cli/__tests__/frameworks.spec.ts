@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Tree } from "./helpers/harness";
 import type { FrameworkId } from "../src/detect/framework";
-import { run, tmpProject } from "./helpers/harness";
+import { REPO_ROOT, run, tmpProject } from "./helpers/harness";
 import {
   astroMinimal,
   expressMinimal,
@@ -145,5 +145,24 @@ describe("frameworks", () => {
     });
     expect(code).toBe(2);
     expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+  });
+
+  it("matches the supported projects in the CLI docs", () => {
+    const docs = fs.readFileSync(
+      path.join(REPO_ROOT, "apps/docs/pages/docs/cli.mdx"),
+      "utf8"
+    );
+    const section = docs.split("## Supported projects")[1].split("\n## ")[0];
+
+    // e.g. "Next.js 15+" or "[TanStack Start](https://tanstack.com/start) 1.132+"
+    for (const id of FRAMEWORK_IDS) {
+      const escape = (text: string) =>
+        text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const name = escape(FRAMEWORK_LABELS[id]);
+      const min = escape(MIN_VERSIONS[id]);
+      expect(section).toMatch(
+        new RegExp(`\\[?${name}\\]?(\\([^)]*\\))? ${min}\\+`)
+      );
+    }
   });
 });

@@ -22,6 +22,7 @@ npx @puckeditor/cli add cloud    # connect Puck Cloud
 npx @puckeditor/cli add ai       # add the Puck AI plugin
 npx @puckeditor/cli status       # show what's set up
 npx @puckeditor/cli doctor       # diagnose problems
+npx @puckeditor/cli frameworks   # show supported frameworks and versions
 npx @puckeditor/cli docs         # read the docs for this version
 ```
 

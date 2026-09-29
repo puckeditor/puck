@@ -21,13 +21,15 @@ Puck AI is optional. It's the editor plugin that uses Puck Cloud as its backend,
 
 - Next.js 15+ using the App Router (`app/` or `src/app/`)
 - React Router 7+ in framework mode
-- [TanStack Start](https://tanstack.com/start) 1.x
-- [vinext](https://github.com/cloudflare/vinext) using the App Router
-- [Vite](https://vite.dev) React apps (see [Vite and Astro](#vite-and-astro))
+- [TanStack Start](https://tanstack.com/start) 1.132+
+- [vinext](https://github.com/cloudflare/vinext) 1+ using the App Router
+- [Vite](https://vite.dev) 6+ React apps (see [Vite and Astro](#vite-and-astro))
 - [Astro](https://astro.build) 7+ (see [Vite and Astro](#vite-and-astro))
-- [Hono](https://hono.dev) and [Express](https://expressjs.com) servers (see [Servers](#servers))
+- [Hono](https://hono.dev) 4+ and [Express](https://expressjs.com) 4.16+ servers (see [Servers](#servers))
 - npm, pnpm, Yarn and Bun, including workspaces
 - TypeScript projects
+
+Run `npx @puckeditor/cli frameworks` to see what the CLI sets up for each framework. Older versions fail with `PUCK-CLI-UNSUPPORTED-FRAMEWORK-VERSION`.
 
 When the CLI can't safely change something, like an existing `middleware.ts`, it leaves the file alone and tells you exactly what to add.
 
@@ -159,6 +161,7 @@ npx skills add puckeditor/skills --skill puck
 | `add ai`     | Add the Puck AI plugin (adds Puck Cloud first if needed)           |
 | `status`     | Show what's installed and configured                               |
 | `doctor`     | Diagnose problems and suggest fixes. Never makes changes           |
+| `frameworks` | Show the supported frameworks and versions                         |
 | `docs`       | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>` |
 
 ## Flags
