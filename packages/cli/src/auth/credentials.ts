@@ -334,7 +334,9 @@ const promptForKey = async (rc: RunContext): Promise<CredentialResolution> => {
 export const resolveCredential = async (
   rc: RunContext,
   state: ProjectState,
-  info: ClientInfo
+  info: ClientInfo,
+  /** Log in again even if a key is already set, e.g. for `connect` */
+  { fresh = false }: { fresh?: boolean } = {}
 ): Promise<CredentialResolution> => {
   const warnings: { code: string; message: string }[] = [];
 
@@ -368,11 +370,16 @@ export const resolveCredential = async (
 
   if (rc.flags.apiKey !== undefined)
     return fromExplicit(rc.flags.apiKey, "flag");
-  if (rc.deps.env[ENV_KEY])
+  if (fresh && rc.deps.env[ENV_KEY]) {
+    warnings.push({
+      code: "PUCK-CLI-W-KEY-IN-PROCESS-ENV",
+      message: `${ENV_KEY} is set in your environment and overrides the new key in the env file. Unset it to use the new key.`,
+    });
+  } else if (rc.deps.env[ENV_KEY])
     return fromExplicit(rc.deps.env[ENV_KEY]!, "process.env");
 
   const existing = state.cloud.apiKey;
-  if (existing.present && existing.value) {
+  if (!fresh && existing.present && existing.value) {
     const secret = secretFrom(
       rc,
       existing.value,
