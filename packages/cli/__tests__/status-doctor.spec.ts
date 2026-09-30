@@ -68,6 +68,9 @@ describe("doctor", () => {
     cloud.validKeys.clear();
     const revoked = await run(["doctor", "--json"], { cwd: root, cloud });
     expect(checks(revoked.json.findings)["cloud.connection"]).toBe("fail");
+    expect(
+      revoked.json.findings?.find((f) => f.check === "cloud.connection")?.fix
+    ).toBe("npx @puckeditor/cli connect");
 
     const offline = await run(["doctor", "--json", "--offline"], { cwd: root });
     expect(checks(offline.json.findings)["cloud.connection"]).toBe("skip");

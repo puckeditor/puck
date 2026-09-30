@@ -419,7 +419,7 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
           "cloud.connection",
           "fail",
           "Puck Cloud rejected the API key",
-          `${CANONICAL_INVOCATION} add cloud${where}`
+          `${CANONICAL_INVOCATION} connect${where}`
         )
       );
     } else {
