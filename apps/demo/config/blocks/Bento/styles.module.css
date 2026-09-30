@@ -1,0 +1,133 @@
+.Bento-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.Bento-tiles {
+  display: grid;
+  gap: var(--puck-space-4);
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.BentoTile {
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  border-radius: calc(var(--puck-radius-l) * 3);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--puck-space-5);
+  isolation: isolate;
+  min-height: 200px;
+  overflow: hidden;
+  padding: clamp(24px, 3vw, 32px);
+  position: relative;
+}
+
+.BentoTile:first-child {
+  min-height: 360px;
+}
+
+/* Photo tiles: the photo fills the tile, with the text over a dark
+   gradient */
+.BentoTile--photo {
+  border-color: transparent;
+  color: var(--puck-color-white);
+  min-height: 280px;
+}
+
+.BentoTile--photo::after {
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--puck-color-black) 80%, transparent),
+    color-mix(in srgb, var(--puck-color-black) 25%, transparent) 60%,
+    transparent
+  );
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.BentoTile-image {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+
+/* The text always sits at the bottom, below the icon or over the photo */
+.BentoTile-text {
+  margin-top: auto;
+}
+
+.BentoTile-title {
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: var(--puck-font-weight-medium);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.BentoTile-description {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  line-height: 1.5;
+  margin: var(--puck-space-1) 0 0;
+  text-wrap: pretty;
+}
+
+.BentoTile--photo .BentoTile-description {
+  color: color-mix(in srgb, currentColor 80%, transparent);
+}
+
+@media (min-width: 768px) {
+  .Bento-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .BentoTile {
+    min-height: 280px;
+  }
+
+  .BentoTile:first-child {
+    grid-column: span 2;
+  }
+
+  /* With 3 or 4 tiles, the tiles after the first widen so the grid has no gaps */
+  .BentoTile:first-child:nth-last-child(3) ~ .BentoTile,
+  .BentoTile:first-child:nth-last-child(4) ~ .BentoTile:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .Bento-tiles {
+    grid-auto-rows: minmax(280px, auto);
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .BentoTile:first-child {
+    grid-row: span 2;
+  }
+
+  .BentoTile:first-child .BentoTile-title {
+    font-size: clamp(28px, 3vw, 40px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .BentoTile-image {
+    transition: transform 600ms var(--puck-ease-entrance);
+  }
+
+  .BentoTile--photo:hover .BentoTile-image {
+    transform: scale(1.04);
+  }
+}

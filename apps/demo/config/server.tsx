@@ -11,6 +11,7 @@ import { CTA } from "./blocks/CTA";
 import { FAQ } from "./blocks/FAQ";
 import { Steps } from "./blocks/Steps";
 import { FeatureSplit } from "./blocks/FeatureSplit";
+import { Bento } from "./blocks/Bento";
 import { Template } from "./blocks/Template/server";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
@@ -35,6 +36,7 @@ const conf: UserConfig = {
         "FAQ",
         "Steps",
         "FeatureSplit",
+        "Bento",
       ],
     },
     socialProof: {
@@ -70,6 +72,7 @@ const conf: UserConfig = {
     FAQ,
     Steps,
     FeatureSplit,
+    Bento,
     Template,
     Text,
     Space,

@@ -87,6 +87,7 @@ const FlexInternal: ComponentConfig<FlexProps> = {
         "FAQ",
         "Steps",
         "FeatureSplit",
+        "Bento",
       ],
     },
   },

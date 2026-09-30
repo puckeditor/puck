@@ -48,6 +48,7 @@ export const GridInternal: ComponentConfig<GridProps> = {
         "FAQ",
         "Steps",
         "FeatureSplit",
+        "Bento",
       ],
     },
   },
