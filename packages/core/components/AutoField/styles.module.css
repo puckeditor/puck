@@ -291,7 +291,12 @@ select.Input-input {
 .Input-checkboxGroupItems {
   display: flex;
   flex-direction: column;
-  gap: var(--puck-space-3);
+  gap: var(--puck-space-2);
+  border-color: var(--puck-field-color-border, var(--puck-color-border));
+  border-style: solid;
+  border-width: var(--puck-field-border-width, 1px);
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  padding: var(--puck-space-3);
 }
 
 .Input-checkbox {
