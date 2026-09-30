@@ -14,6 +14,10 @@ export const COMMANDS = [
     description:
       "Add one capability (ai includes cloud, cloud includes editor)",
   },
+  {
+    name: "connect",
+    description: "Log in to Puck Cloud again and replace PUCK_API_KEY",
+  },
   { name: "status", description: "Show what's installed and configured" },
   {
     name: "doctor",

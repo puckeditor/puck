@@ -85,6 +85,7 @@ const MUTATING: OptionName[] = [
 export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
   init: [...GLOBAL, ...MUTATING, "framework", "name", "ai", "no-ai"],
   add: [...GLOBAL, ...MUTATING],
+  connect: [...GLOBAL, "api-key", "config", "wait"],
   status: ["json", "help", "version", "cwd", "workspace", "config"],
   doctor: ["json", "help", "version", "cwd", "workspace", "config", "offline"],
   docs: ["json", "help", "version"],
@@ -95,6 +96,7 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
 const COMMANDS: CommandName[] = [
   "init",
   "add",
+  "connect",
   "status",
   "doctor",
   "docs",

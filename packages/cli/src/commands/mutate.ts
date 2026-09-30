@@ -51,7 +51,10 @@ export interface MutationInput {
   workspace?: WorkspaceSummary | null;
 }
 
-const serializeSteps = (base: string, steps: PlanStep[]): SerializedStep[] =>
+export const serializeSteps = (
+  base: string,
+  steps: PlanStep[]
+): SerializedStep[] =>
   steps.map((step) => {
     const out: SerializedStep = {
       id: step.id,
@@ -74,7 +77,7 @@ const serializeSteps = (base: string, steps: PlanStep[]): SerializedStep[] =>
     return out;
   });
 
-const assertSupported = (rc: RunContext, ctx: ProjectContext) => {
+export const assertSupported = (rc: RunContext, ctx: ProjectContext) => {
   if (!ctx.hasPackageJson) {
     throw new CliError(
       "PUCK-CLI-NO-PACKAGE-JSON",

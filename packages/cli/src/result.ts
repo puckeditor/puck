@@ -7,6 +7,7 @@ import type { DocEntry } from "./docs/source";
 export type CommandName =
   | "init"
   | "add"
+  | "connect"
   | "status"
   | "doctor"
   | "docs"

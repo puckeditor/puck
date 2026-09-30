@@ -9,6 +9,7 @@ import { presentHuman, presentJson } from "./output/present";
 import { SecretRegistry } from "./secret";
 import { runInit } from "./commands/init";
 import { runAdd } from "./commands/add";
+import { runConnect } from "./commands/connect";
 import { runStatus } from "./commands/status";
 import { runDoctor } from "./commands/doctor";
 import { runDocs } from "./commands/docs";
@@ -86,6 +87,7 @@ export const runCli = async (
   try {
     if (command === "init") result = await runInit(rc);
     else if (command === "add") result = await runAdd(rc, positionals);
+    else if (command === "connect") result = await runConnect(rc);
     else if (command === "status") result = await runStatus(rc);
     else if (command === "docs") result = await runDocs(rc, positionals);
     else if (command === "frameworks")
