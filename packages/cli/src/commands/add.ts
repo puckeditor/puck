@@ -1,6 +1,7 @@
 import type { RunContext } from "../context";
 import type { CapabilityId, CommandResult } from "../result";
 import { CliError } from "../errors";
+import { CANONICAL_INVOCATION } from "../constants";
 import { emptyResult } from "../result";
 import { CAPABILITY_IDS } from "../plan/capabilities";
 import { resolveTarget } from "./target";
@@ -15,7 +16,7 @@ export const runAdd = async (
       "PUCK-CLI-INVALID-ARGS",
       `Specify what to add: ${CAPABILITY_IDS.join(
         ", "
-      )}. For example \`puck add cloud\`.`
+      )}. For example \`${CANONICAL_INVOCATION} add cloud\`.`
     );
   }
 

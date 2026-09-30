@@ -114,6 +114,15 @@ describe("arguments", () => {
     expect(code).toBe(2);
   });
 
+  it("points unknown commands at the npx invocation", async () => {
+    const { json } = await run(["frobnicate", "--json"], {
+      cwd: tmpProject("empty"),
+    });
+    expect(json.message).toBe(
+      'Unknown command "frobnicate". Run `npx @puckeditor/cli --help` to see available commands.'
+    );
+  });
+
   it("prints the agent guide with no arguments", async () => {
     const { stdout, code } = await run([], { cwd: tmpProject("empty") });
     expect(code).toBe(0);

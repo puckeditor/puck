@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { CliError } from "./errors";
+import { CANONICAL_INVOCATION } from "./constants";
 import type { CommandName } from "./result";
 import type { FrameworkId } from "./detect/framework";
 import { FRAMEWORK_IDS } from "./detect/framework";
@@ -124,7 +125,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     if (!COMMANDS.includes(first as CommandName)) {
       throw new CliError(
         "PUCK-CLI-UNKNOWN-COMMAND",
-        `Unknown command "${first}". Run \`puck --help\` to see available commands.`
+        `Unknown command "${first}". Run \`${CANONICAL_INVOCATION} --help\` to see available commands.`
       );
     }
     command = first as CommandName;
@@ -136,7 +137,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     if (!allowed.includes(key as OptionName)) {
       throw new CliError(
         "PUCK-CLI-INVALID-ARGS",
-        `--${key} can't be used with \`${command ?? "puck"}\`.`
+        `--${key} can't be used with \`${command ?? CANONICAL_INVOCATION}\`.`
       );
     }
   }
