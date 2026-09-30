@@ -8,6 +8,7 @@ import { Logos } from "./blocks/Logos";
 import { Stats } from "./blocks/Stats";
 import { FeatureGrid } from "./blocks/FeatureGrid";
 import { CTA } from "./blocks/CTA";
+import { FAQ } from "./blocks/FAQ";
 import { Template } from "./blocks/Template/server";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
@@ -25,7 +26,7 @@ const conf: UserConfig = {
     },
     content: {
       title: "Content",
-      components: ["FeatureGrid", "Card", "CTA"],
+      components: ["FeatureGrid", "Card", "CTA", "FAQ"],
     },
     socialProof: {
       title: "Social Proof",
@@ -57,6 +58,7 @@ const conf: UserConfig = {
     Stats,
     FeatureGrid,
     CTA,
+    FAQ,
     Template,
     Text,
     Space,

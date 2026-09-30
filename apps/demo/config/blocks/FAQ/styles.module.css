@@ -1,0 +1,75 @@
+.FAQ-inner {
+  display: grid;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .FAQ-inner {
+    align-items: start;
+    column-gap: 64px;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+}
+
+/* Without a header, the questions sit in one centered column */
+.FAQ-items:only-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: 48rem;
+  width: 100%;
+}
+
+.FAQ-item:first-child {
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.FAQ-item {
+  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.FAQ-question {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-size: var(--puck-font-size-s);
+  font-weight: var(--puck-font-weight-medium);
+  gap: var(--puck-space-5);
+  justify-content: space-between;
+  list-style: none;
+  padding-block: var(--puck-space-5);
+}
+
+/* Some versions of Safari still draw the default triangle without this */
+.FAQ-question::-webkit-details-marker {
+  display: none;
+}
+
+.FAQ-question:focus-visible {
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
+}
+
+.FAQ-icon {
+  flex-shrink: 0;
+  height: 20px;
+  transition: transform var(--puck-duration-medium) var(--puck-ease-emphasized);
+  width: 20px;
+}
+
+.FAQ-item[open] .FAQ-icon {
+  transform: rotate(45deg);
+}
+
+.FAQ-answer {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  line-height: 1.6;
+  max-width: 40rem;
+  padding-bottom: var(--puck-space-5);
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .FAQ-icon {
+    transition: none;
+  }
+}
