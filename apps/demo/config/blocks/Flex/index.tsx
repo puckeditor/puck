@@ -78,7 +78,15 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     items: {
       type: "slot",
-      disallow: ["Hero", "Stats", "Logos", "FeatureGrid", "CTA", "FAQ"],
+      disallow: [
+        "Hero",
+        "Stats",
+        "Logos",
+        "FeatureGrid",
+        "CTA",
+        "FAQ",
+        "Steps",
+      ],
     },
   },
   defaultProps: {

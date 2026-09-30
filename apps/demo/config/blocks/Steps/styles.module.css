@@ -1,0 +1,100 @@
+.Steps-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.Steps-list {
+  display: grid;
+  gap: var(--puck-space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Steps-step {
+  background: var(--puck-color-surface);
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: calc(var(--puck-radius-l) * 3);
+  box-shadow: 0 -12px 32px color-mix(in srgb, var(--puck-color-black) 6%, transparent);
+  display: grid;
+  gap: var(--puck-space-5);
+  overflow: hidden;
+  padding: clamp(24px, 4vw, 48px);
+}
+
+.Steps--inverse .Steps-step {
+  background: color-mix(
+    in srgb,
+    var(--puck-color-text-inverse) 6%,
+    var(--puck-color-surface-inverse)
+  );
+}
+
+.Steps-content {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--puck-space-3);
+  max-width: 32rem;
+}
+
+.Steps-label {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  font-family: var(--puck-font-family-monospaced);
+  font-size: var(--puck-font-size-xxxs);
+  letter-spacing: 0.12em;
+  margin-bottom: var(--puck-space-2);
+}
+
+.Steps-title {
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: var(--puck-font-weight-medium);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.Steps-description {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  font-size: var(--puck-font-size-s);
+  line-height: 1.5;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.Steps-image {
+  aspect-ratio: 16 / 10;
+  border-radius: calc(var(--puck-radius-l) * 2);
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.Steps-number {
+  align-self: end;
+  color: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: clamp(96px, 14vw, 200px);
+  font-weight: var(--puck-font-weight-medium);
+  justify-self: end;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+}
+
+@media (min-width: 1024px) {
+  .Steps-step {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 240px;
+  }
+}
+
+/* Each step sticks a little lower than the one before, so the steps pile up
+   like a stack of cards while scrolling. Only on screens tall enough to fit a whole
+   step, so none gets stuck half hidden. */
+@media (min-width: 1024px) and (min-height: 800px) {
+  .Steps-step {
+    position: sticky;
+    top: calc(96px + var(--step-index) * 24px);
+  }
+}
