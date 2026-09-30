@@ -20,6 +20,7 @@ Other commands:
 npx @puckeditor/cli add editor   # add the Puck editor
 npx @puckeditor/cli add cloud    # connect Puck Cloud
 npx @puckeditor/cli add ai       # add the Puck AI plugin
+npx @puckeditor/cli connect      # log in to Puck Cloud again for a new API key
 npx @puckeditor/cli status       # show what's set up
 npx @puckeditor/cli doctor       # diagnose problems
 npx @puckeditor/cli frameworks   # show supported frameworks and versions

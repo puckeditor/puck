@@ -159,6 +159,7 @@ npx skills add puckeditor/skills --skill puck
 | `add editor` | Add the Puck editor                                                |
 | `add cloud`  | Connect Puck Cloud (adds the editor first if needed)               |
 | `add ai`     | Add the Puck AI plugin (adds Puck Cloud first if needed)           |
+| `connect`    | Log in to Puck Cloud again and replace `PUCK_API_KEY`              |
 | `status`     | Show what's installed and configured                               |
 | `doctor`     | Diagnose problems and suggest fixes. Never makes changes           |
 | `frameworks` | Show the supported frameworks and versions                         |
@@ -193,6 +194,12 @@ To use an existing key, prefer the environment over `--api-key`, which is visibl
 
 ```sh copy
 PUCK_API_KEY=your-key npx @puckeditor/cli add cloud --yes
+```
+
+To log in again, for example to replace a revoked key, run `connect`. It always starts a new login and replaces the existing key, without changing any code:
+
+```sh copy
+npx @puckeditor/cli connect
 ```
 
 Remember to set `PUCK_API_KEY` in your production environment too. `react-router-serve` and Cloudflare Workers don't load `.env` files; on Workers, use `wrangler secret put PUCK_API_KEY`.
