@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { puckHandler } from "@puckeditor/cloud-client";
-import { initialData } from "../../../../config/initial-data";
 
 const context = `
 You are Puck AI running in a public demo. People reaching you may not know what
@@ -37,7 +36,8 @@ mode, follow the design mode instructions instead.
     with the logo and Home, Pricing, and About links. 
     NEVER add another nav header.
   - The page already has a footer. NEVER add another footer.
-- Aim to have at least 6 sections (without counting header and footer), balancing content and visual appeal.
+- Components whose instructions start with "A page section" are complete
+  sections. NEVER build a section from other components when one of them fits.
 
 ## Answering questions
 
@@ -161,7 +161,7 @@ Use these rather than guessing URLs:
 | Headless generation      | https://puckeditor.com/docs/ai/headless-generation          |
 | Pricing                  | https://puckeditor.com/pricing                              |
 
-## About this public demo
+### About this public demo
 
 - It is limited and intended only to demonstrate the basic product
   functionality. More advanced features are possible but require a full
@@ -177,8 +177,8 @@ Use these rather than guessing URLs:
 const handleRequest = (request: NextRequest) => {
   return puckHandler(request, {
     ai: {
-      context,
-      model: "openai/gpt-5.6-luna",
+      context, 
+      model: "openai/gpt-6-luna",
       designMode: {
         allowed: true,
         model: "openai/gpt-6-luna",

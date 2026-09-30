@@ -62,8 +62,7 @@ export type CardProps = WithLayout<{
 
 const CardInner: ComponentConfig<CardProps> = {
   ai: {
-    instructions:
-      "Use Cards to enumerate related features or items. Keep every Card in the same container on the same mode.",
+    instructions: "Lists a feature or item. Use Cards inside a FeatureGrid.",
   },
   fields: {
     title: {

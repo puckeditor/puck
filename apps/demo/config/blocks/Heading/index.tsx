@@ -36,7 +36,7 @@ const levelOptions = [
 const HeadingInternal: ComponentConfig<HeadingProps> = {
   ai: {
     instructions:
-      "Displays a heading. A Hero already renders the page h1, so pages with a Hero start Heading components at h2.",
+      "Displays a heading (h1-h6 element). Don't use this unless asked by the user explicitly.",
   },
   fields: {
     text: {
@@ -46,10 +46,6 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
     size: {
       type: "select",
       options: sizeOptions,
-      ai: {
-        instructions:
-          "Use 'xxl' for h1 and for h2 headings that are direct children of the page's top-level `content` array. Use 'xl' for other h2 headings.",
-      },
     },
     level: {
       type: "select",
@@ -57,7 +53,7 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
       ai: {
         required: true,
         instructions:
-          "Choose an h1-h6 level that follows the page hierarchy. On pages without a Hero, use h1 for the main page heading. The empty value renders text without a heading tag.",
+          "Choose an h1-h6 level that follows the page hierarchy. The empty value renders text without a heading tag.",
       },
     },
     align: {
@@ -67,10 +63,6 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
         { label: "Center", value: "center" },
         { label: "Right", value: "right" },
       ],
-      ai: {
-        instructions:
-          "Center headings that are direct children of the page's top-level `content` array unless the user asks otherwise. For nested headings, choose an alignment that fits the layout.",
-      },
     },
   },
   defaultProps: {

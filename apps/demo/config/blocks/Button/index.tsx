@@ -10,6 +10,10 @@ export type ButtonProps = {
 
 export const Button: ComponentConfig<ButtonProps> = {
   label: "Button",
+  ai: {
+    instructions:
+      "Displays a button. Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     label: {
       type: "text",

@@ -41,7 +41,7 @@ export const Stats: ComponentConfig<{
   };
 }> = {
   ai: {
-    instructions: "A section of key numbers with its own optional header.",
+    instructions: "A page section of key numbers with its own optional header.",
   },
   fields: {
     layout: {

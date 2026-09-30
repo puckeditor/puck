@@ -16,7 +16,7 @@ export type SpaceProps = {
 export const Space: ComponentConfig<SpaceProps> = {
   ai: {
     instructions:
-      "Inside Flex or Grid, use the container's gap instead of a Space.",
+      "Adds empty space between components. Don't use this unless asked by the user explicitly. Inside Flex or Grid, use the container's gap instead of a Space.",
   },
   label: "Space",
   fields: {

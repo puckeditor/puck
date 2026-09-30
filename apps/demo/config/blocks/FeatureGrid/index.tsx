@@ -35,7 +35,7 @@ export const FeatureGrid: ComponentConfig<{
 }> = {
   label: "Feature Grid",
   ai: {
-    instructions: "A section with an optional header and a grid of Cards.",
+    instructions: "A page section with an optional header and a grid of Cards.",
   },
   fields: {
     background: sectionBackgroundField,

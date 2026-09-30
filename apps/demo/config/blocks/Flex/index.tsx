@@ -19,7 +19,7 @@ export type FlexProps = WithLayout<{
 const FlexInternal: ComponentConfig<FlexProps> = {
   ai: {
     instructions:
-      "Lays out children in a flexible row or column. Containers can be nested for more complex layouts.",
+      "Lays out children in a flexible row or column. Don't use this unless asked by the user explicitly.",
   },
   fields: {
     direction: {
@@ -78,7 +78,7 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     items: {
       type: "slot",
-      disallow: ["Hero", "Stats", "Logos", "FeatureGrid", "CTA"],
+      disallow: ["Hero", "Stats", "Logos", "FeatureGrid", "CTA", "FAQ"],
     },
   },
   defaultProps: {

@@ -17,7 +17,7 @@ export type TextProps = WithLayout<{
 const TextInner: ComponentConfig<TextProps> = {
   ai: {
     instructions:
-      "Use this component for paragraphs, captions, or short descriptions.",
+      "Shows plain text. Don't use this unless asked by the user explicitly.",
   },
   fields: {
     text: {

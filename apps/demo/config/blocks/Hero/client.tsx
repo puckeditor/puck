@@ -22,7 +22,8 @@ export const Hero: ComponentConfig<{
   };
 }> = {
   ai: {
-    instructions: "A page hero whose title renders as the page's h1.",
+    instructions:
+      "A page section for the page's hero. Its title renders as the page's h1.",
   },
   fields: {
     quote: {

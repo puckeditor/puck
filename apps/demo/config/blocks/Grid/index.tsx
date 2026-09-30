@@ -20,7 +20,7 @@ const CustomSlot = (props: any) => {
 export const GridInternal: ComponentConfig<GridProps> = {
   ai: {
     instructions:
-      "Lays out children in equal-width columns that stack below 768px. Containers can be nested for more complex layouts.",
+      "Lays out children in equal-width columns that stack below 768px. Don't use this unless asked by the user explicitly.",
   },
   fields: {
     numColumns: {
@@ -39,7 +39,7 @@ export const GridInternal: ComponentConfig<GridProps> = {
     },
     items: {
       type: "slot",
-      disallow: ["Hero", "Stats", "Logos", "FeatureGrid", "CTA"],
+      disallow: ["Hero", "Stats", "Logos", "FeatureGrid", "CTA", "FAQ"],
     },
   },
   defaultProps: {

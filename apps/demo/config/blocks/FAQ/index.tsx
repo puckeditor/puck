@@ -38,7 +38,7 @@ export const FAQ: ComponentConfig<{
 }> = {
   ai: {
     instructions:
-      "Frequently asked questions with expandable answers, next to an optional header.",
+      "A page section of frequently asked questions with expandable answers, next to an optional header.",
   },
   fields: {
     background: sectionBackgroundField,

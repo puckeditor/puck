@@ -39,7 +39,7 @@ export const Logos: ComponentConfig<{
 }> = {
   ai: {
     instructions:
-      "A strip of partner or customer logos that scrolls from right to left, with an optional header. Usually only needs an eyebrow such as 'Trusted by teams at'.",
+      "A page section with a strip of partner or customer logos that scrolls from right to left, and an optional header. Usually only needs an eyebrow such as 'Trusted by teams at'.",
   },
   fields: {
     background: sectionBackgroundField,

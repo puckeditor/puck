@@ -34,7 +34,7 @@ export const CTA: ComponentConfig<{
 }> = {
   ai: {
     instructions:
-      "A call to action that asks the reader to take a next step. Usually the last section of the page.",
+      "A page section with a call to action that asks the reader to take a next step. Usually the last section of the page.",
   },
   fields: {
     layout: {
