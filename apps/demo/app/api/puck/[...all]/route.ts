@@ -178,10 +178,10 @@ const handleRequest = (request: NextRequest) => {
   return puckHandler(request, {
     ai: {
       context,
-      model: "openai/gpt-6-luna",
+      model: "openai/gpt-5.6-luna",
       designMode: {
         allowed: true,
-        model: "openai/gpt-6-luna",
+        model: "openai/gpt-5.6-luna",
         scripts: true,
         instructions: `
         ### Images and illustrations

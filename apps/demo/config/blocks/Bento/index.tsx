@@ -92,8 +92,7 @@ export const Bento: ComponentConfig<{
           },
           ai: {
             bind: "puck:unsplash",
-            instructions:
-              "Photo that fills the tile, with the text over it.",
+            instructions: "Photo that fills the tile, with the text over it.",
             stream: false,
           },
         },
