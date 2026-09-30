@@ -1,4 +1,7 @@
+import path from "node:path";
 import { Document, isMap, isSeq, parseDocument } from "yaml";
+import type { Planner } from "./planner";
+import templatesConfig from "../../templates.json";
 
 const LEGACY_LISTS = [
   "onlyBuiltDependencies",
@@ -53,3 +56,31 @@ export const withAllowedBuilds = (
   return doc.toString();
 };
 
+/**
+ * Scaffolded apps lose the monorepo's allowBuilds, so give a new pnpm app its
+ * own, or add to the workspace root's when it's created inside one.
+ */
+export const planAllowedBuilds = (planner: Planner) => {
+  const { ctx, vfs } = planner;
+  if (ctx.packageManager.name !== "pnpm") return;
+  const ws = ctx.workspace;
+  if (ws && ws.source !== "pnpm-workspace.yaml") return;
+
+  const file = path.join(ws?.root ?? ctx.root, "pnpm-workspace.yaml");
+  const names = templatesConfig.allowBuilds;
+  const list = names.join(", ");
+  const next = withAllowedBuilds(vfs.readText(file), names);
+  if (next === null) return;
+
+  vfs.write(file, next);
+  // A file inside the new app is part of the scaffold
+  if (!ws) return;
+  planner.steps.push({
+    id: "bootstrap:allow-builds",
+    kind: "modify_file",
+    capability: "bootstrap",
+    summary: `Allow ${list} build scripts in the workspace's pnpm-workspace.yaml`,
+    path: file,
+    edits: [],
+  });
+};

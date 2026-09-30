@@ -20,6 +20,7 @@ import { Planner } from "../plan/planner";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
 import { planEnvWrite, planGitignore } from "../plan/env";
 import { scaffoldApp } from "../plan/bootstrap";
+import { planAllowedBuilds } from "../plan/pnpm-builds";
 import { formatCommand, installCommand } from "../plan/install";
 import { resolveBackend } from "../plan/backend";
 import { resolveCredential, CredentialResolution } from "../auth/credentials";
@@ -222,6 +223,7 @@ export const runMutation = async (
 
   planCapabilities(planner, capabilities);
   planner.finalize();
+  if (bootstrap) planAllowedBuilds(planner);
 
   if (scaffoldStep) planner.steps.unshift(scaffoldStep);
 

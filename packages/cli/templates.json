@@ -32,5 +32,6 @@
     "*.tsbuildinfo",
     "eslint.config.mjs",
     ".env*"
-  ]
+  ],
+  "allowBuilds": ["esbuild"]
 }

@@ -215,6 +215,43 @@ describe("workspaces", () => {
       { command: "pnpm", args: ["install", "--no-frozen-lockfile"], cwd: root },
     ]);
     expect(json.project?.workspace?.root).toBe(root);
+    expect(exists(root, "apps/site/pnpm-workspace.yaml")).toBe(false);
+    expect(read(root, "pnpm-workspace.yaml")).toBe(
+      "packages:\n  - apps/*\nallowBuilds:\n  esbuild: true\n"
+    );
+    expect(json.plan?.steps).toContainEqual(
+      expect.objectContaining({
+        id: "bootstrap:allow-builds",
+        kind: "modify_file",
+        path: "pnpm-workspace.yaml",
+      })
+    );
+  });
+
+  it("keeps a workspace's own build decisions", async () => {
+    const tree = emptyPnpmMonorepo();
+    tree["pnpm-workspace.yaml"] += "allowBuilds:\n  esbuild: false\n";
+    const root = tmpProject({ tree });
+
+    const { json } = await run(
+      [
+        "init",
+        "--yes",
+        "--json",
+        "--ai",
+        "--framework",
+        "next",
+        "--name",
+        "site",
+        ...KEY,
+      ],
+      { cwd: root }
+    );
+    expect(json.status).toBe("success");
+    expect(read(root, "pnpm-workspace.yaml")).toBe(tree["pnpm-workspace.yaml"]);
+    expect(json.plan?.steps.map((s) => s.id)).not.toContain(
+      "bootstrap:allow-builds"
+    );
   });
 
   it("treats workspace:* and catalog: versions of Puck as installed", async () => {

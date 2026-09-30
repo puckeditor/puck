@@ -95,6 +95,7 @@ describe("init", () => {
       expect(read(app, ".env.local")).toBe("PUCK_API_KEY=sk-valid-key\n");
       expect(exists(app, ".gitignore")).toBe(true);
       expect(exists(app, "eslint.config.mjs")).toBe(false);
+      expect(exists(app, "pnpm-workspace.yaml")).toBe(false);
       expect(
         exists(
           app,
@@ -142,6 +143,40 @@ describe("init", () => {
     );
     expect(json.status).toBe("success");
     expect(JSON.parse(read(root, "package.json")).name).toBe("project");
+  });
+
+  it("allows the builds a new pnpm app needs", async () => {
+    const root = tmpProject("empty");
+    const args = ["--yes", "--json", "--ai", "--api-key", "sk-valid-key"];
+
+    const { json, runner } = await run(
+      [
+        "init",
+        ...args,
+        "--framework",
+        "vite",
+        "--name",
+        "site",
+        "--package-manager",
+        "pnpm",
+      ],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    const app = path.join(root, "site");
+    expect(read(app, "pnpm-workspace.yaml")).toContain(
+      "allowBuilds:\n  esbuild: true\n"
+    );
+    expect(runner.calls).toEqual([
+      { command: "pnpm", args: ["install", "--no-frozen-lockfile"], cwd: app },
+    ]);
+
+    // The settings-only pnpm-workspace.yaml doesn't break later runs
+    const before = treeSnapshot(app);
+    const again = await run(["init", ...args], { cwd: app });
+    expect(again.json).toMatchObject({ status: "success", changed: false });
+    expect(treeSnapshot(app)).toEqual(before);
   });
 
   it("verifies an app that's already fully set up without changing it", async () => {
