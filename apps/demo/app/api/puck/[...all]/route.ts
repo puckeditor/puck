@@ -177,7 +177,7 @@ Use these rather than guessing URLs:
 const handleRequest = (request: NextRequest) => {
   return puckHandler(request, {
     ai: {
-      context, 
+      context,
       model: "openai/gpt-6-luna",
       designMode: {
         allowed: true,

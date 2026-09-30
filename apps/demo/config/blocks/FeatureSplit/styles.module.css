@@ -1,0 +1,78 @@
+.FeatureSplit-inner {
+  align-items: center;
+  display: grid;
+  gap: 48px;
+}
+
+@media (min-width: 1024px) {
+  .FeatureSplit-inner {
+    column-gap: 80px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .FeatureSplit--mediaLeft .FeatureSplit-image {
+    order: -1;
+  }
+}
+
+.FeatureSplit-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Without a photo, the text sits in one centered column */
+.FeatureSplit-content:only-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: 48rem;
+  width: 100%;
+}
+
+.FeatureSplit-features {
+  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.FeatureSplit-feature {
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  display: flex;
+  gap: var(--puck-space-4);
+  padding-block: var(--puck-space-5);
+}
+
+.FeatureSplit-featureIcon {
+  display: flex;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.FeatureSplit-featureTitle {
+  font-size: var(--puck-font-size-s);
+  font-weight: var(--puck-font-weight-medium);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.FeatureSplit-featureDescription {
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  line-height: 1.5;
+  margin: var(--puck-space-1) 0 0;
+  text-wrap: pretty;
+}
+
+.FeatureSplit-image {
+  aspect-ratio: 4 / 3;
+  border-radius: calc(var(--puck-radius-l) * 3);
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .FeatureSplit-image {
+    aspect-ratio: 1;
+  }
+}

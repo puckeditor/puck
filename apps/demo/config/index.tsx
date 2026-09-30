@@ -10,6 +10,7 @@ import { FeatureGrid } from "./blocks/FeatureGrid";
 import { CTA } from "./blocks/CTA";
 import { FAQ } from "./blocks/FAQ";
 import { Steps } from "./blocks/Steps";
+import { FeatureSplit } from "./blocks/FeatureSplit";
 import { Template } from "./blocks/Template";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
@@ -29,7 +30,14 @@ export const conf: UserConfig = {
     },
     content: {
       title: "Content",
-      components: ["FeatureGrid", "Card", "CTA", "FAQ", "Steps"],
+      components: [
+        "FeatureGrid",
+        "Card",
+        "CTA",
+        "FAQ",
+        "Steps",
+        "FeatureSplit",
+      ],
     },
     socialProof: {
       title: "Social Proof",
@@ -63,6 +71,7 @@ export const conf: UserConfig = {
     CTA,
     FAQ,
     Steps,
+    FeatureSplit,
     Template,
     Text,
     Space,

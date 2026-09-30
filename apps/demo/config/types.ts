@@ -11,6 +11,7 @@ import { FeatureGridProps } from "./blocks/FeatureGrid";
 import { CTAProps } from "./blocks/CTA";
 import { FAQProps } from "./blocks/FAQ";
 import { StepsProps } from "./blocks/Steps";
+import { FeatureSplitProps } from "./blocks/FeatureSplit";
 import { TemplateProps } from "./blocks/Template";
 import { TextProps } from "./blocks/Text";
 import { SpaceProps } from "./blocks/Space";
@@ -33,6 +34,7 @@ export type Components = {
   CTA: CTAProps;
   FAQ: FAQProps;
   Steps: StepsProps;
+  FeatureSplit: FeatureSplitProps;
   Template: TemplateProps;
   Text: TextProps;
   Space: SpaceProps;

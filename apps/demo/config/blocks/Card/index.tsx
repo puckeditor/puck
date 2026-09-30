@@ -1,57 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { ReactElement } from "react";
+import React from "react";
 import { ComponentConfig } from "@/core/types";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
-import dynamic from "next/dynamic";
-import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { withLayout, WithLayout } from "../../components/Layout";
+import { Icon, iconField } from "../../components/Icon";
 
 const getClassName = getClassNameFactory("Card", styles);
-
-const cardIconNames = [
-  "align-left",
-  "feather",
-  "git-merge",
-  "github",
-  "pen-tool",
-  "plug",
-  "activity",
-  "badge-check",
-  "book-open",
-  "briefcase",
-  "building-2",
-  "chart-no-axes-column-increasing",
-  "circle-check",
-  "cloud",
-  "code",
-  "database",
-  "globe",
-  "heart",
-  "lightbulb",
-  "lock",
-  "rocket",
-  "shield-check",
-  "sparkles",
-  "users",
-] as const satisfies readonly (keyof typeof dynamicIconImports)[];
-
-const icons = cardIconNames.reduce<Record<string, ReactElement>>(
-  (acc, iconName) => {
-    const El = dynamic(dynamicIconImports[iconName]);
-
-    return {
-      ...acc,
-      [iconName]: <El />,
-    };
-  },
-  {}
-);
-
-const iconOptions = cardIconNames.map((iconName) => ({
-  label: iconName,
-  value: iconName,
-}));
 
 export type CardProps = WithLayout<{
   title: string;
@@ -73,10 +28,7 @@ const CardInner: ComponentConfig<CardProps> = {
       type: "textarea",
       contentEditable: true,
     },
-    icon: {
-      type: "select",
-      options: iconOptions,
-    },
+    icon: iconField,
     mode: {
       ai: {
         instructions:
@@ -118,7 +70,9 @@ const CardInner: ComponentConfig<CardProps> = {
     return (
       <div className={getClassName({ [mode]: mode })}>
         <div className={getClassName("inner")}>
-          <div className={getClassName("icon")}>{icon && icons[icon]}</div>
+          <div className={getClassName("icon")}>
+            <Icon name={icon} />
+          </div>
 
           <div className={getClassName("title")}>{title}</div>
           <div className={getClassName("description")}>{description}</div>
