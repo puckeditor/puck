@@ -11,7 +11,7 @@ const getClassName = getClassNameFactory("Space", styles);
 type Direction = "vertical" | "horizontal";
 
 export type SpaceProps = {
-  direction?: Direction[];
+  directions?: Direction[];
   size: string;
 };
 
@@ -22,7 +22,7 @@ export const Space: ComponentConfig<SpaceProps> = {
       type: "select",
       options: spacingOptions,
     },
-    direction: {
+    directions: {
       type: "checkbox",
       options: [
         { value: "vertical", label: "Vertical" },
@@ -31,19 +31,12 @@ export const Space: ComponentConfig<SpaceProps> = {
     },
   },
   defaultProps: {
-    direction: ["vertical", "horizontal"],
+    directions: ["vertical", "horizontal"],
     size: "24px",
   },
   inline: true,
-  render: ({ direction, size, puck }) => {
-    // Support legacy string values from before direction was a checkbox
-    const directions: Direction[] =
-      typeof direction === "string"
-        ? [direction as Direction].filter(Boolean)
-        : direction ?? [];
-
-    // A single direction applies a modifier; both (or none) is a square
-    const modifier = directions.length === 1 ? directions[0] : null;
+  render: ({ directions, size, puck }) => {
+    const modifier = directions?.length === 1 ? directions[0] : null;
 
     return (
       <div
