@@ -11,7 +11,7 @@
 
 _The visual editor for React_
 
-[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
+[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=docs_link) • [Puck AI](https://puckeditor.com/docs/ai/overview?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=ai_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ)
 
 ⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
 
@@ -29,12 +29,24 @@ Because Puck is just a React component, it plays well with all React.js environm
 
 Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
 
+If you need full-stack features that work seamlessly with Puck, you can incrementally add the [Puck Cloud](#puck-cloud) modules you need. For example, [Puck AI](#ai) adds AI generation to the editor.
+
 ## Quick start
+
+Run the [Puck CLI](https://puckeditor.com/docs/cli) and follow the steps:
+
+```sh
+npx @puckeditor/cli init
+```
+
+<details>
+<summary><strong>Manual setup</strong></summary>
+<br />
 
 Install the package:
 
 ```sh
-npm i @puckeditor/core --save # or npx create-puck-app my-app
+npm i @puckeditor/core --save
 ```
 
 Render the editor:
@@ -82,18 +94,109 @@ export function Page() {
 }
 ```
 
-## Recipes
+</details>
 
-Use `create-puck-app` to quickly spin up a a pre-configured app based on our provided [recipes](https://github.com/puckeditor/puck/tree/main/recipes):
+## Puck Cloud
+
+Puck Cloud modules add full-stack features to Puck with minimal setup. Each module gives you an official solution for a common need, like AI, without having to build everything from scratch yourself.
+
+### Setup
+
+Run the CLI and follow the steps:
 
 ```sh
-npx create-puck-app my-app
+npx @puckeditor/cli add cloud
 ```
 
-Available recipes include:
+<details>
+<summary><strong>Manual setup</strong></summary>
+<br />
 
-- [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
-- [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
+Create a [Puck Cloud account](https://cloud.puckeditor.com/sign-up).
+
+Install the Cloud Client in your server:
+
+```sh
+npm i @puckeditor/cloud-client --save
+```
+
+Set your [Puck API key](https://cloud.puckeditor.com/api-keys):
+
+```sh
+# .env
+PUCK_API_KEY=your-api-key
+```
+
+Add a catch-all route for `/api/puck/*` that passes the request to `puckHandler` and returns its response:
+
+```js
+// Next.js app/api/puck/[...all]/route.js
+import { puckHandler } from "@puckeditor/cloud-client";
+
+const handleRequest = (request) => puckHandler(request);
+
+export const DELETE = handleRequest;
+export const GET = handleRequest;
+export const POST = handleRequest;
+```
+
+See the [docs](https://puckeditor.com/docs/ai/getting-started#add-server-side-endpoints) for React Router, Hono, and TanStack Start examples.
+
+</details>
+
+### AI
+
+[Puck AI](https://puckeditor.com/docs/ai/overview) is the recommended way to add AI to Puck. It generates pages with your existing components, or builds new ones that follow your rules and constraints. It works from your Puck config, so you can get started without long prompts or model tuning.
+
+Run the CLI and follow the steps:
+
+```sh
+npx @puckeditor/cli add ai
+```
+
+See the [Puck AI docs](https://puckeditor.com/docs/ai/overview) for more features, like [business context](https://puckeditor.com/docs/ai/business-context), [tools](https://puckeditor.com/docs/ai/tools), [design mode](https://puckeditor.com/docs/ai/design-mode) and [bring your own key](https://puckeditor.com/docs/ai/model-configuration#bring-your-own-key).
+
+<details>
+<summary><strong>Manual setup</strong></summary>
+<br />
+
+Install the AI plugin:
+
+```sh
+npm i @puckeditor/plugin-ai --save
+```
+
+Add it to the editor:
+
+```jsx
+// Editor.jsx
+import { Puck } from "@puckeditor/core";
+import { createAiPlugin } from "@puckeditor/plugin-ai";
+import "@puckeditor/plugin-ai/styles.css";
+
+const aiPlugin = createAiPlugin();
+
+export function Editor() {
+  return (
+    <Puck
+      plugins={[aiPlugin]}
+      config={config}
+      data={initialData}
+      onPublish={save}
+    />
+  );
+}
+```
+
+If your server uses a different URL than your editor, set the plugin's [`host`](https://puckeditor.com/docs/api-reference/ai/ai-plugin/create-ai-plugin#host):
+
+```jsx
+const aiPlugin = createAiPlugin({
+  host: "https://example.com/api/puck/chat",
+});
+```
+
+</details>
 
 ## Community
 
