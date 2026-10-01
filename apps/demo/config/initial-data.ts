@@ -363,7 +363,7 @@ export const initialData: Record<string, UserData> = {
         type: "Flex",
         props: {
           justifyContent: "center",
-          directions: "row",
+          direction: "row",
           gap: 24,
           wrap: "wrap",
           layout: { spanCol: 1, spanRow: 1, padding: "0px" },
