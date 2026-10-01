@@ -2,7 +2,7 @@ import { ConfigPreview } from "@/docs/components/Preview";
 
 # Checkbox
 
-Render a list of `checkbox` inputs, allowing multiple options to be selected. Extends [Base](base).
+Render a list of `checkbox` inputs, stored as an array of selected values. Extends [Base](base).
 
 <ConfigPreview
   label="Example"
@@ -98,9 +98,7 @@ const config = {
 
 ### `options`
 
-The options for the checkbox field. The `value` can be a String, Number or Boolean.
-
-The field value is an array of the selected option values, ordered as they appear in `options`. If nothing is selected, the value is an empty array.
+The options for the checkbox field.
 
 ```tsx {7-10} copy
 const config = {
