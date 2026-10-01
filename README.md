@@ -39,7 +39,9 @@ Run the [Puck CLI](https://puckeditor.com/docs/cli) and follow the steps:
 npx @puckeditor/cli init
 ```
 
-### Manual setup
+<details>
+<summary><strong>Manual setup</strong></summary>
+<br />
 
 Install the package:
 
@@ -92,6 +94,8 @@ export function Page() {
 }
 ```
 
+</details>
+
 ## Puck Cloud
 
 Puck Cloud modules add full-stack features to Puck with minimal setup. Each module gives you an official solution for a common need, like AI, without having to build everything from scratch yourself.
@@ -104,7 +108,9 @@ Run the CLI and follow the steps:
 npx @puckeditor/cli add cloud
 ```
 
-#### Manual setup
+<details>
+<summary><strong>Manual setup</strong></summary>
+<br />
 
 Create a [Puck Cloud account](https://cloud.puckeditor.com/sign-up).
 
@@ -136,6 +142,8 @@ export const POST = handleRequest;
 
 See the [docs](https://puckeditor.com/docs/ai/getting-started#add-server-side-endpoints) for React Router, Hono, and TanStack Start examples.
 
+</details>
+
 ### AI
 
 [Puck AI](https://puckeditor.com/docs/ai/overview) is the recommended way to add AI to Puck. It generates pages with your existing components, or builds new ones that follow your rules and constraints. It works from your Puck config, so you can get started without long prompts or model tuning.
@@ -148,7 +156,9 @@ npx @puckeditor/cli add ai
 
 See the [Puck AI docs](https://puckeditor.com/docs/ai/overview) for more features, like [business context](https://puckeditor.com/docs/ai/business-context), [tools](https://puckeditor.com/docs/ai/tools), [design mode](https://puckeditor.com/docs/ai/design-mode) and [bring your own key](https://puckeditor.com/docs/ai/model-configuration#bring-your-own-key).
 
-#### Manual setup
+<details>
+<summary><strong>Manual setup</strong></summary>
+<br />
 
 Install the AI plugin:
 
@@ -185,6 +195,8 @@ const aiPlugin = createAiPlugin({
   host: "https://example.com/api/puck/chat",
 });
 ```
+
+</details>
 
 ## Community
 
