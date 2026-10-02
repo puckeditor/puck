@@ -5,6 +5,7 @@ import { nonInteractivePrompter } from "./io/prompter";
 import { SecretRegistry } from "./secret";
 import { CloudApi, createCloudApi } from "./auth/cloud-api";
 import { DEFAULT_CLOUD_URL } from "./constants";
+import { isTruthyEnv } from "./env/truthy";
 
 export interface RunContext {
   deps: CliDeps;
@@ -20,12 +21,8 @@ export interface RunContext {
   afterOutput?: () => Promise<void>;
 }
 
-const isCI = (env: Record<string, string | undefined>) => {
-  const ci = env.CI;
-  return (
-    ci !== undefined && ci !== "" && ci !== "0" && ci.toLowerCase() !== "false"
-  );
-};
+export const isCI = (env: Record<string, string | undefined>) =>
+  isTruthyEnv(env.CI);
 
 export const createRunContext = (
   deps: CliDeps,
