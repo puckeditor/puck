@@ -76,6 +76,7 @@ const clientPayload = (rc: RunContext, info: ClientInfo) => ({
   hostname: rc.deps.hostname.slice(0, 100),
   projectName: info.projectName?.slice(0, 100),
   framework: info.framework,
+  anonymousId: rc.telemetry?.anonymousId ?? undefined,
 });
 
 type Approved = {

@@ -27,6 +27,8 @@ export interface CloudApi {
     hostname?: string;
     projectName?: string;
     framework?: string;
+    /** Lets Puck Cloud link this machine's telemetry to the approving account */
+    anonymousId?: string;
   }): Promise<ConnectSession>;
   pollConnect(deviceCode: string): Promise<PollResult>;
   verifyKey(apiKey: string): Promise<KeyCheck>;

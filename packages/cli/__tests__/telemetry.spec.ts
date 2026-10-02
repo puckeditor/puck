@@ -321,4 +321,31 @@ describe("telemetry", () => {
       expect(cloud.networkCalls).toBe(0);
     });
   });
+
+  describe("connect", () => {
+    const startBody = (cloud: FakeCloud) =>
+      cloud.requests.find((r) => r.path === "/api/cli/connect")?.body;
+
+    it("sends the anonymous ID so Puck Cloud can link the account", async () => {
+      const { root, env, cloud } = setup();
+
+      await run(["connect", "--yes", "--json"], { cwd: root, cloud, env });
+
+      expect(startBody(cloud)).toMatchObject({
+        anonymousId: cloud.telemetry[0].anonymousId,
+      });
+    });
+
+    it("leaves it out when telemetry is off", async () => {
+      const { root, env, cloud } = setup();
+
+      await run(["connect", "--yes", "--json"], {
+        cwd: root,
+        cloud,
+        env: { ...env, DO_NOT_TRACK: "1" },
+      });
+
+      expect(startBody(cloud)).not.toHaveProperty("anonymousId");
+    });
+  });
 });
