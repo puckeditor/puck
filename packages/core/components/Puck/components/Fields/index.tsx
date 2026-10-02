@@ -3,7 +3,7 @@ import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
 import { rootDroppableId } from "../../../../lib/root-droppable-id";
 import { ItemSelector } from "../../../../lib/data/get-item";
 import { getSelectorForId } from "../../../../lib/get-selector-for-id";
-import { UiState } from "../../../../types";
+import { ComponentConfig, UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
 import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
@@ -94,7 +94,13 @@ const createOnChange =
     });
   };
 
-const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
+const FieldsChildInner = ({
+  fieldName,
+  className,
+}: {
+  fieldName: string;
+  className: string;
+}) => {
   const fieldTypeOverrides = useAppStore((s) => s.overrides.fieldTypes);
 
   const field = useAppStore((s) => s.fields.fields[fieldName]);
@@ -148,7 +154,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <div key={id} className={getClassName("field")}>
+    <div key={id} className={className}>
       <AutoFieldPrivate
         field={field}
         name={fieldName}
@@ -160,7 +166,13 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   );
 };
 
-const FieldsChild = ({ fieldName }: { fieldName: string }) => {
+const FieldsChild = ({
+  fieldName,
+  className,
+}: {
+  fieldName: string;
+  className: string;
+}) => {
   const appStore = useAppStoreApi();
 
   const initialValue = useMemo(() => {
@@ -171,12 +183,74 @@ const FieldsChild = ({ fieldName }: { fieldName: string }) => {
 
   return (
     <fieldContextStore.Provider value={initialValue}>
-      <FieldsChildInner fieldName={fieldName} />
+      <FieldsChildInner fieldName={fieldName} className={className} />
     </fieldContextStore.Provider>
   );
 };
 
 const FieldsChildMemo = memo(FieldsChild);
+
+/** Renders a custom field layout for the current fields */
+const CustomFieldLayout = ({
+  renderFields: RenderFields,
+}: {
+  /**
+   * The function responsible for rendering the fields layout.
+   *
+   * Receives the fields to be rendered.
+   */
+  renderFields: NonNullable<ComponentConfig["renderFields"]>;
+}) => {
+  // Subscribe to the visible fields
+  const visibleFieldNames = useAppStore(
+    useShallow((s) => {
+      const { fields } = s.fields;
+
+      return Object.keys(fields).filter((fieldName) =>
+        isFieldVisible(s.overrides.fieldTypes, fields[fieldName])
+      );
+    })
+  );
+
+  // Render the visible fields only
+  const fields = useMemo(() => {
+    const fieldMap: Record<string | number, ReactNode> = {};
+
+    visibleFieldNames.forEach((fieldName) => {
+      fieldMap[fieldName] = (
+        <FieldsChildMemo
+          key={fieldName}
+          fieldName={fieldName}
+          className={getClassName("layoutField")}
+        />
+      );
+    });
+
+    return fieldMap;
+  }, [visibleFieldNames]);
+
+  // Provide it to the render fields
+  return (
+    <div className={getClassName("layout")}>
+      <RenderFields fields={fields} />
+    </div>
+  );
+};
+
+/** Renders the default field layout for the current fields */
+const DefaultFieldLayout = () => {
+  const fieldNames = useAppStore(
+    useShallow((s) => Object.keys(s.fields.fields))
+  );
+
+  return fieldNames.map((fieldName) => (
+    <FieldsChildMemo
+      key={fieldName}
+      fieldName={fieldName}
+      className={getClassName("field")}
+    />
+  ));
+};
 
 const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   const overrides = useAppStore((s) => s.overrides);
@@ -189,23 +263,29 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   });
   const itemSelector = useAppStore(useShallow((s) => s.state.ui.itemSelector));
   const id = useAppStore((s) => s.selectedItem?.props.id);
+  const nodeId = id || "root";
   const appStore = useAppStoreApi();
   useRegisterFieldsSlice(appStore, id);
 
+  // The field slice can be behind by one render cycle, which would match
+  // the current selected item data with the previous' fields config. Make sure they are in sync.
+  const fieldsReady = useAppStore((s) => s.fields.id === nodeId);
   const fieldsLoading = useAppStore((s) => s.fields.loading);
-  const fieldNames = useAppStore(
-    useShallow((s) => {
-      if (s.fields.id === id) {
-        return Object.keys(s.fields.fields);
-      }
 
-      return [];
-    })
+  const renderFields = useAppStore(
+    (s) => s.getComponentConfig(s.selectedItem?.type)?.renderFields
   );
 
   const isLoading = fieldsLoading || componentResolving;
 
   const Wrapper = useMemo(() => overrides.fields || DefaultFields, [overrides]);
+
+  // Render the user field layout if provided
+  const fieldLayout = renderFields ? (
+    <CustomFieldLayout renderFields={renderFields} />
+  ) : (
+    <DefaultFieldLayout />
+  );
 
   return (
     <form
@@ -215,9 +295,7 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
       }}
     >
       <Wrapper isLoading={isLoading} itemSelector={itemSelector}>
-        {fieldNames.map((fieldName) => (
-          <FieldsChildMemo key={fieldName} fieldName={fieldName} />
-        ))}
+        {fieldsReady && fieldLayout}
       </Wrapper>
       {isLoading && (
         <div className={getClassName("loadingOverlay")}>

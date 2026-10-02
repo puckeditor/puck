@@ -8,7 +8,7 @@ export * from "../types/Fields";
 
 export * from "../components/ActionBar";
 export { AutoField, FieldLabel } from "../components/AutoField";
-export { FieldGroup } from "../components/FieldGroup";
+export { FieldGroup, FieldGroupItem } from "../components/FieldGroup";
 
 export * from "../components/Button";
 export { Drawer } from "../components/Drawer";
