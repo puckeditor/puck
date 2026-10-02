@@ -23,4 +23,6 @@ export type LayerNode = {
   label: string;
   /** The compound identifier of the zone containing this node as used by puck ({componentId}:{zoneId}). */
   zoneCompound: string;
+  /** When true, the component is not visible in the rendered output but remains in the document structure. */
+  hidden: boolean;
 };

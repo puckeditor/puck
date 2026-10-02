@@ -7,6 +7,8 @@ export type BaseData<
   Props extends { [key: string]: any } = { [key: string]: any }
 > = {
   readOnly?: Partial<Record<keyof Props, boolean>>;
+  /** When true, the component is not visible in the rendered output but remains in the document structure. */
+  hidden?: boolean;
 };
 
 export type RootDataWithProps<

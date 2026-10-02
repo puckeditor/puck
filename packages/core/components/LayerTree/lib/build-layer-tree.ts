@@ -78,6 +78,8 @@ const buildLayerNode = ({
     itemId,
     label,
     zoneCompound,
+    // Read hidden from the node index; defaults to false for existing data
+    hidden: nodeData?.data?.hidden ?? false,
   };
 };
 
