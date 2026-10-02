@@ -1,4 +1,4 @@
-.ObjectField {
+.FieldGroup {
   display: flex;
   flex-direction: column;
   background-color: var(--puck-field-color-surface, var(--puck-color-surface));
@@ -7,7 +7,7 @@
   border-radius: var(--puck-field-radius, var(--puck-radius-m));
 }
 
-.ObjectField-fieldset {
+.FieldGroup-fieldset {
   border: none;
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
