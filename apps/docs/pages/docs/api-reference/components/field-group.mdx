@@ -1,0 +1,75 @@
+---
+title: <FieldGroup>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { FieldGroup, AutoField, FieldLabel, FieldGroupItem } from "@/puck";
+
+# \<FieldGroup\>
+
+Group fields under a label in a fieldset.
+
+Use it anywhere within `<Puck>`, like in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) or the [`fields` override](/docs/api-reference/overrides/fields).
+
+<PuckPreview
+  config={{ components: { Orange: { render: () => <div>Orange</div> } } }}
+  data={{ root: { props: {} }, content: [] }}
+>
+  <FieldGroup label="Appearance">
+    <FieldGroupItem>
+      <FieldLabel label="Color">
+        <AutoField
+          value="#000000"
+          onChange={() => {}}
+          field={{ type: "text" }}
+        />
+      </FieldLabel>
+    </FieldGroupItem>
+    <FieldGroupItem>
+      <FieldLabel label="Size">
+        <AutoField value="12" onChange={() => {}} field={{ type: "number" }} />
+      </FieldLabel>
+    </FieldGroupItem>
+  </FieldGroup>
+</PuckPreview>
+
+```tsx {6-13} copy
+import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
+
+export function Editor() {
+  return (
+    <Puck>
+      <FieldGroup label="Appearance">
+        <FieldGroupItem>
+          <input type="text" value="#000000" onChange={() => {}} />
+        </FieldGroupItem>
+        <FieldGroupItem>
+          <input type="number" value="12" onChange={() => {}} />
+        </FieldGroupItem>
+      </FieldGroup>
+    </Puck>
+  );
+}
+```
+
+## Props
+
+| Param                   | Example               | Type      | Status |
+| ----------------------- | --------------------- | --------- | ------ |
+| [`children`](#children) | `children: <div />`   | ReactNode | -      |
+| [`icon`](#icon)         | `icon: <svg />`       | ReactNode | -      |
+| [`label`](#label)       | `label: "Appearance"` | String    | -      |
+
+## Optional props
+
+### `children`
+
+The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
+
+### `icon`
+
+Render an icon before the label text. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
+
+### `label`
+
+The label for the group.
