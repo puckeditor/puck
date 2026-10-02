@@ -190,6 +190,31 @@ describe("telemetry", () => {
     }
   );
 
+  it("tells humans about telemetry once", async () => {
+    const { root, env, cloud } = setup();
+
+    const agent = await run(["status", "--json"], { cwd: root, cloud, env });
+    const first = await run(["status"], { cwd: root, cloud, env });
+    const second = await run(["status"], { cwd: root, cloud, env });
+
+    expect(agent.stderr).not.toContain("anonymous usage data");
+    expect(first.stderr).toContain("Puck CLI collects anonymous usage data");
+    expect(first.stdout).not.toContain("anonymous usage data");
+    expect(second.stderr).not.toContain("anonymous usage data");
+  });
+
+  it("doesn't show the notice when telemetry is off", async () => {
+    const { root, env, cloud } = setup();
+
+    const { stderr } = await run(["status"], {
+      cwd: root,
+      cloud,
+      env: { ...env, DO_NOT_TRACK: "1" },
+    });
+
+    expect(stderr).not.toContain("anonymous usage data");
+  });
+
   it("turns off for the run when the config can't be written", async () => {
     const { root, env, cloud, home } = setup();
     fs.mkdirSync(home, { recursive: true });

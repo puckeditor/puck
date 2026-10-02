@@ -19,6 +19,7 @@ import { loadTelemetry } from "./telemetry/consent";
 import type { EventInput } from "./telemetry/event";
 import { buildEvent } from "./telemetry/event";
 import { sendTelemetry } from "./telemetry/client";
+import { showTelemetryNotice } from "./telemetry/notice";
 
 const exitCodeFor = (result: CommandResult) => {
   if (result.status === "error")
@@ -133,6 +134,8 @@ export const runCli = async (
 
   const telemetry = loadTelemetry(deps, cloudBaseUrl(deps.env));
   const rc = createRunContext(deps, flags, argv, telemetry);
+  // Agents asking for --json get clean output; the next human run shows it
+  if (!flags.json) showTelemetryNotice(deps, telemetry);
   let result: CommandResult;
 
   try {
