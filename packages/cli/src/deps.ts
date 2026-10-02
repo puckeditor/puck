@@ -26,6 +26,9 @@ export interface CliDeps {
   docs: DocsSource;
   homedir: string;
   hostname: string;
+  platform: string;
+  arch: string;
+  nodeVersion: string;
   now(): number;
   sleep(ms: number): Promise<void>;
 }

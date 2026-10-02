@@ -41,6 +41,9 @@ runCli(process.argv.slice(2), {
   docs: new DirDocsSource(path.join(distDir, "docs")),
   homedir: os.homedir(),
   hostname: os.hostname(),
+  platform: process.platform,
+  arch: process.arch,
+  nodeVersion: process.versions.node,
   now: () => Date.now(),
   sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 }).then(

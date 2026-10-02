@@ -195,6 +195,7 @@ export class FakeCloud {
   mintedKey = "sk-minted-SENTINEL-4242";
   counter = 0;
   offline = false;
+  telemetryResponse: "ok" | "error" | "hang" = "ok";
 
   approveAll() {
     for (const session of this.sessions.values())
@@ -218,6 +219,19 @@ export class FakeCloud {
         status,
         headers: { "content-type": "application/json" },
       });
+
+    if (url.pathname === "/api/cli/telemetry" && init?.method === "POST") {
+      if (this.telemetryResponse === "hang") {
+        return new Promise<Response>((_, reject) =>
+          init.signal?.addEventListener("abort", () =>
+            reject(init.signal?.reason)
+          )
+        );
+      }
+      return this.telemetryResponse === "error"
+        ? json(500, {})
+        : new Response(null, { status: 204 });
+    }
 
     if (url.pathname === "/api/healthcheck") {
       return this.validKeys.has(headers["x-api-key"])
@@ -262,6 +276,13 @@ export class FakeCloud {
     return json(404, {});
   };
 
+  /** Bodies posted to /api/cli/telemetry */
+  get telemetry() {
+    return this.requests
+      .filter((r) => r.path === "/api/cli/telemetry")
+      .map((r) => r.body as { anonymousId: string; events: unknown[] });
+  }
+
   get networkCalls() {
     return this.requests.length;
   }
@@ -305,7 +326,13 @@ export const run = async (
 
   const deps: CliDeps = {
     cwd: opts.cwd,
-    env: { XDG_CACHE_HOME: path.join(home, ".cache"), ...opts.env },
+    env: {
+      XDG_CACHE_HOME: path.join(home, ".cache"),
+      XDG_CONFIG_HOME: path.join(home, ".config"),
+      // telemetry.spec.ts opts back in
+      PUCK_TELEMETRY_DISABLED: "1",
+      ...opts.env,
+    },
     stdout: {
       write: (s: string) => (stdout += s),
       isTTY: Boolean(opts.interactive),
@@ -332,6 +359,9 @@ export const run = async (
     docs: opts.docs ?? testDocs,
     homedir: home,
     hostname: "test-host",
+    platform: "linux",
+    arch: "x64",
+    nodeVersion: "20.19.0",
     now: opts.now ?? (() => Date.now()),
     sleep: async () => undefined,
   };

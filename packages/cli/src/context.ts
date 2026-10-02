@@ -6,6 +6,7 @@ import { SecretRegistry } from "./secret";
 import { CloudApi, createCloudApi } from "./auth/cloud-api";
 import { DEFAULT_CLOUD_URL } from "./constants";
 import { isTruthyEnv } from "./env/truthy";
+import type { Telemetry } from "./telemetry/consent";
 
 export interface RunContext {
   deps: CliDeps;
@@ -15,6 +16,8 @@ export interface RunContext {
   prompter: Prompter;
   secrets: SecretRegistry;
   cloud: CloudApi;
+  /** null for `puck telemetry`, which manages it */
+  telemetry: Telemetry | null;
   /** Progress output for humans; silent in JSON mode */
   log(line: string): void;
   /** Runs after the result is printed, e.g. starting the dev server */
@@ -24,10 +27,14 @@ export interface RunContext {
 export const isCI = (env: Record<string, string | undefined>) =>
   isTruthyEnv(env.CI);
 
+export const cloudBaseUrl = (env: Record<string, string | undefined>) =>
+  env.PUCK_CLOUD_URL || DEFAULT_CLOUD_URL;
+
 export const createRunContext = (
   deps: CliDeps,
   flags: Flags,
-  argv: string[]
+  argv: string[],
+  telemetry: Telemetry | null
 ): RunContext => {
   const interactive =
     !flags.yes &&
@@ -37,7 +44,7 @@ export const createRunContext = (
     !isCI(deps.env);
 
   const secrets = new SecretRegistry();
-  const baseUrl = deps.env.PUCK_CLOUD_URL || DEFAULT_CLOUD_URL;
+  const baseUrl = cloudBaseUrl(deps.env);
 
   return {
     deps,
@@ -47,6 +54,7 @@ export const createRunContext = (
     prompter: interactive ? deps.createPrompter() : nonInteractivePrompter,
     secrets,
     cloud: createCloudApi(baseUrl, deps.fetch),
+    telemetry,
     log: (line) => {
       if (!flags.json) deps.stderr.write(secrets.scrub(line) + "\n");
     },
