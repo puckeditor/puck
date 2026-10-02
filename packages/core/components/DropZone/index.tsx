@@ -52,6 +52,7 @@ import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
 import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
 import { useMessage } from "../../lib/use-message";
+import { getComponentLabel } from "../../lib/data/get-component-label";
 import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
 import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
 import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
@@ -138,6 +139,10 @@ const DropZoneChild = ({
     useShallow((s) => s.state.indexes.nodes[componentId]?.data.readOnly)
   );
 
+  const nodePuckMetadata = useAppStore(
+    useShallow((s) => s.state.indexes.nodes[componentId]?.data.__puck)
+  );
+
   const appStore = useAppStoreApi();
 
   const item = useMemo(() => {
@@ -145,6 +150,7 @@ const DropZoneChild = ({
       const expanded = expandNode({
         type: nodeType,
         props: nodeProps,
+        ...(nodePuckMetadata ? { __puck: nodePuckMetadata } : {}),
       }) as ComponentData;
 
       return expanded;
@@ -162,7 +168,14 @@ const DropZoneChild = ({
     }
 
     return null;
-  }, [appStore, componentId, zoneCompound, nodeType, nodeProps]);
+  }, [
+    appStore,
+    componentId,
+    zoneCompound,
+    nodeType,
+    nodeProps,
+    nodePuckMetadata,
+  ]);
 
   const componentConfig = useAppStore((s) =>
     item?.type ? s.config.components[item.type] : null
@@ -191,7 +204,9 @@ const DropZoneChild = ({
     type: item?.type?.toString() ?? "",
   });
 
-  let label = componentConfig?.label ?? item?.type.toString() ?? componentLabel;
+  const config = useAppStore((s) => s.config);
+
+  const label = item ? getComponentLabel(item, config) : componentLabel;
 
   const defaultsProps = useMemo(
     () => ({
@@ -207,8 +222,6 @@ const DropZoneChild = ({
     () => ({ type: item?.type ?? nodeType, props: defaultsProps }),
     [item?.type, nodeType, defaultsProps]
   );
-
-  const config = useAppStore((s) => s.config);
 
   const plugins = useAppStore((s) => s.plugins);
   const userFieldTransforms = useAppStore((s) => s.fieldTransforms);

@@ -18,6 +18,7 @@ import {
 } from "./actions/register-zone";
 import { setDataAction } from "./actions/set-data";
 import { setUiAction } from "./actions/set-ui";
+import { setComponentLabelAction } from "./actions/set-component-label";
 import { makeStatePublic } from "../lib/data/make-state-public";
 
 export * from "./actions";
@@ -119,6 +120,10 @@ export function createReducer<UserData extends Data>({
 
       if (action.type === "setUi") {
         return setUiAction(state, action);
+      }
+
+      if (action.type === "setComponentLabel") {
+        return setComponentLabelAction(state, action, appStore);
       }
 
       return state;

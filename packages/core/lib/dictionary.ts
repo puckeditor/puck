@@ -19,6 +19,7 @@ export const defaultDictionary = {
   "action-delete": "Delete",
   // Fallback labels — shared by the breadcrumbs, fields panel and header
   "label-page": "Page",
+  "label-rename": "Rename",
   "label-component": "Component",
   // Outline
   "outline-empty": "No items",

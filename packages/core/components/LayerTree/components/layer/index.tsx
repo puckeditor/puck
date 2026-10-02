@@ -18,6 +18,7 @@ import { DropLine } from "../drop-line";
 import { LayerActions } from "../layer-actions";
 import { LayerTreeZone } from "../layer-tree-zone";
 import { useMessage } from "../../../../lib/use-message";
+import { InlineLabelEdit } from "../../../InlineLabelEdit";
 
 const getClassName = getClassNameFactory("Layer", styles);
 
@@ -193,7 +194,9 @@ export const Layer = forwardRef(function Layer(
                   <LayoutGrid />
                 )}
               </div>
-              <div className={getClassName("name")}>{node.label}</div>
+              <div className={getClassName("name")}>
+                <InlineLabelEdit componentId={node.itemId} />
+              </div>
             </div>
           </button>
           <LayerActions node={node} visible={isHovering && !isDragSource} />

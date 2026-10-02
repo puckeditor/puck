@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useAppStore, useAppStoreApi } from "../store";
 import { useMessage } from "./use-message";
+import { getNodeLabel } from "./data/get-component-label";
 import { ItemSelector } from "./data/get-item";
 
 export type Breadcrumb = {
@@ -36,9 +37,7 @@ export const useBreadcrumbs = (renderCount?: number) => {
           appStore.getState().state.indexes.zones[parentId]?.contentIds || [];
         const index = contentIds.indexOf(componentId);
 
-        const label = node
-          ? config.components[node.data.type]?.label ?? node.data.type
-          : componentLabel;
+        const label = getNodeLabel(node, config, componentLabel);
 
         return {
           label,
