@@ -25,9 +25,12 @@ npx @puckeditor/cli status       # show what's set up
 npx @puckeditor/cli doctor       # diagnose problems
 npx @puckeditor/cli frameworks   # show supported frameworks and versions
 npx @puckeditor/cli docs         # read the docs for this version
+npx @puckeditor/cli telemetry    # show or change anonymous usage data collection
 ```
 
 See the [CLI docs](https://puckeditor.com/docs/cli) for the full JSON contract, actions and exit codes.
+
+The CLI collects anonymous usage data. See [Telemetry](https://puckeditor.com/docs/cli#telemetry) for what's sent and how to turn it off.
 
 ## Development
 
@@ -40,7 +43,7 @@ pnpm build
 node dist/bin.mjs status
 ```
 
-Set `PUCK_CLOUD_URL` to point the CLI at a local Puck Cloud.
+Set `PUCK_CLOUD_URL` to point the CLI at a local Puck Cloud. Telemetry is off for local Puck Clouds unless `PUCK_TELEMETRY_DEBUG=1` is set, which prints events to stderr instead of sending them.
 
 ## License
 

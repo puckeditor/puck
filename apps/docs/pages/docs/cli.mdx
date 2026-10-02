@@ -164,6 +164,7 @@ npx skills add puckeditor/skills --skill puck
 | `doctor`     | Diagnose problems and suggest fixes. Never makes changes           |
 | `frameworks` | Show the supported frameworks and versions                         |
 | `docs`       | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>` |
+| `telemetry`  | Show or change anonymous usage data collection                     |
 
 ## Flags
 
@@ -209,3 +210,26 @@ The `/api/puck` route and the editor are public by default. Add authentication b
 ## Puck AI
 
 `init` and `add ai` add the Puck AI plugin to the editor, allow design mode in the `/api/puck` route, and wrap your config with `withDynamicConfig` so components designed by Puck AI render on your pages. If your editor has been customised, the CLI leaves it alone and prints the code to add.
+
+## Telemetry
+
+The CLI collects anonymous usage data to help us improve it. The first time it runs without `--json`, it prints a notice.
+
+Each command sends one event to Puck Cloud with:
+
+- The command, what `add` was asked for, the result status, error and warning codes, the actions it returned, the exit code and how long it took
+- Whether it was a dry run, made changes, ran interactively, used `--json` or ran in CI
+- The CLI version, operating system, CPU architecture and Node.js version
+- The name of the coding agent running it, if it's a known one, such as `claude-code`
+- The framework and its major version, the package manager, the `--backend` choice, whether the project is in a monorepo, and whether the Puck editor, Puck Cloud and Puck AI are set up
+- A random ID, stored in `~/.config/puck/telemetry.json`
+
+It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys. When you log in to Puck Cloud with `connect`, the random ID is linked to your account.
+
+To turn telemetry off, run:
+
+```sh copy
+npx @puckeditor/cli telemetry disable
+```
+
+Or set `PUCK_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` in your environment. `telemetry status` shows whether it's on, and `PUCK_TELEMETRY_DEBUG=1` prints each event instead of sending it.
