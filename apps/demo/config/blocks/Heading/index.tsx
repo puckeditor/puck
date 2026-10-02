@@ -1,6 +1,7 @@
 import React from "react";
 
 import { ComponentConfig } from "@/core/types";
+import { FieldGroup } from "@/core";
 import { Heading as _Heading } from "@/core/components/Heading";
 import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
@@ -56,6 +57,17 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
       ],
     },
   },
+  renderFields: ({ fields }) => (
+    <>
+      {fields.text}
+      {fields.level}
+      <FieldGroup label="Appearance">
+        {fields.size}
+        {fields.align}
+      </FieldGroup>
+      {fields.layout}
+    </>
+  ),
   defaultProps: {
     align: "left",
     text: "Heading",
