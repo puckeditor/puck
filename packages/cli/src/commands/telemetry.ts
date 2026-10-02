@@ -1,7 +1,6 @@
 import type { RunContext } from "../context";
 import type { CommandResult } from "../result";
 import type { TelemetryReason } from "../telemetry/consent";
-import { cloudBaseUrl } from "../context";
 import { emptyResult } from "../result";
 import { CliError } from "../errors";
 import { CANONICAL_INVOCATION } from "../constants";
@@ -19,8 +18,6 @@ const MESSAGES: Record<TelemetryReason, string> = {
   PUCK_TELEMETRY_DISABLED:
     "Telemetry is off because PUCK_TELEMETRY_DISABLED is set.",
   DO_NOT_TRACK: "Telemetry is off because DO_NOT_TRACK is set.",
-  "local-cloud":
-    "Telemetry is off because PUCK_CLOUD_URL points at a local Puck Cloud.",
   unwritable: "Telemetry is off because its config file can't be written.",
 };
 
@@ -58,7 +55,7 @@ export const runTelemetry = async (
     }
   }
 
-  const consent = telemetryConsent(env, config, cloudBaseUrl(env));
+  const consent = telemetryConsent(env, config);
   result.telemetry = {
     ...consent,
     anonymousId: consent.enabled ? config.anonymousId ?? null : null,

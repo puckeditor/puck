@@ -43,7 +43,7 @@ pnpm build
 node dist/bin.mjs status
 ```
 
-Set `PUCK_CLOUD_URL` to point the CLI at a local Puck Cloud. Telemetry is off for local Puck Clouds unless `PUCK_TELEMETRY_DEBUG=1` is set, which prints events to stderr instead of sending them.
+Set `PUCK_CLOUD_URL` to point the CLI at a local Puck Cloud. Telemetry goes there too. Set `PUCK_TELEMETRY_DEBUG=1` to print events to stderr instead of sending them.
 
 ## License
 

@@ -101,19 +101,14 @@ export const runCli = async (
     const exitCode = exitCodeFor(result);
     // Even a mistyped `telemetry disable` shouldn't send anything
     if (argv[0] !== "telemetry") {
-      await recordRun(
-        deps,
-        loadTelemetry(deps, cloudBaseUrl(deps.env)),
-        startedAt,
-        {
-          command: null,
-          positionals: [],
-          flags: { json },
-          result,
-          exitCode,
-          interactive: false,
-        }
-      );
+      await recordRun(deps, loadTelemetry(deps), startedAt, {
+        command: null,
+        positionals: [],
+        flags: { json },
+        result,
+        exitCode,
+        interactive: false,
+      });
     }
     return exitCode;
   }
@@ -137,10 +132,7 @@ export const runCli = async (
   }
 
   // `telemetry disable` mustn't create an ID or send anything first
-  const telemetry =
-    command === "telemetry"
-      ? null
-      : loadTelemetry(deps, cloudBaseUrl(deps.env));
+  const telemetry = command === "telemetry" ? null : loadTelemetry(deps);
   const rc = createRunContext(deps, flags, argv, telemetry);
   // Agents asking for --json get clean output; the next human run shows it
   if (telemetry && !flags.json) showTelemetryNotice(deps, telemetry);

@@ -126,7 +126,7 @@ describe("telemetry", () => {
     }
   );
 
-  it("sends nothing to a local Puck Cloud", async () => {
+  it("sends to a local Puck Cloud", async () => {
     const { root, env, cloud } = setup();
 
     await run(["status", "--json"], {
@@ -135,7 +135,7 @@ describe("telemetry", () => {
       env: { ...env, PUCK_CLOUD_URL: "http://localhost:3000" },
     });
 
-    expect(cloud.telemetry).toEqual([]);
+    expect(cloud.telemetry).toHaveLength(1);
   });
 
   it("prints events instead of sending them with PUCK_TELEMETRY_DEBUG", async () => {
