@@ -14,6 +14,7 @@ import { runStatus } from "./commands/status";
 import { runDoctor } from "./commands/doctor";
 import { runDocs } from "./commands/docs";
 import { runFrameworks } from "./commands/frameworks";
+import { runTelemetry } from "./commands/telemetry";
 import type { Telemetry } from "./telemetry/consent";
 import { loadTelemetry } from "./telemetry/consent";
 import type { EventInput } from "./telemetry/event";
@@ -98,19 +99,22 @@ export const runCli = async (
     if (json) presentJson(deps.stdout, result, new SecretRegistry());
     else presentHuman(deps.stderr, result, new SecretRegistry());
     const exitCode = exitCodeFor(result);
-    await recordRun(
-      deps,
-      loadTelemetry(deps, cloudBaseUrl(deps.env)),
-      startedAt,
-      {
-        command: null,
-        positionals: [],
-        flags: { json },
-        result,
-        exitCode,
-        interactive: false,
-      }
-    );
+    // Even a mistyped `telemetry disable` shouldn't send anything
+    if (argv[0] !== "telemetry") {
+      await recordRun(
+        deps,
+        loadTelemetry(deps, cloudBaseUrl(deps.env)),
+        startedAt,
+        {
+          command: null,
+          positionals: [],
+          flags: { json },
+          result,
+          exitCode,
+          interactive: false,
+        }
+      );
+    }
     return exitCode;
   }
 
@@ -132,10 +136,14 @@ export const runCli = async (
     return EXIT_CODES.success;
   }
 
-  const telemetry = loadTelemetry(deps, cloudBaseUrl(deps.env));
+  // `telemetry disable` mustn't create an ID or send anything first
+  const telemetry =
+    command === "telemetry"
+      ? null
+      : loadTelemetry(deps, cloudBaseUrl(deps.env));
   const rc = createRunContext(deps, flags, argv, telemetry);
   // Agents asking for --json get clean output; the next human run shows it
-  if (!flags.json) showTelemetryNotice(deps, telemetry);
+  if (telemetry && !flags.json) showTelemetryNotice(deps, telemetry);
   let result: CommandResult;
 
   try {
@@ -146,6 +154,8 @@ export const runCli = async (
     else if (command === "docs") result = await runDocs(rc, positionals);
     else if (command === "frameworks")
       result = await runFrameworks(rc, positionals);
+    else if (command === "telemetry")
+      result = await runTelemetry(rc, positionals);
     else result = await runDoctor(rc);
   } catch (err) {
     result = errorResult(command, err, flags.dryRun);
@@ -161,14 +171,16 @@ export const runCli = async (
 
   const exitCode = exitCodeFor(result);
   // Before afterOutput, which can start a dev server that runs until exit
-  await recordRun(deps, telemetry, startedAt, {
-    command,
-    positionals,
-    flags,
-    result,
-    exitCode,
-    interactive: rc.interactive,
-  });
+  if (telemetry) {
+    await recordRun(deps, telemetry, startedAt, {
+      command,
+      positionals,
+      flags,
+      result,
+      exitCode,
+      interactive: rc.interactive,
+    });
+  }
 
   if (result.status === "success" && rc.afterOutput) await rc.afterOutput();
 

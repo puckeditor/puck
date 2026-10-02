@@ -3,6 +3,7 @@ import type { PackageManagerName } from "./detect/package-manager";
 import type { FrameworkId } from "./detect/framework";
 import type { BackendChoice } from "./args";
 import type { DocEntry } from "./docs/source";
+import type { TelemetryReason } from "./telemetry/consent";
 
 export type CommandName =
   | "init"
@@ -12,6 +13,7 @@ export type CommandName =
   | "doctor"
   | "docs"
   | "frameworks"
+  | "telemetry"
   | "help";
 
 export type ResultStatus = "success" | "action_required" | "partial" | "error";
@@ -203,6 +205,12 @@ export interface CommandResult {
     pages?: DocEntry[];
     page?: DocEntry & { content: string };
     matches?: { path: string; line: number; text: string }[];
+  };
+  /** Present on `puck telemetry` */
+  telemetry?: {
+    enabled: boolean;
+    reason: TelemetryReason;
+    anonymousId: string | null;
   };
 }
 

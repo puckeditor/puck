@@ -225,4 +225,100 @@ describe("telemetry", () => {
     expect(code).toBe(0);
     expect(cloud.telemetry).toEqual([]);
   });
+
+  describe("telemetry command", () => {
+    it("shows the status without sending or creating anything", async () => {
+      const { root, env, cloud, configFile } = setup();
+
+      const { code, json } = await run(["telemetry", "--json"], {
+        cwd: root,
+        cloud,
+        env,
+      });
+
+      expect(code).toBe(0);
+      expect(json).toMatchObject({
+        command: "telemetry",
+        status: "success",
+        changed: false,
+        telemetry: { enabled: true, reason: "default", anonymousId: null },
+      });
+      expect(cloud.networkCalls).toBe(0);
+      expect(fs.existsSync(configFile)).toBe(false);
+    });
+
+    it("disables telemetry and forgets the anonymous ID", async () => {
+      const { root, env, cloud, configFile } = setup();
+      await run(["status", "--json"], { cwd: root, cloud, env });
+      expect(cloud.telemetry).toHaveLength(1);
+
+      const disabled = await run(["telemetry", "disable", "--json"], {
+        cwd: root,
+        cloud,
+        env,
+      });
+      await run(["status", "--json"], { cwd: root, cloud, env });
+      await run(["telemetry", "disable", "--bogus"], { cwd: root, cloud, env });
+
+      expect(disabled.json).toMatchObject({
+        changed: true,
+        message: "Telemetry is off.",
+        telemetry: { enabled: false, reason: "disabled", anonymousId: null },
+      });
+      expect(cloud.telemetry).toHaveLength(1);
+      expect(JSON.parse(fs.readFileSync(configFile, "utf8"))).toEqual({
+        enabled: false,
+      });
+    });
+
+    it("re-enables telemetry with a new anonymous ID", async () => {
+      const { root, env, cloud } = setup();
+      await run(["status", "--json"], { cwd: root, cloud, env });
+      await run(["telemetry", "disable"], { cwd: root, cloud, env });
+
+      const enabled = await run(["telemetry", "enable", "--json"], {
+        cwd: root,
+        cloud,
+        env,
+      });
+      await run(["status", "--json"], { cwd: root, cloud, env });
+
+      expect(enabled.json.telemetry).toMatchObject({
+        enabled: true,
+        reason: "enabled",
+      });
+      const [before, after] = cloud.telemetry;
+      expect(after.anonymousId).not.toBe(before.anonymousId);
+    });
+
+    it("explains when the environment keeps telemetry off", async () => {
+      const { root, env, cloud } = setup();
+
+      const { json } = await run(["telemetry", "enable", "--json"], {
+        cwd: root,
+        cloud,
+        env: { ...env, DO_NOT_TRACK: "1" },
+      });
+
+      expect(json.telemetry).toMatchObject({
+        enabled: false,
+        reason: "DO_NOT_TRACK",
+      });
+      expect(json.message).toMatch(/but stays off: DO_NOT_TRACK is set\.$/);
+    });
+
+    it("rejects unknown subcommands", async () => {
+      const { root, env, cloud } = setup();
+
+      const { code, json } = await run(["telemetry", "off", "--json"], {
+        cwd: root,
+        cloud,
+        env,
+      });
+
+      expect(code).toBe(2);
+      expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+      expect(cloud.networkCalls).toBe(0);
+    });
+  });
 });

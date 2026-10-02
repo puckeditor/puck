@@ -32,6 +32,10 @@ export const COMMANDS = [
     description:
       "Read the docs for this version: ls, cat <page>, find <query>, grep <text>",
   },
+  {
+    name: "telemetry [status|enable|disable]",
+    description: "Show or change anonymous usage data collection",
+  },
 ];
 
 export const HELP_TEXT = `Puck CLI: set up Puck and Puck Cloud.
