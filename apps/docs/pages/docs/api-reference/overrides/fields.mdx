@@ -14,10 +14,26 @@ const overrides = {
 
 ## Props
 
-| Prop                    | Example   | Type      |
-| ----------------------- | --------- | --------- |
-| [`children`](#children) | `<div />` | ReactNode |
+| Prop                    | Example              | Type      |
+| ----------------------- | -------------------- | --------- |
+| [`children`](#children) | `<div />`            | ReactNode |
+| [`fields`](#fields)     | `{ title: <div /> }` | Object    |
 
 ### `children`
 
 The default node for the fields.
+
+### `fields`
+
+An object containing the node for each visible field, keyed by field name. Use it to position fields individually.
+
+```tsx copy
+const overrides = {
+  fields: ({ fields }) => (
+    <div>
+      {fields.description}
+      {fields.title}
+    </div>
+  ),
+};
+```

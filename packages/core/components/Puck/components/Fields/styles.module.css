@@ -29,21 +29,12 @@
   top: 0;
 }
 
-.PuckFields-field *,
-.PuckFields-layoutField * {
-  box-sizing: border-box;
-}
-
-.PuckFields--wrapFields .PuckFields-field {
-  color: var(--puck-color-text-secondary);
-  padding: var(--puck-space-4);
-  padding-bottom: var(--puck-space-3);
+.PuckFields-field {
   display: block;
 }
 
-.PuckFields--wrapFields .PuckFields-field + .PuckFields-field {
-  border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
-  margin-top: var(--puck-space-2);
+.PuckFields-field * {
+  box-sizing: border-box;
 }
 
 /* Style every renderFields child as a field row */
