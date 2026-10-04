@@ -24,16 +24,6 @@ import { StoreApi } from "zustand";
 
 const getClassName = getClassNameFactory("PuckFields", styles);
 
-const DefaultFields = ({
-  children,
-}: {
-  children: ReactNode;
-  isLoading: boolean;
-  itemSelector?: ItemSelector | null;
-}) => {
-  return <>{children}</>;
-};
-
 const createOnChange =
   (fieldName: string, appStore: StoreApi<AppStore>) =>
   async (value: any, updatedUi?: Partial<UiState>) => {
@@ -95,13 +85,7 @@ const createOnChange =
     });
   };
 
-const FieldsChildInner = ({
-  fieldName,
-  className,
-}: {
-  fieldName: string;
-  className: string;
-}) => {
+const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   const fieldTypeOverrides = useAppStore((s) => s.overrides.fieldTypes);
 
   const field = useAppStore((s) => s.fields.fields[fieldName]);
@@ -155,7 +139,7 @@ const FieldsChildInner = ({
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <div key={id} className={className}>
+    <div key={id} className={getClassName("field")}>
       <AutoFieldPrivate
         field={field}
         name={fieldName}
@@ -167,13 +151,7 @@ const FieldsChildInner = ({
   );
 };
 
-const FieldsChild = ({
-  fieldName,
-  className,
-}: {
-  fieldName: string;
-  className: string;
-}) => {
+const FieldsChild = ({ fieldName }: { fieldName: string }) => {
   const appStore = useAppStoreApi();
 
   const initialValue = useMemo(() => {
@@ -184,75 +162,32 @@ const FieldsChild = ({
 
   return (
     <fieldContextStore.Provider value={initialValue}>
-      <FieldsChildInner fieldName={fieldName} className={className} />
+      <FieldsChildInner fieldName={fieldName} />
     </fieldContextStore.Provider>
   );
 };
 
 const FieldsChildMemo = memo(FieldsChild);
 
-/** Renders a custom field layout for the current fields */
-const CustomFieldLayout = ({
-  renderFields: RenderFields,
+/** Renders the default fields wrapper */
+const DefaultFields = ({
+  children,
 }: {
-  /**
-   * The function responsible for rendering the fields layout.
-   *
-   * Receives the fields to be rendered.
-   */
-  renderFields: NonNullable<ComponentConfig["renderFields"]>;
+  children: ReactNode;
+  isLoading: boolean;
+  itemSelector?: ItemSelector | null;
+  fields: Partial<Record<string, ReactNode>>;
 }) => {
-  // Subscribe to the visible fields
-  const visibleFieldNames = useAppStore(
-    useShallow((s) => {
-      const { fields } = s.fields;
-
-      return Object.keys(fields).filter((fieldName) =>
-        isFieldVisible(s.overrides.fieldTypes, fields[fieldName])
-      );
-    })
-  );
-
-  // Render the visible fields only
-  const fields = useMemo(() => {
-    const fieldMap: Record<string | number, ReactNode> = {};
-
-    visibleFieldNames.forEach((fieldName) => {
-      fieldMap[fieldName] = (
-        <FieldGroupItem key={fieldName}>
-          <FieldsChildMemo
-            fieldName={fieldName}
-            className={getClassName("layoutField")}
-          />
-        </FieldGroupItem>
-      );
-    });
-
-    return fieldMap;
-  }, [visibleFieldNames]);
-
-  // Provide it to the render fields
-  return (
-    <div className={getClassName("layout")}>
-      <RenderFields fields={fields} />
-    </div>
-  );
+  return <>{children}</>;
 };
 
-/** Renders the default field layout for the current fields */
-const DefaultFieldLayout = () => {
-  const fieldNames = useAppStore(
-    useShallow((s) => Object.keys(s.fields.fields))
-  );
-
-  return fieldNames.map((fieldName) => (
-    <FieldsChildMemo
-      key={fieldName}
-      fieldName={fieldName}
-      className={getClassName("field")}
-    />
-  ));
-};
+/**
+ * Renders the default fields layout:
+ * All fields as direct children of wherever the component is rendered.
+ */
+const DefaultFieldsLayout: NonNullable<ComponentConfig["renderFields"]> = ({
+  fields,
+}) => <>{Object.values(fields)}</>;
 
 const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   const overrides = useAppStore((s) => s.overrides);
@@ -274,20 +209,44 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   const fieldsReady = useAppStore((s) => s.fields.id === nodeId);
   const fieldsLoading = useAppStore((s) => s.fields.loading);
 
+  // Check if the user defined a custom field layout
   const renderFields = useAppStore(
     (s) => s.getComponentConfig(s.selectedItem?.type)?.renderFields
   );
 
+  // Subscribe to the visible fields
+  const visibleFieldNames = useAppStore(
+    useShallow((s) => {
+      const { fields } = s.fields;
+
+      return Object.keys(fields).filter((fieldName) =>
+        isFieldVisible(s.overrides.fieldTypes, fields[fieldName])
+      );
+    })
+  );
+
+  // Render each visible field, so layouts and overrides can place them individually
+  const fields = useMemo(() => {
+    const fieldMap: Record<string | number, ReactNode> = {};
+
+    if (!fieldsReady) return fieldMap;
+
+    visibleFieldNames.forEach((fieldName) => {
+      fieldMap[fieldName] = (
+        <FieldGroupItem key={fieldName}>
+          <FieldsChildMemo fieldName={fieldName} />
+        </FieldGroupItem>
+      );
+    });
+
+    return fieldMap;
+  }, [fieldsReady, visibleFieldNames]);
+
+  const RenderFields = renderFields ?? DefaultFieldsLayout;
+
   const isLoading = fieldsLoading || componentResolving;
 
   const Wrapper = useMemo(() => overrides.fields || DefaultFields, [overrides]);
-
-  // Render the user field layout if provided
-  const fieldLayout = renderFields ? (
-    <CustomFieldLayout renderFields={renderFields} />
-  ) : (
-    <DefaultFieldLayout />
-  );
 
   return (
     <form
@@ -296,8 +255,16 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
         e.preventDefault();
       }}
     >
-      <Wrapper isLoading={isLoading} itemSelector={itemSelector}>
-        {fieldsReady && fieldLayout}
+      <Wrapper
+        isLoading={isLoading}
+        itemSelector={itemSelector}
+        fields={fields}
+      >
+        {fieldsReady && (
+          <div className={getClassName("layout")}>
+            <RenderFields fields={fields} />
+          </div>
+        )}
       </Wrapper>
       {isLoading && (
         <div className={getClassName("loadingOverlay")}>
