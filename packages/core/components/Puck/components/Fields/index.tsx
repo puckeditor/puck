@@ -5,6 +5,7 @@ import { ItemSelector } from "../../../../lib/data/get-item";
 import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { ComponentConfig, UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
+import { FieldGroupItem } from "../../../FieldGroup";
 import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
 import styles from "./styles.module.css";
@@ -218,11 +219,12 @@ const CustomFieldLayout = ({
 
     visibleFieldNames.forEach((fieldName) => {
       fieldMap[fieldName] = (
-        <FieldsChildMemo
-          key={fieldName}
-          fieldName={fieldName}
-          className={getClassName("layoutField")}
-        />
+        <FieldGroupItem key={fieldName}>
+          <FieldsChildMemo
+            fieldName={fieldName}
+            className={getClassName("layoutField")}
+          />
+        </FieldGroupItem>
       );
     });
 
