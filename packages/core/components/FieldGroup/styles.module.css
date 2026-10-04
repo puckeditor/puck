@@ -21,6 +21,6 @@
     );
 }
 
-.FieldGroup-fieldset > * + * {
+.FieldGroup-fieldset > .FieldGroup-item + .FieldGroup-item {
   margin-top: var(--puck-space-3);
 }
