@@ -14,10 +14,12 @@ const overrides = {
 
 ## Props
 
-| Prop                    | Example              | Type      |
-| ----------------------- | -------------------- | --------- |
-| [`children`](#children) | `<div />`            | ReactNode |
-| [`fields`](#fields)     | `{ title: <div /> }` | Object    |
+| Prop                            | Example                            | Type                                                         |
+| ------------------------------- | ---------------------------------- | ------------------------------------------------------------ |
+| [`children`](#children)         | `<div />`                          | ReactNode                                                    |
+| [`fields`](#fields)             | `{ title: <div /> }`               | Object                                                       |
+| [`isLoading`](#isloading)       | `false`                            | boolean                                                      |
+| [`itemSelector`](#itemselector) | `{ index: 0, zone: "my-content" }` | [ItemSelector](/docs/api-reference/data-model/item-selector) |
 
 ### `children`
 
@@ -37,3 +39,11 @@ const overrides = {
   ),
 };
 ```
+
+### `isLoading`
+
+Whether the selected item's [fields](/docs/api-reference/configuration/component-config#resolvefieldsdata-params) or [data](/docs/api-reference/configuration/component-config#resolvedatadata-params) are being resolved.
+
+### `itemSelector`
+
+An [`ItemSelector`](/docs/api-reference/data-model/item-selector) for the currently selected item. `null` when no component is selected.
