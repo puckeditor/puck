@@ -1,5 +1,6 @@
 import { Children, ReactNode } from "react";
 import getClassNameFactory from "../../lib/get-class-name-factory";
+import mergeClassNames from "../../lib/merge-class-names";
 import { FieldLabelInternal } from "../AutoField/FieldLabel";
 import styles from "./styles.module.css";
 
@@ -29,3 +30,20 @@ export const FieldGroup = ({
     </FieldLabelInternal>
   );
 };
+
+/**
+ * Renders an individual item within a FieldGroup.
+ *
+ * Wrap any subfields in this component for a consistent layout
+ */
+export const FieldGroupItem = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => (
+  <div className={mergeClassNames(getClassName("item"), className)}>
+    {children}
+  </div>
+);
