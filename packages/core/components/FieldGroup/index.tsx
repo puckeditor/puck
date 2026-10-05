@@ -23,11 +23,13 @@ export const FieldGroup = ({
   if (!hasContent) return null;
 
   return (
-    <FieldLabelInternal label={label} icon={icon} el="div">
-      <div className={getClassName()}>
-        <fieldset className={getClassName("fieldset")}>{children}</fieldset>
-      </div>
-    </FieldLabelInternal>
+    <div data-puck-field-group>
+      <FieldLabelInternal label={label} icon={icon} el="div">
+        <div className={getClassName()}>
+          <fieldset className={getClassName("fieldset")}>{children}</fieldset>
+        </div>
+      </FieldLabelInternal>
+    </div>
   );
 };
 

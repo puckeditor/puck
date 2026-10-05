@@ -139,7 +139,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <div key={id} className={getClassName("field")}>
+    <FieldGroupItem key={id} className={getClassName("field")}>
       <AutoFieldPrivate
         field={field}
         name={fieldName}
@@ -147,7 +147,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
         readOnly={!permissions.edit || isReadOnly}
         onChange={onChange}
       />
-    </div>
+    </FieldGroupItem>
   );
 };
 
@@ -233,9 +233,7 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
 
     visibleFieldNames.forEach((fieldName) => {
       fieldMap[fieldName] = (
-        <FieldGroupItem key={fieldName}>
-          <FieldsChildMemo fieldName={fieldName} />
-        </FieldGroupItem>
+        <FieldsChildMemo key={fieldName} fieldName={fieldName} />
       );
     });
 
@@ -260,11 +258,7 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
         itemSelector={itemSelector}
         fields={fields}
       >
-        {fieldsReady && (
-          <div className={getClassName("layout")}>
-            <RenderFields fields={fields} />
-          </div>
-        )}
+        {fieldsReady && <RenderFields fields={fields} />}
       </Wrapper>
       {isLoading && (
         <div className={getClassName("loadingOverlay")}>

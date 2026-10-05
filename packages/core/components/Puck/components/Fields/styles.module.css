@@ -37,14 +37,23 @@
   box-sizing: border-box;
 }
 
-/* Style every renderFields child as a field row */
-.PuckFields--wrapFields .PuckFields-layout > * {
+/* A row is a field or a group that isn't inside another field or group */
+.PuckFields--wrapFields
+  :is(.PuckFields-field, [data-puck-field-group]):not(
+    .PuckFields-field *,
+    [data-puck-field-group] *
+  ) {
   color: var(--puck-color-text-secondary);
   padding: var(--puck-space-4);
   padding-bottom: var(--puck-space-3);
 }
 
-.PuckFields--wrapFields .PuckFields-layout > * + * {
+.PuckFields--wrapFields
+  :is(.PuckFields-field, [data-puck-field-group]):not(
+    .PuckFields-field *,
+    [data-puck-field-group] *
+  )
+  + :is(.PuckFields-field, [data-puck-field-group]) {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
   margin-top: var(--puck-space-2);
 }
