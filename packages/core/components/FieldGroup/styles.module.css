@@ -1,4 +1,4 @@
-.FieldGroup {
+.FieldGroup-box {
   display: flex;
   flex-direction: column;
   background-color: var(--puck-field-color-surface, var(--puck-color-surface));
@@ -23,4 +23,44 @@
 
 .FieldGroup-fieldset > .FieldGroup-item + .FieldGroup-item {
   margin-top: var(--puck-space-3);
+}
+
+/* Remove the label vertical spacing when the group is collapsed */
+.FieldGroup--collapsed {
+  --puck-field-label-space-y: 0;
+}
+
+.FieldGroup-toggle {
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  text-align: start;
+  width: 100%;
+}
+
+.FieldGroup-toggle:focus-visible {
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .FieldGroup-toggle:hover {
+    --puck-field-label-color-text: var(--puck-color-text);
+    --puck-field-label-color-icon: var(--puck-color-text);
+  }
+}
+
+.FieldGroup-toggleIcon {
+  display: flex;
+}
+
+.FieldGroup--expanded > .FieldGroup-toggle .FieldGroup-toggleIcon {
+  transform: rotate(90deg);
 }
