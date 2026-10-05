@@ -18,3 +18,9 @@
 [data-dnd-dragging] .InlineTextField::selection {
   display: none;
 }
+
+.InlineTextField:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.5;
+  pointer-events: none;
+}
