@@ -5,7 +5,6 @@ import {
   FieldTransforms,
   Fields,
   RichtextField,
-  WithPuckProps,
 } from "../../../types";
 import { RichTextRenderFallback } from "../components/RenderFallback";
 import { mapDeep } from "./mapDeep";
@@ -26,9 +25,9 @@ export function useRichtextProps(
     | Fields<any, {}>
     | Fields<any, { type: string } & BaseField>
     | undefined,
-  props: WithPuckProps<{
+  props: {
     [x: string]: any;
-  }>,
+  },
   fieldTransforms?: FieldTransforms
 ) {
   const findAllRichtextKeys = (
