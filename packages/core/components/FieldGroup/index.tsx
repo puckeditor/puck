@@ -1,12 +1,15 @@
 import { Children, ReactNode, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import mergeClassNames from "../../lib/merge-class-names";
 import { useSafeId } from "../../lib/use-safe-id";
-import { FieldLabelInternal } from "../AutoField/FieldLabel";
+import { FieldLabel, FieldLabelInternal } from "../AutoField/FieldLabel";
+import type { FieldLabelPropsInternal } from "../AutoField/FieldLabel";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
+
+type FieldGroupVariant = "contained" | "collapsible";
 
 type FieldContainedVariantProps = {
   variant?: "contained";
@@ -23,12 +26,32 @@ type FieldGroupProps = {
   children?: ReactNode;
 } & (FieldContainedVariantProps | FieldCollapsibleVariantProps);
 
-export const FieldGroup = ({
+type FieldGroupInternalProps = {
+  variant?: FieldGroupVariant;
+  label?: string;
+  icon?: ReactNode;
+  children?: ReactNode;
+  Label?: React.FC<FieldLabelPropsInternal>;
+  readOnly?: boolean;
+};
+
+/**
+ * Renders a field group for internal use.
+ *
+ * The difference with the public FieldGroup component
+ * is that this one allows replacing the component used for the `Label`.
+ *
+ * This is needed for use within AutoField, since it replaces the label based on where it is used
+ * (standalone public AutoField vs AutoField used to render a field config).
+ */
+export const FieldGroupInternal = ({
   variant = "contained",
   label,
   icon,
   children,
-}: FieldGroupProps) => {
+  Label = FieldLabelInternal,
+  readOnly,
+}: FieldGroupInternalProps) => {
   const [expanded, setExpanded] = useState(false);
   const contentId = useSafeId();
 
@@ -46,6 +69,12 @@ export const FieldGroup = ({
   );
 
   if (variant === "collapsible") {
+    const toggleIcon = (
+      <span className={getClassName("toggleIcon")}>
+        <ChevronDown size={16} />
+      </span>
+    );
+
     return (
       <div
         data-puck-field-group
@@ -59,15 +88,25 @@ export const FieldGroup = ({
           aria-controls={expanded ? contentId : undefined}
           onClick={() => setExpanded((isExpanded) => !isExpanded)}
         >
-          <FieldLabelInternal
-            label={label}
-            icon={
-              <span className={getClassName("toggleIcon")}>
-                {icon ?? <ChevronRight size={16} />}
-              </span>
-            }
-            el="div"
-          />
+          {label ? (
+            // Collapsible fields need a visible label, so it always uses Puck's
+            <FieldLabelInternal
+              label={label}
+              icon={icon}
+              endIcon={toggleIcon}
+              el="div"
+              readOnly={readOnly}
+            />
+          ) : (
+            // Without a label, only show the icons, so the missing label is easy to spot
+            <FieldLabel
+              label=""
+              icon={icon}
+              endIcon={toggleIcon}
+              el="div"
+              readOnly={readOnly}
+            />
+          )}
         </button>
         {expanded && content}
       </div>
@@ -76,12 +115,17 @@ export const FieldGroup = ({
 
   return (
     <div data-puck-field-group className={getClassName()}>
-      <FieldLabelInternal label={label} icon={icon} el="div">
+      <Label label={label} icon={icon} el="div" readOnly={readOnly}>
         {content}
-      </FieldLabelInternal>
+      </Label>
     </div>
   );
 };
+
+/** Renders a group of related fields under a common label and layout */
+export const FieldGroup = (props: FieldGroupProps) => (
+  <FieldGroupInternal {...props} />
+);
 
 /**
  * Renders an individual item within a FieldGroup.

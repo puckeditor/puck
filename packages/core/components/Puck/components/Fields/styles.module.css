@@ -56,12 +56,16 @@
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
 }
 
-/* A collapsed field group's padding is already even, so only space rows after other rows */
+/* A collapsed field group (or collapsible object field) already has even padding above and below, so only space rows after other rows */
 .PuckFields--wrapFields
   :is(.PuckFields-field, [data-puck-field-group]):not(
     .PuckFields-field *,
     [data-puck-field-group] *,
-    :has(> [data-puck-field-group-toggle][aria-expanded="false"])
+    :is([data-puck-field-group], .PuckFields-field--collapsible):has(
+        [data-puck-field-group-toggle][aria-expanded="false"]:not(
+            [data-puck-field-group] [data-puck-field-group] *
+          )
+      )
   ) {
   padding-bottom: var(--puck-space-3);
 }
@@ -70,7 +74,11 @@
   :is(.PuckFields-field, [data-puck-field-group]):not(
     .PuckFields-field *,
     [data-puck-field-group] *,
-    :has(> [data-puck-field-group-toggle][aria-expanded="false"])
+    :is([data-puck-field-group], .PuckFields-field--collapsible):has(
+        [data-puck-field-group-toggle][aria-expanded="false"]:not(
+            [data-puck-field-group] [data-puck-field-group] *
+          )
+      )
   )
   + :is(.PuckFields-field, [data-puck-field-group]) {
   margin-top: var(--puck-space-2);
