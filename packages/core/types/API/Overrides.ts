@@ -42,6 +42,7 @@ export type Overrides<UserConfig extends Config = Config> = OverridesGeneric<{
   fieldLabel: RenderFunc<{
     children?: ReactNode;
     icon?: ReactNode;
+    endIcon?: ReactNode;
     label: string;
     el?: "label" | "div";
     readOnly?: boolean;

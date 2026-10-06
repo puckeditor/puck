@@ -10,6 +10,7 @@ import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
+import mergeClassNames from "../../../../lib/merge-class-names";
 import {
   memo,
   ReactNode,
@@ -139,7 +140,15 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <FieldGroupItem key={id} className={getClassName("field")}>
+    <FieldGroupItem
+      key={id}
+      className={mergeClassNames(
+        getClassName("field"),
+        field.type === "object" && field.variant === "collapsible"
+          ? getClassName("field--collapsible")
+          : undefined
+      )}
+    >
       <AutoFieldPrivate
         field={field}
         name={fieldName}
