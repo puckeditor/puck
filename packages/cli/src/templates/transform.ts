@@ -7,6 +7,7 @@ export const transformPackageJson = (
 ) => {
   const pkg = JSON.parse(text);
   pkg.name = appName;
+  const pinned: string[] = [];
 
   for (const field of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[field] as Record<string, string> | undefined;
@@ -14,8 +15,19 @@ export const transformPackageJson = (
     // Monorepo-only tooling
     delete deps["eslint-config-custom"];
     for (const [name, range] of Object.entries(deps)) {
-      if (WORKSPACE_PROTOCOL.test(range)) deps[name] = `^${cliVersion}`;
+      if (!WORKSPACE_PROTOCOL.test(range)) continue;
+      deps[name] = `^${cliVersion}`;
+      pinned.push(name);
     }
+  }
+
+  // A canary never satisfies plugins' `^0` peer ranges, which npm treats as
+  // an install error. Point those peers at the app's own version instead.
+  if (cliVersion.includes("-") && pinned.length > 0) {
+    pkg.overrides = {
+      ...pkg.overrides,
+      ...Object.fromEntries(pinned.map((name) => [name, `$${name}`])),
+    };
   }
 
   // The recipe's lint script depends on the monorepo eslint config
