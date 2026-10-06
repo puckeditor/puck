@@ -71,8 +71,6 @@ The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](
 
 Render an icon before the label text. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
 
-For the `collapsible` variant, defaults to a chevron and rotates while expanded.
-
 ### `label`
 
 The label for the group. Required for the `collapsible` variant.
@@ -81,5 +79,5 @@ The label for the group. Required for the `collapsible` variant.
 
 Specify how to display the group. **Defaults to `"contained"`**.
 
-- `"contained"`: shows the fields in a box, like an [`object` field](/docs/api-reference/fields/object).
-- `"collapsible"`: only shows the label, which toggles the box. Starts collapsed.
+- `"contained"`: shows the fields in a box.
+- `"collapsible"`: shows the label which expands or collapses the fields in a box.

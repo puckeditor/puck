@@ -12,6 +12,7 @@ const getClassName = getClassNameFactory("Input", styles);
 export const FieldLabel = ({
   children,
   icon,
+  endIcon,
   label,
   el = "label",
   readOnly,
@@ -19,6 +20,7 @@ export const FieldLabel = ({
 }: {
   children?: ReactNode;
   icon?: ReactNode;
+  endIcon?: ReactNode;
   label: string;
   el?: "label" | "div";
   readOnly?: boolean;
@@ -38,6 +40,12 @@ export const FieldLabel = ({
             <Lock size="12" />
           </div>
         )}
+
+        {endIcon ? (
+          <div className={getClassName("labelEndIcon")}>{endIcon}</div>
+        ) : (
+          <></>
+        )}
       </div>
       {children}
     </El>
@@ -47,6 +55,7 @@ export const FieldLabel = ({
 export type FieldLabelPropsInternal = {
   children?: ReactNode;
   icon?: ReactNode;
+  endIcon?: ReactNode;
   label?: string;
   el?: "label" | "div";
   readOnly?: boolean;
@@ -55,6 +64,7 @@ export type FieldLabelPropsInternal = {
 export const FieldLabelInternal = ({
   children,
   icon,
+  endIcon,
   label,
   el = "label",
   readOnly,
@@ -74,6 +84,7 @@ export const FieldLabelInternal = ({
     <Wrapper
       label={label}
       icon={icon}
+      endIcon={endIcon}
       className={getClassName({ readOnly })}
       readOnly={readOnly}
       el={el}
