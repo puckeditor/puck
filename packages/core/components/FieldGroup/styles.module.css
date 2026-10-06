@@ -62,5 +62,5 @@
 }
 
 .FieldGroup--expanded > .FieldGroup-toggle .FieldGroup-toggleIcon {
-  transform: rotate(90deg);
+  transform: rotate(180deg);
 }
