@@ -200,13 +200,13 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
 
   if (state.target === "server") {
     findings.push(
-      state.pages?.mounted
-        ? finding("puck.pages_api", "ok", state.pages.file)
+      state.pagesApi?.mounted
+        ? finding("puck.pages_api", "ok", state.pagesApi.file)
         : finding(
             "puck.pages_api",
             "fail",
-            state.pages
-              ? `${state.pages.file} isn't mounted on the app`
+            state.pagesApi
+              ? `${state.pagesApi.file} isn't mounted on the app`
               : "No Puck pages API found",
             `${CANONICAL_INVOCATION} add editor${where}`
           )

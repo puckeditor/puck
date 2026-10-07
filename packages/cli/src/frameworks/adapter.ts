@@ -15,7 +15,7 @@ export interface CloudRouteDetection {
   external?: boolean;
 }
 
-export interface PagesDetection {
+export interface PagesApiDetection {
   /** Project-relative module serving the pages API */
   file: string;
   mounted: boolean;
@@ -60,7 +60,11 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
   /** For client-only apps, which need a server chosen by the developer */
   backend?: (info: I) => BackendOptions;
   /** For servers, the pages API that stands in for the editor */
-  detectPages?: (info: I, vfs: Vfs, root: string) => PagesDetection | null;
+  detectPagesApi?: (
+    info: I,
+    vfs: Vfs,
+    root: string
+  ) => PagesApiDetection | null;
   planEditor: (p: Planner, info: I, withAi: boolean) => void;
   planCloudRoute: (p: Planner, info: I, withAi: boolean) => void;
   /** Adds Puck AI to an editor that was set up before */

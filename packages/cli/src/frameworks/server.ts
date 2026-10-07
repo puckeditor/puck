@@ -262,7 +262,7 @@ const serverPlanner = (id: "hono" | "express") => {
           }),
       };
     },
-    detectPages: (info, vfs, root) => {
+    detectPagesApi: (info, vfs, root) => {
       const file = `${puckDir(vfs, root, info)}/pages.ts`;
       if (!vfs.exists(path.join(root, file))) return null;
       const code = info.entry

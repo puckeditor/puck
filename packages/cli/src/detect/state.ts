@@ -13,7 +13,7 @@ import { scanSources, SourceScan, toPosix } from "./scan";
 import { tryParseModule } from "../ast/parse";
 import { ExportShape, getExportShape } from "../ast/exports";
 import { adapterFor } from "../frameworks";
-import type { PagesDetection } from "../frameworks/adapter";
+import type { PagesApiDetection } from "../frameworks/adapter";
 import { findApiKey, KeyLocation } from "../env/files";
 import { isIgnored } from "../env/gitignore";
 
@@ -25,7 +25,7 @@ export interface ProjectState {
   /** "server" when the project only serves Puck's APIs, e.g. Hono or Express */
   target: "app" | "server";
   /** The pages API a server exposes in place of an editor */
-  pages: PagesDetection | null;
+  pagesApi: PagesApiDetection | null;
   scan: SourceScan;
   puck: {
     installed: boolean;
@@ -111,9 +111,9 @@ export const detectState = (
 
   return {
     target: adapter?.kind === "server" ? "server" : "app",
-    pages:
-      ctx.framework && adapter?.detectPages
-        ? adapter.detectPages(ctx.framework, vfs, ctx.root)
+    pagesApi:
+      ctx.framework && adapter?.detectPagesApi
+        ? adapter.detectPagesApi(ctx.framework, vfs, ctx.root)
         : null,
     scan,
     puck: {
@@ -149,9 +149,9 @@ export const capabilityStatus = (
 ): Record<CapabilityId, { satisfied: boolean; missing: string[] }> => {
   const editorMissing: string[] = [];
   if (state.target === "server") {
-    if (!state.pages) editorMissing.push("No Puck pages API found");
-    else if (!state.pages.mounted)
-      editorMissing.push(`${state.pages.file} isn't mounted on the app`);
+    if (!state.pagesApi) editorMissing.push("No Puck pages API found");
+    else if (!state.pagesApi.mounted)
+      editorMissing.push(`${state.pagesApi.file} isn't mounted on the app`);
   } else {
     if (!state.puck.installed)
       editorMissing.push(`${CORE_PACKAGE} is not installed`);
