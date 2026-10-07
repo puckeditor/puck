@@ -121,7 +121,7 @@ npx create-puck-app my-app
 Available recipes include:
 
 - [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
-- [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
+- [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v8 app example, using dynamic routes to create pages at any level
 - [**tanstack-start**](https://github.com/puckeditor/puck/tree/main/recipes/tanstack-start): [TanStack Start](https://tanstack.com/start) example, using a splat route and server functions to create pages at any level
 - [**hono**](https://github.com/puckeditor/puck/tree/main/recipes/hono) and [**express**](https://github.com/puckeditor/puck/tree/main/recipes/express): Hono and Express servers exposing a pages API, and Puck AI in the `-ai` variants, for an editor in another app
 - [**astro**](https://github.com/puckeditor/puck/tree/main/recipes/astro): Astro example, rendering Puck pages on the server with the Node adapter
