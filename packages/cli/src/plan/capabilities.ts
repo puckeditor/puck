@@ -151,6 +151,13 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
       }
       if (adapter.planAuth) adapter.planAuth(p, framework);
       else unsupported(p, "auth");
+
+      if (!capabilities.includes("pages") && !status.pages.satisfied) {
+        p.warn(
+          "PUCK-CLI-W-LOCAL-SAVE-PUBLIC",
+          `Sign in with Puck protects the editor and Puck Cloud, but the editor still saves pages through your own route, which anyone can call. Store pages in Puck Cloud with \`${CANONICAL_INVOCATION} add pages\`, or protect that route.`
+        );
+      }
     }
   }
 

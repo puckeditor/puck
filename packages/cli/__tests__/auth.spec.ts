@@ -61,6 +61,8 @@ describe("add auth", () => {
 
       expect(codes(json.warnings)).not.toContain("PUCK-CLI-W-PUBLIC-ROUTE");
       expect(codes(json.warnings)).not.toContain("PUCK-CLI-W-EDITOR-PUBLIC");
+      // The recipe still saves pages through its own route
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-LOCAL-SAVE-PUBLIC");
 
       const again = await run(["add", "auth", "--yes", "--json"], {
         cwd: root,
@@ -80,6 +82,7 @@ describe("add auth", () => {
     expect(codes(json.warnings)).not.toContain(
       "PUCK-CLI-W-PAGES-UNAUTHENTICATED"
     );
+    expect(codes(json.warnings)).not.toContain("PUCK-CLI-W-LOCAL-SAVE-PUBLIC");
     expect(read(root, "app/puck/[...puckPath]/page.tsx")).toBe(
       nextPagesEditorPage({ ai: true, auth: true })
     );
