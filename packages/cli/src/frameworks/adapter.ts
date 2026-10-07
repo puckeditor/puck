@@ -69,6 +69,10 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
   planCloudRoute: (p: Planner, info: I, withAi: boolean) => void;
   /** Adds Puck AI to an editor that was set up before */
   planAi: (p: Planner, info: I) => void;
+  /** Moves the editor and rendering to pages stored in Puck Cloud */
+  planPages?: (p: Planner, info: I) => void;
+  /** Requires Sign in with Puck for the editor and the Cloud route */
+  planAuth?: (p: Planner, info: I) => void;
   devUrl: string;
   deployEnvWarning: string;
 }

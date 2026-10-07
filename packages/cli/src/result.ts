@@ -18,7 +18,7 @@ export type CommandName =
 
 export type ResultStatus = "success" | "action_required" | "partial" | "error";
 
-export type CapabilityId = "editor" | "cloud" | "ai";
+export type CapabilityId = "editor" | "cloud" | "ai" | "pages" | "auth";
 
 export type KeySource =
   | "flag"

@@ -25,6 +25,8 @@ export const capabilityLabels = (
   editor: server ? "Puck pages API" : "Puck Editor",
   cloud: "Puck Cloud",
   ai: "Puck AI",
+  pages: "Puck Pages",
+  auth: "Puck Auth",
 });
 
 export const projectSummary = (

@@ -7,6 +7,8 @@ import {
   CORE_PACKAGE,
   LEGACY_CORE_PACKAGE,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_AUTH_PACKAGE,
+  PLUGIN_PAGES_PACKAGE,
 } from "../constants";
 import { resolveInstalledVersion } from "./package-json";
 import { scanSources, SourceScan, toPosix } from "./scan";
@@ -52,6 +54,16 @@ export interface ProjectState {
   ai: {
     installed: boolean;
     declaredRange: string | null;
+  };
+  pages: {
+    pluginInstalled: boolean;
+    declaredRange: string | null;
+  };
+  auth: {
+    pluginInstalled: boolean;
+    declaredRange: string | null;
+    /** The Cloud route requires Sign in with Puck */
+    routeAuthenticated: boolean;
   };
 }
 
@@ -141,6 +153,17 @@ export const detectState = (
       installed: PLUGIN_AI_PACKAGE in ctx.deps,
       declaredRange: ctx.deps[PLUGIN_AI_PACKAGE] ?? null,
     },
+    pages: {
+      pluginInstalled: PLUGIN_PAGES_PACKAGE in ctx.deps,
+      declaredRange: ctx.deps[PLUGIN_PAGES_PACKAGE] ?? null,
+    },
+    auth: {
+      pluginInstalled: PLUGIN_AUTH_PACKAGE in ctx.deps,
+      declaredRange: ctx.deps[PLUGIN_AUTH_PACKAGE] ?? null,
+      routeAuthenticated: Boolean(
+        route?.routeFile && scan.puckAuthFiles.includes(route.routeFile)
+      ),
+    },
   };
 };
 
@@ -186,9 +209,34 @@ export const capabilityStatus = (
       aiMissing.push("The Puck AI plugin isn't added to the editor");
   }
 
+  // Like AI, a server only serves published pages; the plugin is in the editor
+  const pagesMissing: string[] =
+    state.target === "server" ? [...cloudMissing] : [];
+  if (state.target === "app") {
+    if (!state.pages.pluginInstalled)
+      pagesMissing.push(`${PLUGIN_PAGES_PACKAGE} is not installed`);
+    if (state.scan.pagesPluginFiles.length === 0)
+      pagesMissing.push("The Puck Pages plugin isn't added to the editor");
+  }
+  if (!state.cloud.external && state.scan.cloudPageFiles.length === 0)
+    pagesMissing.push("Nothing renders published pages from Puck Cloud");
+
+  const authMissing: string[] =
+    state.target === "server" ? [...cloudMissing] : [];
+  if (state.target === "app") {
+    if (!state.auth.pluginInstalled)
+      authMissing.push(`${PLUGIN_AUTH_PACKAGE} is not installed`);
+    if (state.scan.authPluginFiles.length === 0)
+      authMissing.push("The Puck Auth plugin isn't added to the editor");
+  }
+  if (!state.cloud.external && !state.auth.routeAuthenticated)
+    authMissing.push("The Puck Cloud API route doesn't use Sign in with Puck");
+
   return {
     editor: { satisfied: editorMissing.length === 0, missing: editorMissing },
     cloud: { satisfied: cloudMissing.length === 0, missing: cloudMissing },
     ai: { satisfied: aiMissing.length === 0, missing: aiMissing },
+    pages: { satisfied: pagesMissing.length === 0, missing: pagesMissing },
+    auth: { satisfied: authMissing.length === 0, missing: authMissing },
   };
 };

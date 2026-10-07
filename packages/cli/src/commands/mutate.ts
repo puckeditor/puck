@@ -423,7 +423,11 @@ export const runMutation = async (
     `# then open ${adapterFor(verifiedCtx.framework ?? ctx.framework!).devUrl}`,
   ];
 
-  if (wantsCloud && !capabilities.includes("ai") && !status.ai.satisfied) {
+  // Puck AI and Puck Pages are what an editor uses Puck Cloud for
+  const usesCloud = (["ai", "pages"] as const).some(
+    (c) => capabilities.includes(c) || status[c].satisfied
+  );
+  if (wantsCloud && !usesCloud) {
     result.warnings.push({
       code: "PUCK-CLI-W-NO-CLIENT-PLUGIN",
       message:

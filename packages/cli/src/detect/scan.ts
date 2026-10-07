@@ -1,9 +1,12 @@
 import path from "node:path";
 import type { Vfs } from "../io/vfs";
 import {
+  CLOUD_CLIENT_AUTH_ENTRY,
   CLOUD_CLIENT_PACKAGE,
   CORE_PACKAGE,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_AUTH_PACKAGE,
+  PLUGIN_PAGES_PACKAGE,
 } from "../constants";
 import { tryParseModule } from "../ast/parse";
 import { getModuleReferences } from "../ast/imports";
@@ -39,6 +42,14 @@ export interface SourceScan {
   cloudHandlerFiles: string[];
   /** Files that create the Puck AI plugin */
   aiPluginFiles: string[];
+  /** Files that create the Puck Pages plugin */
+  pagesPluginFiles: string[];
+  /** Files that create the Puck Auth plugin */
+  authPluginFiles: string[];
+  /** Files that read published pages from Puck Cloud */
+  cloudPageFiles: string[];
+  /** Files that use Sign in with Puck */
+  puckAuthFiles: string[];
   cssImported: boolean;
   truncated: boolean;
 }
@@ -84,6 +95,10 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
     renderFiles: [],
     cloudHandlerFiles: [],
     aiPluginFiles: [],
+    pagesPluginFiles: [],
+    authPluginFiles: [],
+    cloudPageFiles: [],
+    puckAuthFiles: [],
     cssImported: false,
     truncated: false,
   };
@@ -103,6 +118,9 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
 
     const rel = toPosix(path.relative(root, file));
     for (const ref of getModuleReferences(ast, code)) {
+      const imports = (...names: string[]) =>
+        ref.kind === "import" &&
+        ref.specifiers.some((s) => names.includes(s.imported) && !s.typeOnly);
       if (ref.source === CORE_PACKAGE && ref.kind === "import") {
         const imported = ref.specifiers
           .filter((s) => !s.typeOnly)
@@ -129,6 +147,17 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
       ) {
         scan.cloudHandlerFiles.push(rel);
       }
+      if (ref.source === PLUGIN_PAGES_PACKAGE && imports("createPagesPlugin"))
+        scan.pagesPluginFiles.push(rel);
+      if (ref.source === PLUGIN_AUTH_PACKAGE && imports("createAuthPlugin"))
+        scan.authPluginFiles.push(rel);
+      if (ref.source === CLOUD_CLIENT_PACKAGE && imports("getPage"))
+        scan.cloudPageFiles.push(rel);
+      if (
+        ref.source === CLOUD_CLIENT_AUTH_ENTRY &&
+        imports("puckAuth", "createPuckAuth")
+      )
+        scan.puckAuthFiles.push(rel);
     }
   }
 
@@ -137,6 +166,10 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
   scan.renderFiles = unique(scan.renderFiles);
   scan.cloudHandlerFiles = unique(scan.cloudHandlerFiles);
   scan.aiPluginFiles = unique(scan.aiPluginFiles);
+  scan.pagesPluginFiles = unique(scan.pagesPluginFiles);
+  scan.authPluginFiles = unique(scan.authPluginFiles);
+  scan.cloudPageFiles = unique(scan.cloudPageFiles);
+  scan.puckAuthFiles = unique(scan.puckAuthFiles);
 
   return scan;
 };
