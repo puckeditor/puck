@@ -8,7 +8,7 @@ import { findCloudRoute } from "./adapter";
 import { ensureMounted, isMounted } from "../ast/server-app";
 import { templateText } from "../templates/source";
 import { withCloudHost, withoutAiOptions } from "../templates/cloud";
-import { copyTemplateFiles } from "./shared";
+import { copyTemplateFiles, planAiRoute } from "./shared";
 import { ENV_KEY } from "../constants";
 
 type ServerInfo = HonoInfo | ExpressInfo;
@@ -198,18 +198,7 @@ const serverPlanner = (id: "hono" | "express") => {
     }
 
     if (existing) {
-      const current = p.vfs.readText(p.abs(existing));
-      if (withAi && current === cloudRoute) {
-        p.modifyFile(existing, route, {
-          capability: "ai",
-          summary: `Enable Puck AI in ${existing}`,
-        });
-      } else if (withAi && current !== route) {
-        p.warn(
-          "PUCK-CLI-W-AI-ROUTE",
-          `Make sure the puckHandler in ${existing} sets ai.designMode.allowed to true, or Puck AI's design mode will be rejected.`
-        );
-      }
+      if (withAi) planAiRoute(p, existing, cloudRoute, route);
     } else {
       const outcome = p.createFile(file, route, {
         capability: "cloud",

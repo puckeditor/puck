@@ -20,6 +20,7 @@ import {
   RelocateContext,
   TemplateFile,
   upgradeTemplateFile,
+  planAiRoute,
 } from "./shared";
 import { planOptimizeDeps } from "./vite";
 import { AI_SNIPPET } from "./ai";
@@ -305,13 +306,7 @@ export const planViteCloudRoute = (
   const existing = p.state.cloud.routeFile;
 
   if (existing) {
-    const current = p.vfs.readText(p.abs(existing));
-    if (withAi && current === cloudRoute) {
-      p.modifyFile(existing, route, {
-        capability: "ai",
-        summary: `Enable Puck AI in ${existing}`,
-      });
-    }
+    if (withAi) planAiRoute(p, existing, cloudRoute, route, { warn: false });
   } else {
     p.createFile(CLOUD_ROUTE, route, {
       capability: "cloud",

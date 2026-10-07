@@ -9,6 +9,7 @@ import {
   stripExtension,
 } from "../templates/relocate";
 import { CORE_PACKAGE } from "../constants";
+import { withSameRouteAuth } from "../templates/auth";
 
 export interface TemplateFile {
   /** Recipe-relative path */
@@ -253,4 +254,36 @@ export const planPuckConfig = (
 export const planCoreDependency = (p: Planner) => {
   if (!p.state.puck.installed)
     p.addDependency(CORE_PACKAGE, `^${p.cliVersion}`, "editor");
+};
+
+/** Enables Puck AI in a Cloud route the CLI wrote, keeping its authenticate */
+export const planAiRoute = (
+  p: Planner,
+  file: string,
+  cloudRoute: string,
+  aiRoute: string,
+  { warn = true }: { warn?: boolean } = {}
+) => {
+  const current = p.vfs.readText(p.abs(file)) ?? "";
+  const upgraded = withSameRouteAuth(
+    current,
+    cloudRoute,
+    aiRoute,
+    file,
+    p.cloudHost
+  );
+  if (upgraded !== null) {
+    p.modifyFile(file, upgraded, {
+      capability: "ai",
+      summary: `Enable Puck AI in ${file}`,
+    });
+  } else if (
+    warn &&
+    withSameRouteAuth(current, aiRoute, aiRoute, file, p.cloudHost) === null
+  ) {
+    p.warn(
+      "PUCK-CLI-W-AI-ROUTE",
+      `Make sure the puckHandler in ${file} sets ai.designMode.allowed to true, or Puck AI's design mode will be rejected.`
+    );
+  }
 };

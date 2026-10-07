@@ -17,6 +17,7 @@ import {
   RelocateContext,
   TemplateFile,
   upgradeTemplateFile,
+  planAiRoute,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
 
@@ -242,12 +243,7 @@ export const planAstroCloudRoute = (
   const existing = p.state.cloud.routeFile;
 
   if (existing) {
-    if (withAi && p.vfs.readText(p.abs(existing)) === cloudRoute) {
-      p.modifyFile(existing, route, {
-        capability: "ai",
-        summary: `Enable Puck AI in ${existing}`,
-      });
-    }
+    if (withAi) planAiRoute(p, existing, cloudRoute, route, { warn: false });
     return;
   }
 

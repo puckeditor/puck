@@ -14,6 +14,7 @@ import {
   RelocateContext,
   TemplateFile,
   upgradeTemplateFile,
+  planAiRoute,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
 import { planOptimizeDeps } from "./vite";
@@ -149,18 +150,7 @@ export const planTanStackStartCloudRoute = (
   const existing = p.state.cloud.routeFile;
 
   if (existing) {
-    const current = p.vfs.readText(p.abs(existing));
-    if (withAi && current === cloudRoute) {
-      p.modifyFile(existing, route, {
-        capability: "ai",
-        summary: `Enable Puck AI in ${existing}`,
-      });
-    } else if (withAi && current !== route) {
-      p.warn(
-        "PUCK-CLI-W-AI-ROUTE",
-        `Make sure the puckHandler in ${existing} sets ai.designMode.allowed to true, or Puck AI's design mode will be rejected.`
-      );
-    }
+    if (withAi) planAiRoute(p, existing, cloudRoute, route);
     if (existing !== p.state.cloud.expectedRouteFile) {
       p.warn(
         "PUCK-CLI-W-CLOUD-ROUTE-PATH",

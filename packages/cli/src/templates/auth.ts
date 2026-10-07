@@ -101,3 +101,23 @@ export const withRouteAuth = (
 
   return auth === "puckAuth" ? importPuckAuth(next, filename, host) : next;
 };
+
+/**
+ * `next` with the same authenticate as `current`, when `current` is `base`
+ * with or without one. Lets other edits recognise routes Pages or Auth set
+ * authenticate on.
+ */
+export const withSameRouteAuth = (
+  current: string,
+  base: string,
+  next: string,
+  filename: string,
+  host?: string
+): string | null => {
+  if (current === base) return next;
+  for (const auth of ["unowned", "puckAuth"] as const) {
+    if (current === withRouteAuth(base, filename, auth, host))
+      return withRouteAuth(next, filename, auth, host);
+  }
+  return null;
+};

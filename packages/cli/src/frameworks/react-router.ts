@@ -23,6 +23,7 @@ import {
   planPuckConfig,
   RelocateContext,
   upgradeTemplateFile,
+  planAiRoute,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
 import { planOptimizeDeps } from "./vite";
@@ -222,18 +223,7 @@ export const planReactRouterCloudRoute = (
   let routeFile = p.state.cloud.routeFile;
 
   if (routeFile) {
-    const current = p.vfs.readText(p.abs(routeFile));
-    if (withAi && current === cloudRoute) {
-      p.modifyFile(routeFile, route, {
-        capability: "ai",
-        summary: `Enable Puck AI in ${routeFile}`,
-      });
-    } else if (withAi && current !== route) {
-      p.warn(
-        "PUCK-CLI-W-AI-ROUTE",
-        `Make sure the puckHandler in ${routeFile} sets ai.designMode.allowed to true, or Puck AI's design mode will be rejected.`
-      );
-    }
+    if (withAi) planAiRoute(p, routeFile, cloudRoute, route);
   } else {
     routeFile = REACT_ROUTER_CLOUD_ROUTE_FILE(info.appDir);
     const outcome = p.createFile(routeFile, route, {
