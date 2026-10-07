@@ -200,6 +200,11 @@ export class FakeCloud {
   counter = 0;
   offline = false;
   telemetryResponse: "ok" | "error" | "hang" = "ok";
+  /** Routes with a page in Puck Cloud */
+  pageRoutes = new Set<string>();
+  /** Fails this page import request (1-based) with a server error */
+  failImportAt?: number;
+  imports = 0;
 
   approveAll() {
     for (const session of this.sessions.values())
@@ -274,6 +279,21 @@ export class FakeCloud {
         keyId: "key_1",
         keyName: "Puck CLI · project · test-host",
         organization: { id: "org_1", name: "Acme" },
+      });
+    }
+
+    if (url.pathname === "/api/pages/batch" && init?.method === "POST") {
+      if (!this.validKeys.has(headers["x-api-key"]))
+        return json(401, { error: "Unauthorized" });
+      if (++this.imports === this.failImportAt)
+        return json(500, { error: "Internal server error" });
+      const routes = Object.keys((body as { pages: object }).pages);
+      const created = routes.filter((r) => !this.pageRoutes.has(r));
+      created.forEach((r) => this.pageRoutes.add(r));
+      return json(200, {
+        status: "ok",
+        created,
+        skipped: routes.filter((r) => !created.includes(r)),
       });
     }
 

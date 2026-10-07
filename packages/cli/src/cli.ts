@@ -14,6 +14,7 @@ import { runStatus } from "./commands/status";
 import { runDoctor } from "./commands/doctor";
 import { runDocs } from "./commands/docs";
 import { runFrameworks } from "./commands/frameworks";
+import { runPages } from "./commands/pages";
 import { runTelemetry } from "./commands/telemetry";
 import type { Telemetry } from "./telemetry/consent";
 import { loadTelemetry } from "./telemetry/consent";
@@ -148,6 +149,7 @@ export const runCli = async (
       result = await runFrameworks(rc, positionals);
     else if (command === "telemetry")
       result = await runTelemetry(rc, positionals);
+    else if (command === "pages") result = await runPages(rc, positionals);
     else result = await runDoctor(rc);
   } catch (err) {
     result = errorResult(command, err, flags.dryRun);

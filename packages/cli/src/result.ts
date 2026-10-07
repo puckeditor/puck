@@ -14,6 +14,7 @@ export type CommandName =
   | "docs"
   | "frameworks"
   | "telemetry"
+  | "pages"
   | "help";
 
 export type ResultStatus = "success" | "action_required" | "partial" | "error";
@@ -217,6 +218,17 @@ export interface CommandResult {
     pages?: DocEntry[];
     page?: DocEntry & { content: string };
     matches?: { path: string; line: number; text: string }[];
+  };
+  /** Present on `puck pages import` */
+  pagesImport?: {
+    /** The imported file, relative to where the command ran */
+    file: string;
+    total: number;
+    created: string[];
+    /** Routes that already had a page in Puck Cloud */
+    skipped: string[];
+    /** Routes not sent because an earlier batch failed */
+    notImported: string[];
   };
   /** Present on `puck telemetry` */
   telemetry?: {
