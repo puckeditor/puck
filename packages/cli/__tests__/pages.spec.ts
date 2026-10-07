@@ -1,8 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { exists, read, readRecipe, run, tmpProject } from "./helpers/harness";
-import { viteMinimal } from "./helpers/fixtures";
+import { astroMinimal, viteMinimal } from "./helpers/fixtures";
 import {
+  ASTRO_PAGES_API,
+  ASTRO_PAGES_CATCH_ALL,
+  astroPagesEditorPage,
+  astroPagesLib,
   cloudPagesServer,
   honoPublishedPages,
   vitePagesEditor,
@@ -315,6 +319,59 @@ describe("add pages", () => {
         vitePagesEditor({ ai: false })
       );
       expect(exists(root, "server")).toBe(false);
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-PAGES");
+    });
+  });
+
+  describe("astro", () => {
+    it("edits at /puck and renders published pages", async () => {
+      const root = tmpProject({ recipe: "astro" });
+      const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/pages/[...puckPath].astro")).toBe(
+        ASTRO_PAGES_CATCH_ALL
+      );
+      expect(read(root, "src/pages/puck.astro")).toBe(
+        astroPagesEditorPage({ server: true, auth: false })
+      );
+      expect(read(root, "src/lib/pages.ts")).toBe(astroPagesLib());
+      expect(read(root, "src/pages/api/pages.ts")).toBe(ASTRO_PAGES_API);
+      expect(read(root, "src/puck/editor.tsx")).toBe(
+        vitePagesEditor({ ai: false })
+      );
+
+      const again = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(again.json.changed).toBe(false);
+    });
+
+    it("serves a static editor when Puck Cloud is elsewhere", async () => {
+      const root = tmpProject({ tree: astroMinimal() });
+      await run(
+        [
+          "add",
+          "editor",
+          "--backend",
+          "external",
+          "--backend-url",
+          "http://localhost:3000",
+          "--yes",
+          "--json",
+        ],
+        { cwd: root }
+      );
+      const { json } = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/pages/puck.astro")).toBe(
+        astroPagesEditorPage({ server: false, auth: false })
+      );
       expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-PAGES");
     });
   });

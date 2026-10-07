@@ -490,7 +490,7 @@ export function PuckRoot({ children }: { children: ReactNode }) {
 }
 `;
 
-/** Vite: src/puck/editor.tsx */
+/** Vite and Astro: src/puck/editor.tsx */
 export const vitePagesEditor = ({ ai }: { ai: boolean }) => `import { Puck${
   ai ? ", blocksPlugin, outlinePlugin" : ""
 } } from "@puckeditor/core";
@@ -536,4 +536,110 @@ export const puckPages = new Hono().get("/api/pages", async (c) => {
 
   return page ? c.json(page) : c.json({ error: "Not found" }, 404);
 });
+`;
+
+// Astro doesn't put .env files in process.env, where cloud-client reads them
+const ASTRO_LOAD_ENV = `// Astro doesn't put .env files in process.env, where cloud-client reads
+// PUCK_API_KEY. Production servers read it from their environment.
+if (import.meta.env.DEV && fs.existsSync(".env.local"))
+  process.loadEnvFile(".env.local");`;
+
+/** Astro: src/lib/pages.ts */
+export const astroPagesLib = (host?: string) => `import fs from "node:fs";
+import { getPage as getPublishedPage } from "@puckeditor/cloud-client";
+
+${ASTRO_LOAD_ENV}
+
+// Pages are edited and published in Puck Cloud
+export const getPage = (path: string) => getPublishedPage(${getPageArgs(host)});
+`;
+
+/** Astro: src/pages/api/pages.ts, for the pages the site renders */
+export const ASTRO_PAGES_API = `// Serves pages published in Puck Cloud
+import type { APIRoute } from "astro";
+import { getPage } from "../../lib/pages";
+
+export const prerender = false;
+
+export const GET: APIRoute = async ({ url }) => {
+  const page = await getPage(url.searchParams.get("path") ?? "/");
+  return page
+    ? Response.json(page)
+    : Response.json({ error: "Not found" }, { status: 404 });
+};
+`;
+
+/** Astro: src/pages/[...puckPath].astro, which renders published pages */
+export const ASTRO_PAGES_CATCH_ALL = `---
+import { getPage } from "../lib/pages";
+import { resolvePuckPath } from "../lib/resolve-puck-path";
+import PuckRender from "../puck/render";
+
+// Pages are loaded when requested, so published changes show up immediately
+export const prerender = false;
+
+const { isEditorRoute, path } = resolvePuckPath(Astro.url.pathname);
+
+// Pages are edited at /puck, which opens the page in the path parameter
+if (isEditorRoute)
+  return Astro.redirect(\`/puck?path=\${encodeURIComponent(path)}\`);
+
+const page = await getPage(path);
+
+if (!page) return new Response(null, { status: 404 });
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{page.root.props?.title}</title>
+  </head>
+  <body>
+    <PuckRender data={page} />
+  </body>
+</html>
+`;
+
+/**
+ * Astro: src/pages/puck.astro, the editor. Rendered on request with a server,
+ * where it can require Sign in with Puck, or a static page without one.
+ */
+export const astroPagesEditorPage = ({
+  server,
+  auth,
+}: {
+  server: boolean;
+  auth: boolean;
+}) => `---
+// The Puck editor, which opens the page in the path parameter, e.g. /puck?path=/about
+${
+  auth ? `import { puckSignInUrl } from "../lib/puck-auth";\n` : ""
+}import Editor from "../puck/editor";
+${
+  server
+    ? `
+export const prerender = false;
+`
+    : ""
+}${
+  auth
+    ? `
+// Editing requires Sign in with Puck
+const signIn = await puckSignInUrl(Astro.request);
+if (signIn) return Astro.redirect(signIn);
+`
+    : ""
+}---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Puck</title>
+  </head>
+  <body style="margin: 0">
+    <Editor client:only="react" />
+  </body>
+</html>
 `;

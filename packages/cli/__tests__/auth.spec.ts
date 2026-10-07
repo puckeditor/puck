@@ -2,8 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { exists, read, run, tmpProject } from "./helpers/harness";
 import { viteMinimal } from "./helpers/fixtures";
-import { nextPagesEditorPage, vitePagesRoot } from "../src/templates/pages";
 import {
+  astroPagesEditorPage,
+  nextPagesEditorPage,
+  vitePagesRoot,
+} from "../src/templates/pages";
+import {
+  astroPuckAuth,
   nextPuckAuth,
   REQUIRE_SESSION,
   reactRouterPuckAuth,
@@ -288,6 +293,32 @@ export const POST = GET;
       expect(json.status).toBe("success");
       expect(exists(root, "server")).toBe(false);
       expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-AUTH");
+    });
+  });
+
+  describe("astro", () => {
+    it("redirects signed-out visitors from the editor", async () => {
+      const root = tmpProject({ recipe: "astro" });
+      const { json } = await run(["add", "auth", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/lib/puck-auth.ts")).toBe(astroPuckAuth());
+      expect(read(root, "src/pages/[...puckPath].astro")).toContain(
+        "const signIn = isEditorRoute ? await puckSignInUrl(Astro.request) : null;"
+      );
+      expect(read(root, "src/puck/editor.tsx")).toContain(
+        "plugins={[authPlugin]}"
+      );
+
+      const pages = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(pages.json.status).toBe("success");
+      expect(read(root, "src/pages/puck.astro")).toBe(
+        astroPagesEditorPage({ server: true, auth: true })
+      );
     });
   });
 });

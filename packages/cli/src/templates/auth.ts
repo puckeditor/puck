@@ -220,3 +220,24 @@ export function RequireSession({ children }: { children: ReactNode }) {
   return signedIn ? children : null;
 }
 `;
+
+/** Astro: src/lib/puck-auth.ts */
+export const astroPuckAuth = (host?: string) => {
+  const setup = puckAuthSetup(host);
+  return `import fs from "node:fs";
+${setup.imports}
+
+// Astro doesn't put .env files in process.env, where Sign in with Puck reads
+// its settings. Production servers read them from their environment.
+if (import.meta.env.DEV && fs.existsSync(".env.local"))
+  process.loadEnvFile(".env.local");
+${setup.create}
+/** Where to send visitors who aren't signed in with Puck, or null if they are */
+export const puckSignInUrl = async (request: Request) => {
+  if (await puckAuth.getSession(request.headers)) return null;
+
+  const url = new URL(request.url);
+  return puckAuth.loginUrl(\`\${url.pathname}\${url.search}\`);
+};
+`;
+};

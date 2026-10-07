@@ -9,6 +9,20 @@ import { withCloudHost, withoutAiOptions } from "../templates/cloud";
 import { ASTRO_EDITOR_PAGE, LOCAL_PAGES_MODULE } from "../templates/client";
 import { ENV_KEY } from "../constants";
 import {
+  ASTRO_PAGES_API,
+  ASTRO_PAGES_CATCH_ALL,
+  astroPagesEditorPage,
+  astroPagesLib,
+  vitePagesEditor,
+} from "../templates/pages";
+import { astroPuckAuth } from "../templates/auth";
+import {
+  planAuthPlugin,
+  planRouteAuth,
+  warnLocalPages,
+  withAuthPlugin,
+} from "./pages-auth";
+import {
   configModuleTarget,
   configRelocation,
   copyTemplateFiles,
@@ -18,6 +32,8 @@ import {
   TemplateFile,
   upgradeTemplateFile,
   planAiRoute,
+  flagCombos,
+  upgradeVariant,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
 
@@ -281,10 +297,12 @@ export const planAstroAi = (p: Planner) => {
       summary,
     });
 
-  const editor = upgrade(
-    "src/puck/editor.tsx",
-    "Add the Puck AI plugin to src/puck/editor.tsx"
-  );
+  const editor = upgradeVariant(p, {
+    ...editorVariants(p),
+    want: { ai: true },
+    capability: "ai",
+    summary: `Add the Puck AI plugin to ${EDITOR}`,
+  });
   if (editor === "upgraded" || editor === "already") {
     upgrade(
       "src/puck/render.tsx",
@@ -305,6 +323,234 @@ export const planAstroAi = (p: Planner) => {
     instructions: `Add the Puck AI plugin to the <Puck> editor in ${file}, import "@puckeditor/plugin-ai/styles.css", and wrap the config with withDynamicConfig wherever you <Render> Puck pages.`,
     snippet: AI_SNIPPET,
   });
+};
+
+const EDITOR = "src/puck/editor.tsx";
+const CATCH_ALL_PAGE = "src/pages/[...puckPath].astro";
+const PAGES_EDITOR = "src/pages/puck.astro";
+const PAGES_LIB = "src/lib/pages.ts";
+const PAGES_API = "src/pages/api/pages.ts";
+
+type Flags = { ai: boolean; pages: boolean; auth: boolean };
+
+/** Every version of editor.tsx the CLI writes */
+const editorVariants = (p: Planner) => ({
+  from: EDITOR,
+  to: EDITOR,
+  opts: astroRelocation(p),
+  combos: flagCombos("ai", "pages", "auth"),
+  source: ({ ai, pages, auth }: Flags) => {
+    const code = pages
+      ? vitePagesEditor({ ai })
+      : templateText(p.templates, ai ? "astro-ai" : "astro", EDITOR);
+    return auth ? withAuthPlugin(code, EDITOR) : code;
+  },
+});
+
+/** Gates the recipe's editor behind Sign in with Puck */
+const gateRecipeCatchAll = (code: string) => {
+  const resolved =
+    "const { isEditorRoute, path } = resolvePuckPath(Astro.url.pathname);";
+  return code
+    .replace(
+      resolved,
+      `${resolved}
+
+// Editing requires Sign in with Puck
+const signIn = isEditorRoute ? await puckSignInUrl(Astro.request) : null;
+if (signIn) return Astro.redirect(signIn);
+`
+    )
+    .replace(
+      'import { getPage } from "../lib/pages";',
+      'import { getPage } from "../lib/pages";\nimport { puckSignInUrl } from "../lib/puck-auth";'
+    );
+};
+
+/** Every version of [...puckPath].astro the CLI writes */
+const catchAllVariants = (p: Planner) => ({
+  from: CATCH_ALL_PAGE,
+  to: CATCH_ALL_PAGE,
+  opts: astroRelocation(p),
+  combos: flagCombos("pages", "auth"),
+  source: ({ pages, auth }: Omit<Flags, "ai">) => {
+    // With Pages, the editor is in puck.astro
+    if (pages) return ASTRO_PAGES_CATCH_ALL;
+    const code = templateText(p.templates, "astro", CATCH_ALL_PAGE);
+    return auth ? gateRecipeCatchAll(code) : code;
+  },
+});
+
+/** Every version of the Pages editor page, puck.astro */
+const pagesEditorVariants = (p: Planner, server: boolean) => ({
+  from: PAGES_EDITOR,
+  to: PAGES_EDITOR,
+  opts: astroRelocation(p),
+  combos: flagCombos("auth"),
+  source: ({ auth }: { auth: boolean }) =>
+    astroPagesEditorPage({ server, auth }),
+});
+
+/** Edits at /puck with the Pages plugin, and renders published pages */
+export const planAstroPages = (p: Planner, info: AstroInfo) => {
+  const mode = modeOf(p, info);
+  const onServer = mode === "local" || mode === "add";
+  const manual = (file: string, snippet: string) =>
+    p.manual({
+      id: `pages:${file}`,
+      type: "manual_edit",
+      capability: "pages",
+      required: true,
+      file,
+      reason: "unsupported_shape",
+      message: `${file} was customised or moved, so it wasn't changed to use Puck Pages.`,
+      instructions: `Update ${file} to match this version, which uses pages stored in Puck Cloud.`,
+      snippet,
+    });
+  const ok = (outcome: string) =>
+    outcome === "upgraded" || outcome === "already";
+  const want = { pages: true };
+
+  if (
+    !ok(
+      upgradeVariant(p, {
+        ...editorVariants(p),
+        want,
+        capability: "pages",
+        summary: `Add the Puck Pages plugin to ${EDITOR}`,
+      })
+    )
+  )
+    manual(EDITOR, vitePagesEditor({ ai: false }));
+
+  let auth = false;
+  if (onServer) {
+    const catchAll = upgradeVariant(p, {
+      ...catchAllVariants(p),
+      want,
+      capability: "pages",
+      summary: `Render pages published in Puck Cloud in ${CATCH_ALL_PAGE}`,
+      onMatch: (flags) => (auth = flags.auth),
+    });
+    if (!ok(catchAll)) manual(CATCH_ALL_PAGE, ASTRO_PAGES_CATCH_ALL);
+
+    // The recipe's /api/pages saves pages with lib/pages.ts, so it changes first
+    const api = upgradeVariant(p, {
+      from: PAGES_API,
+      to: PAGES_API,
+      opts: astroRelocation(p),
+      combos: [{ pages: false }, { pages: true }],
+      source: ({ pages }) =>
+        pages ? ASTRO_PAGES_API : templateText(p.templates, "astro", PAGES_API),
+      want,
+      capability: "pages",
+      summary: `Serve pages published in Puck Cloud from ${PAGES_API}`,
+    });
+    if (ok(api) || api === "missing") {
+      const lib = upgradeVariant(p, {
+        from: PAGES_LIB,
+        to: PAGES_LIB,
+        opts: astroRelocation(p),
+        combos: [{ pages: false }, { pages: true }],
+        source: ({ pages }) =>
+          pages
+            ? astroPagesLib(p.cloudHost)
+            : templateText(p.templates, "astro", PAGES_LIB),
+        want,
+        capability: "pages",
+        summary: `Read published pages from Puck Cloud in ${PAGES_LIB}`,
+      });
+      if (!ok(lib)) manual(PAGES_LIB, astroPagesLib(p.cloudHost));
+    } else {
+      manual(PAGES_API, ASTRO_PAGES_API);
+      manual(PAGES_LIB, astroPagesLib(p.cloudHost));
+    }
+
+    planRouteAuth(p, "unowned", "pages");
+    warnLocalPages(p);
+  } else {
+    p.warn(
+      "PUCK-CLI-W-EXTERNAL-PAGES",
+      `Pages are loaded from ${
+        p.backend?.url ?? "the server /api is proxied to"
+      }. Run \`npx @puckeditor/cli add pages\` in that server's project, so /api/pages serves pages published in Puck Cloud.`
+    );
+  }
+
+  const page = astroPagesEditorPage({ server: onServer, auth });
+  if (
+    p.createFile(PAGES_EDITOR, page, {
+      capability: "pages",
+      summary: `Create ${PAGES_EDITOR} (the Puck Pages editor)`,
+    }) === "conflict"
+  )
+    manual(PAGES_EDITOR, page);
+};
+
+/** Requires Sign in with Puck to edit, and for the Cloud route */
+export const planAstroAuth = (p: Planner, info: AstroInfo) => {
+  const mode = modeOf(p, info);
+  const onServer = mode === "local" || mode === "add";
+
+  if (onServer) {
+    const helper = "src/lib/puck-auth.ts";
+    if (
+      p.createFile(helper, astroPuckAuth(p.cloudHost), {
+        capability: "auth",
+        summary: `Create ${helper} (requires Sign in with Puck)`,
+      }) === "conflict"
+    ) {
+      p.manual({
+        id: "auth:helper",
+        type: "manual_edit",
+        capability: "auth",
+        required: true,
+        file: helper,
+        reason: "conflict",
+        message: `${helper} already exists with different content.`,
+        instructions: `Export puckSignInUrl from ${helper}, or move your file and re-run the command.`,
+        snippet: astroPuckAuth(p.cloudHost),
+      });
+    }
+
+    // With Pages, the editor is its own page
+    const pagesEditor = p.vfs.exists(p.abs(PAGES_EDITOR));
+    const upgrade = {
+      want: { auth: true },
+      capability: "auth" as const,
+      summary: `Require Sign in with Puck in ${
+        pagesEditor ? PAGES_EDITOR : CATCH_ALL_PAGE
+      }`,
+    };
+    const gate = pagesEditor
+      ? upgradeVariant(p, { ...pagesEditorVariants(p, true), ...upgrade })
+      : upgradeVariant(p, { ...catchAllVariants(p), ...upgrade });
+    if (gate === "customized" || gate === "missing") {
+      p.manual({
+        id: "auth:editor-gate",
+        type: "manual_edit",
+        capability: "auth",
+        required: false,
+        file: pagesEditor ? PAGES_EDITOR : CATCH_ALL_PAGE,
+        reason: "unsupported_shape",
+        message:
+          "Your editor page was customised, so it doesn't send signed-out visitors to sign in.",
+        instructions:
+          "Redirect to puckSignInUrl in the frontmatter of the page that renders your editor. The Puck Cloud API route already requires Sign in with Puck.",
+        snippet: `import { puckSignInUrl } from "../lib/puck-auth";\n\nconst signIn = await puckSignInUrl(Astro.request);\nif (signIn) return Astro.redirect(signIn);\n`,
+      });
+    }
+    planRouteAuth(p, "puckAuth", "auth");
+  } else {
+    p.warn(
+      "PUCK-CLI-W-EXTERNAL-AUTH",
+      `Puck Cloud requests go to ${
+        p.backend?.url ?? "the server /api is proxied to"
+      }. Run \`npx @puckeditor/cli add auth\` in that server's project to require Sign in with Puck there.`
+    );
+  }
+
+  planAuthPlugin(p, EDITOR);
 };
 
 export const astroAdapter: FrameworkAdapter<AstroInfo> = {
@@ -331,6 +577,8 @@ export const astroAdapter: FrameworkAdapter<AstroInfo> = {
   planEditor: planAstroEditor,
   planCloudRoute: planAstroCloudRoute,
   planAi: (p) => planAstroAi(p),
+  planPages: planAstroPages,
+  planAuth: planAstroAuth,
   devUrl: "http://localhost:4321/edit",
   deployEnvWarning: `.env.local is only loaded in development. Set ${ENV_KEY} in the environment wherever the Astro server runs.`,
 };
