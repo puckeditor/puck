@@ -9,7 +9,7 @@ import {
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
-import { versionOf } from "../detect/package-json";
+import { atLeast } from "../detect/package-json";
 
 /**
  * In the order they're planned. Puck AI comes before Pages and Auth, which
@@ -53,9 +53,7 @@ export const resolveCapabilities = (
 /** Pages and Sign in with Puck need a newer cloud-client than Puck AI */
 const planCloudClientUpgrade = (p: Planner, capability: CapabilityId) => {
   const range = p.templates.manifest().cloudClientPagesRange;
-  const [major, minor] = versionOf(p.state.cloud.declaredRange) ?? [0, 0];
-  const [minMajor, minMinor] = versionOf(range)!;
-  if (major > minMajor || (major === minMajor && minor >= minMinor)) return;
+  if (atLeast(p.state.cloud.declaredRange, range)) return;
   p.addDependency(CLOUD_CLIENT_PACKAGE, range, capability);
 };
 

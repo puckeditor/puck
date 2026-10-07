@@ -4,6 +4,8 @@ import type { ProjectState } from "../detect/state";
 import { adapterFor } from "../frameworks";
 import type {
   AiSummary,
+  AuthSummary,
+  PagesSummary,
   CapabilityId,
   CloudSummary,
   ProjectSummary,
@@ -71,4 +73,22 @@ export const cloudSummary = (
 export const aiSummary = (state: ProjectState): AiSummary => ({
   installed: state.ai.installed,
   configured: capabilityStatus(state).ai.satisfied,
+});
+
+/** A server serves published pages; an app has the editor plugin */
+export const pagesSummary = (state: ProjectState): PagesSummary => ({
+  installed:
+    state.target === "server"
+      ? state.scan.cloudPageFiles.length > 0
+      : state.pages.pluginInstalled,
+  configured: capabilityStatus(state).pages.satisfied,
+});
+
+/** A server requires Sign in with Puck; an app has the editor plugin */
+export const authSummary = (state: ProjectState): AuthSummary => ({
+  installed:
+    state.target === "server"
+      ? state.auth.routeAuthenticated
+      : state.auth.pluginInstalled,
+  configured: capabilityStatus(state).auth.satisfied,
 });

@@ -73,6 +73,16 @@ export const versionOf = (
   return match ? [Number(match[1]), Number(match[2] ?? 0)] : null;
 };
 
+/** Whether a version or range starts at `min`'s major.minor or later */
+export const atLeast = (
+  versionOrRange: string | null | undefined,
+  min: string
+) => {
+  const [major, minor] = versionOf(versionOrRange) ?? [0, 0];
+  const [minMajor, minMinor] = versionOf(min) ?? [0, 0];
+  return major > minMajor || (major === minMajor && minor >= minMinor);
+};
+
 /** The major version from a version or range, e.g. "^16.2.1" → 16 */
 export const majorOf = (
   versionOrRange: string | null | undefined

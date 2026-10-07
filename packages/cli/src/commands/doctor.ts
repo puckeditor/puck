@@ -8,6 +8,8 @@ import { capabilityStatus, detectState } from "../detect/state";
 import { isIgnored } from "../env/gitignore";
 import {
   aiSummary,
+  authSummary,
+  pagesSummary,
   cloudSummary,
   displayPath,
   projectSummary,
@@ -17,9 +19,13 @@ import { FRAMEWORK_LABELS } from "../detect/framework";
 import { baseDir, resolveTarget } from "./target";
 import {
   CANONICAL_INVOCATION,
+  CLOUD_CLIENT_PACKAGE,
   ENV_KEY,
   MANUAL_INTEGRATION_DOCS_URL,
+  PLUGIN_AUTH_PACKAGE,
+  PLUGIN_PAGES_PACKAGE,
 } from "../constants";
+import { atLeast } from "../detect/package-json";
 
 const finding = (
   check: string,
@@ -393,6 +399,95 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
     }
   }
 
+  // Puck Pages and Puck Auth, once they're in use
+  const usesPages =
+    state.pages.pluginInstalled || state.scan.cloudPageFiles.length > 0;
+  const usesAuth =
+    state.auth.pluginInstalled || state.scan.puckAuthFiles.length > 0;
+  const plugin = (
+    capability: "pages" | "auth",
+    pkg: string,
+    factory: string,
+    files: string[]
+  ) => {
+    if (state.target !== "app") return;
+    findings.push(
+      files.length
+        ? finding(`${capability}.plugin_configured`, "ok", files.join(", "))
+        : finding(
+            `${capability}.plugin_configured`,
+            "fail",
+            `${factory} from ${pkg} isn't used in the editor`,
+            `${CANONICAL_INVOCATION} add ${capability}${where}`
+          )
+    );
+  };
+
+  if (usesPages) {
+    plugin(
+      "pages",
+      PLUGIN_PAGES_PACKAGE,
+      "createPagesPlugin",
+      state.scan.pagesPluginFiles
+    );
+    if (!state.cloud.external) {
+      findings.push(
+        state.scan.cloudPageFiles.length
+          ? finding("pages.render", "ok", state.scan.cloudPageFiles.join(", "))
+          : finding(
+              "pages.render",
+              "warn",
+              "Nothing reads published pages from Puck Cloud with getPage",
+              `${CANONICAL_INVOCATION} add pages${where}`
+            )
+      );
+    }
+  }
+
+  if (usesAuth) {
+    plugin(
+      "auth",
+      PLUGIN_AUTH_PACKAGE,
+      "createAuthPlugin",
+      state.scan.authPluginFiles
+    );
+    if (!state.cloud.external) {
+      findings.push(
+        state.auth.routeAuthenticated
+          ? finding(
+              "auth.route",
+              "ok",
+              `${state.cloud.routeFile} requires Sign in with Puck`
+            )
+          : finding(
+              "auth.route",
+              "fail",
+              "The Puck Cloud API route doesn't use Sign in with Puck",
+              `${CANONICAL_INVOCATION} add auth${where}`
+            )
+      );
+    }
+  }
+
+  // Pages and Sign in with Puck arrived in a newer cloud-client
+  if ((usesPages || usesAuth) && state.cloud.clientInstalled) {
+    const min = rc.deps.templates.manifest().cloudClientPagesRange;
+    findings.push(
+      atLeast(state.cloud.declaredRange, min)
+        ? finding(
+            "cloud.client_version",
+            "ok",
+            `${CLOUD_CLIENT_PACKAGE} ${state.cloud.declaredRange}`
+          )
+        : finding(
+            "cloud.client_version",
+            "fail",
+            `${CLOUD_CLIENT_PACKAGE} ${state.cloud.declaredRange} doesn't have Puck Pages or Sign in with Puck`,
+            `npm install ${CLOUD_CLIENT_PACKAGE}@${min}`
+          )
+    );
+  }
+
   let verified: "remote" | "local" | "failed" | "none" = status.cloud.satisfied
     ? "local"
     : "none";
@@ -437,5 +532,7 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
   result.puck = puckSummary(state);
   result.cloud = cloudSummary(state, verified);
   result.ai = aiSummary(state);
+  result.pages = pagesSummary(state);
+  result.auth = authSummary(state);
   return finish();
 };

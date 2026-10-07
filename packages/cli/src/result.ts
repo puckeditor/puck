@@ -159,6 +159,16 @@ export interface AiSummary {
   configured: boolean;
 }
 
+export interface PagesSummary {
+  installed: boolean;
+  configured: boolean;
+}
+
+export interface AuthSummary {
+  installed: boolean;
+  configured: boolean;
+}
+
 export interface FrameworkSupport {
   /** The value for `--framework` */
   id: FrameworkId;
@@ -186,6 +196,8 @@ export interface CommandResult {
   puck: PuckSummary | null;
   cloud: CloudSummary | null;
   ai: AiSummary | null;
+  pages: PagesSummary | null;
+  auth: AuthSummary | null;
   plan?: { steps: SerializedStep[] };
   filesModified: string[];
   filesCreated: string[];
@@ -228,6 +240,8 @@ export const emptyResult = (
   puck: null,
   cloud: null,
   ai: null,
+  pages: null,
+  auth: null,
   filesModified: [],
   filesCreated: [],
   packagesInstalled: [],

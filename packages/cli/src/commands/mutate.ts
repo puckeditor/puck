@@ -28,6 +28,8 @@ import { resolveCredential, CredentialResolution } from "../auth/credentials";
 import { applyPlan } from "../apply/applier";
 import {
   aiSummary,
+  authSummary,
+  pagesSummary,
   capabilityLabels,
   cloudSummary,
   displayPath,
@@ -192,6 +194,8 @@ export const runMutation = async (
     result.puck = puckSummary(state);
     result.cloud = cloudSummary(state, "none");
     result.ai = aiSummary(state);
+    result.pages = pagesSummary(state);
+    result.auth = authSummary(state);
   };
 
   const finishWithoutChanges = (
@@ -382,6 +386,8 @@ export const runMutation = async (
   result.puck = puckSummary(verifiedState);
   result.cloud = cloudSummary(verifiedState, verified);
   result.ai = aiSummary(verifiedState);
+  result.pages = pagesSummary(verifiedState);
+  result.auth = authSummary(verifiedState);
   result.plan = { steps: serializeSteps(base, planner.steps) };
   result.changed = planner.steps.length > 0;
   result.filesCreated = outcome.created.map((f) => displayPath(base, f)).sort();

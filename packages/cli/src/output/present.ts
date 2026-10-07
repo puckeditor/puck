@@ -133,6 +133,23 @@ const statusTable = (result: CommandResult) => {
         : pc.dim("not installed"),
     ]);
   }
+  // Shown once they're in use, as most apps don't need them
+  if (result.pages?.installed) {
+    rows.push([
+      "Puck Pages",
+      result.pages.configured
+        ? pc.green("configured")
+        : pc.yellow("installed, not set up"),
+    ]);
+  }
+  if (result.auth?.installed) {
+    rows.push([
+      "Puck Auth",
+      result.auth.configured
+        ? pc.green("configured")
+        : pc.yellow("installed, not set up"),
+    ]);
+  }
   const width = Math.max(...rows.map(([k]) => k.length), 0) + 2;
   return rows.map(([k, v]) => `${k.padEnd(width)}${v}`);
 };

@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { run, tmpProject, treeSnapshot, FakeCloud } from "./helpers/harness";
 import { nextMinimal, nextPages } from "./helpers/fixtures";
 
@@ -137,5 +139,66 @@ describe("arguments", () => {
   it("prints the version", async () => {
     const { stdout } = await run(["--version"], { cwd: tmpProject("empty") });
     expect(stdout).toBe("0.23.0\n");
+  });
+});
+
+describe("Puck Pages and Puck Auth", () => {
+  const KEY = ["--api-key", "sk-valid-key"];
+
+  it("reports Pages, and suggests Auth until it's added", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "pages", "--yes", "--json", ...KEY], { cwd: root });
+
+    const pages = await run(["status", "--json"], { cwd: root });
+    expect(pages.json.pages).toEqual({ installed: true, configured: true });
+    expect(pages.json.auth).toEqual({ installed: false, configured: false });
+    expect(pages.json.nextSteps).toContain("npx @puckeditor/cli add auth");
+
+    await run(["add", "auth", "--yes", "--json"], { cwd: root });
+    const both = await run(["status", "--json"], { cwd: root });
+    expect(both.json.auth).toEqual({ installed: true, configured: true });
+    expect(both.json.nextSteps).not.toContain("npx @puckeditor/cli add auth");
+
+    const { stdout } = await run(["status"], { cwd: root });
+    expect(stdout).toMatch(/Puck Pages\s+configured/);
+    expect(stdout).toMatch(/Puck Auth\s+configured/);
+  });
+
+  it("checks them in doctor", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "pages", "auth", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    const { json } = await run(["doctor", "--json", "--offline"], {
+      cwd: root,
+    });
+    expect(checks(json.findings)).toMatchObject({
+      "pages.plugin_configured": "ok",
+      "pages.render": "ok",
+      "auth.plugin_configured": "ok",
+      "auth.route": "ok",
+      "cloud.client_version": "ok",
+    });
+  });
+
+  it("fails doctor when the Cloud route doesn't require Sign in", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "pages", "auth", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+    const route = path.join(root, "app/api/puck/[...all]/route.ts");
+    fs.writeFileSync(
+      route,
+      fs
+        .readFileSync(route, "utf8")
+        .replace(/import \{ puckAuth \}.*\n/, "")
+        .replace("authenticate: puckAuth", "authenticate: () => ({ id: null })")
+    );
+
+    const { json } = await run(["doctor", "--json", "--offline"], {
+      cwd: root,
+    });
+    expect(checks(json.findings)["auth.route"]).toBe("fail");
   });
 });
