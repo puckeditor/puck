@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { exists, read, readRecipe, run, tmpProject } from "./helpers/harness";
-import { astroMinimal, viteMinimal } from "./helpers/fixtures";
+import { astroMinimal, nextMinimal, viteMinimal } from "./helpers/fixtures";
 import {
   ASTRO_PAGES_API,
   ASTRO_PAGES_CATCH_ALL,
@@ -397,5 +397,69 @@ describe("add pages", () => {
       });
       expect(again.json.changed).toBe(false);
     });
+  });
+});
+
+describe("init --pages --auth", () => {
+  it("scaffolds an app that edits pages in Puck Cloud", async () => {
+    const root = tmpProject("empty");
+    const { json, runner } = await run(
+      [
+        "init",
+        "--ai",
+        "--pages",
+        "--auth",
+        "--framework",
+        "next",
+        "--name",
+        "site",
+        "--yes",
+        "--json",
+        ...KEY,
+      ],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(json.message).toBe(
+      "Set up Puck Editor, Puck Cloud, Puck AI, Puck Pages and Puck Auth."
+    );
+    const app = path.join(root, "site");
+    expect(runner.calls).toEqual([
+      { command: "npm", args: ["install"], cwd: app },
+    ]);
+    const pkg = JSON.parse(read(app, "package.json"));
+    expect(pkg.dependencies).toMatchObject({
+      "@puckeditor/cloud-client": "^0.9.0-0",
+      "@puckeditor/plugin-pages": "^0.9.0-0",
+      "@puckeditor/plugin-auth": "^0.9.0-0",
+    });
+    expect(read(app, "app/puck/[...puckPath]/page.tsx")).toBe(
+      nextPagesEditorPage({ ai: true, auth: true })
+    );
+    expect(json.pages).toEqual({ installed: true, configured: true });
+    expect(json.auth).toEqual({ installed: true, configured: true });
+  });
+
+  it("adds them to an existing app", async () => {
+    const root = tmpProject({ tree: nextMinimal() });
+    const { json } = await run(
+      ["init", "--no-ai", "--pages", "--yes", "--json", ...KEY],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(json.plan?.steps.map((s) => s.summary)).toContain(
+      "Create app/puck/[...puckPath]/client.tsx"
+    );
+    // Created as the Pages editor, not created then edited
+    expect(
+      json.plan?.steps.some(
+        (s) => s.path?.endsWith("client.tsx") && s.kind === "modify_file"
+      )
+    ).toBe(false);
+    expect(read(root, "app/puck/[...puckPath]/client.tsx")).toBe(
+      nextPagesEditorClient({ ai: false })
+    );
   });
 });

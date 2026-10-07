@@ -49,9 +49,14 @@ const chooseCapabilities = async (
   alreadySetUp: boolean,
   server: boolean
 ): Promise<CapabilityId[] | null> => {
-  if (rc.flags.ai) return ["editor", "ai"];
-  if (rc.flags.noAi) return ["editor"];
-  if (alreadySetUp) return ["editor", "ai"];
+  // Puck Pages and Puck Auth are opt-in, alongside the choice of Puck AI
+  const extras: CapabilityId[] = [
+    ...(rc.flags.pages ? (["pages"] as const) : []),
+    ...(rc.flags.auth ? (["auth"] as const) : []),
+  ];
+  if (rc.flags.ai) return ["editor", "ai", ...extras];
+  if (rc.flags.noAi) return ["editor", ...extras];
+  if (alreadySetUp) return ["editor", "ai", ...extras];
   if (!rc.interactive) return null;
   const withAi = await rc.prompter.confirm(
     server
@@ -59,7 +64,7 @@ const chooseCapabilities = async (
       : "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
     false
   );
-  return withAi ? ["editor", "ai"] : ["editor"];
+  return withAi ? ["editor", "ai", ...extras] : ["editor", ...extras];
 };
 
 const AI_CHOICE_FLAGS = "<--ai|--no-ai>";

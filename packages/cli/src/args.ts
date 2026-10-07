@@ -24,6 +24,8 @@ export interface Flags {
   offline: boolean;
   ai: boolean;
   noAi: boolean;
+  pages: boolean;
+  auth: boolean;
   backend?: BackendChoice;
   backendUrl?: string;
 }
@@ -57,6 +59,8 @@ const OPTIONS = {
   offline: { type: "boolean" },
   ai: { type: "boolean" },
   "no-ai": { type: "boolean" },
+  pages: { type: "boolean" },
+  auth: { type: "boolean" },
   backend: { type: "string" },
   "backend-url": { type: "string" },
 } as const;
@@ -83,7 +87,16 @@ const MUTATING: OptionName[] = [
 ];
 
 export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
-  init: [...GLOBAL, ...MUTATING, "framework", "name", "ai", "no-ai"],
+  init: [
+    ...GLOBAL,
+    ...MUTATING,
+    "framework",
+    "name",
+    "ai",
+    "no-ai",
+    "pages",
+    "auth",
+  ],
   add: [...GLOBAL, ...MUTATING],
   connect: [...GLOBAL, "api-key", "config", "wait"],
   status: ["json", "help", "version", "cwd", "workspace", "config"],
@@ -211,6 +224,8 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       offline: Boolean(values.offline),
       ai: Boolean(values.ai),
       noAi: Boolean(values["no-ai"]),
+      pages: Boolean(values.pages),
+      auth: Boolean(values.auth),
       backend: backend as BackendChoice | undefined,
       backendUrl: backendUrl?.replace(/\/+$/, ""),
     },
