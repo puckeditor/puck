@@ -107,6 +107,10 @@ export class Planner {
     const abs = this.abs(rel);
     this.vfs.write(abs, content);
 
+    // A file created earlier in this plan is created with the edit already in
+    if (this.steps.some((s) => s.kind === "create_file" && s.path === abs))
+      return;
+
     const id = `${opts.capability}:modify:${rel}`;
     const edits = (opts.inserted ?? []).map((e) => ({
       line: lineOf(content, e.at),
