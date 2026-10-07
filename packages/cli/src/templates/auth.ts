@@ -150,3 +150,23 @@ export const withSameRouteAuth = (
   }
   return null;
 };
+
+/** React Router: app/lib/puck-auth.server.ts */
+export const reactRouterPuckAuth = (host?: string) => {
+  const setup = puckAuthSetup(host);
+  return `import { redirect } from "react-router";
+${setup.imports}
+${setup.create}
+/** Sends anyone who isn't signed in with Puck to sign in, then back here */
+export async function requirePuckSession(request: Request) {
+  const session = await puckAuth.getSession(request.headers);
+
+  if (!session) {
+    const url = new URL(request.url);
+    throw redirect(puckAuth.loginUrl(\`\${url.pathname}\${url.search}\`));
+  }
+
+  return session;
+}
+`;
+};

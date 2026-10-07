@@ -11,6 +11,8 @@ import {
   CORE_PACKAGE,
   MANUAL_INTEGRATION_DOCS_URL,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_AUTH_PACKAGE,
+  PLUGIN_PAGES_PACKAGE,
 } from "../constants";
 import { templateText } from "../templates/source";
 import { parseModule } from "../ast/parse";
@@ -24,8 +26,23 @@ import {
   RelocateContext,
   upgradeTemplateFile,
   planAiRoute,
+  flagCombos,
+  renderCode,
+  upgradeVariant,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
+import {
+  reactRouterPagesEditor,
+  reactRouterPagesServer,
+  reactRouterPagesSplat,
+} from "../templates/pages";
+import { reactRouterPuckAuth } from "../templates/auth";
+import {
+  planAuthPlugin,
+  planRouteAuth,
+  warnLocalPages,
+  withAuthPlugin,
+} from "./pages-auth";
 import { planOptimizeDeps } from "./vite";
 
 export const REACT_ROUTER_CLOUD_ROUTE_FILE = (appDir: string) =>
@@ -87,6 +104,7 @@ const rrRelocation = (p: Planner, info: ReactRouterInfo): RelocateContext => {
       "app/lib/pages.server": `${A}/lib/pages.server`,
       "app/lib/resolve-puck-path.server": `${A}/lib/resolve-puck-path.server`,
       "app/components/puck-render": `${A}/components/puck-render`,
+      "app/lib/puck-auth.server": `${A}/lib/puck-auth.server`,
       "puck.config": configModuleTarget(p),
     },
     aliases: { "~/": "app/" },
@@ -282,15 +300,23 @@ export const planReactRouterAi = (p: Planner, info: ReactRouterInfo) => {
   }
 
   const opts = rrRelocation(p, info);
-  const editor = upgradeTemplateFile(p, {
-    fromRecipe: "react-router",
-    toRecipe: "react-router-ai",
-    from: "app/routes/puck-splat.tsx",
-    to: `${A}/routes/puck-splat.tsx`,
-    opts,
+  const pagesEditor = p.vfs.exists(p.abs(`${A}/${PAGES_EDITOR}`));
+  const editor = upgradeVariant(p, {
+    ...splatVariants(p, info),
+    want: { ai: true },
     capability: "ai",
-    summary: `Add the Puck AI plugin to ${A}/routes/puck-splat.tsx`,
+    summary: pagesEditor
+      ? `Render AI-designed components in ${A}/routes/puck-splat.tsx`
+      : `Add the Puck AI plugin to ${A}/routes/puck-splat.tsx`,
   });
+  if (pagesEditor) {
+    upgradeVariant(p, {
+      ...pagesEditorVariants(p, info),
+      want: { ai: true },
+      capability: "ai",
+      summary: `Add the Puck AI plugin to ${A}/${PAGES_EDITOR}`,
+    });
+  }
 
   planOptimizeDeps(p, info, [CORE_PACKAGE, PLUGIN_AI_PACKAGE], "ai");
 
@@ -333,6 +359,198 @@ export const planReactRouterAi = (p: Planner, info: ReactRouterInfo) => {
     instructions: `Add the Puck AI plugin to the <Puck> editor in ${file}, load "@puckeditor/plugin-ai/styles.css?url" as a stylesheet, and wrap the config with withDynamicConfig wherever you <Render> Puck pages.`,
     snippet: AI_SNIPPET,
   });
+};
+
+const SPLAT = "routes/puck-splat.tsx";
+const PAGES_EDITOR = "routes/puck.tsx";
+const PAGES_EDITOR_ROUTE: RouteEntry = { path: "puck", file: PAGES_EDITOR };
+
+/** Gates the recipe's editor behind Sign in with Puck */
+const gateRecipeSplat = (code: string) => {
+  const resolved = "const { isEditorRoute, path } = resolvePuckPath(pathname);";
+  const loader = code.indexOf("export async function loader");
+  const at = code.indexOf(resolved, loader) + resolved.length;
+  return `${code.slice(0, at)}
+
+  // Editing requires Sign in with Puck
+  if (isEditorRoute) await requirePuckSession(request);${code.slice(at)}`
+    .replace(
+      "export async function loader({ params }: Route.LoaderArgs)",
+      "export async function loader({ params, request }: Route.LoaderArgs)"
+    )
+    .replace(
+      'import { getPage, savePage } from "~/lib/pages.server";',
+      'import { getPage, savePage } from "~/lib/pages.server";\nimport { requirePuckSession } from "~/lib/puck-auth.server";'
+    );
+};
+
+/** Every version of puck-splat.tsx the CLI writes */
+const splatVariants = (p: Planner, info: ReactRouterInfo) => ({
+  from: `app/${SPLAT}`,
+  to: `${info.appDir}/${SPLAT}`,
+  opts: rrRelocation(p, info),
+  combos: flagCombos("ai", "pages", "auth"),
+  source: ({
+    ai,
+    pages,
+    auth,
+  }: {
+    ai: boolean;
+    pages: boolean;
+    auth: boolean;
+  }) => {
+    // With Pages, the editor is in routes/puck.tsx
+    if (pages) return reactRouterPagesSplat({ ai });
+    const code = templateText(
+      p.templates,
+      ai ? "react-router-ai" : "react-router",
+      `app/${SPLAT}`
+    );
+    return auth ? withAuthPlugin(gateRecipeSplat(code), SPLAT) : code;
+  },
+});
+
+/** Every version of the Pages editor, routes/puck.tsx */
+const pagesEditorVariants = (p: Planner, info: ReactRouterInfo) => ({
+  from: `app/${PAGES_EDITOR}`,
+  to: `${info.appDir}/${PAGES_EDITOR}`,
+  opts: rrRelocation(p, info),
+  combos: flagCombos("ai", "auth"),
+  source: ({ ai, auth }: { ai: boolean; auth: boolean }) => {
+    const code = reactRouterPagesEditor({ ai, auth });
+    return auth ? withAuthPlugin(code, PAGES_EDITOR) : code;
+  },
+});
+
+/** Edits at /puck with the Pages plugin, and renders published pages */
+export const planReactRouterPages = (p: Planner, info: ReactRouterInfo) => {
+  const A = info.appDir;
+  const opts = rrRelocation(p, info);
+  const manual = (file: string, snippet: string) =>
+    p.manual({
+      id: `pages:${file}`,
+      type: "manual_edit",
+      capability: "pages",
+      required: true,
+      file,
+      reason: "unsupported_shape",
+      message: `${file} was customised or moved, so it wasn't changed to use Puck Pages.`,
+      instructions: `Update ${file} to match this version, which uses pages stored in Puck Cloud.`,
+      snippet,
+    });
+
+  let flags = { ai: false, auth: false };
+  const splat = upgradeVariant(p, {
+    ...splatVariants(p, info),
+    want: { pages: true },
+    capability: "pages",
+    summary: `Render pages published in Puck Cloud in ${A}/${SPLAT}`,
+    onMatch: ({ ai, auth }) => (flags = { ai, auth }),
+  });
+
+  if (splat === "customized" || splat === "missing") {
+    manual(`${A}/${SPLAT}`, reactRouterPagesSplat({ ai: false }));
+  } else {
+    // The recipe's splat route saves pages with it, so only once that's gone
+    const server = upgradeVariant(p, {
+      from: "app/lib/pages.server.ts",
+      to: `${A}/lib/pages.server.ts`,
+      opts,
+      combos: [{ pages: false }, { pages: true }],
+      source: ({ pages }) =>
+        pages
+          ? reactRouterPagesServer(p.cloudHost)
+          : templateText(
+              p.templates,
+              "react-router",
+              "app/lib/pages.server.ts"
+            ),
+      want: { pages: true },
+      capability: "pages",
+      summary: `Read published pages from Puck Cloud in ${A}/lib/pages.server.ts`,
+    });
+    if (server === "customized" || server === "missing")
+      manual(`${A}/lib/pages.server.ts`, reactRouterPagesServer(p.cloudHost));
+  }
+
+  const editor = pagesEditorVariants(p, info);
+  const rendered = renderCode(
+    editor.source(flags),
+    editor.from,
+    editor.to,
+    opts
+  );
+  if (
+    !rendered.ok ||
+    p.createFile(editor.to, rendered.code, {
+      capability: "pages",
+      summary: `Create ${editor.to} (the Puck Pages editor)`,
+    }) === "conflict"
+  ) {
+    manual(editor.to, reactRouterPagesEditor({ ai: false, auth: false }));
+  }
+
+  registerRoute(p, info, PAGES_EDITOR_ROUTE, "pages", {
+    position: "before-splat",
+  });
+  planOptimizeDeps(p, info, [PLUGIN_PAGES_PACKAGE], "pages");
+  planRouteAuth(p, "unowned", "pages");
+  warnLocalPages(p);
+};
+
+/** Requires Sign in with Puck to edit, and for the Cloud route */
+export const planReactRouterAuth = (p: Planner, info: ReactRouterInfo) => {
+  const A = info.appDir;
+  const helper = `${A}/lib/puck-auth.server.ts`;
+  if (
+    p.createFile(helper, reactRouterPuckAuth(p.cloudHost), {
+      capability: "auth",
+      summary: `Create ${helper} (requires Sign in with Puck)`,
+    }) === "conflict"
+  ) {
+    p.manual({
+      id: "auth:helper",
+      type: "manual_edit",
+      capability: "auth",
+      required: true,
+      file: helper,
+      reason: "conflict",
+      message: `${helper} already exists with different content.`,
+      instructions: `Export requirePuckSession from ${helper}, or move your file and re-run the command.`,
+      snippet: reactRouterPuckAuth(p.cloudHost),
+    });
+  }
+
+  // With Pages, the editor is its own route
+  const pagesEditor = p.vfs.exists(p.abs(`${A}/${PAGES_EDITOR}`));
+  const file = `${A}/${pagesEditor ? PAGES_EDITOR : SPLAT}`;
+  const upgrade = {
+    want: { auth: true },
+    capability: "auth" as const,
+    summary: `Require Sign in with Puck in ${file}`,
+  };
+  const gate = pagesEditor
+    ? upgradeVariant(p, { ...pagesEditorVariants(p, info), ...upgrade })
+    : upgradeVariant(p, { ...splatVariants(p, info), ...upgrade });
+  if (gate === "customized" || gate === "missing") {
+    p.manual({
+      id: "auth:editor-gate",
+      type: "manual_edit",
+      capability: "auth",
+      required: false,
+      file,
+      reason: "unsupported_shape",
+      message:
+        "Your editor route was customised, so it doesn't send signed-out visitors to sign in.",
+      instructions:
+        "Call requirePuckSession in the loader of the route that renders your editor. The Puck Cloud API route already requires Sign in with Puck.",
+      snippet: `import { requirePuckSession } from "~/lib/puck-auth.server";\n\nexport async function loader({ request }: Route.LoaderArgs) {\n  await requirePuckSession(request);\n  return null;\n}\n`,
+    });
+  }
+
+  planAuthPlugin(p, file);
+  planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
+  planRouteAuth(p, "puckAuth", "auth");
 };
 
 const REACT_ROUTER_7 = "^7.18.0";
@@ -394,6 +612,8 @@ export const reactRouterAdapter: FrameworkAdapter<ReactRouterInfo> = {
   planEditor: planReactRouterEditor,
   planCloudRoute: planReactRouterCloudRoute,
   planAi: planReactRouterAi,
+  planPages: planReactRouterPages,
+  planAuth: planReactRouterAuth,
   devUrl: "http://localhost:5173/edit",
   deployEnvWarning:
     "react-router-serve doesn't load .env files. Set PUCK_API_KEY in the environment wherever the app runs in production.",

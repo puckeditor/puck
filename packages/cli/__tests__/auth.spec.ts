@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { read, run, tmpProject } from "./helpers/harness";
 import { nextPagesEditorPage } from "../src/templates/pages";
-import { nextPuckAuth } from "../src/templates/auth";
+import { nextPuckAuth, reactRouterPuckAuth } from "../src/templates/auth";
 
 const KEY = ["--api-key", "sk-valid-key"];
 
@@ -130,5 +130,57 @@ export const POST = GET;
         required: true,
       })
     );
+  });
+
+  describe("react-router", () => {
+    it("gates the editor's loader", async () => {
+      const root = tmpProject({ recipe: "react-router" });
+      const { json } = await run(["add", "auth", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "app/lib/puck-auth.server.ts")).toBe(
+        reactRouterPuckAuth()
+      );
+      const splat = read(root, "app/routes/puck-splat.tsx");
+      expect(splat).toContain(
+        "export async function loader({ params, request }: Route.LoaderArgs)"
+      );
+      expect(splat).toContain(
+        "if (isEditorRoute) await requirePuckSession(request);"
+      );
+      expect(splat).toContain("plugins={[authPlugin]}");
+      expect(read(root, "app/routes/api.puck.ts")).toContain(
+        "const options: PuckHandlerOptions = { authenticate: puckAuth };"
+      );
+    });
+
+    it("gates the Pages editor, whichever comes first", async () => {
+      const together = tmpProject({ recipe: "react-router" });
+      await run(["add", "pages", "auth", "--yes", "--json", ...KEY], {
+        cwd: together,
+      });
+      const editor = read(together, "app/routes/puck.tsx");
+      expect(editor).toContain("await requirePuckSession(request);");
+      expect(editor).toContain("plugins={[pagesPlugin, authPlugin]}");
+
+      const authFirst = tmpProject({ recipe: "react-router" });
+      await run(["add", "auth", "--yes", "--json", ...KEY], { cwd: authFirst });
+      const { json } = await run(["add", "pages", "--yes", "--json"], {
+        cwd: authFirst,
+      });
+      expect(json.status).toBe("success");
+      for (const file of [
+        "app/routes/puck.tsx",
+        "app/routes/puck-splat.tsx",
+        "app/routes/api.puck.ts",
+      ]) {
+        expect({ file, content: read(authFirst, file) }).toEqual({
+          file,
+          content: read(together, file),
+        });
+      }
+    });
   });
 });

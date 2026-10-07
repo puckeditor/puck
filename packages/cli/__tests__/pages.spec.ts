@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { read, readRecipe, run, tmpProject } from "./helpers/harness";
 import {
+  reactRouterPagesServer,
   NEXT_PAGES_PROXY,
   nextPagesEditorClient,
   nextPagesEditorPage,
@@ -148,5 +149,69 @@ describe("add pages", () => {
     expect(read(root, "app/[...puckPath]/page.tsx")).toBe(
       nextPagesRenderPage(`${host}/api`)
     );
+  });
+
+  describe("react-router", () => {
+    it("edits at /puck and renders published pages", async () => {
+      const root = tmpProject({ recipe: "react-router" });
+      const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "app/routes.ts"))
+        .toContain(`  route("puck", "routes/puck.tsx"),
+  route("*", "routes/puck-splat.tsx"),`);
+      expect(read(root, "app/routes/puck.tsx")).toContain(
+        "<Puck plugins={[pagesPlugin]} config={config} data={{}} />"
+      );
+      const splat = read(root, "app/routes/puck-splat.tsx");
+      expect(splat).toContain(
+        "throw redirect(`/puck?path=${encodeURIComponent(path)}`);"
+      );
+      expect(splat).not.toContain("<Puck");
+      expect(read(root, "app/lib/pages.server.ts")).toBe(
+        reactRouterPagesServer()
+      );
+      expect(read(root, "vite.config.ts")).toContain(
+        'include: ["@puckeditor/core", "@puckeditor/plugin-pages"]'
+      );
+      expect(read(root, "app/routes/api.puck.ts")).toContain(
+        "const options: PuckHandlerOptions = { authenticate: () => ({ id: null }) };"
+      );
+
+      const again = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(again.json.changed).toBe(false);
+    });
+
+    it("keeps Puck AI, before or after", async () => {
+      const aiFirst = tmpProject({ recipe: "react-router-ai" });
+      await run(["add", "pages", "--yes", "--json", ...KEY], { cwd: aiFirst });
+
+      const pagesFirst = tmpProject({ recipe: "react-router" });
+      await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: pagesFirst,
+      });
+      const { json } = await run(["add", "ai", "--yes", "--json"], {
+        cwd: pagesFirst,
+      });
+      expect(json.status).toBe("success");
+
+      for (const file of [
+        "app/routes/puck.tsx",
+        "app/routes/puck-splat.tsx",
+        "app/components/puck-render.tsx",
+      ]) {
+        expect({ file, content: read(pagesFirst, file) }).toEqual({
+          file,
+          content: read(aiFirst, file),
+        });
+      }
+      expect(read(aiFirst, "app/routes/puck.tsx")).toContain(
+        "const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];"
+      );
+    });
   });
 });

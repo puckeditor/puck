@@ -183,3 +183,150 @@ export async function proxy(req: NextRequest) {
   return res;
 }
 `;
+
+/** React Router: app/lib/pages.server.ts */
+export const reactRouterPagesServer = (
+  host?: string
+) => `import { getPage as getPublishedPage } from "@puckeditor/cloud-client";
+
+// Pages are edited and published in Puck Cloud
+export async function getPage(path: string) {
+  return getPublishedPage(${getPageArgs(host)});
+}
+`;
+
+/** React Router: app/routes/puck-splat.tsx, which renders published pages */
+export const reactRouterPagesSplat = ({
+  ai,
+}: {
+  ai: boolean;
+}) => `import { redirect } from "react-router";
+${
+  ai
+    ? `
+import type { Route } from "./+types/puck-splat";
+import { resolvePuckPath } from "~/lib/resolve-puck-path.server";
+import { getPage } from "~/lib/pages.server";
+import { PuckRender } from "~/components/puck-render";
+`
+    : `import { Render } from "@puckeditor/core";
+
+import type { Route } from "./+types/puck-splat";
+import { config } from "../../puck.config";
+import { resolvePuckPath } from "~/lib/resolve-puck-path.server";
+import { getPage } from "~/lib/pages.server";
+`
+}
+export async function loader({ params }: Route.LoaderArgs) {
+  const pathname = params["*"] ?? "/";
+  const { isEditorRoute, path } = resolvePuckPath(pathname);
+
+  // Pages are edited at /puck, which opens the page in the path parameter
+  if (isEditorRoute) {
+    throw redirect(\`/puck?path=\${encodeURIComponent(path)}\`);
+  }
+
+  const page = await getPage(path);
+
+  // Throw a 404 if data for the page does not exist
+  if (!page) {
+    throw new Response("Not Found", { status: 404 });
+  }
+
+  return {
+    path,
+    data: page,
+  };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+  return [
+    {
+      title: loaderData.data.root.props?.title ?? "",
+    },
+  ];
+}
+
+export default function PuckSplatRoute({ loaderData }: Route.ComponentProps) {
+  return (
+    <div>
+      ${
+        ai
+          ? "<PuckRender data={loaderData.data} />"
+          : "<Render config={config} data={loaderData.data} />"
+      }
+    </div>
+  );
+}
+`;
+
+/** React Router: app/routes/puck.tsx, the editor */
+export const reactRouterPagesEditor = ({
+  ai,
+  auth,
+}: {
+  ai: boolean;
+  auth: boolean;
+}) => `import { Puck${
+  ai ? ", blocksPlugin, outlinePlugin" : ""
+} } from "@puckeditor/core";
+${
+  ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
+}import { createPagesPlugin } from "@puckeditor/plugin-pages";
+
+import type { Route } from "./+types/puck";
+import { config } from "../../puck.config";${
+  auth ? `\nimport { requirePuckSession } from "~/lib/puck-auth.server";` : ""
+}
+import editorStyles from "@puckeditor/core/puck.css?url";${
+  ai
+    ? `\nimport aiPluginStyles from "@puckeditor/plugin-ai/styles.css?url";`
+    : ""
+}
+import pagesPluginStyles from "@puckeditor/plugin-pages/styles.css?url";
+${
+  auth
+    ? `
+export async function loader({ request }: Route.LoaderArgs) {
+  await requirePuckSession(request);
+
+  return null;
+}
+`
+    : ""
+}
+export function meta(_: Route.MetaArgs) {
+  return [{ title: "Puck" }];
+}
+${ai ? `\n${AI_PLUGIN}` : ""}
+// Loads, saves and publishes pages in Puck Cloud. The page to edit is in the
+// path parameter, e.g. /puck?path=/about
+const pagesPlugin = createPagesPlugin();
+${
+  ai
+    ? `
+// Place the ai plugin in the first position in the side nav.
+const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+`
+    : ""
+}
+export default function PuckEditorRoute() {
+  return (
+    <>
+      <link rel="stylesheet" href={editorStyles} id="puck-css" />${
+        ai
+          ? `\n      <link rel="stylesheet" href={aiPluginStyles} id="puck-plugin-ai-css" />`
+          : ""
+      }
+      <link
+        rel="stylesheet"
+        href={pagesPluginStyles}
+        id="puck-plugin-pages-css"
+      />
+      <Puck plugins={${
+        ai ? "plugins" : "[pagesPlugin]"
+      }} config={config} data={{}} />
+    </>
+  );
+}
+`;
