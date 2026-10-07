@@ -21,6 +21,17 @@ export interface TemplateFile {
 
 export type RelocateContext = Omit<RelocateOptions, "from" | "to">;
 
+/** Code written as if it were the recipe file `from`, relocated to `to` */
+export const renderCode = (
+  raw: string,
+  from: string,
+  to: string,
+  opts: RelocateContext
+): RelocateResult => {
+  if (!/\.(tsx?|jsx?)$/.test(from)) return { ok: true, code: raw };
+  return relocateModule(raw, { ...opts, from, to });
+};
+
 /** A recipe file's content as it should be written at `to` in this project */
 export const renderTemplate = (
   p: Planner,
@@ -28,11 +39,8 @@ export const renderTemplate = (
   from: string,
   to: string,
   opts: RelocateContext
-): RelocateResult => {
-  const raw = templateText(p.templates, recipe, from);
-  if (!/\.(tsx?|jsx?)$/.test(from)) return { ok: true, code: raw };
-  return relocateModule(raw, { ...opts, from, to });
-};
+): RelocateResult =>
+  renderCode(templateText(p.templates, recipe, from), from, to, opts);
 
 const configManual = (
   p: Planner,
@@ -149,6 +157,77 @@ export const upgradeTemplateFile = (
   p.modifyFile(to, match.next, { capability, summary });
   return "upgraded";
 };
+
+/**
+ * Rewrites a file the CLI generated into another known version of it, e.g. a
+ * recipe editor into a Puck Pages editor. `source` gives each version in
+ * recipe coordinates; the file must match one of `combos` exactly, either
+ * relocated for this project or verbatim as scaffolded. The matched version's
+ * flags are merged with `want` to pick the new one.
+ */
+export const upgradeVariant = <F extends object>(
+  p: Planner,
+  {
+    from,
+    to,
+    opts,
+    combos,
+    source,
+    want,
+    capability,
+    summary,
+  }: {
+    from: string;
+    to: string;
+    opts: RelocateContext;
+    combos: F[];
+    source: (flags: F) => string | null;
+    want: Partial<F>;
+    capability: CapabilityId;
+    summary: string;
+  }
+): UpgradeOutcome => {
+  const current = p.vfs.readText(p.abs(to));
+  if (current === null) return "missing";
+  const same = (a: string, b: string) => normalizeEol(a) === normalizeEol(b);
+  const forms = (flags: F) => {
+    const raw = source(flags);
+    if (raw === null) return null;
+    const relocated = renderCode(raw, from, to, opts);
+    return { relocated: relocated.ok ? relocated.code : null, verbatim: raw };
+  };
+
+  for (const combo of combos) {
+    const known = forms(combo);
+    if (!known) continue;
+    const form = [known.relocated, known.verbatim].findIndex(
+      (code) => code !== null && same(current, code)
+    );
+    if (form === -1) continue;
+
+    const wanted = forms({ ...combo, ...want });
+    const code = wanted && [wanted.relocated, wanted.verbatim][form];
+    if (!code) return "customized";
+    if (same(current, code)) return "already";
+    p.modifyFile(to, code, { capability, summary });
+    return "upgraded";
+  }
+
+  return "customized";
+};
+
+/** Every combination of boolean flags, e.g. for upgradeVariant's combos */
+export const flagCombos = <K extends string>(
+  ...keys: K[]
+): Record<K, boolean>[] =>
+  keys.reduce<Record<K, boolean>[]>(
+    (combos, key) =>
+      combos.flatMap((c) => [
+        { ...c, [key]: false },
+        { ...c, [key]: true },
+      ]),
+    [{} as Record<K, boolean>]
+  );
 
 /** Maps recipe module ids for the config, preferring the project's existing config */
 export const configModuleTarget = (p: Planner, created = "puck.config.tsx") =>
