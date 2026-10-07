@@ -26,7 +26,9 @@ import {
   nextPagesEditorPage,
   nextPagesRenderPage,
 } from "../templates/pages";
+import { nextPuckAuth } from "../templates/auth";
 import {
+  planAuthPlugin,
   planRouteAuth,
   warnLocalPages,
   withAuthPlugin,
@@ -541,6 +543,58 @@ export const planNextPages = (p: Planner, info: NextLikeInfo) => {
   warnLocalPages(p);
 };
 
+/** Requires Sign in with Puck to edit, and for the Cloud route */
+export const planNextAuth = (p: Planner, info: NextLikeInfo) => {
+  const A = info.appDir;
+  const lib = `${info.baseDir ? `${info.baseDir}/` : ""}lib`;
+
+  const helper = `${lib}/puck-auth.ts`;
+  const created = p.createFile(helper, nextPuckAuth(p.cloudHost), {
+    capability: "auth",
+    summary: `Create ${helper} (requires Sign in with Puck)`,
+  });
+  if (created === "conflict") {
+    p.manual({
+      id: "auth:helper",
+      type: "manual_edit",
+      capability: "auth",
+      required: true,
+      file: helper,
+      reason: "conflict",
+      message: `${helper} already exists with different content.`,
+      instructions: `Export requirePuckSession from ${helper}, or move your file and re-run the command.`,
+      snippet: nextPuckAuth(p.cloudHost),
+    });
+  }
+
+  const gate = upgradeEditor(p, info, EDITOR_PAGE, {
+    want: { auth: true },
+    capability: "auth",
+    summary: `Require Sign in with Puck in ${A}/puck/[...puckPath]/page.tsx`,
+  });
+  if (gate === "customized" || gate === "missing") {
+    p.manual({
+      id: "auth:editor-gate",
+      type: "manual_edit",
+      capability: "auth",
+      required: false,
+      file: `${A}/puck/[...puckPath]/page.tsx`,
+      reason: "unsupported_shape",
+      message:
+        "Your editor page was customised, so it doesn't send signed-out visitors to sign in.",
+      instructions:
+        "Call requirePuckSession at the start of the page that renders your editor. The Puck Cloud API route already requires Sign in with Puck.",
+      snippet: `import { requirePuckSession } from "${lib}/puck-auth";
+
+await requirePuckSession("/puck");
+`,
+    });
+  }
+
+  planAuthPlugin(p, `${A}/puck/[...puckPath]/client.tsx`);
+  planRouteAuth(p, "puckAuth", "auth");
+};
+
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   recipe: (withAi) => (withAi ? "next-ai" : "next"),
   recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
@@ -559,6 +613,7 @@ export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   planCloudRoute: planNextCloudRoute,
   planAi: planNextAi,
   planPages: planNextPages,
+  planAuth: planNextAuth,
   devUrl: "http://localhost:3000/edit",
   deployEnvWarning:
     "Set PUCK_API_KEY in your hosting provider's environment variables before deploying.",

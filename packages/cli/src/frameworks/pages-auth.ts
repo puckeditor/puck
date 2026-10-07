@@ -18,6 +18,14 @@ export const withAuthPlugin = (code: string, file: string) => {
   return result.status === "inserted" ? result.code : code;
 };
 
+export const AUTH_PLUGIN_SNIPPET = `import { createAuthPlugin } from "@puckeditor/plugin-auth";
+import "@puckeditor/plugin-auth/styles.css";
+
+const authPlugin = createAuthPlugin();
+
+<Puck plugins={[authPlugin]} config={config} data={data} />
+`;
+
 /**
  * Sets `authenticate` on the Cloud route, including one created earlier in
  * this plan. Pages needs it ("unowned"), and Auth makes it Sign in with Puck.
@@ -60,6 +68,46 @@ export const planRouteAuth = (
       auth === "puckAuth"
         ? `import { puckAuth } from "@puckeditor/cloud-client/auth";\n\npuckHandler(request, { authenticate: puckAuth });\n`
         : `puckHandler(request, { authenticate: () => ({ id: null }) });\n`,
+  });
+};
+
+/** Adds the Puck Auth plugin to the editor, preferring `preferred` */
+export const planAuthPlugin = (p: Planner, preferred: string) => {
+  const editors = p.state.scan.editorFiles;
+  const file = p.vfs.exists(p.abs(preferred))
+    ? preferred
+    : editors.length === 1
+    ? editors[0]
+    : null;
+  const current = file && p.vfs.readText(p.abs(file));
+  const result = current
+    ? ensurePuckPlugin(current, file!, AUTH_PLUGIN)
+    : ({
+        status: "manual",
+        detail: "No single Puck editor was found",
+      } as const);
+
+  if (result.status === "exists") return;
+  if (result.status === "inserted") {
+    p.modifyFile(file!, result.code, {
+      capability: "auth",
+      summary: `Add the Puck Auth plugin to ${file}`,
+      inserted: result.inserted,
+    });
+    return;
+  }
+
+  p.manual({
+    id: "auth:editor",
+    type: "manual_edit",
+    capability: "auth",
+    required: true,
+    file: file ?? preferred,
+    reason: "unsupported_shape",
+    message: `Couldn't add the Puck Auth plugin automatically: ${result.detail}.`,
+    instructions:
+      "Add the Puck Auth plugin to your <Puck> editor's plugins, and import its styles.",
+    snippet: AUTH_PLUGIN_SNIPPET,
   });
 };
 

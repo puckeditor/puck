@@ -26,18 +26,13 @@ const insertAfterImports = (code: string, filename: string, text: string) => {
 
 const importPuckAuth = (code: string, filename: string, host?: string) => {
   const q = quoteOf(code);
-  if (!host)
-    return insertAfterImports(
-      code,
-      filename,
-      `import { puckAuth } from ${q}${CLOUD_CLIENT_AUTH_ENTRY}${q};`
-    );
+  const setup = puckAuthSetup(host);
   return insertAfterImports(
     code,
     filename,
-    `import { createPuckAuth } from ${q}${CLOUD_CLIENT_AUTH_ENTRY}${q};\n\nconst puckAuth = createPuckAuth({ host: ${JSON.stringify(
-      host
-    )} });`
+    `${setup.imports.replace(/"/g, q)}${
+      setup.create ? `\n${setup.create.trimEnd()}` : ""
+    }`
   );
 };
 
@@ -100,6 +95,40 @@ export const withRouteAuth = (
   }
 
   return auth === "puckAuth" ? importPuckAuth(next, filename, host) : next;
+};
+
+/** Imports puckAuth, or creates it for a non-default Puck Cloud */
+export const puckAuthSetup = (host?: string) =>
+  host
+    ? {
+        imports: `import { createPuckAuth } from "${CLOUD_CLIENT_AUTH_ENTRY}";`,
+        create: `\nconst puckAuth = createPuckAuth({ host: ${JSON.stringify(
+          host
+        )} });\n`,
+      }
+    : {
+        imports: `import { puckAuth } from "${CLOUD_CLIENT_AUTH_ENTRY}";`,
+        create: "",
+      };
+
+/** Next.js: lib/puck-auth.ts */
+export const nextPuckAuth = (host?: string) => {
+  const setup = puckAuthSetup(host);
+  return `${setup.imports}
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+${setup.create}
+/** Sends anyone who isn't signed in with Puck to sign in, then back to returnTo */
+export async function requirePuckSession(returnTo: string) {
+  const session = await puckAuth.getSession(await headers());
+
+  if (!session) {
+    redirect(puckAuth.loginUrl(returnTo));
+  }
+
+  return session;
+}
+`;
 };
 
 /**
