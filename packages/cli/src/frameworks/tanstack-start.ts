@@ -15,10 +15,31 @@ import {
   TemplateFile,
   upgradeTemplateFile,
   planAiRoute,
+  flagCombos,
+  renderCode,
+  upgradeVariant,
 } from "./shared";
 import { AI_SNIPPET } from "./ai";
 import { planOptimizeDeps } from "./vite";
-import { CORE_PACKAGE, PLUGIN_AI_PACKAGE } from "../constants";
+import {
+  CORE_PACKAGE,
+  PLUGIN_AI_PACKAGE,
+  PLUGIN_AUTH_PACKAGE,
+  PLUGIN_PAGES_PACKAGE,
+} from "../constants";
+import {
+  cloudPagesServer,
+  TANSTACK_PAGES_SPLAT,
+  tanstackPagesEditor,
+  tanstackPagesLib,
+} from "../templates/pages";
+import { tanstackPuckAuth } from "../templates/auth";
+import {
+  planAuthPlugin,
+  planRouteAuth,
+  warnLocalPages,
+  withAuthPlugin,
+} from "./pages-auth";
 
 export const TANSTACK_START_CLOUD_ROUTE_FILE = (routesDir: string) =>
   `${routesDir}/api/puck/$.ts`;
@@ -79,6 +100,7 @@ const tanstackRelocation = (
       "src/lib/pages.server": moduleId("src/lib/pages.server"),
       "src/lib/resolve-puck-path": moduleId("src/lib/resolve-puck-path"),
       "src/components/puck-render": moduleId("src/components/puck-render"),
+      "src/lib/puck-auth": moduleId("src/lib/puck-auth"),
       "puck.config": configModuleTarget(p),
     },
     config: configRelocation(p),
@@ -196,10 +218,21 @@ export const planTanStackStartAi = (p: Planner, info: TanStackStartInfo) => {
       summary,
     });
 
-  const editor = upgrade(
-    "src/routes/$.tsx",
-    `Add the Puck AI plugin to ${to("src/routes/$.tsx")}`
-  );
+  const pagesEditor = p.vfs.exists(p.abs(to(PAGES_EDITOR)));
+  const editor = upgradeVariant(p, {
+    ...splatVariants(p, info),
+    want: { ai: true },
+    capability: "ai",
+    summary: `Add the Puck AI plugin to ${to(SPLAT)}`,
+  });
+  if (pagesEditor) {
+    upgradeVariant(p, {
+      ...pagesEditorVariants(p, info),
+      want: { ai: true },
+      capability: "ai",
+      summary: `Add the Puck AI plugin to ${to(PAGES_EDITOR)}`,
+    });
+  }
 
   planOptimizeDeps(p, info, [CORE_PACKAGE, PLUGIN_AI_PACKAGE], "ai");
 
@@ -225,6 +258,230 @@ export const planTanStackStartAi = (p: Planner, info: TanStackStartInfo) => {
   });
 };
 
+const SPLAT = "src/routes/$.tsx";
+const PAGES_LIB = "src/lib/pages.ts";
+const PAGES_SERVER = "src/lib/pages.server.ts";
+const PAGES_EDITOR = "src/routes/puck.tsx";
+
+/** Gates the recipe's editor behind Sign in with Puck */
+const gateRecipePagesLib = (code: string) => {
+  const resolved = "const { isEditorRoute, path } = resolvePuckPath(pathname);";
+  const at = code.indexOf(resolved) + resolved.length;
+  return `${code.slice(0, at)}
+
+    // Editing requires Sign in with Puck
+    if (isEditorRoute) await requirePuckSession({ data: pathname });${code.slice(
+      at
+    )}`.replace(
+    'import { resolvePuckPath } from "./resolve-puck-path";',
+    'import { resolvePuckPath } from "./resolve-puck-path";\nimport { requirePuckSession } from "./puck-auth";'
+  );
+};
+
+type Flags = { ai: boolean; pages: boolean; auth: boolean };
+
+/** Every version of $.tsx the CLI writes */
+const splatVariants = (p: Planner, info: TanStackStartInfo) => ({
+  from: SPLAT,
+  to: locate(info)(SPLAT),
+  opts: tanstackRelocation(p, info),
+  combos: flagCombos("ai", "pages", "auth"),
+  source: ({ ai, pages, auth }: Flags) => {
+    // With Pages, the editor is in routes/puck.tsx
+    if (pages) return TANSTACK_PAGES_SPLAT;
+    const code = templateText(
+      p.templates,
+      ai ? "tanstack-start-ai" : "tanstack-start",
+      SPLAT
+    );
+    return auth ? withAuthPlugin(code, SPLAT) : code;
+  },
+});
+
+/** Every version of lib/pages.ts, which loads pages for $.tsx */
+const pagesLibVariants = (p: Planner, info: TanStackStartInfo) => ({
+  from: PAGES_LIB,
+  to: locate(info)(PAGES_LIB),
+  opts: tanstackRelocation(p, info),
+  combos: flagCombos("pages", "auth"),
+  source: ({ pages, auth }: Omit<Flags, "ai">) => {
+    if (pages) return tanstackPagesLib;
+    const code = templateText(p.templates, "tanstack-start", PAGES_LIB);
+    return auth ? gateRecipePagesLib(code) : code;
+  },
+});
+
+/** Every version of the Pages editor, routes/puck.tsx */
+const pagesEditorVariants = (p: Planner, info: TanStackStartInfo) => ({
+  from: PAGES_EDITOR,
+  to: locate(info)(PAGES_EDITOR),
+  opts: tanstackRelocation(p, info),
+  combos: flagCombos("ai", "auth"),
+  source: ({ ai, auth }: Omit<Flags, "pages">) => {
+    const code = tanstackPagesEditor({ ai, auth });
+    return auth ? withAuthPlugin(code, PAGES_EDITOR) : code;
+  },
+});
+
+/** Edits at /puck with the Pages plugin, and renders published pages */
+export const planTanStackStartPages = (p: Planner, info: TanStackStartInfo) => {
+  const to = locate(info);
+  const manual = (file: string, snippet: string) =>
+    p.manual({
+      id: `pages:${file}`,
+      type: "manual_edit",
+      capability: "pages",
+      required: true,
+      file,
+      reason: "unsupported_shape",
+      message: `${file} was customised or moved, so it wasn't changed to use Puck Pages.`,
+      instructions: `Update ${file} to match this version, which uses pages stored in Puck Cloud.`,
+      snippet,
+    });
+  const upgrade = <F extends { pages: boolean }>(
+    variants: {
+      from: string;
+      to: string;
+      opts: RelocateContext;
+      combos: F[];
+      source: (flags: F) => string;
+    },
+    summary: string,
+    snippet: string,
+    onMatch?: (flags: F) => void
+  ) => {
+    const outcome = upgradeVariant<F>(p, {
+      ...variants,
+      want: { pages: true } as Partial<F>,
+      capability: "pages",
+      summary,
+      onMatch,
+    });
+    const ok = outcome === "upgraded" || outcome === "already";
+    if (!ok) manual(variants.to, snippet);
+    return ok;
+  };
+
+  let flags = { ai: false, auth: false };
+  const splat = upgrade(
+    splatVariants(p, info),
+    `Render pages published in Puck Cloud in ${to(SPLAT)}`,
+    TANSTACK_PAGES_SPLAT,
+    ({ ai, auth }) => (flags = { ai, auth })
+  );
+  // The recipe's $.tsx saves pages with them, so only once that's gone
+  if (splat) {
+    upgrade(
+      pagesLibVariants(p, info),
+      `Send /<path>/edit to the Puck Pages editor in ${to(PAGES_LIB)}`,
+      tanstackPagesLib
+    );
+    upgrade(
+      {
+        from: PAGES_SERVER,
+        to: to(PAGES_SERVER),
+        opts: tanstackRelocation(p, info),
+        combos: [{ pages: false }, { pages: true }],
+        source: ({ pages }) =>
+          pages
+            ? cloudPagesServer(p.cloudHost)
+            : templateText(p.templates, "tanstack-start", PAGES_SERVER),
+      },
+      `Read published pages from Puck Cloud in ${to(PAGES_SERVER)}`,
+      cloudPagesServer(p.cloudHost)
+    );
+  }
+
+  const editor = pagesEditorVariants(p, info);
+  const rendered = renderCode(
+    editor.source(flags),
+    editor.from,
+    editor.to,
+    editor.opts
+  );
+  if (
+    !rendered.ok ||
+    p.createFile(editor.to, rendered.code, {
+      capability: "pages",
+      summary: `Create ${editor.to} (the Puck Pages editor)`,
+    }) === "conflict"
+  ) {
+    manual(editor.to, tanstackPagesEditor({ ai: false, auth: false }));
+  }
+
+  planOptimizeDeps(p, info, [PLUGIN_PAGES_PACKAGE], "pages");
+  planRouteAuth(p, "unowned", "pages");
+  warnLocalPages(p);
+};
+
+/** Requires Sign in with Puck to edit, and for the Cloud route */
+export const planTanStackStartAuth = (p: Planner, info: TanStackStartInfo) => {
+  const to = locate(info);
+  const helper = to("src/lib/puck-auth.ts");
+  if (
+    p.createFile(helper, tanstackPuckAuth(p.cloudHost), {
+      capability: "auth",
+      summary: `Create ${helper} (requires Sign in with Puck)`,
+    }) === "conflict"
+  ) {
+    p.manual({
+      id: "auth:helper",
+      type: "manual_edit",
+      capability: "auth",
+      required: true,
+      file: helper,
+      reason: "conflict",
+      message: `${helper} already exists with different content.`,
+      instructions: `Export the requirePuckSession server function from ${helper}, or move your file and re-run the command.`,
+      snippet: tanstackPuckAuth(p.cloudHost),
+    });
+  }
+
+  // With Pages, the editor is its own route; otherwise $.tsx loads it
+  const pagesEditor = p.vfs.exists(p.abs(to(PAGES_EDITOR)));
+  const upgrade = (file: string) => ({
+    want: { auth: true },
+    capability: "auth" as const,
+    summary: `Require Sign in with Puck in ${file}`,
+  });
+  const gate = pagesEditor
+    ? upgradeVariant(p, {
+        ...pagesEditorVariants(p, info),
+        ...upgrade(to(PAGES_EDITOR)),
+      })
+    : upgradeVariant(p, {
+        ...pagesLibVariants(p, info),
+        ...upgrade(to(PAGES_LIB)),
+      });
+  if (!pagesEditor) {
+    upgradeVariant(p, {
+      ...splatVariants(p, info),
+      want: { auth: true },
+      capability: "auth",
+      summary: `Add the Puck Auth plugin to ${to(SPLAT)}`,
+    });
+  }
+  if (gate === "customized" || gate === "missing") {
+    p.manual({
+      id: "auth:editor-gate",
+      type: "manual_edit",
+      capability: "auth",
+      required: false,
+      file: to(pagesEditor ? PAGES_EDITOR : PAGES_LIB),
+      reason: "unsupported_shape",
+      message:
+        "Your editor was customised, so it doesn't send signed-out visitors to sign in.",
+      instructions:
+        "Call requirePuckSession before loading the route that renders your editor. The Puck Cloud API route already requires Sign in with Puck.",
+      snippet: `beforeLoad: ({ location }) => requirePuckSession({ data: location.href }),\n`,
+    });
+  }
+
+  planAuthPlugin(p, to(pagesEditor ? PAGES_EDITOR : SPLAT));
+  planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
+  planRouteAuth(p, "puckAuth", "auth");
+};
+
 export const tanstackStartAdapter: FrameworkAdapter<TanStackStartInfo> = {
   recipe: (withAi) => (withAi ? "tanstack-start-ai" : "tanstack-start"),
   recipeCloudRoute: AI_ROUTE,
@@ -243,6 +500,8 @@ export const tanstackStartAdapter: FrameworkAdapter<TanStackStartInfo> = {
   planEditor: planTanStackStartEditor,
   planCloudRoute: planTanStackStartCloudRoute,
   planAi: planTanStackStartAi,
+  planPages: planTanStackStartPages,
+  planAuth: planTanStackStartAuth,
   devUrl: "http://localhost:3000/edit",
   deployEnvWarning:
     "Set PUCK_API_KEY in your hosting provider's environment variables before deploying.",

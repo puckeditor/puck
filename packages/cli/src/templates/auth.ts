@@ -170,3 +170,26 @@ export async function requirePuckSession(request: Request) {
 }
 `;
 };
+
+/** TanStack Start: src/lib/puck-auth.ts */
+export const tanstackPuckAuth = (host?: string) => {
+  const setup = puckAuthSetup(host);
+  return `import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+import { redirect } from "@tanstack/react-router";
+${setup.imports}
+${setup.create}
+/** Sends anyone who isn't signed in with Puck to sign in, then back to returnTo */
+export const requirePuckSession = createServerFn({ method: "GET" })
+  .validator((returnTo: string) => returnTo)
+  .handler(async ({ data: returnTo }) => {
+    const session = await puckAuth.getSession(getRequest().headers);
+
+    if (!session) {
+      throw redirect({ href: puckAuth.loginUrl(returnTo) });
+    }
+
+    return session;
+  });
+`;
+};

@@ -2,7 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { read, readRecipe, run, tmpProject } from "./helpers/harness";
 import {
-  reactRouterPagesServer,
+  cloudPagesServer,
+  TANSTACK_PAGES_SPLAT,
+  tanstackPagesEditor,
+  tanstackPagesLib,
   NEXT_PAGES_PROXY,
   nextPagesEditorClient,
   nextPagesEditorPage,
@@ -170,9 +173,7 @@ describe("add pages", () => {
         "throw redirect(`/puck?path=${encodeURIComponent(path)}`);"
       );
       expect(splat).not.toContain("<Puck");
-      expect(read(root, "app/lib/pages.server.ts")).toBe(
-        reactRouterPagesServer()
-      );
+      expect(read(root, "app/lib/pages.server.ts")).toBe(cloudPagesServer());
       expect(read(root, "vite.config.ts")).toContain(
         'include: ["@puckeditor/core", "@puckeditor/plugin-pages"]'
       );
@@ -212,6 +213,55 @@ describe("add pages", () => {
       expect(read(aiFirst, "app/routes/puck.tsx")).toContain(
         "const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];"
       );
+    });
+  });
+
+  describe("tanstack-start", () => {
+    it("edits at /puck and renders published pages", async () => {
+      const root = tmpProject({ recipe: "tanstack-start" });
+      const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/routes/$.tsx")).toBe(TANSTACK_PAGES_SPLAT);
+      expect(read(root, "src/lib/pages.ts")).toBe(tanstackPagesLib);
+      expect(read(root, "src/lib/pages.server.ts")).toBe(cloudPagesServer());
+      expect(read(root, "src/routes/puck.tsx")).toBe(
+        tanstackPagesEditor({ ai: false, auth: false })
+      );
+
+      const again = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(again.json.changed).toBe(false);
+    });
+
+    it("keeps Puck AI, before or after", async () => {
+      const aiFirst = tmpProject({ recipe: "tanstack-start-ai" });
+      await run(["add", "pages", "--yes", "--json", ...KEY], { cwd: aiFirst });
+      expect(read(aiFirst, "src/routes/puck.tsx")).toBe(
+        tanstackPagesEditor({ ai: true, auth: false })
+      );
+
+      const pagesFirst = tmpProject({ recipe: "tanstack-start" });
+      await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: pagesFirst,
+      });
+      const { json } = await run(["add", "ai", "--yes", "--json"], {
+        cwd: pagesFirst,
+      });
+      expect(json.status).toBe("success");
+      for (const file of [
+        "src/routes/puck.tsx",
+        "src/routes/$.tsx",
+        "src/components/puck-render.tsx",
+      ]) {
+        expect({ file, content: read(pagesFirst, file) }).toEqual({
+          file,
+          content: read(aiFirst, file),
+        });
+      }
     });
   });
 });

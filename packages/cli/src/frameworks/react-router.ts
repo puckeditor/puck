@@ -33,7 +33,7 @@ import {
 import { AI_SNIPPET } from "./ai";
 import {
   reactRouterPagesEditor,
-  reactRouterPagesServer,
+  cloudPagesServer,
   reactRouterPagesSplat,
 } from "../templates/pages";
 import { reactRouterPuckAuth } from "../templates/auth";
@@ -459,7 +459,7 @@ export const planReactRouterPages = (p: Planner, info: ReactRouterInfo) => {
       combos: [{ pages: false }, { pages: true }],
       source: ({ pages }) =>
         pages
-          ? reactRouterPagesServer(p.cloudHost)
+          ? cloudPagesServer(p.cloudHost)
           : templateText(
               p.templates,
               "react-router",
@@ -470,7 +470,7 @@ export const planReactRouterPages = (p: Planner, info: ReactRouterInfo) => {
       summary: `Read published pages from Puck Cloud in ${A}/lib/pages.server.ts`,
     });
     if (server === "customized" || server === "missing")
-      manual(`${A}/lib/pages.server.ts`, reactRouterPagesServer(p.cloudHost));
+      manual(`${A}/lib/pages.server.ts`, cloudPagesServer(p.cloudHost));
   }
 
   const editor = pagesEditorVariants(p, info);

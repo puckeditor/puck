@@ -184,8 +184,8 @@ export async function proxy(req: NextRequest) {
 }
 `;
 
-/** React Router: app/lib/pages.server.ts */
-export const reactRouterPagesServer = (
+/** React Router and TanStack Start: lib/pages.server.ts */
+export const cloudPagesServer = (
   host?: string
 ) => `import { getPage as getPublishedPage } from "@puckeditor/cloud-client";
 
@@ -328,5 +328,117 @@ export default function PuckEditorRoute() {
       }} config={config} data={{}} />
     </>
   );
+}
+`;
+
+/** TanStack Start: src/lib/pages.ts, without the editor */
+export const tanstackPagesLib = `import { createServerFn } from "@tanstack/react-start";
+import { notFound, redirect } from "@tanstack/react-router";
+
+import { getPage } from "./pages.server";
+import { resolvePuckPath } from "./resolve-puck-path";
+
+// Loads the published page for a URL
+export const loadPuckPage = createServerFn({ method: "GET" })
+  .validator((pathname: string) => pathname)
+  .handler(async ({ data: pathname }) => {
+    const { isEditorRoute, path } = resolvePuckPath(pathname);
+
+    // Pages are edited at /puck, which opens the page in the path parameter
+    if (isEditorRoute) {
+      throw redirect({ href: \`/puck?path=\${encodeURIComponent(path)}\` });
+    }
+
+    const page = await getPage(path);
+
+    // Throw a 404 if data for the page does not exist
+    if (!page) {
+      throw notFound();
+    }
+
+    return { path, data: page };
+  });
+`;
+
+/** TanStack Start: src/routes/$.tsx, which renders published pages */
+export const TANSTACK_PAGES_SPLAT = `import { createFileRoute } from "@tanstack/react-router";
+
+import { loadPuckPage } from "../lib/pages";
+import { PuckRender } from "../components/puck-render";
+
+export const Route = createFileRoute("/$")({
+  loader: ({ params }) => loadPuckPage({ data: params._splat ?? "" }),
+  head: ({ loaderData }) => ({
+    meta: [{ title: loaderData?.data.root.props?.title ?? "" }],
+  }),
+  component: PuckSplatRoute,
+});
+
+function PuckSplatRoute() {
+  const { data } = Route.useLoaderData();
+
+  return <PuckRender data={data} />;
+}
+`;
+
+/** TanStack Start: src/routes/puck.tsx, the editor */
+export const tanstackPagesEditor = ({
+  ai,
+  auth,
+}: {
+  ai: boolean;
+  auth: boolean;
+}) => `import { createFileRoute } from "@tanstack/react-router";
+import { Puck${
+  ai ? ", blocksPlugin, outlinePlugin" : ""
+} } from "@puckeditor/core";
+${
+  ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
+}import { createPagesPlugin } from "@puckeditor/plugin-pages";
+
+import { config } from "../../puck.config";${
+  auth ? `\nimport { requirePuckSession } from "../lib/puck-auth";` : ""
+}
+
+import editorStyles from "@puckeditor/core/puck.css?url";${
+  ai
+    ? `\nimport aiPluginStyles from "@puckeditor/plugin-ai/styles.css?url";`
+    : ""
+}
+import pagesPluginStyles from "@puckeditor/plugin-pages/styles.css?url";
+
+export const Route = createFileRoute("/puck")({${
+  auth
+    ? `
+  beforeLoad: ({ location }) => requirePuckSession({ data: location.href }),`
+    : ""
+}
+  head: () => ({
+    meta: [{ title: "Puck" }],
+    links: [
+      { rel: "stylesheet", href: editorStyles },${
+        ai ? `\n      { rel: "stylesheet", href: aiPluginStyles },` : ""
+      }
+      { rel: "stylesheet", href: pagesPluginStyles },
+    ],
+  }),
+  component: PuckEditorRoute,
+});
+${ai ? `\n${AI_PLUGIN}` : ""}
+// Loads, saves and publishes pages in Puck Cloud. The page to edit is in the
+// path parameter, e.g. /puck?path=/about
+const pagesPlugin = createPagesPlugin();
+${
+  ai
+    ? `
+// Place the ai plugin in the first position in the side nav.
+const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+`
+    : ""
+}
+function PuckEditorRoute() {
+  return <Puck plugins={${
+    ai ? "plugins" : "[pagesPlugin]"
+  }} config={config} data={{}} />;
 }
 `;

@@ -2,7 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { read, run, tmpProject } from "./helpers/harness";
 import { nextPagesEditorPage } from "../src/templates/pages";
-import { nextPuckAuth, reactRouterPuckAuth } from "../src/templates/auth";
+import {
+  nextPuckAuth,
+  reactRouterPuckAuth,
+  tanstackPuckAuth,
+} from "../src/templates/auth";
 
 const KEY = ["--api-key", "sk-valid-key"];
 
@@ -175,6 +179,54 @@ export const POST = GET;
         "app/routes/puck.tsx",
         "app/routes/puck-splat.tsx",
         "app/routes/api.puck.ts",
+      ]) {
+        expect({ file, content: read(authFirst, file) }).toEqual({
+          file,
+          content: read(together, file),
+        });
+      }
+    });
+  });
+
+  describe("tanstack-start", () => {
+    it("gates the editor's loader", async () => {
+      const root = tmpProject({ recipe: "tanstack-start" });
+      const { json } = await run(["add", "auth", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/lib/puck-auth.ts")).toBe(tanstackPuckAuth());
+      expect(read(root, "src/lib/pages.ts")).toContain(
+        "if (isEditorRoute) await requirePuckSession({ data: pathname });"
+      );
+      expect(read(root, "src/routes/$.tsx")).toContain(
+        "plugins={[authPlugin]}"
+      );
+      expect(read(root, "src/routes/api/puck/$.ts")).toContain(
+        "const options: PuckHandlerOptions = { authenticate: puckAuth };"
+      );
+    });
+
+    it("gates the Pages editor, whichever comes first", async () => {
+      const together = tmpProject({ recipe: "tanstack-start" });
+      await run(["add", "pages", "auth", "--yes", "--json", ...KEY], {
+        cwd: together,
+      });
+      expect(read(together, "src/routes/puck.tsx")).toContain(
+        "beforeLoad: ({ location }) => requirePuckSession({ data: location.href }),"
+      );
+
+      const authFirst = tmpProject({ recipe: "tanstack-start" });
+      await run(["add", "auth", "--yes", "--json", ...KEY], { cwd: authFirst });
+      const { json } = await run(["add", "pages", "--yes", "--json"], {
+        cwd: authFirst,
+      });
+      expect(json.status).toBe("success");
+      for (const file of [
+        "src/routes/puck.tsx",
+        "src/routes/$.tsx",
+        "src/lib/pages.ts",
       ]) {
         expect({ file, content: read(authFirst, file) }).toEqual({
           file,
