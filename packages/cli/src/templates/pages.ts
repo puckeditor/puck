@@ -442,3 +442,98 @@ function PuckEditorRoute() {
   }} config={config} data={{}} />;
 }
 `;
+
+/** Vite: src/puck/root.tsx, which opens the editor at /puck */
+export const vitePagesRoot = ({
+  auth,
+}: {
+  auth: boolean;
+}) => `import { lazy, Suspense } from "react";
+import type { ReactNode } from "react";${
+  auth ? `\nimport { RequireSession } from "./require-session";` : ""
+}
+
+// Loaded only when editing, so the editor stays out of your app's bundle
+const Editor = lazy(() => import("./editor"));
+
+/** The path being edited for URLs ending in /edit, e.g. /about/edit */
+export const editorPath = (pathname: string) => {
+  const segments = pathname.split("/");
+  if (segments.at(-1) !== "edit") return null;
+  return segments.slice(0, -1).join("/") || "/";
+};
+
+/** Renders the Puck editor at /puck, and your app everywhere else */
+export function PuckRoot({ children }: { children: ReactNode }) {
+  const { pathname } = window.location;
+  const path = editorPath(pathname);
+
+  // Pages are edited at /puck, which opens the page in the path parameter
+  if (path !== null) {
+    window.location.replace(\`/puck?path=\${encodeURIComponent(path)}\`);
+    return null;
+  }
+  if (pathname !== "/puck") return children;
+
+  return (
+    // Fill the window, whatever layout styles your app gives its root
+    <div style={{ position: "fixed", inset: 0, textAlign: "initial" }}>
+      <Suspense>
+        ${
+          auth
+            ? "<RequireSession>\n          <Editor />\n        </RequireSession>"
+            : "<Editor />"
+        }
+      </Suspense>
+    </div>
+  );
+}
+`;
+
+/** Vite: src/puck/editor.tsx */
+export const vitePagesEditor = ({ ai }: { ai: boolean }) => `import { Puck${
+  ai ? ", blocksPlugin, outlinePlugin" : ""
+} } from "@puckeditor/core";
+${
+  ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
+}import { createPagesPlugin } from "@puckeditor/plugin-pages";
+import "@puckeditor/core/puck.css";${
+  ai ? `\nimport "@puckeditor/plugin-ai/styles.css";` : ""
+}
+import "@puckeditor/plugin-pages/styles.css";
+
+import { config } from "../puck.config";
+${ai ? `\n${AI_PLUGIN}` : ""}
+// Loads, saves and publishes pages in Puck Cloud. The page to edit is in the
+// path parameter, e.g. /puck?path=/about
+const pagesPlugin = createPagesPlugin();
+${
+  ai
+    ? `
+// Place the ai plugin in the first position in the side nav.
+const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+`
+    : ""
+}
+export default function Editor() {
+  return <Puck plugins={${
+    ai ? "plugins" : "[pagesPlugin]"
+  }} config={config} data={{}} />;
+}
+`;
+
+/** Hono: serves pages published in Puck Cloud to an app's renderer */
+export const honoPublishedPages = (
+  host?: string
+) => `// Serves pages published in Puck Cloud
+// Learn more: https://puckeditor.com/docs/cli
+import { Hono } from "hono";
+import { getPage } from "@puckeditor/cloud-client";
+
+export const puckPages = new Hono().get("/api/pages", async (c) => {
+  const path = c.req.query("path") ?? "/";
+  const page = await getPage(${getPageArgs(host)});
+
+  return page ? c.json(page) : c.json({ error: "Not found" }, 404);
+});
+`;

@@ -1,8 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { read, readRecipe, run, tmpProject } from "./helpers/harness";
+import { exists, read, readRecipe, run, tmpProject } from "./helpers/harness";
+import { viteMinimal } from "./helpers/fixtures";
 import {
   cloudPagesServer,
+  honoPublishedPages,
+  vitePagesEditor,
+  vitePagesRoot,
   TANSTACK_PAGES_SPLAT,
   tanstackPagesEditor,
   tanstackPagesLib,
@@ -262,6 +266,56 @@ describe("add pages", () => {
           content: read(aiFirst, file),
         });
       }
+    });
+  });
+
+  describe("vite", () => {
+    it("edits at /puck and serves published pages", async () => {
+      const root = tmpProject({ recipe: "vite" });
+      const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/puck/root.tsx")).toBe(
+        vitePagesRoot({ auth: false })
+      );
+      expect(read(root, "src/puck/editor.tsx")).toBe(
+        vitePagesEditor({ ai: false })
+      );
+      expect(read(root, "server/puck/pages.ts")).toBe(honoPublishedPages());
+
+      const again = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(again.json.changed).toBe(false);
+    });
+
+    it("leaves published pages to a server elsewhere", async () => {
+      const root = tmpProject({ tree: viteMinimal() });
+      await run(
+        [
+          "add",
+          "editor",
+          "--backend",
+          "external",
+          "--backend-url",
+          "http://localhost:3000",
+          "--yes",
+          "--json",
+        ],
+        { cwd: root }
+      );
+      const { json } = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/puck/editor.tsx")).toBe(
+        vitePagesEditor({ ai: false })
+      );
+      expect(exists(root, "server")).toBe(false);
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-PAGES");
     });
   });
 });

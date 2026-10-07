@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import { read, run, tmpProject } from "./helpers/harness";
-import { nextPagesEditorPage } from "../src/templates/pages";
+import { exists, read, run, tmpProject } from "./helpers/harness";
+import { viteMinimal } from "./helpers/fixtures";
+import { nextPagesEditorPage, vitePagesRoot } from "../src/templates/pages";
 import {
   nextPuckAuth,
+  REQUIRE_SESSION,
   reactRouterPuckAuth,
   tanstackPuckAuth,
 } from "../src/templates/auth";
@@ -233,6 +235,59 @@ export const POST = GET;
           content: read(together, file),
         });
       }
+    });
+  });
+
+  describe("vite", () => {
+    it("checks the session before loading the editor", async () => {
+      const root = tmpProject({ recipe: "vite" });
+      const { json } = await run(["add", "auth", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/puck/require-session.tsx")).toBe(REQUIRE_SESSION);
+      expect(read(root, "src/puck/root.tsx")).toContain(`<RequireSession>
+          <Editor path={path} />
+        </RequireSession>`);
+      expect(read(root, "src/puck/editor.tsx")).toContain(
+        "plugins={[authPlugin]}"
+      );
+      expect(read(root, "server/puck/cloud.ts")).toContain(
+        "const options: PuckHandlerOptions = { authenticate: puckAuth };"
+      );
+
+      const pages = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(pages.json.status).toBe("success");
+      expect(read(root, "src/puck/root.tsx")).toBe(
+        vitePagesRoot({ auth: true })
+      );
+    });
+
+    it("leaves the Cloud route to a server elsewhere", async () => {
+      const root = tmpProject({ tree: viteMinimal() });
+      await run(
+        [
+          "add",
+          "editor",
+          "--backend",
+          "external",
+          "--backend-url",
+          "http://localhost:3000",
+          "--yes",
+          "--json",
+        ],
+        { cwd: root }
+      );
+      const { json } = await run(["add", "auth", "--yes", "--json"], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(exists(root, "server")).toBe(false);
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-AUTH");
     });
   });
 });

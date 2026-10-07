@@ -10,7 +10,25 @@ import { ensureMounted, isMounted } from "../ast/server-app";
 import { templateText } from "../templates/source";
 import { withCloudHost, withoutAiOptions } from "../templates/cloud";
 import { LOCAL_PAGES_MODULE } from "../templates/client";
-import { CORE_PACKAGE, ENV_KEY, PLUGIN_AI_PACKAGE } from "../constants";
+import {
+  CORE_PACKAGE,
+  ENV_KEY,
+  PLUGIN_AI_PACKAGE,
+  PLUGIN_AUTH_PACKAGE,
+  PLUGIN_PAGES_PACKAGE,
+} from "../constants";
+import {
+  honoPublishedPages,
+  vitePagesEditor,
+  vitePagesRoot,
+} from "../templates/pages";
+import { REQUIRE_SESSION } from "../templates/auth";
+import {
+  planAuthPlugin,
+  planRouteAuth,
+  warnLocalPages,
+  withAuthPlugin,
+} from "./pages-auth";
 import {
   configModuleTarget,
   configRelocation,
@@ -21,6 +39,8 @@ import {
   TemplateFile,
   upgradeTemplateFile,
   planAiRoute,
+  flagCombos,
+  upgradeVariant,
 } from "./shared";
 import { planOptimizeDeps } from "./vite";
 import { AI_SNIPPET } from "./ai";
@@ -86,6 +106,7 @@ const viteRelocation = (p: Planner, info: ViteInfo): RelocateContext => {
     moduleMap: {
       "src/puck/pages": moduleId("src/puck/pages"),
       "src/puck/editor": moduleId("src/puck/editor"),
+      "src/puck/require-session": moduleId("src/puck/require-session"),
       "src/puck.config": configModuleTarget(p, to("src/puck.config.tsx")),
     },
     config: configRelocation(p),
@@ -357,10 +378,12 @@ export const planViteAi = (p: Planner, info: ViteInfo) => {
       summary,
     });
 
-  const editor = upgrade(
-    "src/puck/editor.tsx",
-    `Add the Puck AI plugin to ${to("src/puck/editor.tsx")}`
-  );
+  const editor = upgradeVariant(p, {
+    ...editorVariants(p, info),
+    want: { ai: true },
+    capability: "ai",
+    summary: `Add the Puck AI plugin to ${to(EDITOR)}`,
+  });
   planOptimizeDeps(p, info, [CORE_PACKAGE, PLUGIN_AI_PACKAGE], "ai");
 
   if (editor === "upgraded" || editor === "already") {
@@ -383,6 +406,170 @@ export const planViteAi = (p: Planner, info: ViteInfo) => {
     instructions: `Add the Puck AI plugin to the <Puck> editor in ${file}, import "@puckeditor/plugin-ai/styles.css", and wrap the config with withDynamicConfig wherever you <Render> Puck pages.`,
     snippet: AI_SNIPPET,
   });
+};
+
+const ROOT = "src/puck/root.tsx";
+const EDITOR = "src/puck/editor.tsx";
+const PAGES_API = "server/puck/pages.ts";
+
+type Flags = { ai: boolean; pages: boolean; auth: boolean };
+
+/** Gates the recipe's editor behind Sign in with Puck */
+const gateRecipeRoot = (code: string) =>
+  code
+    .replace(
+      'import type { ReactNode } from "react";',
+      'import type { ReactNode } from "react";\nimport { RequireSession } from "./require-session";'
+    )
+    .replace(
+      "<Editor path={path} />",
+      "<RequireSession>\n          <Editor path={path} />\n        </RequireSession>"
+    );
+
+/** Every version of root.tsx the CLI writes */
+const rootVariants = (p: Planner, info: ViteInfo) => ({
+  from: ROOT,
+  to: locate(info)(ROOT),
+  opts: viteRelocation(p, info),
+  combos: flagCombos("pages", "auth"),
+  source: ({ pages, auth }: Omit<Flags, "ai">) => {
+    if (pages) return vitePagesRoot({ auth });
+    const code = templateText(p.templates, "vite", ROOT);
+    return auth ? gateRecipeRoot(code) : code;
+  },
+});
+
+/** Every version of editor.tsx the CLI writes */
+const editorVariants = (p: Planner, info: ViteInfo) => ({
+  from: EDITOR,
+  to: locate(info)(EDITOR),
+  opts: viteRelocation(p, info),
+  combos: flagCombos("ai", "pages", "auth"),
+  source: ({ ai, pages, auth }: Flags) => {
+    const code = pages
+      ? vitePagesEditor({ ai })
+      : templateText(p.templates, ai ? "vite-ai" : "vite", EDITOR);
+    return auth ? withAuthPlugin(code, EDITOR) : code;
+  },
+});
+
+/** Edits at /puck with the Pages plugin, and serves published pages */
+export const planVitePages = (p: Planner, info: ViteInfo) => {
+  const to = locate(info);
+  const manual = (file: string, snippet: string) =>
+    p.manual({
+      id: `pages:${file}`,
+      type: "manual_edit",
+      capability: "pages",
+      required: true,
+      file,
+      reason: "unsupported_shape",
+      message: `${file} was customised or moved, so it wasn't changed to use Puck Pages.`,
+      instructions: `Update ${file} to match this version, which uses pages stored in Puck Cloud.`,
+      snippet,
+    });
+  const failed = (outcome: string) =>
+    outcome === "customized" || outcome === "missing";
+
+  const want = { pages: true };
+  if (
+    failed(
+      upgradeVariant(p, {
+        ...editorVariants(p, info),
+        want,
+        capability: "pages",
+        summary: `Add the Puck Pages plugin to ${to(EDITOR)}`,
+      })
+    )
+  )
+    manual(to(EDITOR), vitePagesEditor({ ai: false }));
+  if (
+    failed(
+      upgradeVariant(p, {
+        ...rootVariants(p, info),
+        want,
+        capability: "pages",
+        summary: `Open the Puck Pages editor at /puck in ${to(ROOT)}`,
+      })
+    )
+  )
+    manual(to(ROOT), vitePagesRoot({ auth: false }));
+
+  // PuckPage loads pages from /api/pages, served by the app's server
+  if (modeOf(p, info) === "external") {
+    p.warn(
+      "PUCK-CLI-W-EXTERNAL-PAGES",
+      `Pages are loaded from ${
+        p.backend?.url ?? "the server /api is proxied to"
+      }. Run \`npx @puckeditor/cli add pages\` in that server's project, so /api/pages serves pages published in Puck Cloud.`
+    );
+  } else {
+    const api = upgradeVariant(p, {
+      from: PAGES_API,
+      to: PAGES_API,
+      opts: { moduleMap: {} },
+      combos: [{ pages: false }, { pages: true }],
+      source: ({ pages }) =>
+        pages
+          ? honoPublishedPages(p.cloudHost)
+          : templateText(p.templates, "vite", PAGES_API),
+      want,
+      capability: "pages",
+      summary: `Serve pages published in Puck Cloud from ${PAGES_API}`,
+    });
+    if (failed(api)) manual(PAGES_API, honoPublishedPages(p.cloudHost));
+    planRouteAuth(p, "unowned", "pages");
+    warnLocalPages(p);
+  }
+
+  planOptimizeDeps(p, info, [PLUGIN_PAGES_PACKAGE], "pages");
+};
+
+/** Requires Sign in with Puck to edit, and for the Cloud route */
+export const planViteAuth = (p: Planner, info: ViteInfo) => {
+  const to = locate(info);
+  p.createFile(to("src/puck/require-session.tsx"), REQUIRE_SESSION, {
+    capability: "auth",
+    summary: `Create ${to(
+      "src/puck/require-session.tsx"
+    )} (sends signed-out visitors to Sign in with Puck)`,
+  });
+
+  const gate = upgradeVariant(p, {
+    ...rootVariants(p, info),
+    want: { auth: true },
+    capability: "auth",
+    summary: `Require Sign in with Puck to edit in ${to(ROOT)}`,
+  });
+  if (gate === "customized" || gate === "missing") {
+    p.manual({
+      id: "auth:editor-gate",
+      type: "manual_edit",
+      capability: "auth",
+      required: false,
+      file: to(ROOT),
+      reason: "unsupported_shape",
+      message:
+        "Your editor was customised, so it doesn't send signed-out visitors to sign in.",
+      instructions:
+        "Wrap your editor in <RequireSession>. The Puck Cloud API route already requires Sign in with Puck.",
+      snippet: `import { RequireSession } from "./require-session";\n\n<RequireSession>\n  <Editor />\n</RequireSession>\n`,
+    });
+  }
+
+  planAuthPlugin(p, to(EDITOR));
+  planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
+
+  if (modeOf(p, info) === "external") {
+    p.warn(
+      "PUCK-CLI-W-EXTERNAL-AUTH",
+      `Puck Cloud requests go to ${
+        p.backend?.url ?? "the server /api is proxied to"
+      }. Run \`npx @puckeditor/cli add auth\` in that server's project to require Sign in with Puck there.`
+    );
+  } else {
+    planRouteAuth(p, "puckAuth", "auth");
+  }
 };
 
 export const viteAdapter: FrameworkAdapter<ViteInfo> = {
@@ -417,6 +604,8 @@ export const viteAdapter: FrameworkAdapter<ViteInfo> = {
   planEditor: planViteEditor,
   planCloudRoute: planViteCloudRoute,
   planAi: planViteAi,
+  planPages: planVitePages,
+  planAuth: planViteAuth,
   devUrl: "http://localhost:5173/edit",
   deployEnvWarning: `npm start runs server/prod.ts. Set ${ENV_KEY} in the environment wherever it runs.`,
 };

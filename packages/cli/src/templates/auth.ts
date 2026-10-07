@@ -193,3 +193,30 @@ export const requirePuckSession = createServerFn({ method: "GET" })
   });
 `;
 };
+
+/** Apps without a server render: src/puck/require-session.tsx */
+export const REQUIRE_SESSION = `import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+
+/**
+ * Sends anyone who isn't signed in with Puck to sign in, then back here. The
+ * Puck Cloud API route checks the session too, so this only saves signed-out
+ * visitors from an editor they can't use.
+ */
+export function RequireSession({ children }: { children: ReactNode }) {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/puck/auth/session").then((response) => {
+      if (response.ok) return setSignedIn(true);
+
+      const returnTo = \`\${window.location.pathname}\${window.location.search}\`;
+      window.location.assign(
+        \`/api/puck/auth/login?returnTo=\${encodeURIComponent(returnTo)}\`
+      );
+    });
+  }, []);
+
+  return signedIn ? children : null;
+}
+`;
