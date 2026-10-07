@@ -14,10 +14,23 @@ import {
   planPuckConfig,
   RelocateContext,
   TemplateFile,
-  planAiRoute,
+  flagCombos,
   upgradeTemplateFile,
+  upgradeVariant,
+  planAiRoute,
 } from "./shared";
 import { AI_SNIPPET, RENDER_AI_SNIPPET } from "./ai";
+import {
+  NEXT_PAGES_PROXY,
+  nextPagesEditorClient,
+  nextPagesEditorPage,
+  nextPagesRenderPage,
+} from "../templates/pages";
+import {
+  planRouteAuth,
+  warnLocalPages,
+  withAuthPlugin,
+} from "./pages-auth";
 
 export const NEXT_CLOUD_ROUTE_FILE = (appDir: string) =>
   `${appDir}/api/puck/[...all]/route.ts`;
@@ -96,6 +109,7 @@ const nextRelocation = (p: Planner, info: NextLikeInfo): RelocateContext => {
       "app/puck/[...puckPath]/client": `${A}/puck/[...puckPath]/client`,
       "app/page": `${A}/page`,
       "lib/get-page": `${lib}/get-page`,
+      "lib/puck-auth": `${lib}/puck-auth`,
       "puck.config": configModuleTarget(p),
     },
     config: configRelocation(p),
@@ -118,8 +132,11 @@ const conflictingSegments = (p: Planner, appDir: string) => {
   return found;
 };
 
-const proxySource = (p: Planner, info: NextLikeInfo) => {
-  const code = templateText(p.templates, "next", "proxy.ts");
+const proxySource = (
+  p: Planner,
+  info: NextLikeInfo,
+  code = templateText(p.templates, "next", "proxy.ts")
+) => {
   if (info.proxyKind === "proxy") return code;
 
   // Next.js 15 calls the same file middleware.ts with a `middleware` export
@@ -136,6 +153,16 @@ const proxySource = (p: Planner, info: NextLikeInfo) => {
     }
   }
   return code;
+};
+
+const findProxy = (p: Planner) =>
+  PROXY_FILES.flatMap((f) => [f, `src/${f}`]).find((f) =>
+    p.vfs.exists(p.abs(f))
+  );
+
+const proxyFile = (info: NextLikeInfo) => {
+  const name = `${info.proxyKind}.ts`;
+  return info.baseDir ? `${info.baseDir}/${name}` : name;
 };
 
 export const planNextEditor = (
@@ -205,12 +232,8 @@ export const planNextEditor = (
   planPuckConfig(p, recipe);
   copyTemplateFiles(p, recipe, files, nextRelocation(p, info));
 
-  const proxyDir = info.baseDir;
-  const existingProxy = PROXY_FILES.flatMap((f) => [f, `src/${f}`]).find((f) =>
-    p.vfs.exists(p.abs(f))
-  );
-  const proxyName = `${info.proxyKind}.ts`;
-  const proxyRel = proxyDir ? `${proxyDir}/${proxyName}` : proxyName;
+  const existingProxy = findProxy(p);
+  const proxyRel = proxyFile(info);
 
   if (existingProxy) {
     p.manual({
@@ -299,20 +322,25 @@ export const planNextAi = (p: Planner, info: NextLikeInfo) => {
       summary,
     });
 
-  const editor = upgrade(
-    "app/puck/[...puckPath]/client.tsx",
-    `Add the Puck AI plugin to ${A}/puck/[...puckPath]/client.tsx`
-  );
-  upgrade(
-    "app/puck/[...puckPath]/page.tsx",
-    `Load Puck AI styles in ${A}/puck/[...puckPath]/page.tsx`
-  );
+  const editor = upgradeEditor(p, info, EDITOR_CLIENT, {
+    want: { ai: true },
+    capability: "ai",
+    summary: `Add the Puck AI plugin to ${A}/puck/[...puckPath]/client.tsx`,
+  });
+  upgradeEditor(p, info, EDITOR_PAGE, {
+    want: { ai: true },
+    capability: "ai",
+    summary: `Load Puck AI styles in ${A}/puck/[...puckPath]/page.tsx`,
+  });
   const render = upgrade(
     "app/[...puckPath]/client.tsx",
     `Render AI-designed components in ${A}/[...puckPath]/client.tsx`
   );
 
-  if (editor === "upgraded" || editor === "already") {
+  const pages = p.state.scan.pagesPluginFiles.length > 0;
+  if (pages && (editor === "upgraded" || editor === "already")) {
+    // Pages are saved to Puck Cloud
+  } else if (editor === "upgraded" || editor === "already") {
     // The AI editor saves to /api/pages
     copyTemplateFiles(
       p,
@@ -354,6 +382,165 @@ export const planNextAi = (p: Planner, info: NextLikeInfo) => {
   }
 };
 
+const EDITOR_CLIENT = "app/puck/[...puckPath]/client.tsx";
+const EDITOR_PAGE = "app/puck/[...puckPath]/page.tsx";
+const RENDER_PAGE = "app/[...puckPath]/page.tsx";
+
+type EditorFlags = { ai: boolean; pages: boolean; auth: boolean };
+
+const recipeText = (p: Planner, ai: boolean, file: string) =>
+  templateText(p.templates, ai ? "next-ai" : "next", file);
+
+const GET_PAGE_IMPORT = 'import { getPage } from "../../../lib/get-page";';
+
+/** Gates the recipe's editor behind Sign in with Puck */
+const gateRecipeEditorPage = (recipe: string) => {
+  const code = recipe
+    .replace(
+      GET_PAGE_IMPORT,
+      `${GET_PAGE_IMPORT}\nimport { requirePuckSession } from "../../../lib/puck-auth";`
+    )
+    .replace(
+      "NB this route is public, and you will need to add authentication",
+      "Editing requires signing in with a Puck Cloud account in your organization."
+    );
+  const path = 'const path = `/${puckPath.join("/")}`;';
+  const at =
+    code.indexOf(path, code.indexOf("export default async function Page")) +
+    path.length;
+  return `${code.slice(0, at)}
+  await requirePuckSession(\`\${path.replace(/\\/$/, "")}/edit\`);${code.slice(
+    at
+  )}`;
+};
+
+/** Every version of the editor's files the CLI writes */
+const EDITOR_SOURCES: Record<
+  string,
+  (p: Planner) => (flags: EditorFlags) => string
+> = {
+  [EDITOR_CLIENT]:
+    (p) =>
+    ({ ai, pages, auth }) => {
+      const code = pages
+        ? nextPagesEditorClient({ ai })
+        : recipeText(p, ai, EDITOR_CLIENT);
+      return auth ? withAuthPlugin(code, EDITOR_CLIENT) : code;
+    },
+  [EDITOR_PAGE]:
+    (p) =>
+    ({ ai, pages, auth }) => {
+      if (pages) return nextPagesEditorPage({ ai, auth });
+      const code = recipeText(p, ai, EDITOR_PAGE);
+      return auth ? gateRecipeEditorPage(code) : code;
+    },
+};
+
+const upgradeEditor = (
+  p: Planner,
+  info: NextLikeInfo,
+  from: string,
+  {
+    want,
+    capability,
+    summary,
+  }: {
+    want: Partial<EditorFlags>;
+    capability: "ai" | "pages" | "auth";
+    summary: string;
+  }
+) =>
+  upgradeVariant(p, {
+    from,
+    to: from.replace(/^app\//, `${info.appDir}/`),
+    opts: nextRelocation(p, info),
+    combos: flagCombos("ai", "pages", "auth"),
+    source: EDITOR_SOURCES[from](p),
+    want,
+    capability,
+    summary,
+  });
+
+/** Moves the editor and the public pages to Puck Cloud */
+export const planNextPages = (p: Planner, info: NextLikeInfo) => {
+  const A = info.appDir;
+  const opts = nextRelocation(p, info);
+  const manual = (file: string, snippet: string, required = true) =>
+    p.manual({
+      id: `pages:${file}`,
+      type: "manual_edit",
+      capability: "pages",
+      required,
+      file,
+      reason: "unsupported_shape",
+      message: `${file} was customised or moved, so it wasn't changed to use Puck Pages.`,
+      instructions: `Update ${file} to match this version, which uses pages stored in Puck Cloud.`,
+      snippet,
+    });
+
+  const client = upgradeEditor(p, info, EDITOR_CLIENT, {
+    want: { pages: true },
+    capability: "pages",
+    summary: `Add the Puck Pages plugin to ${A}/puck/[...puckPath]/client.tsx`,
+  });
+  if (client === "customized" || client === "missing")
+    manual(
+      `${A}/puck/[...puckPath]/client.tsx`,
+      nextPagesEditorClient({ ai: false })
+    );
+
+  const page = upgradeEditor(p, info, EDITOR_PAGE, {
+    want: { pages: true },
+    capability: "pages",
+    summary: `Open pages from Puck Cloud in ${A}/puck/[...puckPath]/page.tsx`,
+  });
+  if (page === "customized" || page === "missing")
+    manual(
+      `${A}/puck/[...puckPath]/page.tsx`,
+      nextPagesEditorPage({ ai: false, auth: false })
+    );
+
+  const render = upgradeVariant(p, {
+    from: RENDER_PAGE,
+    to: `${A}/[...puckPath]/page.tsx`,
+    opts,
+    combos: [{ pages: false }, { pages: true }],
+    source: ({ pages }) =>
+      pages
+        ? nextPagesRenderPage(p.cloudHost)
+        : templateText(p.templates, "next", RENDER_PAGE),
+    want: { pages: true },
+    capability: "pages",
+    summary: `Render pages published in Puck Cloud in ${A}/[...puckPath]/page.tsx`,
+  });
+  if (render === "customized" || render === "missing")
+    manual(`${A}/[...puckPath]/page.tsx`, nextPagesRenderPage(p.cloudHost));
+
+  // /<path>/edit opens the editor at /puck?path=<path>
+  const proxy = findProxy(p) ?? proxyFile(info);
+  const proxyOutcome = p.vfs.exists(p.abs(proxy))
+    ? upgradeVariant(p, {
+        from: "proxy.ts",
+        to: proxy,
+        opts,
+        combos: [{ pages: false }, { pages: true }],
+        source: ({ pages }) =>
+          proxySource(p, info, pages ? NEXT_PAGES_PROXY : undefined),
+        want: { pages: true },
+        capability: "pages",
+        summary: `Redirect /<path>/edit to the Puck Pages editor in ${proxy}`,
+      })
+    : p.createFile(proxy, proxySource(p, info, NEXT_PAGES_PROXY), {
+        capability: "pages",
+        summary: `Create ${proxy} (redirects /<path>/edit to the editor)`,
+      });
+  if (proxyOutcome === "customized")
+    manual(proxy, proxySource(p, info, NEXT_PAGES_PROXY), false);
+
+  planRouteAuth(p, "unowned", "pages");
+  warnLocalPages(p);
+};
+
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   recipe: (withAi) => (withAi ? "next-ai" : "next"),
   recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
@@ -371,6 +558,7 @@ export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   planEditor: planNextEditor,
   planCloudRoute: planNextCloudRoute,
   planAi: planNextAi,
+  planPages: planNextPages,
   devUrl: "http://localhost:3000/edit",
   deployEnvWarning:
     "Set PUCK_API_KEY in your hosting provider's environment variables before deploying.",
