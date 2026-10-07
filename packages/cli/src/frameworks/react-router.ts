@@ -4,8 +4,9 @@ import type { Planner } from "../plan/planner";
 import type { CapabilityId } from "../result";
 import { hasRoute, insertRoute, RouteEntry } from "../ast/react-router-routes";
 import { REACT_ROUTER_CLOUD_ROUTE, withCloudHost } from "../templates/cloud";
-import type { FrameworkAdapter } from "./adapter";
+import type { FrameworkAdapter, LegacyScaffold } from "./adapter";
 import { findCloudRoute } from "./adapter";
+import { versionOf } from "../detect/package-json";
 import {
   CORE_PACKAGE,
   MANUAL_INTEGRATION_DOCS_URL,
@@ -344,8 +345,43 @@ export const planReactRouterAi = (p: Planner, info: ReactRouterInfo) => {
   });
 };
 
+const REACT_ROUTER_7 = "^7.18.0";
+
+/** What React Router 8 does by default, which stops 7 warning about each */
+const V8_FUTURE_FLAGS = `  future: {
+    v8_middleware: true,
+    v8_splitRouteModules: true,
+    v8_viteEnvironmentApi: true,
+    v8_passThroughRequests: true,
+    v8_trailingSlashAwareDataRequests: true,
+  },
+`;
+
+/** React Router 8 needs Node 22.22+, so older Nodes get React Router 7 */
+export const reactRouterLegacyScaffold = (
+  nodeVersion: string
+): LegacyScaffold | null => {
+  const [major, minor] = versionOf(nodeVersion) ?? [0, 0];
+  if (major > 22 || (major === 22 && minor >= 22)) return null;
+  return {
+    dependencies: {
+      "react-router": REACT_ROUTER_7,
+      "@react-router/node": REACT_ROUTER_7,
+      "@react-router/serve": REACT_ROUTER_7,
+      "@react-router/dev": REACT_ROUTER_7,
+    },
+    node: ">=20.0.0",
+    files: {
+      "react-router.config.ts": (text) =>
+        text.replace(/^} satisfies Config;/m, `${V8_FUTURE_FLAGS}$&`),
+    },
+    warning: `React Router 8 needs Node 22.22 or later, and this is Node ${nodeVersion}, so the app uses React Router 7. To move to React Router 8, upgrade Node and update react-router, @react-router/node, @react-router/serve and @react-router/dev to ^8.`,
+  };
+};
+
 export const reactRouterAdapter: FrameworkAdapter<ReactRouterInfo> = {
   recipe: (withAi) => (withAi ? "react-router-ai" : "react-router"),
+  legacyScaffold: reactRouterLegacyScaffold,
   recipeCloudRoute: REACT_ROUTER_CLOUD_ROUTE_FILE("app"),
   appDir: (info) => info.appDir,
   configDirs: (info) => ["", "src", info.appDir],

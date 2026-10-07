@@ -16,6 +16,7 @@ import { detectProject, ProjectContext } from "../detect/project";
 import { capabilityStatus, detectState } from "../detect/state";
 import { FRAMEWORK_LABELS, SUPPORTED_FRAMEWORKS } from "../detect/framework";
 import { ADAPTERS, adapterFor } from "../frameworks";
+import type { LegacyScaffold } from "../frameworks/adapter";
 import { Planner } from "../plan/planner";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
 import { planEnvWrite, planGitignore } from "../plan/env";
@@ -139,17 +140,19 @@ export const runMutation = async (
     : undefined;
 
   let scaffoldStep: PlanStep | null = null;
+  let legacy: LegacyScaffold | null = null;
   if (bootstrap) {
+    const adapter = ADAPTERS[bootstrap.framework];
     // With Puck Cloud, start from the AI recipe: the known-good editor + Cloud + AI setup
-    const recipe = ADAPTERS[bootstrap.framework].recipe(
-      input.requested.includes("ai")
-    );
+    const recipe = adapter.recipe(input.requested.includes("ai"));
+    legacy = adapter.legacyScaffold?.(deps.nodeVersion) ?? null;
     const { files } = scaffoldApp(vfs, deps.templates, {
       recipe,
       dir: bootstrap.dir,
       appName: bootstrap.appName,
       cliVersion: deps.cliVersion,
       cloudHost,
+      legacy,
     });
     scaffoldStep = {
       id: "bootstrap:scaffold",
@@ -180,6 +183,7 @@ export const runMutation = async (
   planner.scaffolded = Boolean(bootstrap);
   planner.cloudHost = cloudHost;
 
+  if (legacy) planner.warn("PUCK-CLI-W-NODE-VERSION", legacy.warning);
   for (const warning of ctx.warnings)
     planner.warn("PUCK-CLI-W-DETECTION", warning);
 

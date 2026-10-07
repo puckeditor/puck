@@ -1,9 +1,15 @@
+import type { LegacyScaffold } from "../frameworks/adapter";
+
 const WORKSPACE_PROTOCOL = /^workspace:/;
 
 /** Recipe package.json → standalone app package.json */
 export const transformPackageJson = (
   text: string,
-  { appName, cliVersion }: { appName: string; cliVersion: string }
+  {
+    appName,
+    cliVersion,
+    legacy,
+  }: { appName: string; cliVersion: string; legacy?: LegacyScaffold | null }
 ) => {
   const pkg = JSON.parse(text);
   pkg.name = appName;
@@ -15,6 +21,7 @@ export const transformPackageJson = (
     // Monorepo-only tooling
     delete deps["eslint-config-custom"];
     for (const [name, range] of Object.entries(deps)) {
+      if (legacy?.dependencies[name]) deps[name] = legacy.dependencies[name];
       if (!WORKSPACE_PROTOCOL.test(range)) continue;
       deps[name] = `^${cliVersion}`;
       pinned.push(name);
@@ -29,6 +36,8 @@ export const transformPackageJson = (
       ...Object.fromEntries(pinned.map((name) => [name, `$${name}`])),
     };
   }
+
+  if (legacy) pkg.engines = { ...pkg.engines, node: legacy.node };
 
   // The recipe's lint script depends on the monorepo eslint config
   if (pkg.scripts?.lint === "eslint") delete pkg.scripts.lint;

@@ -297,6 +297,7 @@ export interface RunOptions {
   prompter?: Prompter;
   now?: () => number;
   docs?: DocsSource;
+  nodeVersion?: string;
 }
 
 export interface RunOutput {
@@ -361,7 +362,7 @@ export const run = async (
     hostname: "test-host",
     platform: "linux",
     arch: "x64",
-    nodeVersion: "20.19.0",
+    nodeVersion: opts.nodeVersion ?? "20.19.0",
     now: opts.now ?? (() => Date.now()),
     sleep: async () => undefined,
   };

@@ -21,6 +21,17 @@ export interface PagesDetection {
   mounted: boolean;
 }
 
+/** Older framework versions to scaffold when the recipe's need a newer Node */
+export interface LegacyScaffold {
+  /** Package name → range, replacing the recipe's */
+  dependencies: Record<string, string>;
+  /** package.json `engines.node` */
+  node: string;
+  /** Recipe-relative path → rewrite of its contents */
+  files: Record<string, (text: string) => string>;
+  warning: string;
+}
+
 /** Everything the CLI does differently per framework */
 export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
   /**
@@ -30,6 +41,8 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
    */
   kind?: "server";
   recipe: (withAi: boolean) => RecipeName;
+  /** For new apps, when this Node can't run the recipe's framework version */
+  legacyScaffold?: (nodeVersion: string) => LegacyScaffold | null;
   /** Recipe-relative path of the Puck Cloud route, pointed at PUCK_CLOUD_URL when scaffolding */
   recipeCloudRoute: string;
   /** Project-relative directory the app's source lives in, for the JSON output */

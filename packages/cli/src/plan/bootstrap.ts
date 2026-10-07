@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { Vfs } from "../io/vfs";
 import type { RecipeName, TemplateSource } from "../templates/source";
+import type { LegacyScaffold } from "../frameworks/adapter";
 import {
   transformPackageJson,
   transformTsconfig,
@@ -31,12 +32,14 @@ export const scaffoldApp = (
     appName,
     cliVersion,
     cloudHost,
+    legacy,
   }: {
     recipe: RecipeName;
     dir: string;
     appName: string;
     cliVersion: string;
     cloudHost?: string;
+    legacy?: LegacyScaffold | null;
   }
 ) => {
   const files = templates.list(recipe);
@@ -45,10 +48,17 @@ export const scaffoldApp = (
     const target = path.join(dir, ...rel.split("/"));
     const raw = templates.read(recipe, rel);
 
-    if (rel === "package.json") {
+    const legacyFile = legacy?.files[rel];
+    if (legacyFile) {
+      vfs.write(target, legacyFile(raw.toString("utf8")));
+    } else if (rel === "package.json") {
       vfs.write(
         target,
-        transformPackageJson(raw.toString("utf8"), { appName, cliVersion })
+        transformPackageJson(raw.toString("utf8"), {
+          appName,
+          cliVersion,
+          legacy,
+        })
       );
     } else if (rel === "tsconfig.json") {
       vfs.write(target, transformTsconfig(raw.toString("utf8")));

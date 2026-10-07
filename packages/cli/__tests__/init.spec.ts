@@ -124,6 +124,51 @@ describe("init", () => {
     }
   );
 
+  it.each([
+    ["20.19.0", "^7.18.0", ">=20.0.0", true],
+    ["22.21.1", "^7.18.0", ">=20.0.0", true],
+    ["22.22.0", "^8.4.0", ">=22.22.0", false],
+    ["24.1.0", "^8.4.0", ">=22.22.0", false],
+  ] as const)(
+    "scaffolds React Router for Node %s with %s",
+    async (nodeVersion, range, engine, warned) => {
+      const root = tmpProject("empty");
+      fs.writeFileSync(path.join(root, "README.md"), "workspace");
+
+      const { json } = await run(
+        [
+          "init",
+          "--yes",
+          "--json",
+          "--no-ai",
+          "--framework",
+          "react-router",
+          "--name",
+          "site",
+        ],
+        { cwd: root, nodeVersion }
+      );
+
+      expect(json.status).toBe("success");
+      const pkg = JSON.parse(read(path.join(root, "site"), "package.json"));
+      for (const name of [
+        "react-router",
+        "@react-router/node",
+        "@react-router/serve",
+      ])
+        expect(pkg.dependencies[name]).toBe(range);
+      expect(pkg.devDependencies["@react-router/dev"]).toBe(range);
+      expect(pkg.engines.node).toBe(engine);
+      // React Router 7 opts in to 8's behavior, so it doesn't warn about each flag
+      const config = read(path.join(root, "site"), "react-router.config.ts");
+      expect(config.includes("v8_middleware: true")).toBe(warned);
+      expect(config).toMatch(/\} satisfies Config;\n$/);
+      expect(
+        json.warnings.filter((w) => w.code === "PUCK-CLI-W-NODE-VERSION")
+      ).toHaveLength(warned ? 1 : 0);
+    }
+  );
+
   it("scaffolds in place into an empty directory, named after it", async () => {
     const root = tmpProject("empty");
     const { json } = await run(
