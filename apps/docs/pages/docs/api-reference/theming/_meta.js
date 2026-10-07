@@ -11,6 +11,7 @@ const menu = {
   "plugin-bar": {},
   sidebar: {},
   slot: {},
+  tabs: {},
   "computed-values": {},
 };
 
