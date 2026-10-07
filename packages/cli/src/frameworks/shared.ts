@@ -177,6 +177,7 @@ export const upgradeVariant = <F extends object>(
     want,
     capability,
     summary,
+    onMatch,
   }: {
     from: string;
     to: string;
@@ -186,6 +187,8 @@ export const upgradeVariant = <F extends object>(
     want: Partial<F>;
     capability: CapabilityId;
     summary: string;
+    /** Called with the flags of the version the file matched */
+    onMatch?: (flags: F) => void;
   }
 ): UpgradeOutcome => {
   const current = p.vfs.readText(p.abs(to));
@@ -205,6 +208,7 @@ export const upgradeVariant = <F extends object>(
       (code) => code !== null && same(current, code)
     );
     if (form === -1) continue;
+    onMatch?.(combo);
 
     const wanted = forms({ ...combo, ...want });
     const code = wanted && [wanted.relocated, wanted.verbatim][form];
