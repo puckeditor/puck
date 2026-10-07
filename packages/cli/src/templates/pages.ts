@@ -643,3 +643,27 @@ if (signIn) return Astro.redirect(signIn);
   </body>
 </html>
 `;
+
+/** Express: serves pages published in Puck Cloud to an app's renderer */
+export const expressPublishedPages = (
+  host?: string
+) => `// Serves pages published in Puck Cloud
+// Learn more: https://puckeditor.com/docs/cli
+import express from "express";
+import { getPage } from "@puckeditor/cloud-client";
+
+export const puckPages = express.Router();
+
+puckPages.get("/api/pages", async (req, res, next) => {
+  // Express 4 doesn't pass errors from async handlers to next()
+  try {
+    const path = typeof req.query.path === "string" ? req.query.path : "/";
+    const page = await getPage(${getPageArgs(host)});
+
+    if (page) res.json(page);
+    else res.status(404).json({ error: "Not found" });
+  } catch (error) {
+    next(error);
+  }
+});
+`;

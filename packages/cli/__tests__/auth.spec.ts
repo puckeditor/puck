@@ -321,4 +321,20 @@ export const POST = GET;
       );
     });
   });
+
+  it.each(["hono", "express-ai"])(
+    "requires Sign in with Puck in the %s Cloud route",
+    async (recipe) => {
+      const root = tmpProject({ recipe });
+      const { json } = await run(["add", "auth", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/puck/cloud.ts")).toContain(
+        "authenticate: puckAuth"
+      );
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-AUTH-EDITOR");
+    }
+  );
 });

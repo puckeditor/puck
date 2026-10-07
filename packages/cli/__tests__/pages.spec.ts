@@ -8,6 +8,7 @@ import {
   astroPagesEditorPage,
   astroPagesLib,
   cloudPagesServer,
+  expressPublishedPages,
   honoPublishedPages,
   vitePagesEditor,
   vitePagesRoot,
@@ -373,6 +374,28 @@ describe("add pages", () => {
         astroPagesEditorPage({ server: false, auth: false })
       );
       expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-PAGES");
+    });
+  });
+
+  describe.each([
+    ["hono", honoPublishedPages],
+    ["express", expressPublishedPages],
+  ] as const)("%s", (recipe, published) => {
+    it("serves pages published in Puck Cloud", async () => {
+      const root = tmpProject({ recipe });
+      const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, "src/puck/pages.ts")).toBe(published());
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-PAGES-EDITOR");
+      expect(codes(json.warnings)).not.toContain("PUCK-CLI-W-PAGES-PUBLIC");
+
+      const again = await run(["add", "pages", "--yes", "--json"], {
+        cwd: root,
+      });
+      expect(again.json.changed).toBe(false);
     });
   });
 });

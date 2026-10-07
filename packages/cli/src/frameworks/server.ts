@@ -8,7 +8,9 @@ import { findCloudRoute } from "./adapter";
 import { ensureMounted, isMounted } from "../ast/server-app";
 import { templateText } from "../templates/source";
 import { withCloudHost, withoutAiOptions } from "../templates/cloud";
-import { copyTemplateFiles, planAiRoute } from "./shared";
+import { copyTemplateFiles, planAiRoute, upgradeVariant } from "./shared";
+import { expressPublishedPages, honoPublishedPages } from "../templates/pages";
+import { planRouteAuth, warnLocalPages } from "./pages-auth";
 import { ENV_KEY } from "../constants";
 
 type ServerInfo = HonoInfo | ExpressInfo;
@@ -227,6 +229,59 @@ const serverPlanner = (id: "hono" | "express") => {
     planEnvLoading(p, info);
   };
 
+  /** The pages API serves pages published in Puck Cloud, read-only */
+  const planPages = (p: Planner, info: ServerInfo) => {
+    const file = `${puckDir(p.vfs, p.ctx.root, info)}/pages.ts`;
+    const published = (host?: string) =>
+      id === "hono" ? honoPublishedPages(host) : expressPublishedPages(host);
+    const outcome = upgradeVariant(p, {
+      from: PAGES.from,
+      to: file,
+      opts: { moduleMap: {} },
+      combos: [{ pages: false }, { pages: true }],
+      source: ({ pages }) =>
+        pages
+          ? published(p.cloudHost)
+          : templateText(p.templates, recipe, PAGES.from),
+      want: { pages: true },
+      capability: "pages",
+      summary: `Serve pages published in Puck Cloud from ${file}`,
+    });
+    if (outcome === "customized" || outcome === "missing") {
+      p.manual({
+        id: `pages:${file}`,
+        type: "manual_edit",
+        capability: "pages",
+        required: true,
+        file,
+        reason: "unsupported_shape",
+        message: `${file} was customised or moved, so it wasn't changed to serve pages from Puck Cloud.`,
+        instructions: `Serve published pages from Puck Cloud with getPage from @puckeditor/cloud-client.`,
+        snippet: published(p.cloudHost),
+      });
+    } else {
+      // It no longer saves pages, so it's safe to leave public
+      p.warnings = p.warnings.filter(
+        (w) => w.code !== "PUCK-CLI-W-PAGES-PUBLIC"
+      );
+    }
+
+    planRouteAuth(p, "unowned", "pages");
+    warnLocalPages(p);
+    p.warn(
+      "PUCK-CLI-W-PAGES-EDITOR",
+      "Pages are edited with the Puck Pages plugin. Run `npx @puckeditor/cli add pages` in the editor's app too."
+    );
+  };
+
+  const planAuth = (p: Planner) => {
+    planRouteAuth(p, "puckAuth", "auth");
+    p.warn(
+      "PUCK-CLI-W-AUTH-EDITOR",
+      "Puck Cloud requests now require Sign in with Puck. Run `npx @puckeditor/cli add auth` in the editor's app too, so editors can sign in."
+    );
+  };
+
   const adapter: FrameworkAdapter<ServerInfo> = {
     kind: "server",
     recipe: (withAi) => (withAi ? aiRecipe : recipe),
@@ -271,6 +326,8 @@ const serverPlanner = (id: "hono" | "express") => {
     planCloudRoute,
     // The AI plugin goes in the editor; this server only enables AI in its Cloud route
     planAi: () => {},
+    planPages,
+    planAuth,
     devUrl: "http://localhost:3000/api/pages?path=/",
     deployEnvWarning: `Node doesn't load .env files in production. Set ${ENV_KEY} in the environment wherever the server runs.`,
   };
