@@ -6,6 +6,7 @@ import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { ComponentConfig, UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
 import { FieldGroupItem } from "../../../FieldGroup";
+import { Tabs } from "../../../Tabs";
 import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
 import styles from "./styles.module.css";
@@ -262,13 +263,15 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
         e.preventDefault();
       }}
     >
-      <Wrapper
-        isLoading={isLoading}
-        itemSelector={itemSelector}
-        fields={fields}
-      >
-        {fieldsReady && <RenderFields fields={fields} />}
-      </Wrapper>
+      <Tabs>
+        <Wrapper
+          isLoading={isLoading}
+          itemSelector={itemSelector}
+          fields={fields}
+        >
+          {fieldsReady && <RenderFields fields={fields} />}
+        </Wrapper>
+      </Tabs>
       {isLoading && (
         <div className={getClassName("loadingOverlay")}>
           <div className={getClassName("loadingOverlayInner")}>

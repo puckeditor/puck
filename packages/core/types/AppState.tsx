@@ -40,6 +40,8 @@ export type UiState = {
     options: Viewport[];
   };
   field: { focus?: string | null; metadata?: Record<string, any> };
+  /** The selected field tab. Shows the first available tab when `null`. */
+  fieldTab?: string | number | null;
   plugin: {
     current: string | null;
   };

@@ -1,0 +1,78 @@
+---
+title: Tabs
+---
+
+import { ConfigPreview } from "@/docs/components/Preview";
+import { Tab } from "@/puck";
+
+# Tabs
+
+Use the following CSS properties for theming the [field tabs](/docs/api-reference/components/tab).
+
+```css showLineNumbers
+.Container {
+  --puck-tabs-color-bg-selected: #0158ad;
+  --puck-tabs-color-text-selected: #ffffff;
+  --puck-tabs-radius: 999px;
+}
+```
+
+<div
+  style={{
+    "--puck-tabs-color-bg-selected": "#0158ad",
+    "--puck-tabs-color-text-selected": "#ffffff",
+    "--puck-tabs-radius": "999px",
+  }}
+>
+  <ConfigPreview
+    label="Example"
+    componentConfig={{
+      fields: {
+        title: { type: "text" },
+        weight: {
+          type: "radio",
+          options: [
+            { label: "Thin", value: "thin" },
+            { label: "Regular", value: "regular" },
+            { label: "Bold", value: "bold" },
+          ],
+        },
+      },
+      renderFields: ({ fields }) => (
+        <>
+          <Tab label="Content">{fields.title}</Tab>
+          <Tab label="Style">{fields.weight}</Tab>
+        </>
+      ),
+      defaultProps: { title: "Hello, world", weight: "regular" },
+      render: ({ title, weight }) => (
+        <p
+          style={{
+            margin: 0,
+            fontWeight:
+              weight === "thin" ? "100" : weight === "regular" ? "400" : "700",
+          }}
+        >
+          {title}
+        </p>
+      ),
+    }}
+  />
+</div>
+
+## CSS properties
+
+Defaults shown as `var(--puck-...)` reference [global tokens](/docs/api-reference/theming/global). See [computed values](/docs/api-reference/theming/computed-values#tabs) for the values they resolve to.
+
+| Token                             | Default                              | Description             |
+| --------------------------------- | ------------------------------------ | ----------------------- |
+| `--puck-tabs-color-bg`            | `none`                               | Tab background          |
+| `--puck-tabs-color-text`          | `var(--puck-color-text-secondary)`   | Tab text color          |
+| `--puck-tabs-color-bg-hover`      | `var(--puck-color-interactive-soft)` | Tab background on hover |
+| `--puck-tabs-color-text-hover`    | `var(--puck-color-text-secondary)`   | Tab text color on hover |
+| `--puck-tabs-color-bg-selected`   | `var(--puck-color-interactive-soft)` | Selected tab background |
+| `--puck-tabs-color-text-selected` | `var(--puck-color-text)`             | Selected tab text color |
+| `--puck-tabs-radius`              | `var(--puck-radius-m)`               | Tab border radius       |
+| `--puck-tabs-font-size`           | `var(--puck-font-size-xxxs)`         | Tab font size           |
+| `--puck-tabs-font-weight`         | `var(--puck-font-weight-medium)`     | Tab font weight         |
+| `--puck-tabs-space`               | `var(--puck-space-2)`                | Tab padding             |

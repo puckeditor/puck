@@ -176,7 +176,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
     "syncHostStyles": true,
     "waitForStyles": true,
   },
-  "instanceId": "_r_5_",
+  "instanceId": "_r_9_",
   "metadata": undefined,
   "nodes": {
     "registerNode": [Function],

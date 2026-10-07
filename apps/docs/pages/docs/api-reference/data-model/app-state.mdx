@@ -26,6 +26,7 @@ The current state of the Puck editor interface.
 | [`arrayState`](#uiarraystate)                   | `{}`                                                  | Object                        |
 | [`componentList`](#uicomponentlist)             | `{ typography: { components: [ "HeadingBlock" ] } }`  | Object                        |
 | [`field.focus`](#fieldfocus)                    | `"title"`                                             | String                        |
+| [`fieldTab`](#uifieldtab)                       | `"style"`                                             | String \| Number              |
 | [`isDragging`](#isdragging)                     | `false`                                               | Boolean                       |
 | [`itemSelector`](#uiitemselector)               | `{ index: 0, zone: "my-content" }`                    | [ItemSelector](item-selector) |
 | [`leftSideBarVisible`](#uileftsidebarvisible)   | `false`                                               | Boolean                       |
@@ -74,6 +75,12 @@ The name of the currently focused field.
 ### `ui.field.metadata`
 
 Metadata for the the currently focused field.
+
+---
+
+### `ui.fieldTab`
+
+The value of the selected [`<Tab>`](/docs/api-reference/components/tab) in the fields plugin.
 
 ---
 

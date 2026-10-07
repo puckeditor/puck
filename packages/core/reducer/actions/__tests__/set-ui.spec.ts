@@ -1,6 +1,7 @@
 import { SetUiAction } from "../..";
 import { defaultState, testSetup, UserData } from "../__helpers__";
 import { PrivateAppState } from "../../../types/Internal";
+import { rootDroppableId } from "../../../lib/root-droppable-id";
 
 describe("Reducer", () => {
   const { reducer, executeSequence } = testSetup();
@@ -128,6 +129,59 @@ describe("Reducer", () => {
         });
 
         expect(newState.ui.itemExpanded).toEqual({});
+      });
+    });
+
+    describe("field tab", () => {
+      const stateWithTabOpen = () => {
+        const state = executeSequence(
+          defaultState as PrivateAppState<UserData>,
+          [0, 1].map((index) => () => ({
+            type: "insert",
+            componentType: "Comp",
+            destinationZone: rootDroppableId,
+            destinationIndex: index,
+            id: `item-${index}`,
+          }))
+        );
+
+        return reducer(state, {
+          type: "setUi",
+          ui: {
+            itemSelector: { zone: rootDroppableId, index: 0 },
+            fieldTab: "Style",
+          },
+        });
+      };
+
+      it("should reset the selected field tab when another item is selected", () => {
+        const newState = reducer(stateWithTabOpen(), {
+          type: "setUi",
+          ui: { itemSelector: { zone: rootDroppableId, index: 1 } },
+        });
+
+        expect(newState.ui.fieldTab).toBeNull();
+      });
+
+      it("should keep the same tab when the same item is selected again", () => {
+        const newState = reducer(stateWithTabOpen(), {
+          type: "setUi",
+          ui: { itemSelector: { zone: rootDroppableId, index: 0 } },
+        });
+
+        expect(newState.ui.fieldTab).toBe("Style");
+      });
+
+      it("should keep a tab selected in the same update", () => {
+        const newState = reducer(stateWithTabOpen(), {
+          type: "setUi",
+          ui: {
+            itemSelector: { zone: rootDroppableId, index: 1 },
+            fieldTab: "Content",
+          },
+        });
+
+        expect(newState.ui.fieldTab).toBe("Content");
       });
     });
   });

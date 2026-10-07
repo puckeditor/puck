@@ -22,6 +22,7 @@ const menu = {
   "rich-text-menu": {},
   "rich-text-menu-group": {},
   "rich-text-menu-control": {},
+  tab: {},
 };
 
 export default menu;

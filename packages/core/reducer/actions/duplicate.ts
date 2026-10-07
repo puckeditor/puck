@@ -81,6 +81,8 @@ export function duplicateAction<UserData extends Data>(
         index: action.sourceIndex + 1,
         zone: action.sourceZone,
       },
+      // Reset the selected tab since a new item is selected
+      fieldTab: null,
     },
   };
 }

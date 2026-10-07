@@ -1,0 +1,56 @@
+.Tabs-list,
+.Tabs-list * {
+  box-sizing: border-box;
+}
+
+.Tabs-list {
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  display: flex;
+  overflow-x: auto;
+  padding: var(--puck-space-2);
+  gap: var(--puck-space-1);
+}
+
+.Tabs-tab {
+  appearance: none;
+  background: var(--puck-tabs-color-bg, none);
+  border: none;
+  border-radius: var(--puck-tabs-radius, var(--puck-radius-m));
+  color: var(--puck-tabs-color-text, var(--puck-color-text-secondary));
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--puck-tabs-font-size, var(--puck-font-size-xxxs));
+  font-weight: var(--puck-tabs-font-weight, var(--puck-font-weight-medium));
+  padding: var(--puck-tabs-space, var(--puck-space-2));
+}
+
+.Tabs-tab--selected {
+  background: var(
+    --puck-tabs-color-bg-selected,
+    var(--puck-color-interactive-soft)
+  );
+  color: var(--puck-tabs-color-text-selected, var(--puck-color-text));
+}
+
+.Tabs-tab:focus-visible {
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Tabs-tab:hover {
+    background: var(
+      --puck-tabs-color-bg-hover,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(--puck-tabs-color-text-hover, var(--puck-color-text-secondary));
+  }
+
+  .Tabs-tab--selected:hover {
+    background: var(
+      --puck-tabs-color-bg-selected,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(--puck-tabs-color-text-selected, var(--puck-color-text));
+  }
+}
