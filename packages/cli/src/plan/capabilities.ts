@@ -5,7 +5,6 @@ import { adapterFor } from "../frameworks";
 import {
   CANONICAL_INVOCATION,
   CLOUD_CLIENT_PACKAGE,
-  DOCS_URL,
   PLUGIN_AI_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
@@ -128,8 +127,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
           "pages"
         );
       }
-      if (adapter.planPages) adapter.planPages(p, framework);
-      else unsupported(p, "pages");
+      adapter.planPages(p, framework);
 
       if (!withAuth) {
         p.warn(
@@ -149,8 +147,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
           "auth"
         );
       }
-      if (adapter.planAuth) adapter.planAuth(p, framework);
-      else unsupported(p, "auth");
+      adapter.planAuth(p, framework);
 
       if (!capabilities.includes("pages") && !status.pages.satisfied) {
         p.warn(
@@ -164,17 +161,3 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
   if (withAuth)
     p.warnings = p.warnings.filter((w) => !AUTH_RESOLVES.includes(w.code));
 };
-
-const unsupported = (p: Planner, capability: "pages" | "auth") =>
-  p.manual({
-    id: `${capability}:unsupported`,
-    type: "manual_edit",
-    capability,
-    required: true,
-    file: p.state.scan.editorFiles[0] ?? "puck.config.tsx",
-    reason: "unsupported_shape",
-    message: `The CLI can't set up Puck ${
-      capability === "pages" ? "Pages" : "Auth"
-    } in this framework yet.`,
-    instructions: `Follow ${DOCS_URL} to set it up by hand.`,
-  });
