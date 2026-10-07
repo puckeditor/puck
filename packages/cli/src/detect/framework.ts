@@ -55,7 +55,7 @@ export const MIN_VERSIONS: Record<FrameworkId, string> = {
 
 /** For error messages, kept in sync with FRAMEWORK_IDS */
 export const SUPPORTED_FRAMEWORKS =
-  "Next.js (App Router), React Router 7 framework mode, TanStack Start, vinext, Astro and Vite React apps, or a Hono or Express server";
+  "Next.js (App Router), React Router 7+ framework mode, TanStack Start, vinext, Astro and Vite React apps, or a Hono or Express server";
 
 export interface NextInfo {
   id: "next";
@@ -384,7 +384,7 @@ const detectReactRouter = (
       error: {
         code: "PUCK-CLI-UNSUPPORTED-FRAMEWORK",
         message:
-          "Found @react-router/dev but no react-router.config or app/routes file. The CLI supports React Router 7 framework mode.",
+          "Found @react-router/dev but no react-router.config or app/routes file. The CLI supports React Router 7+ framework mode.",
         details: { docs: MANUAL_INTEGRATION_DOCS_URL },
       },
     };
