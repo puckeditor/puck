@@ -52,6 +52,8 @@ In a Hono or Express project, the CLI sets up the APIs a Puck editor in another 
 - `/api/pages`: loads (`GET ?path=/about`) and saves (`POST { path, data }`) pages, in `src/puck/pages.ts`
 - `/api/puck/*`: the Puck Cloud route for Puck AI, in `src/puck/cloud.ts`, when you choose Puck AI
 
+With [Puck Pages](#puck-pages), `/api/pages` serves pages published in Puck Cloud instead, and only loads them.
+
 It mounts both on your app before it starts serving, so your own middleware runs first. Node doesn't load `.env` files, so the CLI adds `--env-file-if-exists=.env.local` to a `tsx` or `node` dev script. Bun loads `.env.local` itself. On Cloudflare Workers, put `PUCK_API_KEY` in `.dev.vars` instead.
 
 Add the Puck AI plugin in the app with the editor. If that app runs on another origin, proxy `/api` to the server in development, or pass `host` to `createAiPlugin`.
@@ -122,17 +124,17 @@ Start with `npx @puckeditor/cli status --json` to see what's already set up and 
 
 ### Exit codes
 
-| Code | Meaning                              |
-| ---- | ------------------------------------ |
-| 0    | Success                              |
-| 2    | Invalid arguments or API key         |
-| 3    | Unsupported or ambiguous project     |
-| 4    | File conflict                        |
-| 5    | Package manager failure              |
-| 6    | `doctor` found problems              |
-| 7    | Puck Cloud couldn't complete a login |
-| 10   | Action required                      |
-| 11   | Partially set up                     |
+| Code | Meaning                                         |
+| ---- | ----------------------------------------------- |
+| 0    | Success                                         |
+| 2    | Invalid arguments or API key                    |
+| 3    | Unsupported or ambiguous project                |
+| 4    | File conflict                                   |
+| 5    | Package manager failure                         |
+| 6    | `doctor` found problems                         |
+| 7    | Puck Cloud couldn't complete a login or request |
+| 10   | Action required                                 |
+| 11   | Partially set up                                |
 
 ### Reading the docs
 
@@ -153,18 +155,21 @@ npx skills add puckeditor/skills --skill puck
 
 ## Commands
 
-| Command      | Description                                                        |
-| ------------ | ------------------------------------------------------------------ |
-| `init`       | Set up Puck, optionally with Puck AI, creating an app if needed    |
-| `add editor` | Add the Puck editor                                                |
-| `add cloud`  | Connect Puck Cloud (adds the editor first if needed)               |
-| `add ai`     | Add the Puck AI plugin (adds Puck Cloud first if needed)           |
-| `connect`    | Log in to Puck Cloud again and replace `PUCK_API_KEY`              |
-| `status`     | Show what's installed and configured                               |
-| `doctor`     | Diagnose problems and suggest fixes. Never makes changes           |
-| `frameworks` | Show the supported frameworks and versions                         |
-| `docs`       | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>` |
-| `telemetry`  | Show or change anonymous usage data collection                     |
+| Command               | Description                                                             |
+| --------------------- | ----------------------------------------------------------------------- |
+| `init`                | Set up Puck, optionally with Puck AI, creating an app if needed         |
+| `add editor`          | Add the Puck editor                                                     |
+| `add cloud`           | Connect Puck Cloud (adds the editor first if needed)                    |
+| `add ai`              | Add the Puck AI plugin (adds Puck Cloud first if needed)                |
+| `add pages`           | Store and publish pages in Puck Cloud (adds Puck Cloud first if needed) |
+| `add auth`            | Require Sign in with Puck to edit (adds Puck Cloud first if needed)     |
+| `pages import <file>` | Publish pages from a JSON file to Puck Cloud                            |
+| `connect`             | Log in to Puck Cloud again and replace `PUCK_API_KEY`                   |
+| `status`              | Show what's installed and configured                                    |
+| `doctor`              | Diagnose problems and suggest fixes. Never makes changes                |
+| `frameworks`          | Show the supported frameworks and versions                              |
+| `docs`                | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>`      |
+| `telemetry`           | Show or change anonymous usage data collection                          |
 
 ## Flags
 
@@ -179,6 +184,8 @@ npx skills add puckeditor/skills --skill puck
 | `--no-env-write`           | Don't write `PUCK_API_KEY` to a file                                                                              |
 | `--ai`                     | Also set up Puck AI and Puck Cloud (`init`)                                                                       |
 | `--no-ai`                  | Set up the editor only, without asking about Puck AI (`init`)                                                     |
+| `--pages`                  | Also set up [Puck Pages](#puck-pages) (`init`)                                                                    |
+| `--auth`                   | Also set up [Puck Auth](#puck-auth) (`init`)                                                                      |
 | `--backend <choice>`       | Where a Vite app's server comes from: `add`, `external` or `none`                                                 |
 | `--backend-url <url>`      | The server for `--backend external`                                                                               |
 | `--wait`                   | Wait for login approval instead of returning `action_required`                                                    |
@@ -205,11 +212,45 @@ npx @puckeditor/cli connect
 
 Remember to set `PUCK_API_KEY` in your production environment too. `react-router-serve` and Cloudflare Workers don't load `.env` files; on Workers, use `wrangler secret put PUCK_API_KEY`.
 
-The `/api/puck` route and the editor are public by default. Add authentication before deploying.
+The `/api/puck` route and the editor are public by default. Add [Puck Auth](#puck-auth), or your own authentication, before deploying.
 
 ## Puck AI
 
 `init` and `add ai` add the Puck AI plugin to the editor, allow design mode in the `/api/puck` route, and wrap your config with `withDynamicConfig` so components designed by Puck AI render on your pages. If your editor has been customised, the CLI leaves it alone and prints the code to add.
+
+## Puck Pages
+
+`add pages`, or `init --pages`, stores pages in Puck Cloud with the [Pages plugin](https://puckeditor.com/docs/pages/overview), which adds page management, drafts, publishing and version history to the editor:
+
+- The editor opens at `/puck`, with the page to edit in the `path` query parameter, e.g. `/puck?path=/about`. URLs ending in `/edit` redirect there
+- Published pages are rendered from Puck Cloud with `getPage` from `@puckeditor/cloud-client`. In Vite apps and on [servers](#servers), `/api/pages` serves them read-only
+- `@puckeditor/cloud-client` is updated to a version with Puck Pages, and the `/api/puck` route gets the `authenticate` option it requires
+
+Pages in `database.json`, or wherever your app saved them, aren't moved automatically. Import them with `pages import`, then delete the old routes.
+
+Until you add [Puck Auth](#puck-auth), anyone who can reach `/api/puck` can edit, publish and delete pages using your API key.
+
+### Importing pages
+
+```sh copy
+npx @puckeditor/cli pages import database.json
+```
+
+`pages import` publishes a JSON object of Puck data keyed by route, like a recipe's `database.json`. Pages that already exist in Puck Cloud are kept. It uses `--api-key`, `PUCK_API_KEY` in the environment, or the key in the env files where it runs, so run it from your app. The API key decides which project and branch the pages go to.
+
+Agents pass `--yes --json`. If Puck Cloud fails part way, the status is `partial` and `pagesImport.notImported` lists the routes left. Run the command again to import them.
+
+## Puck Auth
+
+`add auth`, or `init --auth`, requires [Sign in with Puck](https://puckeditor.com/docs/auth/overview) to edit:
+
+- The `/api/puck` route passes `puckAuth` to `puckHandler`, which serves the sign-in routes under `/api/puck/auth` and rejects requests from anyone not signed in to your Puck Cloud organization
+- The editor sends signed-out visitors to sign in. Server-rendered apps check before rendering it. Vite apps, and Astro sites without a server, check in the browser with `<RequireSession>`
+- The Puck Auth plugin adds an account menu to the editor
+
+Without Puck Pages, the editor still saves pages through your own route, which Sign in with Puck doesn't protect. On a Hono or Express server, `add auth` only changes the Cloud route, so run it in the editor's app too.
+
+Before deploying, add each deployment's URL under [Settings › Branches](https://cloud.puckeditor.com/settings/project/branches) in Puck Cloud. `localhost` works without one.
 
 ## Telemetry
 
