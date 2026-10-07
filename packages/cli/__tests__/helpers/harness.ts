@@ -10,6 +10,7 @@ import { DirTemplateSource } from "../../src/templates/source";
 import type { DocsSource } from "../../src/docs/source";
 import { DirDocsSource } from "../../src/docs/source";
 import { nonInteractivePrompter } from "../../src/io/prompter";
+import templatesConfig from "../../templates.json";
 
 export const REPO_ROOT = path.resolve(__dirname, "../../../..");
 export const RECIPES = path.join(REPO_ROOT, "recipes");
@@ -24,6 +25,9 @@ export const testTemplates = new DirTemplateSource(RECIPES, {
     return {
       cloudClientRange: deps["@puckeditor/cloud-client"],
       pluginAiRange: deps["@puckeditor/plugin-ai"],
+      cloudClientPagesRange: templatesConfig.ranges.cloudClientPages,
+      pluginPagesRange: templatesConfig.ranges.pluginPages,
+      pluginAuthRange: templatesConfig.ranges.pluginAuth,
     };
   },
 });

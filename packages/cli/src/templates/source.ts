@@ -25,6 +25,10 @@ export type RecipeName =
 export interface TemplateManifest {
   cloudClientRange: string;
   pluginAiRange: string;
+  /** The first cloud-client with Puck Pages and Puck Auth */
+  cloudClientPagesRange: string;
+  pluginPagesRange: string;
+  pluginAuthRange: string;
 }
 
 export interface TemplateSource {

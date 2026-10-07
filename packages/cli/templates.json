@@ -33,5 +33,10 @@
     "eslint.config.mjs",
     ".env*"
   ],
-  "allowBuilds": ["esbuild"]
+  "allowBuilds": ["esbuild"],
+  "ranges": {
+    "cloudClientPages": "^0.9.0-0",
+    "pluginPages": "^0.9.0-0",
+    "pluginAuth": "^0.9.0-0"
+  }
 }

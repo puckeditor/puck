@@ -64,6 +64,10 @@ const aiPkg = JSON.parse(
 const manifest = {
   cloudClientRange: aiPkg.dependencies["@puckeditor/cloud-client"],
   pluginAiRange: aiPkg.dependencies["@puckeditor/plugin-ai"],
+  // No recipe uses Puck Pages or Puck Auth yet
+  cloudClientPagesRange: config.ranges.cloudClientPages,
+  pluginPagesRange: config.ranges.pluginPages,
+  pluginAuthRange: config.ranges.pluginAuth,
 };
 fs.writeFileSync(
   path.join(outDir, "manifest.json"),
