@@ -10,9 +10,9 @@ export const COMMANDS = [
       "Set up Puck in this project or create a new app, optionally with Puck AI",
   },
   {
-    name: "add <editor|cloud|ai>",
+    name: "add <editor|cloud|ai|pages|auth>",
     description:
-      "Add one capability (ai includes cloud, cloud includes editor)",
+      "Add capabilities (ai, pages and auth include cloud, cloud includes editor)",
   },
   {
     name: "connect",
@@ -31,6 +31,11 @@ export const COMMANDS = [
     name: "docs <command>",
     description:
       "Read the docs for this version: ls, cat <page>, find <query>, grep <text>",
+  },
+  {
+    name: "pages import <file>",
+    description:
+      "Publish pages from a JSON file of Puck data keyed by route to Puck Cloud",
   },
   {
     name: "telemetry [status|enable|disable]",
@@ -61,6 +66,8 @@ Flags:
   --no-env-write          Don't write PUCK_API_KEY to .env.local
   --ai                    Also set up Puck AI and Puck Cloud (init)
   --no-ai                 Set up the editor only, without asking about Puck AI (init)
+  --pages                 Also store and publish pages in Puck Cloud (init)
+  --auth                  Also require Sign in with Puck to edit (init)
   --backend <add|external|none>  Where a Vite or static Astro app gets its server:
                           add one, use one elsewhere, or none (editor only)
   --backend-url <url>     The server for --backend external, e.g. http://localhost:3000
