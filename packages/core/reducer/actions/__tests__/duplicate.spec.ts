@@ -190,7 +190,7 @@ describe("Reducer", () => {
         expect(newState.ui.itemSelector?.zone).toBe(rootDroppableId);
       });
 
-      it("should reset the selected field tab when duplicating an item", () => {
+      it("should keep the selected field tab when duplicating an item", () => {
         const newState = executeSequence(defaultState, [
           () => ({
             type: "insert",
@@ -207,7 +207,7 @@ describe("Reducer", () => {
           }),
         ]);
 
-        expect(newState.ui.fieldTab).toBeNull();
+        expect(newState.ui.fieldTab).toBe("Style");
       });
     });
     describe("with slots", () => {

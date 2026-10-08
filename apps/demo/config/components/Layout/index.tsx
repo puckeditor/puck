@@ -6,6 +6,8 @@ import {
 } from "@/core/types";
 import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
+
+import LayoutFields from "./LayoutFields";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("Layout", styles);
@@ -29,7 +31,6 @@ type LayoutProps = WithLayout<{
 
 export const layoutField: ObjectField<LayoutFieldProps> = {
   type: "object",
-  variant: "collapsible",
   objectFields: {
     spanCol: {
       label: "Grid Columns",
@@ -107,6 +108,13 @@ export function withLayout<
         ...componentConfig.defaultProps?.layout,
       },
     },
+    // Augment the renderFields with a layout tab
+    renderFields: ({ fields }) => (
+      <LayoutFields
+        fields={fields}
+        AugmentedRenderFields={componentConfig.renderFields}
+      />
+    ),
     resolveFields: (_, params) => {
       if (params.parent?.type === "Grid") {
         return {
