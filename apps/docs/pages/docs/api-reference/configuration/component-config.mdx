@@ -36,6 +36,7 @@ const config = {
 | [`label`](#label)                                        | `label: "Heading Block"`                        | String   | -        |
 | [`metadata`](#metadata)                                  | `metadata: {}`                                  | Object   | -        |
 | [`permissions()`](#permissions)                          | `permissions: { delete: false }`                | Object   | -        |
+| [`renderFields()`](#renderfieldsprops)                   | `renderFields: ({ fields }) => <div />`         | Function | -        |
 | [`resolveData()`](#resolvedatadata-params)               | `resolveData: async ({ props }) => ({ props })` | Object   | -        |
 | [`resolveFields()`](#resolvefieldsdata-params)           | `resolveFields: async ({ props }) => ({})`      | Object   | -        |
 | [`resolvePermissions()`](#resolvepermissionsdata-params) | `resolvePermissions: async ({ props }) => ({})` | Object   | -        |
@@ -303,6 +304,48 @@ const config = {
   },
 };
 ```
+
+### `renderFields(props)`
+
+Render the fields for the component in a custom layout in the sidebar.
+
+```tsx {1,11-19} copy showLineNumbers
+import { FieldGroup } from "@puckeditor/core";
+
+const config = {
+  components: {
+    HeadingBlock: {
+      fields: {
+        title: { type: "text" },
+        color: { type: "text" },
+        size: { type: "number" },
+      },
+      renderFields: ({ fields }) => (
+        <>
+          {fields.title}
+          <FieldGroup label="Appearance">
+            {fields.color}
+            {fields.size}
+          </FieldGroup>
+        </>
+      ),
+      render: ({ title }) => <h1>{title}</h1>,
+    },
+  },
+};
+```
+
+#### Args
+
+| Prop    | Example                          | Type   |
+| ------- | -------------------------------- | ------ |
+| `props` | `{ fields: { title: <div /> } }` | Object |
+
+##### `props.fields`
+
+An object containing the node for each visible field, keyed by field name.
+
+Non-visible fields are set to `undefined`.
 
 ### `resolveData(data, params)`
 

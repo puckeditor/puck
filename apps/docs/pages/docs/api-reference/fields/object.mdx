@@ -44,10 +44,11 @@ const config = {
 
 ## Params
 
-| Param                           | Example                                     | Type    | Status   |
-| ------------------------------- | ------------------------------------------- | ------- | -------- |
-| [`type`](#type)                 | `type: "array"`                             | "array" | Required |
-| [`objectFields`](#objectfields) | `objectFields: { title: { type: "text" } }` | Object  | Required |
+| Param                           | Example                                     | Type                         | Status   |
+| ------------------------------- | ------------------------------------------- | ---------------------------- | -------- |
+| [`type`](#type)                 | `type: "object"`                            | "object"                     | Required |
+| [`objectFields`](#objectfields) | `objectFields: { title: { type: "text" } }` | Object                       | Required |
+| [`variant`](#variant)           | `variant: "collapsible"`                    | "contained" \| "collapsible" | -        |
 
 ## Required params
 
@@ -96,3 +97,14 @@ const config = {
   },
 };
 ```
+
+## Optional params
+
+### `variant`
+
+Specify how to display the field. **Defaults to `"contained"`**.
+
+- `"contained"`: shows the subfields in a box.
+- `"collapsible"`: shows the subfields in a collapsible box with `label` as the toggle.
+
+If using [`<AutoField>`](/docs/api-reference/components/auto-field), you need to pass a `label` to show the toggle.

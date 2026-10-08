@@ -37,10 +37,12 @@ export type Overrides<UserConfig extends Config = Config> = OverridesGeneric<{
     children: ReactNode;
     isLoading: boolean;
     itemSelector?: ItemSelector | null;
+    fields: Partial<Record<string, ReactNode>>;
   }>;
   fieldLabel: RenderFunc<{
     children?: ReactNode;
     icon?: ReactNode;
+    endIcon?: ReactNode;
     label: string;
     el?: "label" | "div";
     readOnly?: boolean;
