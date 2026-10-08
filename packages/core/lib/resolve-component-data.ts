@@ -29,7 +29,11 @@ export const resolveComponentData = async <
   trigger: ResolveDataTrigger = "replace",
   parent: ComponentData | null = null,
   root: RootData = { props: {} },
-  cacheStore: ResolveDataCache = cache
+  cacheStore: ResolveDataCache = cache,
+  resolveChild?: (
+    child: ComponentData,
+    parent: ComponentData
+  ) => Promise<ComponentData>
 ) => {
   const configForItem =
     "type" in item && item.type !== "root"
@@ -99,21 +103,22 @@ export const resolveComponentData = async <
         const content = value as Content;
 
         return await Promise.all(
-          content.map(
-            async (childItem) =>
-              (
-                await resolveComponentData(
-                  childItem as T,
-                  config,
-                  metadata,
-                  onResolveStart,
-                  onResolveEnd,
-                  trigger,
-                  itemAsComponentData,
-                  root,
-                  cacheStore
-                )
-              ).node
+          content.map(async (childItem) =>
+            resolveChild
+              ? resolveChild(childItem, itemAsComponentData)
+              : (
+                  await resolveComponentData(
+                    childItem as T,
+                    config,
+                    metadata,
+                    onResolveStart,
+                    onResolveEnd,
+                    trigger,
+                    itemAsComponentData,
+                    root,
+                    cacheStore
+                  )
+                ).node
           )
         );
       },

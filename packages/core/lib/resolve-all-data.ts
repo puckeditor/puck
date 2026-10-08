@@ -15,7 +15,6 @@ import {
 import { groupZonesByComponent } from "./group-zones-by-component";
 import { defaultData } from "./data/default-data";
 import { toComponent } from "./data/to-component";
-import { mapFields } from "./data/map-fields";
 
 export async function resolveAllData<
   Components extends DefaultComponents = DefaultComponents,
@@ -58,20 +57,14 @@ export async function resolveAllData<
         "force",
         parent,
         root,
-        cacheStore
+        cacheStore,
+        // Slot children resolve through resolveNode, not a second walk of
+        // the resolved tree, so each resolveData runs once.
+        (child, resolvedParent) => resolveNode(child, resolvedParent, root)
       )
     ).node as T;
 
     const resolvedAsComponent = toComponent(resolved);
-
-    // Resolve any slots concurrently
-    const resolvedDeepPromise = mapFields(
-      resolved,
-      {
-        slot: ({ value }) => processContent(value, resolvedAsComponent, root),
-      },
-      config
-    ) as unknown as Promise<T>;
 
     let resolveZonePromises: Promise<void>[] = [];
 
@@ -88,13 +81,11 @@ export async function resolveAllData<
       );
     }
 
-    // Await all concurrent children
-    const resolvedDeep = await resolvedDeepPromise;
     await Promise.all(resolveZonePromises);
 
-    onResolveEnd?.(toComponent(resolvedDeep));
+    onResolveEnd?.(resolvedAsComponent);
 
-    return resolvedDeep;
+    return resolved;
   };
 
   const processContent = async (
