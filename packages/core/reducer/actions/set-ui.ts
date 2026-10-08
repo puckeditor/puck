@@ -55,27 +55,6 @@ const revealSelectedItem = <UserData extends Data>(
   return { ...partialUi, itemExpanded };
 };
 
-/**
- * Resets the selected field tab when a new item is selected.
- */
-const resetFieldTab = <UserData extends Data>(
-  state: PrivateAppState<UserData>,
-  partialUi: Partial<UiState>
-): Partial<UiState> => {
-  if (!("itemSelector" in partialUi) || "fieldTab" in partialUi) {
-    return partialUi;
-  }
-
-  const getId = (itemSelector?: Partial<UiState>["itemSelector"]) =>
-    itemSelector ? getItem(itemSelector, state)?.props.id : undefined;
-
-  if (getId(partialUi.itemSelector) === getId(state.ui.itemSelector)) {
-    return partialUi;
-  }
-
-  return { ...partialUi, fieldTab: null };
-};
-
 export const setUiAction = <UserData extends Data>(
   state: PrivateAppState<UserData>,
   action: SetUiAction
@@ -87,7 +66,7 @@ export const setUiAction = <UserData extends Data>(
     ...state,
     ui: {
       ...state.ui,
-      ...revealSelectedItem(state, resetFieldTab(state, partialUi)),
+      ...revealSelectedItem(state, partialUi),
     },
   };
 };

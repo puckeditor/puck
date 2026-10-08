@@ -163,6 +163,59 @@ describe("Tabs", () => {
     expect(selectedTab()).toBe("C");
   });
 
+  it("selects the first tab when the next component doesn't have the selected one", async () => {
+    const { store, rerender } = renderTabs(<Layout />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "B" }));
+
+    // Nothing renders while the next component's fields load, then its tabs mount
+    await rerender(<></>);
+    await rerender(
+      <>
+        <Tab label="Settings">Settings content</Tab>
+        <Tab label="Advanced">Advanced content</Tab>
+      </>
+    );
+
+    expect(selectedTab()).toBe("Settings");
+    expect(storedTab(store)).toBe("Settings");
+  });
+
+  it("keeps the selected tab when the next component has it", async () => {
+    const { store, rerender } = renderTabs(<Layout />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "B" }));
+    await rerender(<></>);
+    await rerender(
+      <>
+        <Tab label="Settings">Settings content</Tab>
+        <Tab label="B">Other B content</Tab>
+      </>
+    );
+
+    expect(selectedTab()).toBe("B");
+    expect(storedTab(store)).toBe("B");
+  });
+
+  it("keeps a tab chosen before it registers, and selects it once it does", async () => {
+    const { store, rerender } = renderTabs(
+      <Tab label="Settings">Settings content</Tab>,
+      { selectedTab: "Advanced" }
+    );
+
+    expect(selectedTab()).toBe("Settings");
+    expect(storedTab(store)).toBe("Advanced");
+
+    await rerender(
+      <>
+        <Tab label="Settings">Settings content</Tab>
+        <Tab label="Advanced">Advanced content</Tab>
+      </>
+    );
+
+    expect(selectedTab()).toBe("Advanced");
+  });
+
   it("stays on the tab shown when a tab is added before it", async () => {
     const { rerender } = renderTabs(<Layout />);
 
