@@ -2,7 +2,7 @@ import { Button } from "./blocks/Button";
 import { Card } from "./blocks/Card";
 import { Grid } from "./blocks/Grid";
 import { Hero } from "./blocks/Hero/server";
-import { Heading } from "./blocks/Heading/server";
+import { Heading } from "./blocks/Heading";
 import { Flex } from "./blocks/Flex";
 import { Logos } from "./blocks/Logos";
 import { Stats } from "./blocks/Stats";

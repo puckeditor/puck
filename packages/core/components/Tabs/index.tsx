@@ -87,7 +87,7 @@ export const Tabs = ({ children }: { children: ReactNode }) => {
 
   const [tabs, setTabs] = useState<RegisteredTab[]>([]);
 
-  // The tabs from the last commit, to be able to tell when a tab has been removed or reordered
+  // The last tabs registered, to tell when the selected tab was removed
   const previousTabs = useRef<RegisteredTab[]>([]);
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -138,21 +138,25 @@ export const Tabs = ({ children }: { children: ReactNode }) => {
   const selectedIndex = Math.max(storedIndex, 0);
   const selected = tabs[selectedIndex]?.value;
 
-  // When no tab is selected yet, or it was removed, set the first tab as selected.
+  // When no tab is selected yet, it was removed, or doesn't exist, set the first tab as selected.
   //
   // Checked in an effect, not in a tab's cleanup, bc cleanups also run when a tab registers
   // again while the tab is still there (e.g. they get a new label).
   useLayoutEffect(() => {
+    // Skip moments with no tabs (e.g. while the next component's fields load),
+    // so the tabs from before still count when the next ones register
+    if (tabs.length === 0) return;
+
     const chosenWasRemoved = previousTabs.current.some(
       (tab) => tab.value === storedValue
     );
     previousTabs.current = tabs;
 
-    // If there are no tabs or the selected tab is still there, do nothing
-    if (tabs.length === 0 || storedIndex !== -1) return;
+    // If the selected tab is still there, do nothing
+    if (storedIndex !== -1) return;
 
     // Otherwise select the first tab
-    if (storedValue == null || chosenWasRemoved) {
+    if (storedValue === null || storedValue === undefined || chosenWasRemoved) {
       appStore.getState().setUi({ fieldTab: tabs[0].value });
     }
   }, [tabs, storedValue, storedIndex, appStore]);
