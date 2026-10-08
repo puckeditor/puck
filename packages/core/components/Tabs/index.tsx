@@ -116,7 +116,7 @@ export const Tabs = ({ children }: { children: ReactNode }) => {
     const observer = new MutationObserver((records) => {
       if (
         records.some((record) =>
-          [...record.addedNodes].some((node) =>
+          Array.from(record.addedNodes).some((node) =>
             containsDataAttr(node, "data-puck-tab-marker")
           )
         )
