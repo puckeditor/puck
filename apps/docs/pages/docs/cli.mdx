@@ -244,13 +244,13 @@ Agents pass `--yes --json`. If Puck Cloud fails part way, the status is `partial
 
 `add auth`, or `init --auth`, requires [Sign in with Puck](https://puckeditor.com/docs/auth/overview) to edit:
 
-- The `/api/puck` route passes `puckAuth` to `puckHandler`, which serves the sign-in routes under `/api/puck/auth` and rejects requests from anyone not signed in to your Puck Cloud organization
+- The `/api/puck` route passes `authenticate` from `@puckeditor/cloud-client/auth` to `puckHandler`, which serves the sign-in routes under `/api/puck/auth` and rejects requests from anyone not signed in to your Puck Cloud organization
 - The editor sends signed-out visitors to sign in. Server-rendered apps check before rendering it. Vite apps, and Astro sites without a server, check in the browser with `<RequireSession>`
 - The Puck Auth plugin adds an account menu to the editor
 
 Without Puck Pages, the editor still saves pages through your own route, which Sign in with Puck doesn't protect. On a Hono or Express server, `add auth` only changes the Cloud route, so run it in the editor's app too.
 
-Before deploying, add each deployment's URL under [Settings › Branches](https://cloud.puckeditor.com/settings/project/branches) in Puck Cloud. `localhost` works without one.
+Members sign in to the API key's project and edit its branch. Set `PUCK_API_KEY` on each deployment to a key for the branch it should edit, so a preview deployment can't edit production.
 
 ## Telemetry
 
