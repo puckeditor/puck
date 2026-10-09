@@ -1,0 +1,44 @@
+---
+title: <FieldGroupItem>
+---
+
+# \<FieldGroupItem\>
+
+An item within a [`<FieldGroup>`](field-group). Wrap each item in one for consistent spacing.
+
+The nodes passed by [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) and the [`fields` override](/docs/api-reference/overrides/fields) are already wrapped.
+
+```tsx {7-9} copy
+import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
+
+export function Editor() {
+  return (
+    <Puck>
+      <FieldGroup label="Appearance">
+        <FieldGroupItem>
+          <input type="text" value="#000000" onChange={() => {}} />
+        </FieldGroupItem>
+      </FieldGroup>
+    </Puck>
+  );
+}
+```
+
+## Props
+
+| Prop                      | Example               | Type      | Status   |
+| ------------------------- | --------------------- | --------- | -------- |
+| [`children`](#children)   | `children: <div />`   | ReactNode | Required |
+| [`className`](#classname) | `className: "MyItem"` | String    | -        |
+
+## Required props
+
+### `children`
+
+A React node with the contents of the item, like a field.
+
+## Optional props
+
+### `className`
+
+Define a custom class for the item.

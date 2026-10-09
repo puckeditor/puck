@@ -26,6 +26,17 @@
   margin-inline-start: auto;
 }
 
+.Input-labelEndIcon {
+  color: var(--puck-field-label-color-icon, var(--puck-color-text-subtle));
+  display: flex;
+  margin-inline-start: auto;
+}
+
+/* The padlock already pushes the end icon to the end */
+.Input-disabledIcon + .Input-labelEndIcon {
+  margin-inline-start: var(--puck-space-1);
+}
+
 .Input-input {
   background: var(--puck-field-color-bg, var(--puck-color-surface));
   border-width: var(

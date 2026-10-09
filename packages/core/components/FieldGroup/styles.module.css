@@ -1,0 +1,66 @@
+.FieldGroup-box {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--puck-field-color-surface, var(--puck-color-surface));
+  border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
+    var(--puck-field-color-border, var(--puck-color-border));
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
+}
+
+.FieldGroup-fieldset {
+  border: none;
+  margin: 0;
+  min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
+  padding: var(--puck-field-space-surface-y, var(--puck-space-4))
+    var(
+      --puck-field-space-surface-x,
+      calc(
+        var(--puck-space-4) -
+          var(--puck-field-border-width, var(--puck-border-width-regular))
+      )
+    );
+}
+
+.FieldGroup-fieldset > .FieldGroup-item + .FieldGroup-item {
+  margin-top: var(--puck-space-3);
+}
+
+/* Remove the label vertical spacing when the group is collapsed */
+.FieldGroup--collapsed {
+  --puck-field-label-space-y: 0;
+}
+
+.FieldGroup-toggle {
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  text-align: start;
+  width: 100%;
+}
+
+.FieldGroup-toggle:focus-visible {
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .FieldGroup-toggle:hover {
+    --puck-field-label-color-text: var(--puck-color-text);
+    --puck-field-label-color-icon: var(--puck-color-text);
+  }
+}
+
+.FieldGroup-toggleIcon {
+  display: flex;
+}
+
+.FieldGroup--expanded > .FieldGroup-toggle .FieldGroup-toggleIcon {
+  transform: rotate(180deg);
+}
