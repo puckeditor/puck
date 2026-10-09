@@ -6,7 +6,7 @@ import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { ComponentConfig, UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
 import { FieldGroupItem } from "../../../FieldGroup";
-import { Tabs } from "../../../Tabs";
+import { Tabs, TabsChangeReason, TabValue } from "../../../Tabs";
 import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
 import styles from "./styles.module.css";
@@ -25,6 +25,18 @@ import { useShallow } from "zustand/react/shallow";
 import { StoreApi } from "zustand";
 
 const getClassName = getClassNameFactory("PuckFields", styles);
+
+/**
+ * Checks if the fields slice matches the currently selected item's ID.
+ *
+ * The fields slice can be behind by one render cycle after the selection changes,
+ * which would match the selected item's data with the previous item's fields
+ *
+ * @param s The application store state.
+ * @returns `true` if the fields slice is up to date with the selected item's ID, `false` otherwise.
+ */
+const isFieldsReady = (s: AppStore) =>
+  s.fields.id === (s.selectedItem?.props.id || "root");
 
 const createOnChange =
   (fieldName: string, appStore: StoreApi<AppStore>) =>
@@ -211,15 +223,42 @@ export const ComponentFields = ({
   /** The fields of the currently selected item to render */
   fields: Partial<Record<string, ReactNode>>;
 }) => {
-  const fieldsReady = useAppStore(
-    (s) => s.fields.id === (s.selectedItem?.props.id || "root")
-  );
+  const fieldsReady = useAppStore(isFieldsReady);
   const renderFields = useAppStore(
     (s) => s.getComponentConfig(s.selectedItem?.type)?.renderFields
   );
   const RenderFields = renderFields ?? DefaultFieldsLayout;
 
   return <>{fieldsReady && <RenderFields fields={fields} />}</>;
+};
+
+/**
+ * Renders the fields' tabs.
+ *
+ * NB: Needs to be in its own component, to avoid re-rendering the entire fields section when the selected tab changes.
+ */
+const FieldTabs = ({ children }: { children: ReactNode }) => {
+  const appStore = useAppStoreApi();
+  const fieldTab = useAppStore((s) => s.state.ui.fieldTab);
+
+  const onChange = useCallback(
+    (value: TabValue, { reason }: { reason: TabsChangeReason }) => {
+      const state = appStore.getState();
+
+      // Tabs come and go while the next item's fields sync in the field slice,
+      // so only replace a missing tab once they're ready
+      if (reason === "missing" && !isFieldsReady(state)) return;
+
+      state.dispatch({ type: "setUi", ui: { fieldTab: value } });
+    },
+    [appStore]
+  );
+
+  return (
+    <Tabs value={fieldTab} onChange={onChange}>
+      {children}
+    </Tabs>
+  );
 };
 
 const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
@@ -233,13 +272,10 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   });
   const itemSelector = useAppStore(useShallow((s) => s.state.ui.itemSelector));
   const id = useAppStore((s) => s.selectedItem?.props.id);
-  const nodeId = id || "root";
   const appStore = useAppStoreApi();
   useRegisterFieldsSlice(appStore, id);
 
-  // The field slice can be behind by one render cycle, which would match
-  // the current selected item data with the previous' fields config. Make sure they are in sync.
-  const fieldsReady = useAppStore((s) => s.fields.id === nodeId);
+  const fieldsReady = useAppStore(isFieldsReady);
   const fieldsLoading = useAppStore((s) => s.fields.loading);
 
   // Subscribe to the visible fields
@@ -279,7 +315,7 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
         e.preventDefault();
       }}
     >
-      <Tabs>
+      <FieldTabs>
         <Wrapper
           isLoading={isLoading}
           itemSelector={itemSelector}
@@ -287,7 +323,7 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
         >
           <ComponentFields fields={fields} />
         </Wrapper>
-      </Tabs>
+      </FieldTabs>
       {isLoading && (
         <div className={getClassName("loadingOverlay")}>
           <div className={getClassName("loadingOverlayInner")}>

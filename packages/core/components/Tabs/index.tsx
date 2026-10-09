@@ -17,14 +17,19 @@ import containsDataAttr from "../../lib/dom/node-contains-data-attr";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { useSafeId } from "../../lib/use-safe-id";
 
-import { useAppStore, useAppStoreApi } from "../../store";
-
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("Tabs", styles);
 const getTabClassName = getClassNameFactory("Tabs-tab", styles);
 
-type TabValue = string | number;
+export type TabValue = string | number;
+
+/**
+ * Why `Tabs` changed:
+ * - `"selected"`: someone picked it (click or keyboard)
+ * - `"missing"`: no tab has the current value, so the first tab is suggested
+ */
+export type TabsChangeReason = "selected" | "missing";
 
 /** How a tab is represented for handling its state */
 type RegisteredTab = {
@@ -81,28 +86,40 @@ const useTabs = (): TabsContextValue => {
   return tabs;
 };
 
+type TabsProps = {
+  /** The selected tab's value. When no tab has it, the first tab is shown. */
+  value?: TabValue | null;
+  /**
+   * Called when the selected tab should change. The parent decides whether to apply it.
+   *
+   * With `reason: "missing"`, no tab has `value` and the first tab's value is passed.
+   */
+  onChange: (value: TabValue, details: { reason: TabsChangeReason }) => void;
+  /** The containers with the nested `Tab` components */
+  children: ReactNode;
+};
+
 /** Renders a row with the tabs defined below it in the tree, and only the selected tab's content. */
-export const Tabs = ({ children }: { children: ReactNode }) => {
+export const Tabs = ({ value, onChange, children }: TabsProps) => {
   const id = useSafeId();
 
   const [tabs, setTabs] = useState<RegisteredTab[]>([]);
-
-  // The last tabs registered, to tell when the selected tab was removed
-  const previousTabs = useRef<RegisteredTab[]>([]);
+  // The live tabs registered. The state above can be one render behind, so we keep a live copy to check
+  const latestTabs = useRef<RegisteredTab[]>([]);
 
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const appStore = useAppStoreApi();
-  const storedValue = useAppStore((s) => s.state.ui.fieldTab);
-  const dispatch = useAppStore((s) => s.dispatch);
-
   // Register a new tab and return a function to remove it.
   const register = useCallback((tab: RegisteredTab) => {
+    latestTabs.current = [...latestTabs.current, tab];
     setTabs((current) =>
       sortElementsByPosition([...current, tab], (t) => t.marker)
     );
 
-    return () => setTabs((current) => current.filter((item) => item !== tab));
+    return () => {
+      latestTabs.current = latestTabs.current.filter((item) => item !== tab);
+      setTabs((current) => current.filter((item) => item !== tab));
+    };
   }, []);
 
   const canReorder = tabs.length > 1;
@@ -133,33 +150,22 @@ export const Tabs = ({ children }: { children: ReactNode }) => {
     return () => observer.disconnect();
   }, [canReorder]);
 
-  const storedIndex = tabs.findIndex((tab) => tab.value === storedValue);
-  // Show the first tab if no tab is currently selected
-  const selectedIndex = Math.max(storedIndex, 0);
+  const valueIndex = tabs.findIndex((tab) => tab.value === value);
+  // Show the first tab when none matches the value
+  const selectedIndex = Math.max(valueIndex, 0);
   const selected = tabs[selectedIndex]?.value;
 
-  // When no tab is selected yet, it was removed, or doesn't exist, set the first tab as selected.
-  //
-  // Checked in an effect, not in a tab's cleanup, bc cleanups also run when a tab registers
-  // again while the tab is still there (e.g. they get a new label).
+  // Suggest the first tab when none matches the current value
   useLayoutEffect(() => {
-    // Skip moments with no tabs (e.g. while the next component's fields load),
-    // so the tabs from before still count when the next ones register
-    if (tabs.length === 0) return;
+    const current = latestTabs.current;
 
-    const chosenWasRemoved = previousTabs.current.some(
-      (tab) => tab.value === storedValue
-    );
-    previousTabs.current = tabs;
-
-    // If the selected tab is still there, do nothing
-    if (storedIndex !== -1) return;
-
-    // Otherwise select the first tab
-    if (storedValue === null || storedValue === undefined || chosenWasRemoved) {
-      appStore.getState().setUi({ fieldTab: tabs[0].value });
+    if (current.length === 0 || current.some((tab) => tab.value === value)) {
+      return;
     }
-  }, [tabs, storedValue, storedIndex, appStore]);
+
+    const first = sortElementsByPosition(current, (t) => t.marker)[0];
+    onChange(first.value, { reason: "missing" });
+  }, [tabs, value, onChange]);
 
   useEffect(() => {
     const values = tabs.map((tab) => tab.value);
@@ -171,8 +177,8 @@ export const Tabs = ({ children }: { children: ReactNode }) => {
     }
   }, [tabs]);
 
-  const selectTab = (value: TabValue) =>
-    dispatch({ type: "setUi", ui: { fieldTab: value } });
+  const selectTab = (tabValue: TabValue) =>
+    onChange(tabValue, { reason: "selected" });
 
   // Handle keyboard navigation for the tab list
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
