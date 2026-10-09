@@ -199,6 +199,29 @@ const DefaultFieldsLayout: NonNullable<ComponentConfig["renderFields"]> = ({
   fields,
 }) => <>{Object.values(fields)}</>;
 
+/**
+ * Renders the provided fields for the currently selected component.
+ * Uses the component's `renderFields` if defined.
+ *
+ * To use within the `fields` override.
+ */
+export const ComponentFields = ({
+  fields,
+}: {
+  /** The fields of the currently selected item to render */
+  fields: Partial<Record<string, ReactNode>>;
+}) => {
+  const fieldsReady = useAppStore(
+    (s) => s.fields.id === (s.selectedItem?.props.id || "root")
+  );
+  const renderFields = useAppStore(
+    (s) => s.getComponentConfig(s.selectedItem?.type)?.renderFields
+  );
+  const RenderFields = renderFields ?? DefaultFieldsLayout;
+
+  return <>{fieldsReady && <RenderFields fields={fields} />}</>;
+};
+
 const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   const overrides = useAppStore((s) => s.overrides);
   const componentResolving = useAppStore((s) => {
@@ -218,11 +241,6 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
   // the current selected item data with the previous' fields config. Make sure they are in sync.
   const fieldsReady = useAppStore((s) => s.fields.id === nodeId);
   const fieldsLoading = useAppStore((s) => s.fields.loading);
-
-  // Check if the user defined a custom field layout
-  const renderFields = useAppStore(
-    (s) => s.getComponentConfig(s.selectedItem?.type)?.renderFields
-  );
 
   // Subscribe to the visible fields
   const visibleFieldNames = useAppStore(
@@ -250,8 +268,6 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
     return fieldMap;
   }, [fieldsReady, visibleFieldNames]);
 
-  const RenderFields = renderFields ?? DefaultFieldsLayout;
-
   const isLoading = fieldsLoading || componentResolving;
 
   const Wrapper = useMemo(() => overrides.fields || DefaultFields, [overrides]);
@@ -269,7 +285,7 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
           itemSelector={itemSelector}
           fields={fields}
         >
-          {fieldsReady && <RenderFields fields={fields} />}
+          <ComponentFields fields={fields} />
         </Wrapper>
       </Tabs>
       {isLoading && (
