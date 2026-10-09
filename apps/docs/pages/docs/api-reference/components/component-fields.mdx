@@ -1,0 +1,38 @@
+---
+title: <ComponentFields>
+---
+
+# \<ComponentFields\>
+
+Select and render fields for the currently selected component.
+
+Use it only within the [`fields` override](/docs/api-reference/overrides/fields).
+
+```tsx {5,9-10} copy
+import { ComponentFields } from "@puckeditor/core";
+
+const overrides = {
+  fields: ({ fields }) => {
+    const { title, ...rest } = fields;
+
+    return (
+      <>
+        <div className="field-title">{title}</div>
+        <ComponentFields fields={rest} />
+      </>
+    );
+  },
+};
+```
+
+## Props
+
+| Param               | Example                      | Type   | Status   |
+| ------------------- | ---------------------------- | ------ | -------- |
+| [`fields`](#fields) | `fields: { title: <div /> }` | Object | Required |
+
+## Required props
+
+### `fields`
+
+The fields to render, from the override's [`fields`](/docs/api-reference/overrides/fields#fields).

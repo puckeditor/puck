@@ -5,6 +5,7 @@ const menu = {
   "action-bar-label": {},
   "action-bar-separator": {},
   "auto-field": {},
+  "component-fields": {},
   drawer: {},
   "drawer-item": {},
   "drop-zone": {},
@@ -22,6 +23,7 @@ const menu = {
   "rich-text-menu": {},
   "rich-text-menu-group": {},
   "rich-text-menu-control": {},
+  tab: {},
 };
 
 export default menu;

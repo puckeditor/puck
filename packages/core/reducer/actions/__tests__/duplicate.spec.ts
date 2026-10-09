@@ -189,6 +189,26 @@ describe("Reducer", () => {
         expect(newState.ui.itemSelector?.index).toBe(1);
         expect(newState.ui.itemSelector?.zone).toBe(rootDroppableId);
       });
+
+      it("should keep the selected field tab when duplicating an item", () => {
+        const newState = executeSequence(defaultState, [
+          () => ({
+            type: "insert",
+            componentType: "Comp",
+            destinationZone: rootDroppableId,
+            destinationIndex: 0,
+            id: "sampleId",
+          }),
+          () => ({ type: "setUi", ui: { fieldTab: "Style" } }),
+          () => ({
+            type: "duplicate",
+            sourceZone: rootDroppableId,
+            sourceIndex: 0,
+          }),
+        ]);
+
+        expect(newState.ui.fieldTab).toBe("Style");
+      });
     });
     describe("with slots", () => {
       it("should duplicate within a slot", () => {

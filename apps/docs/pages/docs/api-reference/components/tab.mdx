@@ -1,0 +1,112 @@
+---
+title: <Tab>
+---
+
+import { ConfigPreview } from "@/docs/components/Preview";
+import { Tab } from "@/puck";
+
+# \<Tab\>
+
+Group fields in a tab. Use it in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) or the [`fields` override](/docs/api-reference/overrides/fields).
+
+Conditions:
+
+- Tabs are shown in the order they're rendered.
+- Tabs within tabs aren't supported.
+
+<ConfigPreview
+  label="Example"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      size: {
+        type: "radio",
+        options: [
+          { label: "Small", value: "s" },
+          { label: "Large", value: "l" },
+        ],
+      },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Thin", value: "thin" },
+          { label: "Regular", value: "regular" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      color: { type: "text" },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        <Tab label="Content">{fields.title}</Tab>
+        <Tab label="Style">
+          {fields.size}
+          {fields.weight}
+        </Tab>
+      </>
+    ),
+    defaultProps: { title: "Hello, world", size: "l", weight: "regular" },
+    render: ({ title, weight, size }) => {
+      return (
+        <p
+          style={{
+            margin: 0,
+            fontWeight:
+              weight === "thin" ? "100" : weight === "regular" ? "400" : "700",
+            fontSize: size === "s" ? "12px" : "24px",
+          }}
+        >
+          {title}
+        </p>
+      );
+    },
+  }}
+/>
+
+```tsx {1,8-14} copy
+import { Tab } from "@puckeditor/core";
+
+const config = {
+  components: {
+    Example: {
+      fields: { title, size, weight },
+      renderFields: ({ fields }) => (
+        <>
+          <Tab label="Content">{fields.title}</Tab>
+          <Tab label="Style">
+            {fields.size}
+            {fields.weight}
+          </Tab>
+        </>
+      ),
+      // ...
+    },
+  },
+};
+```
+
+## Props
+
+| Param                   | Example               | Type             | Status   |
+| ----------------------- | --------------------- | ---------------- | -------- |
+| [`label`](#label)       | `label: "Content"`    | String           | Required |
+| [`children`](#children) | `children: <input />` | ReactNode        | -        |
+| [`value`](#value)       | `value: "content"`    | String \| Number | -        |
+
+## Required props
+
+### `label`
+
+The text shown in the tab row.
+
+## Optional props
+
+### `children`
+
+The content to render when the tab is selected, like fields.
+
+### `value`
+
+A unique value for the tab. Defaults to [`label`](#label).
+
+Used in [`ui.fieldTab`](/docs/api-reference/data-model/app-state#uifieldtab) when this tab is selected.

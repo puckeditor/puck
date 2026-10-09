@@ -9,6 +9,7 @@ export * from "../types/Fields";
 export * from "../components/ActionBar";
 export { AutoField, FieldLabel } from "../components/AutoField";
 export { FieldGroup, FieldGroupItem } from "../components/FieldGroup";
+export { Tab } from "../components/Tabs";
 
 export * from "../components/Button";
 export { Drawer } from "../components/Drawer";
@@ -22,6 +23,7 @@ export {
 export * from "../components/IconButton";
 export { InlineTextField } from "../components/InlineTextField";
 export { Puck } from "../components/Puck";
+export { ComponentFields } from "../components/Puck/components/Fields";
 export * from "../components/Render";
 export { RichTextMenu } from "../components/RichTextMenu/inner";
 
