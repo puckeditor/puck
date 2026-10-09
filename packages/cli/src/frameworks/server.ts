@@ -275,7 +275,7 @@ const serverPlanner = (id: "hono" | "express") => {
   };
 
   const planAuth = (p: Planner) => {
-    planRouteAuth(p, "puckAuth", "auth");
+    planRouteAuth(p, "signIn", "auth");
     p.warn(
       "PUCK-CLI-W-AUTH-EDITOR",
       "Puck Cloud requests now require Sign in with Puck. Run `npx @puckeditor/cli add auth` in the editor's app too, so editors can sign in."

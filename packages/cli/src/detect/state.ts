@@ -161,7 +161,7 @@ export const detectState = (
       pluginInstalled: PLUGIN_AUTH_PACKAGE in ctx.deps,
       declaredRange: ctx.deps[PLUGIN_AUTH_PACKAGE] ?? null,
       routeAuthenticated: Boolean(
-        route?.routeFile && scan.puckAuthFiles.includes(route.routeFile)
+        route?.routeFile && scan.signInFiles.includes(route.routeFile)
       ),
     },
   };

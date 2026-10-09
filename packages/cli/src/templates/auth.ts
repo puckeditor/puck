@@ -5,14 +5,30 @@ import { quoteOf } from "../ast/config-object";
 /**
  * How a Cloud route identifies who's calling. Puck Pages needs every route to
  * say: "unowned" keeps today's behaviour, where anyone who can reach the
- * route acts with the API key, and "puckAuth" requires Sign in with Puck.
+ * route acts with the API key, and "signIn" requires Sign in with Puck.
  */
-export type RouteAuth = "unowned" | "puckAuth";
+export type RouteAuth = "unowned" | "signIn";
 
 const UNOWNED = "() => ({ id: null })";
 
-const authenticateValue = (auth: RouteAuth) =>
-  auth === "puckAuth" ? "puckAuth" : UNOWNED;
+/**
+ * Imports Sign in with Puck's functions, or creates them against a
+ * non-default Puck Cloud, e.g. when PUCK_CLOUD_URL is set
+ */
+export const signInSetup = (names: string[], host?: string) =>
+  host
+    ? {
+        imports: `import { createPuckAuth } from "${CLOUD_CLIENT_AUTH_ENTRY}";`,
+        create: `\nconst { ${names.join(
+          ", "
+        )} } = createPuckAuth({ host: ${JSON.stringify(host)} });\n`,
+      }
+    : {
+        imports: `import { ${names.join(
+          ", "
+        )} } from "${CLOUD_CLIENT_AUTH_ENTRY}";`,
+        create: "",
+      };
 
 const insertAfterImports = (code: string, filename: string, text: string) => {
   const ast = tryParseModule(code, filename);
@@ -24,9 +40,9 @@ const insertAfterImports = (code: string, filename: string, text: string) => {
   return code.slice(0, last.end!) + `\n${text}` + code.slice(last.end!);
 };
 
-const importPuckAuth = (code: string, filename: string, host?: string) => {
+const importAuthenticate = (code: string, filename: string, host?: string) => {
   const q = quoteOf(code);
-  const setup = puckAuthSetup(host);
+  const setup = signInSetup(["authenticate"], host);
   return insertAfterImports(
     code,
     filename,
@@ -35,6 +51,10 @@ const importPuckAuth = (code: string, filename: string, host?: string) => {
     }`
   );
 };
+
+const usesSignIn = (code: string) =>
+  code.includes(`"${CLOUD_CLIENT_AUTH_ENTRY}"`) ||
+  code.includes(`'${CLOUD_CLIENT_AUTH_ENTRY}'`);
 
 /**
  * Sets `authenticate` on a Cloud route the CLI generated, keeping any other
@@ -50,13 +70,15 @@ export const withRouteAuth = (
   auth: RouteAuth,
   host?: string
 ): string | null => {
-  const value = authenticateValue(auth);
+  // Sign in with Puck's authenticate is imported under its own name
+  const property =
+    auth === "signIn" ? "authenticate" : `authenticate: ${UNOWNED}`;
 
   if (/\bauthenticate\b/.test(route)) {
-    if (auth === "unowned" || /\bpuckAuth\b/.test(route)) return route;
+    if (auth === "unowned" || usesSignIn(route)) return route;
     if (!route.includes(`authenticate: ${UNOWNED}`)) return null;
-    return importPuckAuth(
-      route.replace(`authenticate: ${UNOWNED}`, `authenticate: ${value}`),
+    return importAuthenticate(
+      route.replace(`authenticate: ${UNOWNED}`, property),
       filename,
       host
     );
@@ -67,10 +89,10 @@ export const withRouteAuth = (
   const call = /puckHandler\(request(\)|, \{(\n([ \t]*)| ))/;
   const entry = (rest: string, indent = "") =>
     rest === "}"
-      ? ` authenticate: ${value} }`
+      ? ` ${property} }`
       : rest === " "
-      ? ` authenticate: ${value}, `
-      : `\n${indent}authenticate: ${value},\n${indent}`;
+      ? ` ${property}, `
+      : `\n${indent}${property},\n${indent}`;
   let next: string;
 
   if (options.test(route)) {
@@ -94,36 +116,22 @@ export const withRouteAuth = (
     return null;
   }
 
-  return auth === "puckAuth" ? importPuckAuth(next, filename, host) : next;
+  return auth === "signIn" ? importAuthenticate(next, filename, host) : next;
 };
-
-/** Imports puckAuth, or creates it for a non-default Puck Cloud */
-export const puckAuthSetup = (host?: string) =>
-  host
-    ? {
-        imports: `import { createPuckAuth } from "${CLOUD_CLIENT_AUTH_ENTRY}";`,
-        create: `\nconst puckAuth = createPuckAuth({ host: ${JSON.stringify(
-          host
-        )} });\n`,
-      }
-    : {
-        imports: `import { puckAuth } from "${CLOUD_CLIENT_AUTH_ENTRY}";`,
-        create: "",
-      };
 
 /** Next.js: lib/puck-auth.ts */
 export const nextPuckAuth = (host?: string) => {
-  const setup = puckAuthSetup(host);
+  const setup = signInSetup(["getSession", "loginUrl"], host);
   return `${setup.imports}
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 ${setup.create}
 /** Sends anyone who isn't signed in with Puck to sign in, then back to returnTo */
 export async function requirePuckSession(returnTo: string) {
-  const session = await puckAuth.getSession(await headers());
+  const session = await getSession(await headers());
 
   if (!session) {
-    redirect(puckAuth.loginUrl(returnTo));
+    redirect(loginUrl(returnTo));
   }
 
   return session;
@@ -144,7 +152,7 @@ export const withSameRouteAuth = (
   host?: string
 ): string | null => {
   if (current === base) return next;
-  for (const auth of ["unowned", "puckAuth"] as const) {
+  for (const auth of ["unowned", "signIn"] as const) {
     if (current === withRouteAuth(base, filename, auth, host))
       return withRouteAuth(next, filename, auth, host);
   }
@@ -153,17 +161,17 @@ export const withSameRouteAuth = (
 
 /** React Router: app/lib/puck-auth.server.ts */
 export const reactRouterPuckAuth = (host?: string) => {
-  const setup = puckAuthSetup(host);
+  const setup = signInSetup(["getSession", "loginUrl"], host);
   return `import { redirect } from "react-router";
 ${setup.imports}
 ${setup.create}
 /** Sends anyone who isn't signed in with Puck to sign in, then back here */
 export async function requirePuckSession(request: Request) {
-  const session = await puckAuth.getSession(request.headers);
+  const session = await getSession(request.headers);
 
   if (!session) {
     const url = new URL(request.url);
-    throw redirect(puckAuth.loginUrl(\`\${url.pathname}\${url.search}\`));
+    throw redirect(loginUrl(\`\${url.pathname}\${url.search}\`));
   }
 
   return session;
@@ -173,7 +181,7 @@ export async function requirePuckSession(request: Request) {
 
 /** TanStack Start: src/lib/puck-auth.ts */
 export const tanstackPuckAuth = (host?: string) => {
-  const setup = puckAuthSetup(host);
+  const setup = signInSetup(["getSession", "loginUrl"], host);
   return `import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { redirect } from "@tanstack/react-router";
@@ -183,10 +191,10 @@ ${setup.create}
 export const requirePuckSession = createServerFn({ method: "GET" })
   .validator((returnTo: string) => returnTo)
   .handler(async ({ data: returnTo }) => {
-    const session = await puckAuth.getSession(getRequest().headers);
+    const session = await getSession(getRequest().headers);
 
     if (!session) {
-      throw redirect({ href: puckAuth.loginUrl(returnTo) });
+      throw redirect({ href: loginUrl(returnTo) });
     }
 
     return session;
@@ -223,7 +231,7 @@ export function RequireSession({ children }: { children: ReactNode }) {
 
 /** Astro: src/lib/puck-auth.ts */
 export const astroPuckAuth = (host?: string) => {
-  const setup = puckAuthSetup(host);
+  const setup = signInSetup(["getSession", "loginUrl"], host);
   return `import fs from "node:fs";
 ${setup.imports}
 
@@ -234,10 +242,10 @@ if (import.meta.env.DEV && fs.existsSync(".env.local"))
 ${setup.create}
 /** Where to send visitors who aren't signed in with Puck, or null if they are */
 export const puckSignInUrl = async (request: Request) => {
-  if (await puckAuth.getSession(request.headers)) return null;
+  if (await getSession(request.headers)) return null;
 
   const url = new URL(request.url);
-  return puckAuth.loginUrl(\`\${url.pathname}\${url.search}\`);
+  return loginUrl(\`\${url.pathname}\${url.search}\`);
 };
 `;
 };

@@ -540,7 +540,7 @@ export const planAstroAuth = (p: Planner, info: AstroInfo) => {
         snippet: `import { puckSignInUrl } from "../lib/puck-auth";\n\nconst signIn = await puckSignInUrl(Astro.request);\nif (signIn) return Astro.redirect(signIn);\n`,
       });
     }
-    planRouteAuth(p, "puckAuth", "auth");
+    planRouteAuth(p, "signIn", "auth");
   } else {
     p.warn(
       "PUCK-CLI-W-EXTERNAL-AUTH",

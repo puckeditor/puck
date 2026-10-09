@@ -592,7 +592,7 @@ await requirePuckSession("/puck");
   }
 
   planAuthPlugin(p, `${A}/puck/[...puckPath]/client.tsx`);
-  planRouteAuth(p, "puckAuth", "auth");
+  planRouteAuth(p, "signIn", "auth");
 };
 
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {

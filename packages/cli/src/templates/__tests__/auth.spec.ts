@@ -34,11 +34,14 @@ const ROUTES: [string, string][] = [
 
 describe("withRouteAuth", () => {
   it.each(ROUTES)("authenticates the %s route", (_, route) => {
-    for (const auth of ["unowned", "puckAuth"] as const) {
+    for (const auth of ["unowned", "signIn"] as const) {
       const code = withRouteAuth(route, "route.ts", auth)!;
       expect(code).not.toBeNull();
       expect(() => parseModule(code, "route.ts")).not.toThrow();
-      expect(code.match(/authenticate:/g)).toHaveLength(1);
+      // One authenticate property, shorthand for Sign in with Puck's
+      expect(code.match(/authenticate[:,} ]/g)).toHaveLength(
+        auth === "signIn" ? 2 : 1
+      );
       expect(code).not.toContain("PuckCloudOptions");
       // Idempotent
       expect(withRouteAuth(code, "route.ts", auth)).toBe(code);
@@ -61,12 +64,12 @@ describe("withRouteAuth", () => {
       withRouteAuth(
         readRecipe("hono-ai", "src/puck/cloud.ts"),
         "cloud.ts",
-        "puckAuth"
+        "signIn"
       )
-    ).toContain(`import { puckAuth } from "@puckeditor/cloud-client/auth";
+    ).toContain(`import { authenticate } from "@puckeditor/cloud-client/auth";
 
 const options: PuckHandlerOptions = {
-  authenticate: puckAuth,
+  authenticate,
   ai: {`);
   });
 
@@ -74,21 +77,21 @@ const options: PuckHandlerOptions = {
     const code = withRouteAuth(
       withCloudHost(NEXT_CLOUD_ROUTE, HOST),
       "route.ts",
-      "puckAuth",
+      "signIn",
       HOST
     );
     expect(code).toContain(
-      `return puckHandler(request, { authenticate: puckAuth, host: "${HOST}" });`
+      `return puckHandler(request, { authenticate, host: "${HOST}" });`
     );
     expect(code).toContain(
-      `const puckAuth = createPuckAuth({ host: "${HOST}" });`
+      `const { authenticate } = createPuckAuth({ host: "${HOST}" });`
     );
   });
 
   it("switches an unowned route to Sign in with Puck", () => {
     const unowned = withRouteAuth(NEXT_CLOUD_ROUTE, "route.ts", "unowned")!;
-    expect(withRouteAuth(unowned, "route.ts", "puckAuth")).toBe(
-      withRouteAuth(NEXT_CLOUD_ROUTE, "route.ts", "puckAuth")
+    expect(withRouteAuth(unowned, "route.ts", "signIn")).toBe(
+      withRouteAuth(NEXT_CLOUD_ROUTE, "route.ts", "signIn")
     );
   });
 
@@ -98,7 +101,7 @@ const options: PuckHandlerOptions = {
       "puckHandler(request, { authenticate: getUser })"
     );
     expect(withRouteAuth(custom, "route.ts", "unowned")).toBe(custom);
-    expect(withRouteAuth(custom, "route.ts", "puckAuth")).toBeNull();
+    expect(withRouteAuth(custom, "route.ts", "signIn")).toBeNull();
   });
 
   it("doesn't guess at routes it didn't write", () => {

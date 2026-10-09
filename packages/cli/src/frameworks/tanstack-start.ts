@@ -479,7 +479,7 @@ export const planTanStackStartAuth = (p: Planner, info: TanStackStartInfo) => {
 
   planAuthPlugin(p, to(pagesEditor ? PAGES_EDITOR : SPLAT));
   planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
-  planRouteAuth(p, "puckAuth", "auth");
+  planRouteAuth(p, "signIn", "auth");
 };
 
 export const tanstackStartAdapter: FrameworkAdapter<TanStackStartInfo> = {

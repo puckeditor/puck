@@ -49,7 +49,7 @@ export interface SourceScan {
   /** Files that read published pages from Puck Cloud */
   cloudPageFiles: string[];
   /** Files that use Sign in with Puck */
-  puckAuthFiles: string[];
+  signInFiles: string[];
   cssImported: boolean;
   truncated: boolean;
 }
@@ -98,7 +98,7 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
     pagesPluginFiles: [],
     authPluginFiles: [],
     cloudPageFiles: [],
-    puckAuthFiles: [],
+    signInFiles: [],
     cssImported: false,
     truncated: false,
   };
@@ -155,9 +155,9 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
         scan.cloudPageFiles.push(rel);
       if (
         ref.source === CLOUD_CLIENT_AUTH_ENTRY &&
-        imports("puckAuth", "createPuckAuth")
+        imports("authenticate", "getSession", "loginUrl", "createPuckAuth")
       )
-        scan.puckAuthFiles.push(rel);
+        scan.signInFiles.push(rel);
     }
   }
 
@@ -169,7 +169,7 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
   scan.pagesPluginFiles = unique(scan.pagesPluginFiles);
   scan.authPluginFiles = unique(scan.authPluginFiles);
   scan.cloudPageFiles = unique(scan.cloudPageFiles);
-  scan.puckAuthFiles = unique(scan.puckAuthFiles);
+  scan.signInFiles = unique(scan.signInFiles);
 
   return scan;
 };

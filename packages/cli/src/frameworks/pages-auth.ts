@@ -45,7 +45,7 @@ export const planRouteAuth = (
     p.modifyFile(file, next, {
       capability,
       summary:
-        auth === "puckAuth"
+        auth === "signIn"
           ? `Require Sign in with Puck in ${file}`
           : `Set authenticate in ${file}`,
     });
@@ -61,12 +61,12 @@ export const planRouteAuth = (
     reason: "unsupported_shape",
     message: `${file} was customised, so authenticate wasn't set automatically.`,
     instructions:
-      auth === "puckAuth"
+      auth === "signIn"
         ? `Pass Sign in with Puck to puckHandler in ${file}.`
         : `Pass an authenticate option to puckHandler in ${file}, which the version of @puckeditor/cloud-client with Puck Pages requires. () => ({ id: null }) lets anyone who can reach the route use your API key.`,
     snippet:
-      auth === "puckAuth"
-        ? `import { puckAuth } from "@puckeditor/cloud-client/auth";\n\npuckHandler(request, { authenticate: puckAuth });\n`
+      auth === "signIn"
+        ? `import { authenticate } from "@puckeditor/cloud-client/auth";\n\npuckHandler(request, { authenticate });\n`
         : `puckHandler(request, { authenticate: () => ({ id: null }) });\n`,
   });
 };

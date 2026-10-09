@@ -403,7 +403,7 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
   const usesPages =
     state.pages.pluginInstalled || state.scan.cloudPageFiles.length > 0;
   const usesAuth =
-    state.auth.pluginInstalled || state.scan.puckAuthFiles.length > 0;
+    state.auth.pluginInstalled || state.scan.signInFiles.length > 0;
   const plugin = (
     capability: "pages" | "auth",
     pkg: string,

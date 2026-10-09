@@ -550,7 +550,7 @@ export const planReactRouterAuth = (p: Planner, info: ReactRouterInfo) => {
 
   planAuthPlugin(p, file);
   planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
-  planRouteAuth(p, "puckAuth", "auth");
+  planRouteAuth(p, "signIn", "auth");
 };
 
 const REACT_ROUTER_7 = "^7.18.0";

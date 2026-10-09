@@ -568,7 +568,7 @@ export const planViteAuth = (p: Planner, info: ViteInfo) => {
       }. Run \`npx @puckeditor/cli add auth\` in that server's project to require Sign in with Puck there.`
     );
   } else {
-    planRouteAuth(p, "puckAuth", "auth");
+    planRouteAuth(p, "signIn", "auth");
   }
 };
 
