@@ -15,7 +15,7 @@ npx @puckeditor/cli init
 
 With Puck AI, the only manual step is logging in to Puck Cloud and approving the connection in your browser. When it's done, the CLI starts your dev server and opens the editor.
 
-Puck AI is optional. It's the editor plugin that uses Puck Cloud as its backend, so choosing it sets up Puck Cloud too. `init` asks whether to add it; pass `--ai` or `--no-ai` to choose up front.
+Puck AI, [Puck Pages](#puck-pages) and [Puck Auth](#puck-auth) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all three selected; pass `--ai` or `--no-ai`, plus `--pages` and `--auth`, to choose up front.
 
 ## Supported projects
 
@@ -183,7 +183,7 @@ npx skills add puckeditor/skills --skill puck
 | `--api-key <key>`          | Use an existing API key instead of logging in                                                                     |
 | `--no-env-write`           | Don't write `PUCK_API_KEY` to a file                                                                              |
 | `--ai`                     | Also set up Puck AI and Puck Cloud (`init`)                                                                       |
-| `--no-ai`                  | Set up the editor only, without asking about Puck AI (`init`)                                                     |
+| `--no-ai`                  | Set up the editor without Puck AI, and without asking what else to include (`init`)                               |
 | `--pages`                  | Also set up [Puck Pages](#puck-pages) (`init`)                                                                    |
 | `--auth`                   | Also set up [Puck Auth](#puck-auth) (`init`)                                                                      |
 | `--backend <choice>`       | Where a Vite app's server comes from: `add`, `external` or `none`                                                 |
