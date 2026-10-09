@@ -54,13 +54,19 @@ const actionLines = (action: RequiredAction): string[] => {
     case "provide_app_name":
       lines.push(`    ${action.flag} ${action.suggested}`);
       break;
-    case "choose_ai":
+    case "choose_capabilities": {
+      const width = Math.max(...action.choices.map((c) => c.label.length));
       lines.push(
         ...action.choices.map(
-          (c) => `    ${c.value.padEnd(8)} ${pc.dim(c.label)}`
-        )
+          (c) =>
+            `    ${c.value.padEnd(8)} ${c.label.padEnd(width)}  ${pc.dim(
+              c.description
+            )}`
+        ),
+        `    ${action.none.padEnd(8)} ${pc.dim("None of them")}`
       );
       break;
+    }
     case "choose_backend":
       lines.push(
         ...action.choices.map(

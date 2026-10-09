@@ -142,7 +142,7 @@ describe("add ai", () => {
 });
 
 describe("init with Puck AI", () => {
-  it("asks whether to add Puck AI without changing anything", async () => {
+  it("asks which of Puck AI, Pages and Auth to add without changing anything", async () => {
     const root = tmpProject({ tree: nextMinimal() });
     const before = treeSnapshot(root);
     const { json, code, runner, cloud } = await run(
@@ -154,13 +154,28 @@ describe("init with Puck AI", () => {
     expect(code).toBe(10);
     expect(json.actions).toEqual([
       expect.objectContaining({
-        type: "choose_ai",
+        type: "choose_capabilities",
         required: true,
         choices: [
-          { value: "--ai", label: "Add Puck AI and Puck Cloud" },
-          { value: "--no-ai", label: "Editor only" },
+          expect.objectContaining({
+            value: "--ai",
+            label: "Puck AI",
+            recommended: true,
+          }),
+          expect.objectContaining({
+            value: "--pages",
+            label: "Puck Pages",
+            recommended: true,
+          }),
+          expect.objectContaining({
+            value: "--auth",
+            label: "Puck Auth",
+            recommended: true,
+          }),
         ],
-        rerun: "npx @puckeditor/cli init --yes --json <--ai|--no-ai>",
+        none: "--no-ai",
+        rerun:
+          "npx @puckeditor/cli init --yes --json [--ai] [--pages] [--auth]",
       }),
     ]);
     expect(treeSnapshot(root)).toEqual(before);

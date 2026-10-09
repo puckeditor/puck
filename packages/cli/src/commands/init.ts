@@ -91,13 +91,15 @@ const chooseCapabilities = async (
   alreadySetUp: boolean,
   server: boolean
 ): Promise<CapabilityId[] | null> => {
+  const { ai, pages, auth } = rc.flags;
   const extras: CapabilityId[] = [
-    ...(rc.flags.pages ? (["pages"] as const) : []),
-    ...(rc.flags.auth ? (["auth"] as const) : []),
+    ...(pages ? (["pages"] as const) : []),
+    ...(auth ? (["auth"] as const) : []),
   ];
-  if (rc.flags.ai) return ["editor", "ai", ...extras];
-  if (rc.flags.noAi) return ["editor", ...extras];
-  if (alreadySetUp) return ["editor", "ai", ...extras];
+  // Any of the flags answers the question; the rest are left out
+  if (choseCapabilities(rc))
+    return ["editor", ...(ai ? ["ai" as const] : []), ...extras];
+  if (alreadySetUp) return ["editor", "ai"];
   if (!rc.interactive) return null;
   const chosen = await rc.prompter.checkbox(
     "What else should Puck include? (each needs a Puck Cloud account)",
@@ -106,27 +108,26 @@ const chooseCapabilities = async (
       checked: true,
     }))
   );
-  return ["editor", ...new Set<CapabilityId>([...chosen, ...extras])];
+  return ["editor", ...chosen];
 };
 
-const AI_CHOICE_FLAGS = "<--ai|--no-ai>";
+const choseCapabilities = (rc: RunContext) =>
+  rc.flags.ai || rc.flags.noAi || rc.flags.pages || rc.flags.auth;
 
-const aiChoiceAction = (server = false): RequiredAction => ({
-  id: "init:ai",
-  type: "choose_ai",
+const CAPABILITY_FLAGS = "[--ai] [--pages] [--auth]";
+
+const capabilitiesAction = (server = false): RequiredAction => ({
+  id: "init:capabilities",
+  type: "choose_capabilities",
   required: true,
-  message: server
-    ? "Choose whether this server should serve Puck AI for your editor. It sets up Puck Cloud and requires a Puck Cloud account."
-    : "Choose whether to add Puck AI. It includes Puck Cloud and requires a Puck Cloud account.",
-  choices: server
-    ? [
-        { value: "--ai", label: "Pages API, Puck Cloud and Puck AI" },
-        { value: "--no-ai", label: "Pages API only" },
-      ]
-    : [
-        { value: "--ai", label: "Add Puck AI and Puck Cloud" },
-        { value: "--no-ai", label: "Editor only" },
-      ],
+  message: `Ask the developer which of these to include, all recommended. Each sets up Puck Cloud, which requires a Puck Cloud account. Re-run with the flag for each one chosen, or --no-ai for none.`,
+  choices: EXTRAS[server ? "server" : "app"].map((extra) => ({
+    value: `--${extra.value}` as const,
+    label: extra.name,
+    description: extra.description,
+    recommended: true,
+  })),
+  none: "--no-ai",
 });
 
 export const runInit = async (rc: RunContext): Promise<CommandResult> => {
@@ -177,12 +178,12 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
         server
       );
       if (!requested) {
-        const action = aiChoiceAction(server);
-        action.rerun = `${rerunCommand(rc)} ${AI_CHOICE_FLAGS}`;
+        const action = capabilitiesAction(server);
+        action.rerun = `${rerunCommand(rc)} ${CAPABILITY_FLAGS}`;
         const result = emptyResult("init", rc.flags.dryRun);
         result.status = "action_required";
         result.message =
-          "Choose whether to add Puck AI; no changes have been made.";
+          "Choose what to include with Puck; no changes have been made.";
         result.actions = [action];
         return result;
       }
@@ -244,16 +245,20 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
     }
   }
 
-  if (!rc.interactive && !rc.flags.ai && !rc.flags.noAi) {
-    missing.push(aiChoiceAction());
+  if (!rc.interactive && !choseCapabilities(rc)) {
+    missing.push(
+      capabilitiesAction(
+        Boolean(framework) && ADAPTERS[framework!].kind === "server"
+      )
+    );
   }
 
   if (missing.length > 0) {
     const flags = missing.map((a) =>
       a.type === "choose_framework"
         ? `--framework <${FRAMEWORK_IDS.join("|")}>`
-        : a.type === "choose_ai"
-        ? AI_CHOICE_FLAGS
+        : a.type === "choose_capabilities"
+        ? CAPABILITY_FLAGS
         : "--name <name>"
     );
     for (const action of missing)

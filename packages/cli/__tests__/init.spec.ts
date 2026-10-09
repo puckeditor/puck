@@ -26,7 +26,7 @@ describe("init", () => {
     expect(json.actions.map((a) => a.type)).toEqual([
       "choose_framework",
       "provide_app_name",
-      "choose_ai",
+      "choose_capabilities",
     ]);
     expect(json.actions[0]).toMatchObject({
       choices: [
@@ -40,11 +40,12 @@ describe("init", () => {
         { value: "express" },
       ],
       rerun: expect.stringContaining(
-        "--framework <next|react-router|tanstack-start|vinext|vite|astro|hono|express> --name <name> <--ai|--no-ai>"
+        "--framework <next|react-router|tanstack-start|vinext|vite|astro|hono|express> --name <name> [--ai] [--pages] [--auth]"
       ),
     });
     expect(json.actions[2]).toMatchObject({
-      choices: [{ value: "--ai" }, { value: "--no-ai" }],
+      choices: [{ value: "--ai" }, { value: "--pages" }, { value: "--auth" }],
+      none: "--no-ai",
     });
     expect(treeSnapshot(root)).toEqual(before);
     expect(runner.calls).toEqual([]);

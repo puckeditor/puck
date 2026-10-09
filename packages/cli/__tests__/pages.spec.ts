@@ -441,12 +441,22 @@ describe("init --pages --auth", () => {
     expect(json.auth).toEqual({ installed: true, configured: true });
   });
 
+  it("leaves out what isn't chosen", async () => {
+    const root = tmpProject({ tree: nextMinimal() });
+    const { json } = await run(["init", "--pages", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.message).toBe("Set up Puck Editor, Puck Cloud and Puck Pages.");
+    expect(json.ai).toMatchObject({ installed: false });
+  });
+
   it("adds them to an existing app", async () => {
     const root = tmpProject({ tree: nextMinimal() });
-    const { json } = await run(
-      ["init", "--no-ai", "--pages", "--yes", "--json", ...KEY],
-      { cwd: root }
-    );
+    const { json } = await run(["init", "--pages", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
 
     expect(json.status).toBe("success");
     expect(json.plan?.steps.map((s) => s.summary)).toContain(

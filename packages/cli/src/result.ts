@@ -67,8 +67,15 @@ export type RequiredAction = ActionBase &
       }
     | { type: "provide_app_name"; flag: "--name"; suggested: string }
     | {
-        type: "choose_ai";
-        choices: { value: "--ai" | "--no-ai"; label: string }[];
+        /** Pick any number of choices, passing each one's flag, or `none` */
+        type: "choose_capabilities";
+        choices: {
+          value: "--ai" | "--pages" | "--auth";
+          label: string;
+          description: string;
+          recommended: boolean;
+        }[];
+        none: "--no-ai";
       }
     | {
         type: "choose_backend";

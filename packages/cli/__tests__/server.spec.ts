@@ -60,16 +60,23 @@ describe("servers (Hono and Express)", () => {
     expect(checks.map(([c]) => c)).not.toContain("ai.plugin_installed");
   });
 
-  it("asks about Puck AI in server terms", async () => {
+  it("asks about Puck AI, Pages and Auth in server terms", async () => {
     const root = tmpProject({ tree: honoMinimal() });
     const { json } = await run(["init", "--json"], { cwd: root });
 
     expect(json.status).toBe("action_required");
     expect(json.actions[0]).toMatchObject({
-      type: "choose_ai",
+      type: "choose_capabilities",
       choices: [
-        { value: "--ai", label: "Pages API, Puck Cloud and Puck AI" },
-        { value: "--no-ai", label: "Pages API only" },
+        { value: "--ai", description: "Serve Puck AI for your editor" },
+        {
+          value: "--pages",
+          description: "Serve pages published in Puck Cloud",
+        },
+        {
+          value: "--auth",
+          description: "Require Sign in with Puck for Puck Cloud requests",
+        },
       ],
     });
   });
