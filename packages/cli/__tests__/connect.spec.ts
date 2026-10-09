@@ -64,6 +64,49 @@ describe("connect", () => {
     expect(done.json.warnings).toEqual([]);
   });
 
+  it("asks for a key for a branch", async () => {
+    const root = connectedProject();
+    const cloud = new FakeCloud();
+    const home = path.join(root, "..", "home");
+
+    const first = await run(["connect", "preview", "--yes", "--json"], {
+      cwd: root,
+      cloud,
+      env: { HOME: home },
+    });
+    expect(first.json.actions[0]).toMatchObject({
+      type: "browser_login",
+      rerun: "npx @puckeditor/cli connect preview --yes --json",
+    });
+    const started = cloud.requests.filter((r) => r.path === "/api/cli/connect");
+    expect(started[0].body).toMatchObject({ branch: "preview" });
+
+    // A pending login for another branch isn't reused
+    await run(["connect", "--yes", "--json"], {
+      cwd: root,
+      cloud,
+      env: { HOME: home },
+    });
+    const restarted = cloud.requests.filter(
+      (r) => r.path === "/api/cli/connect"
+    );
+    expect(restarted).toHaveLength(2);
+    expect(restarted[1].body).not.toHaveProperty("branch");
+  });
+
+  it.each([["../oops"], ["preview", "extra"]])(
+    "rejects connect with %s",
+    async (...args: string[]) => {
+      const { json, code, cloud } = await run(
+        ["connect", ...args, "--yes", "--json"],
+        { cwd: connectedProject() }
+      );
+      expect(code).toBe(2);
+      expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+      expect(cloud.networkCalls).toBe(0);
+    }
+  );
+
   it("asks for --yes before logging in", async () => {
     const root = connectedProject();
     const before = treeSnapshot(root);
@@ -175,6 +218,8 @@ describe("connect", () => {
 
   it("is listed in help", async () => {
     const { stdout } = await run([], { cwd: tmpProject("empty") });
-    expect(stdout).toMatch(/^  connect +Log in to Puck Cloud again/m);
+    expect(stdout).toMatch(
+      /^  connect \[branch\] +Log in to Puck Cloud again/m
+    );
   });
 });

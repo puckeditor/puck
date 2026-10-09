@@ -13,6 +13,8 @@ export interface ClientInfo {
   projectName?: string;
   framework?: string;
   projectRoot: string;
+  /** The branch to connect to, when not the project's default */
+  branch?: string;
 }
 
 export type CredentialResolution =
@@ -76,6 +78,7 @@ const clientPayload = (rc: RunContext, info: ClientInfo) => ({
   hostname: rc.deps.hostname.slice(0, 100),
   projectName: info.projectName?.slice(0, 100),
   framework: info.framework,
+  branch: info.branch,
   anonymousId: rc.telemetry?.anonymousId ?? undefined,
 });
 
@@ -158,6 +161,12 @@ const connectNonInteractive = async (
   );
   let session = store.load();
 
+  // A login started for another branch would mint a key for that branch
+  if (session && session.branch !== info.branch) {
+    store.clear();
+    session = null;
+  }
+
   if (session && session.expiresAt <= rc.deps.now()) {
     store.clear();
     session = null;
@@ -173,6 +182,7 @@ const connectNonInteractive = async (
         verificationUriComplete: started.verificationUriComplete,
         expiresAt: rc.deps.now() + started.expiresIn * 1000,
         interval: started.interval,
+        branch: info.branch,
       };
       store.save(session);
       if (!rc.flags.wait)

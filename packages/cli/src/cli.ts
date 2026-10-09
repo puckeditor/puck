@@ -142,7 +142,7 @@ export const runCli = async (
   try {
     if (command === "init") result = await runInit(rc);
     else if (command === "add") result = await runAdd(rc, positionals);
-    else if (command === "connect") result = await runConnect(rc);
+    else if (command === "connect") result = await runConnect(rc, positionals);
     else if (command === "status") result = await runStatus(rc);
     else if (command === "docs") result = await runDocs(rc, positionals);
     else if (command === "frameworks")

@@ -16,12 +16,35 @@ import { rerunCommand } from "../context";
 import { assertSupported, serializeSteps } from "./mutate";
 import { baseDir, resolveTarget } from "./target";
 
+// Puck Cloud's branch names, which are git-style
+const BRANCH_NAME = /^[A-Za-z0-9][A-Za-z0-9._/-]*$/;
+const isValidBranchName = (name: string) =>
+  name.length <= 255 &&
+  BRANCH_NAME.test(name) &&
+  !name.includes("..") &&
+  !name.includes("//") &&
+  !name.endsWith("/") &&
+  !name.endsWith(".");
+
 /**
  * Logs in to Puck Cloud again and replaces PUCK_API_KEY, even if a key is
  * already set. Only writes the key: code changes are `add cloud`'s job.
+ *
+ * `puck connect <branch>` asks for a key for that branch, which Puck Cloud
+ * preselects, or offers to create. Without one, it's the default branch.
  */
-export const runConnect = async (rc: RunContext): Promise<CommandResult> => {
+export const runConnect = async (
+  rc: RunContext,
+  positionals: string[] = []
+): Promise<CommandResult> => {
   const { deps, flags } = rc;
+  const [branch, ...rest] = positionals;
+  if (rest.length > 0 || (branch !== undefined && !isValidBranchName(branch))) {
+    throw new CliError(
+      "PUCK-CLI-INVALID-ARGS",
+      `Usage: \`${CANONICAL_INVOCATION} connect [branch]\`, where branch is a Puck Cloud branch name like feature/new-hero.`
+    );
+  }
   const result = emptyResult("connect", flags.dryRun);
   const target = await resolveTarget(rc);
 
@@ -111,6 +134,7 @@ export const runConnect = async (rc: RunContext): Promise<CommandResult> => {
       projectRoot: root,
       projectName: ctx.packageJson?.name ?? path.basename(root),
       framework: ctx.framework!.id,
+      branch,
     },
     { fresh: true }
   );

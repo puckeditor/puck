@@ -15,8 +15,9 @@ export const COMMANDS = [
       "Add capabilities (ai, pages and auth include cloud, cloud includes editor)",
   },
   {
-    name: "connect",
-    description: "Log in to Puck Cloud again and replace PUCK_API_KEY",
+    name: "connect [branch]",
+    description:
+      "Log in to Puck Cloud again and replace PUCK_API_KEY, optionally for a branch",
   },
   { name: "status", description: "Show what's installed and configured" },
   {

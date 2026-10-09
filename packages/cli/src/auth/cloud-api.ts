@@ -34,6 +34,8 @@ export interface CloudApi {
     hostname?: string;
     projectName?: string;
     framework?: string;
+    /** The branch to connect to; Puck Cloud preselects it, or offers to create it */
+    branch?: string;
     /** Lets Puck Cloud link this machine's telemetry to the approving account */
     anonymousId?: string;
   }): Promise<ConnectSession>;

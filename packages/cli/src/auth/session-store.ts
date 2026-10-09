@@ -10,6 +10,8 @@ export interface StoredSession {
   /** Epoch milliseconds */
   expiresAt: number;
   interval: number;
+  /** The branch the login asked for */
+  branch?: string;
 }
 
 /**
