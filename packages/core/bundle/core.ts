@@ -23,6 +23,7 @@ export {
 export * from "../components/IconButton";
 export { InlineTextField } from "../components/InlineTextField";
 export { Puck } from "../components/Puck";
+export { ComponentFields } from "../components/Puck/components/Fields";
 export * from "../components/Render";
 export { RichTextMenu } from "../components/RichTextMenu/inner";
 
