@@ -81,6 +81,24 @@ const EXTRAS: Record<
   ],
 };
 
+const EXTRA_IDS: Extra[] = ["ai", "pages", "auth"];
+
+/**
+ * Which of Puck AI, Pages and Auth the flags choose, or null when they don't
+ * say. All three are included by default, like the checkboxes:
+ * --editor-only leaves out all of them, --ai, --pages and --auth pick exactly
+ * those, and --no-ai, --no-pages and --no-auth drop one from the default.
+ */
+const chosenByFlags = ({ flags }: RunContext): Extra[] | null => {
+  const on = { ai: flags.ai, pages: flags.pages, auth: flags.auth };
+  const off = { ai: flags.noAi, pages: flags.noPages, auth: flags.noAuth };
+  if (flags.editorOnly) return [];
+  if (EXTRA_IDS.some((id) => on[id])) return EXTRA_IDS.filter((id) => on[id]);
+  if (EXTRA_IDS.some((id) => off[id]))
+    return EXTRA_IDS.filter((id) => !off[id]);
+  return null;
+};
+
 /**
  * Puck AI, Pages and Auth are optional. Each needs Puck Cloud, which
  * resolveCapabilities pulls in, so Cloud isn't offered on its own. Returns
@@ -91,28 +109,19 @@ const chooseCapabilities = async (
   alreadySetUp: boolean,
   server: boolean
 ): Promise<CapabilityId[] | null> => {
-  const { ai, pages, auth } = rc.flags;
-  const extras: CapabilityId[] = [
-    ...(pages ? (["pages"] as const) : []),
-    ...(auth ? (["auth"] as const) : []),
-  ];
-  // Any of the flags answers the question; the rest are left out
-  if (choseCapabilities(rc))
-    return ["editor", ...(ai ? ["ai" as const] : []), ...extras];
+  const chosen = chosenByFlags(rc);
+  if (chosen) return ["editor", ...chosen];
   if (alreadySetUp) return ["editor", "ai"];
   if (!rc.interactive) return null;
-  const chosen = await rc.prompter.checkbox(
+  const checked = await rc.prompter.checkbox(
     "What else should Puck include? (each needs a Puck Cloud account)",
     EXTRAS[server ? "server" : "app"].map((extra) => ({
       ...extra,
       checked: true,
     }))
   );
-  return ["editor", ...chosen];
+  return ["editor", ...checked];
 };
-
-const choseCapabilities = (rc: RunContext) =>
-  rc.flags.ai || rc.flags.noAi || rc.flags.pages || rc.flags.auth;
 
 const CAPABILITY_FLAGS = "[--ai] [--pages] [--auth]";
 
@@ -120,14 +129,14 @@ const capabilitiesAction = (server = false): RequiredAction => ({
   id: "init:capabilities",
   type: "choose_capabilities",
   required: true,
-  message: `Ask the developer which of these to include, all recommended. Each sets up Puck Cloud, which requires a Puck Cloud account. Re-run with the flag for each one chosen, or --no-ai for none.`,
+  message: `Ask the developer which of these to include, all recommended. Each sets up Puck Cloud, which requires a Puck Cloud account. Re-run with the flag for each one chosen, or --editor-only for none.`,
   choices: EXTRAS[server ? "server" : "app"].map((extra) => ({
     value: `--${extra.value}` as const,
     label: extra.name,
     description: extra.description,
     recommended: true,
   })),
-  none: "--no-ai",
+  none: "--editor-only",
 });
 
 export const runInit = async (rc: RunContext): Promise<CommandResult> => {
@@ -245,7 +254,7 @@ export const runInit = async (rc: RunContext): Promise<CommandResult> => {
     }
   }
 
-  if (!rc.interactive && !choseCapabilities(rc)) {
+  if (!rc.interactive && !chosenByFlags(rc)) {
     missing.push(
       capabilitiesAction(
         Boolean(framework) && ADAPTERS[framework!].kind === "server"

@@ -173,7 +173,7 @@ describe("init with Puck AI", () => {
             recommended: true,
           }),
         ],
-        none: "--no-ai",
+        none: "--editor-only",
         rerun:
           "npx @puckeditor/cli init --yes --json [--ai] [--pages] [--auth]",
       }),
@@ -216,10 +216,10 @@ describe("init with Puck AI", () => {
     expect(exists(root, "app/components/puck-render.tsx")).toBe(true);
   });
 
-  it("sets up only the editor with --no-ai", async () => {
+  it("sets up only the editor with --editor-only", async () => {
     const root = tmpProject({ tree: nextMinimal() });
     const { json, runner, cloud } = await run(
-      ["init", "--yes", "--json", "--no-ai"],
+      ["init", "--yes", "--json", "--editor-only"],
       { cwd: root }
     );
 
@@ -235,10 +235,17 @@ describe("init with Puck AI", () => {
     );
   });
 
-  it("scaffolds the plain recipe with --no-ai", async () => {
+  it("scaffolds the plain recipe with --editor-only", async () => {
     const root = tmpProject("empty");
     const { json } = await run(
-      ["init", "--yes", "--json", "--no-ai", "--framework", "react-router"],
+      [
+        "init",
+        "--yes",
+        "--json",
+        "--editor-only",
+        "--framework",
+        "react-router",
+      ],
       { cwd: root }
     );
 

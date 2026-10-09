@@ -452,6 +452,38 @@ describe("init --pages --auth", () => {
     expect(json.ai).toMatchObject({ installed: false });
   });
 
+  it.each([
+    [["--no-pages"], { ai: true, pages: false, auth: true }],
+    [["--no-ai"], { ai: false, pages: true, auth: true }],
+    [["--no-ai", "--no-auth"], { ai: false, pages: true, auth: false }],
+    [["--ai", "--no-pages"], { ai: true, pages: false, auth: false }],
+    [["--editor-only"], { ai: false, pages: false, auth: false }],
+  ])("sets up the defaults that %j leaves", async (flags, expected) => {
+    const root = tmpProject({ tree: nextMinimal() });
+    const { json } = await run(["init", ...flags, "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect({
+      ai: json.ai?.installed,
+      pages: json.pages?.installed,
+      auth: json.auth?.installed,
+    }).toEqual(expected);
+  });
+
+  it.each([
+    [["--pages", "--no-pages"]],
+    [["--auth", "--no-auth"]],
+    [["--ai", "--editor-only"]],
+  ])("rejects %j", async (flags) => {
+    const { json, code } = await run(["init", ...flags, "--json"], {
+      cwd: tmpProject({ tree: nextMinimal() }),
+    });
+    expect(code).toBe(2);
+    expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+  });
+
   it("adds them to an existing app", async () => {
     const root = tmpProject({ tree: nextMinimal() });
     const { json } = await run(["init", "--pages", "--yes", "--json", ...KEY], {

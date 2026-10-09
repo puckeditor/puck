@@ -45,7 +45,7 @@ describe("init", () => {
     });
     expect(json.actions[2]).toMatchObject({
       choices: [{ value: "--ai" }, { value: "--pages" }, { value: "--auth" }],
-      none: "--no-ai",
+      none: "--editor-only",
     });
     expect(treeSnapshot(root)).toEqual(before);
     expect(runner.calls).toEqual([]);
@@ -141,7 +141,7 @@ describe("init", () => {
           "init",
           "--yes",
           "--json",
-          "--no-ai",
+          "--editor-only",
           "--framework",
           "react-router",
           "--name",
@@ -255,7 +255,7 @@ describe("init", () => {
       [
         "init",
         "--json",
-        "--no-ai",
+        "--editor-only",
         "--framework",
         "next",
         "--name",
@@ -268,7 +268,15 @@ describe("init", () => {
     fs.mkdirSync(path.join(root, "taken"));
     fs.writeFileSync(path.join(root, "taken", "file"), "x");
     const taken = await run(
-      ["init", "--json", "--no-ai", "--framework", "next", "--name", "taken"],
+      [
+        "init",
+        "--json",
+        "--editor-only",
+        "--framework",
+        "next",
+        "--name",
+        "taken",
+      ],
       { cwd: root }
     );
     expect(taken.json.error?.code).toBe("PUCK-CLI-TARGET-DIR-NOT-EMPTY");
@@ -278,7 +286,14 @@ describe("init", () => {
   it("rejects a --framework that contradicts the project", async () => {
     const root = tmpProject({ recipe: "next" });
     const { json } = await run(
-      ["init", "--yes", "--json", "--no-ai", "--framework", "react-router"],
+      [
+        "init",
+        "--yes",
+        "--json",
+        "--editor-only",
+        "--framework",
+        "react-router",
+      ],
       { cwd: root }
     );
     expect(json.error?.code).toBe("PUCK-CLI-FRAMEWORK-MISMATCH");

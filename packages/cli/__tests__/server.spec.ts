@@ -83,9 +83,12 @@ describe("servers (Hono and Express)", () => {
 
   it("sets up only the pages API without AI", async () => {
     const root = tmpProject({ tree: expressMinimal() });
-    const { json, runner } = await run(["init", "--no-ai", "--yes", "--json"], {
-      cwd: root,
-    });
+    const { json, runner } = await run(
+      ["init", "--editor-only", "--yes", "--json"],
+      {
+        cwd: root,
+      }
+    );
 
     expect(json.status).toBe("success");
     expect(json.message).toBe("Set up Puck pages API.");
@@ -178,7 +181,7 @@ export default app
 
   it("asks for the routes to be mounted when there's no entry file", async () => {
     const root = tmpProject({ tree: expressMinimal({ entry: null }) });
-    const { json } = await run(["init", "--no-ai", "--yes", "--json"], {
+    const { json } = await run(["init", "--editor-only", "--yes", "--json"], {
       cwd: root,
     });
 

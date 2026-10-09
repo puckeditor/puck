@@ -65,10 +65,10 @@ Flags:
   --workspace <name|dir>  Choose an app when run from a monorepo root
   --api-key <key>         Use an existing Puck API key (prefer PUCK_API_KEY=… in the environment)
   --no-env-write          Don't write PUCK_API_KEY to .env.local
-  --ai                    Include Puck AI, which sets up Puck Cloud (init)
-  --no-ai                 Include none of Puck AI, Pages and Auth (init)
-  --pages                 Include Puck Pages: store and publish pages in Puck Cloud (init)
-  --auth                  Include Puck Auth: require Sign in with Puck to edit (init)
+  --ai, --pages, --auth   Include only these of Puck AI, Pages and Auth (init)
+  --no-ai, --no-pages, --no-auth
+                          Include all of them except these (init)
+  --editor-only           Include none of them (init)
   --backend <add|external|none>  Where a Vite or static Astro app gets its server:
                           add one, use one elsewhere, or none (editor only)
   --backend-url <url>     The server for --backend external, e.g. http://localhost:3000

@@ -75,7 +75,7 @@ export type RequiredAction = ActionBase &
           description: string;
           recommended: boolean;
         }[];
-        none: "--no-ai";
+        none: "--editor-only";
       }
     | {
         type: "choose_backend";

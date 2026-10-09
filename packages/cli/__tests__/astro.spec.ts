@@ -168,7 +168,7 @@ export default defineConfig({
       "src/pages/[...slug].astro": "---\n---\n",
     };
     const root = tmpProject({ tree });
-    const { json } = await run(["init", "--no-ai", "--yes", "--json"], {
+    const { json } = await run(["init", "--editor-only", "--yes", "--json"], {
       cwd: root,
     });
 

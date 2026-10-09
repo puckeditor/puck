@@ -25,7 +25,10 @@ export interface Flags {
   ai: boolean;
   noAi: boolean;
   pages: boolean;
+  noPages: boolean;
   auth: boolean;
+  noAuth: boolean;
+  editorOnly: boolean;
   backend?: BackendChoice;
   backendUrl?: string;
 }
@@ -60,7 +63,10 @@ const OPTIONS = {
   ai: { type: "boolean" },
   "no-ai": { type: "boolean" },
   pages: { type: "boolean" },
+  "no-pages": { type: "boolean" },
   auth: { type: "boolean" },
+  "no-auth": { type: "boolean" },
+  "editor-only": { type: "boolean" },
   backend: { type: "string" },
   "backend-url": { type: "string" },
 } as const;
@@ -95,7 +101,10 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
     "ai",
     "no-ai",
     "pages",
+    "no-pages",
     "auth",
+    "no-auth",
+    "editor-only",
   ],
   add: [...GLOBAL, ...MUTATING],
   connect: [...GLOBAL, "api-key", "config", "wait"],
@@ -198,11 +207,19 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     );
   }
 
-  if (values.ai && values["no-ai"]) {
-    throw new CliError(
-      "PUCK-CLI-INVALID-ARGS",
-      "--ai and --no-ai can't be used together."
-    );
+  for (const name of ["ai", "pages", "auth"]) {
+    if (values[name] && values[`no-${name}`]) {
+      throw new CliError(
+        "PUCK-CLI-INVALID-ARGS",
+        `--${name} and --no-${name} can't be used together.`
+      );
+    }
+    if (values[name] && values["editor-only"]) {
+      throw new CliError(
+        "PUCK-CLI-INVALID-ARGS",
+        `--${name} and --editor-only can't be used together.`
+      );
+    }
   }
 
   return {
@@ -227,7 +244,10 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       ai: Boolean(values.ai),
       noAi: Boolean(values["no-ai"]),
       pages: Boolean(values.pages),
+      noPages: Boolean(values["no-pages"]),
       auth: Boolean(values.auth),
+      noAuth: Boolean(values["no-auth"]),
+      editorOnly: Boolean(values["editor-only"]),
       backend: backend as BackendChoice | undefined,
       backendUrl: backendUrl?.replace(/\/+$/, ""),
     },
