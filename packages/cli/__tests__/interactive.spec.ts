@@ -18,6 +18,7 @@ const scripted = (answers: unknown[]) => {
   const prompter: Prompter = {
     confirm: (m) => next(m) as Promise<boolean>,
     select: (m) => next(m) as Promise<never>,
+    checkbox: (m) => next(m) as Promise<never>,
     input: (m) => next(m) as Promise<string>,
     password: (m) => next(m) as Promise<string>,
   };
@@ -34,7 +35,12 @@ describe("interactive", () => {
       if (String(input).endsWith("/token")) cloud.approveAll();
       return original(input, init);
     };
-    const { prompter, asked } = scripted(["react-router", true, true, "login"]);
+    const { prompter, asked } = scripted([
+      "react-router",
+      ["ai"],
+      true,
+      "login",
+    ]);
 
     const { code, stdout, stderr, devServers, opened } = await run(["init"], {
       cwd: root,
@@ -45,7 +51,7 @@ describe("interactive", () => {
 
     expect(asked).toEqual([
       "Which framework?",
-      "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
+      "What else should Puck include? (each needs a Puck Cloud account)",
       "Apply these changes?",
       "How do you want to connect to Puck Cloud?",
     ]);
@@ -145,10 +151,37 @@ describe("interactive", () => {
 });
 
 describe("interactive AI choice", () => {
-  it("sets up only the editor when Puck AI is declined", async () => {
+  it("offers Puck AI, Pages and Auth, all checked", async () => {
     const { nextMinimal } = await import("./helpers/fixtures");
     const root = tmpProject({ tree: nextMinimal() });
-    const { prompter, asked } = scripted([false, true]);
+    const { prompter } = scripted([true, "paste", false, "sk-valid-key"]);
+    let offered: { value: string; checked?: boolean }[] = [];
+    prompter.checkbox = async (_, choices) => {
+      offered = choices;
+      return choices.filter((c) => c.checked).map((c) => c.value);
+    };
+
+    const { code, stdout } = await run(["init"], {
+      cwd: root,
+      interactive: true,
+      prompter,
+    });
+
+    expect(offered).toEqual([
+      expect.objectContaining({ value: "ai", checked: true }),
+      expect.objectContaining({ value: "pages", checked: true }),
+      expect.objectContaining({ value: "auth", checked: true }),
+    ]);
+    expect(code).toBe(0);
+    expect(stdout).toContain(
+      "Set up Puck Editor, Puck Cloud, Puck AI, Puck Pages and Puck Auth."
+    );
+  });
+
+  it("sets up only the editor when nothing else is chosen", async () => {
+    const { nextMinimal } = await import("./helpers/fixtures");
+    const root = tmpProject({ tree: nextMinimal() });
+    const { prompter, asked } = scripted([[], true]);
 
     const { code, stdout, devServers, opened } = await run(["init"], {
       cwd: root,
@@ -157,7 +190,7 @@ describe("interactive AI choice", () => {
     });
 
     expect(asked[0]).toBe(
-      "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)"
+      "What else should Puck include? (each needs a Puck Cloud account)"
     );
     expect(code).toBe(0);
     expect(stdout).toContain("Set up Puck Editor.");

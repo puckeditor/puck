@@ -195,6 +195,7 @@ describe("connect", () => {
     const asked: string[] = [];
     const prompter: Prompter = {
       confirm: () => Promise.reject(new Error("Unexpected confirm")),
+      checkbox: () => Promise.reject(new Error("Unexpected checkbox")),
       select: (m) => {
         asked.push(m);
         return Promise.resolve("login" as never);

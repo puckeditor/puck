@@ -6,9 +6,18 @@ export interface Choice<T extends string> {
   description?: string;
 }
 
+export interface CheckboxChoice<T extends string> extends Choice<T> {
+  checked?: boolean;
+}
+
 export interface Prompter {
   confirm(message: string, defaultValue?: boolean): Promise<boolean>;
   select<T extends string>(message: string, choices: Choice<T>[]): Promise<T>;
+  /** Every checked value */
+  checkbox<T extends string>(
+    message: string,
+    choices: CheckboxChoice<T>[]
+  ): Promise<T[]>;
   input(
     message: string,
     opts?: { default?: string; validate?: (value: string) => true | string }
@@ -62,6 +71,11 @@ export const createInquirerPrompter = (
       wrap(async () => {
         const { default: select } = await import("@inquirer/select");
         return select({ message, choices }, context);
+      }),
+    checkbox: (message, choices) =>
+      wrap(async () => {
+        const { default: checkbox } = await import("@inquirer/checkbox");
+        return checkbox({ message, choices }, context);
       }),
     input: (message, opts = {}) =>
       wrap(async () => {

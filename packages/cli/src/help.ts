@@ -66,7 +66,7 @@ Flags:
   --api-key <key>         Use an existing Puck API key (prefer PUCK_API_KEY=… in the environment)
   --no-env-write          Don't write PUCK_API_KEY to .env.local
   --ai                    Also set up Puck AI and Puck Cloud (init)
-  --no-ai                 Set up the editor only, without asking about Puck AI (init)
+  --no-ai                 Skip Puck AI, without asking what else to include (init)
   --pages                 Also store and publish pages in Puck Cloud (init)
   --auth                  Also require Sign in with Puck to edit (init)
   --backend <add|external|none>  Where a Vite or static Astro app gets its server:

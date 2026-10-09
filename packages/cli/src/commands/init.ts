@@ -39,8 +39,50 @@ const validateName = (name: string) => {
   }
 };
 
+type Extra = "ai" | "pages" | "auth";
+
+const EXTRAS: Record<
+  "app" | "server",
+  { value: Extra; name: string; description: string }[]
+> = {
+  app: [
+    {
+      value: "ai",
+      name: "Puck AI",
+      description: "Generate and edit pages with AI",
+    },
+    {
+      value: "pages",
+      name: "Puck Pages",
+      description: "Store, publish and version pages in Puck Cloud",
+    },
+    {
+      value: "auth",
+      name: "Puck Auth",
+      description: "Require Sign in with Puck to edit",
+    },
+  ],
+  server: [
+    {
+      value: "ai",
+      name: "Puck AI",
+      description: "Serve Puck AI for your editor",
+    },
+    {
+      value: "pages",
+      name: "Puck Pages",
+      description: "Serve pages published in Puck Cloud",
+    },
+    {
+      value: "auth",
+      name: "Puck Auth",
+      description: "Require Sign in with Puck for Puck Cloud requests",
+    },
+  ],
+};
+
 /**
- * Puck AI is optional. It needs Puck Cloud (its backend), which
+ * Puck AI, Pages and Auth are optional. Each needs Puck Cloud, which
  * resolveCapabilities pulls in, so Cloud isn't offered on its own. Returns
  * null when the developer has to choose and can't be prompted.
  */
@@ -49,7 +91,6 @@ const chooseCapabilities = async (
   alreadySetUp: boolean,
   server: boolean
 ): Promise<CapabilityId[] | null> => {
-  // Puck Pages and Puck Auth are opt-in, alongside the choice of Puck AI
   const extras: CapabilityId[] = [
     ...(rc.flags.pages ? (["pages"] as const) : []),
     ...(rc.flags.auth ? (["auth"] as const) : []),
@@ -58,13 +99,14 @@ const chooseCapabilities = async (
   if (rc.flags.noAi) return ["editor", ...extras];
   if (alreadySetUp) return ["editor", "ai", ...extras];
   if (!rc.interactive) return null;
-  const withAi = await rc.prompter.confirm(
-    server
-      ? "Serve Puck AI from this server? (sets up Puck Cloud, requires a Puck Cloud account)"
-      : "Add Puck AI? (includes Puck Cloud, requires a Puck Cloud account)",
-    false
+  const chosen = await rc.prompter.checkbox(
+    "What else should Puck include? (each needs a Puck Cloud account)",
+    EXTRAS[server ? "server" : "app"].map((extra) => ({
+      ...extra,
+      checked: true,
+    }))
   );
-  return withAi ? ["editor", "ai", ...extras] : ["editor", ...extras];
+  return ["editor", ...new Set<CapabilityId>([...chosen, ...extras])];
 };
 
 const AI_CHOICE_FLAGS = "<--ai|--no-ai>";

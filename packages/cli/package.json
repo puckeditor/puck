@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@babel/parser": "^7.29.3",
+    "@inquirer/checkbox": "^4.3.2",
     "@inquirer/confirm": "^5.1.21",
     "@inquirer/input": "^4.3.1",
     "@inquirer/password": "^4.0.23",
