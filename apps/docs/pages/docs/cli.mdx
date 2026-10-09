@@ -155,21 +155,21 @@ npx skills add puckeditor/skills --skill puck
 
 ## Commands
 
-| Command               | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `init`                | Set up Puck, optionally with Puck AI, creating an app if needed         |
-| `add editor`          | Add the Puck editor                                                     |
-| `add cloud`           | Connect Puck Cloud (adds the editor first if needed)                    |
-| `add ai`              | Add the Puck AI plugin (adds Puck Cloud first if needed)                |
-| `add pages`           | Store and publish pages in Puck Cloud (adds Puck Cloud first if needed) |
-| `add auth`            | Require Sign in with Puck to edit (adds Puck Cloud first if needed)     |
-| `pages import <file>` | Publish pages from a JSON file to Puck Cloud                            |
-| `connect`             | Log in to Puck Cloud again and replace `PUCK_API_KEY`                   |
-| `status`              | Show what's installed and configured                                    |
-| `doctor`              | Diagnose problems and suggest fixes. Never makes changes                |
-| `frameworks`          | Show the supported frameworks and versions                              |
-| `docs`                | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>`      |
-| `telemetry`           | Show or change anonymous usage data collection                          |
+| Command               | Description                                                                    |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `init`                | Set up Puck, optionally with Puck AI, creating an app if needed                |
+| `add editor`          | Add the Puck editor                                                            |
+| `add cloud`           | Connect Puck Cloud (adds the editor first if needed)                           |
+| `add ai`              | Add the Puck AI plugin (adds Puck Cloud first if needed)                       |
+| `add pages`           | Store and publish pages in Puck Cloud (adds Puck Cloud first if needed)        |
+| `add auth`            | Require Sign in with Puck to edit (adds Puck Cloud first if needed)            |
+| `pages import <file>` | Publish pages from a JSON file to Puck Cloud                                   |
+| `connect [branch]`    | Log in to Puck Cloud again and replace `PUCK_API_KEY`, optionally for a branch |
+| `status`              | Show what's installed and configured                                           |
+| `doctor`              | Diagnose problems and suggest fixes. Never makes changes                       |
+| `frameworks`          | Show the supported frameworks and versions                                     |
+| `docs`                | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>`             |
+| `telemetry`           | Show or change anonymous usage data collection                                 |
 
 ## Flags
 
@@ -209,6 +209,14 @@ To log in again, for example to replace a revoked key, run `connect`. It always 
 ```sh copy
 npx @puckeditor/cli connect
 ```
+
+Each key is for one branch of a Puck Cloud project. When you approve the login, you choose the project and branch, which defaults to the project's default branch. To connect to another branch, for example for a preview deployment, name it:
+
+```sh copy
+npx @puckeditor/cli connect feature/new-hero
+```
+
+Puck Cloud preselects that branch, or offers to create it from the default branch.
 
 Remember to set `PUCK_API_KEY` in your production environment too. `react-router-serve` and Cloudflare Workers don't load `.env` files; on Workers, use `wrangler secret put PUCK_API_KEY`.
 
