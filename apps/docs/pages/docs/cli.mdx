@@ -15,7 +15,7 @@ npx @puckeditor/cli init
 
 With Puck AI, the only manual step is logging in to Puck Cloud and approving the connection in your browser. When it's done, the CLI starts your dev server and opens the editor.
 
-Puck AI, [Puck Pages](#puck-pages) and [Puck Auth](#puck-auth) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all three selected; pass `--ai` or `--no-ai`, plus `--pages` and `--auth`, to choose up front.
+Puck AI, [Puck Pages](#puck-pages) and [Puck Auth](#puck-auth) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all three selected. To choose up front, pass any of `--ai`, `--pages` and `--auth`, or `--no-ai` for none; any left out aren't set up.
 
 ## Supported projects
 
@@ -66,7 +66,7 @@ Run with `--yes --json`. The CLI never prompts, and prints exactly one JSON docu
 npx @puckeditor/cli init --yes --json
 ```
 
-When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. Without `--ai` or `--no-ai`, the first run returns a `choose_ai` action, so the developer can decide whether to add Puck AI. With `--ai`, the first run asks the developer to log in:
+When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. Without `--ai`, `--pages`, `--auth` or `--no-ai`, the first run returns a `choose_capabilities` action, so the developer can choose which of Puck AI, Puck Pages and Puck Auth to add. With `--ai`, the first run asks the developer to log in:
 
 ```json
 {
@@ -114,7 +114,7 @@ Start with `npx @puckeditor/cli status --json` to see what's already set up and 
 | `browser_login`            | Ask the developer to open `url`, confirm `userCode` and approve                                                                      |
 | `provide_api_key`          | Ask for a Puck API key, then re-run with `PUCK_API_KEY` set                                                                          |
 | `confirm_plan`             | Review `plan.steps`, then re-run with `--yes`                                                                                        |
-| `choose_ai`                | Ask the developer, then re-run `init` with `--ai` or `--no-ai`                                                                       |
+| `choose_capabilities`      | Ask the developer which of `choices` to add, then re-run `init` with each one's flag, or `none` (`--no-ai`) for none                 |
 | `choose_backend`           | Ask the developer, then re-run with `--backend add`, `--backend external --backend-url <url>` or `--backend none`                    |
 | `choose_framework`         | Re-run `init` with `--framework` and one of `next`, `react-router`, `tanstack-start`, `vinext`, `vite`, `astro`, `hono` or `express` |
 | `provide_app_name`         | Re-run `init` with `--name <name>`                                                                                                   |
