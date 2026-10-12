@@ -77,13 +77,16 @@ export const migratePageData = (data: unknown, paths: AssetPaths): number => {
   return changed;
 };
 
-/** Paths for the chosen fields that held a URL; { src } objects need no change */
+/**
+ * Paths for the chosen fields that held a URL, or already use assetField()
+ * and may still have URLs saved. { src } objects need no change.
+ */
 export const assetPaths = (
   fields: { component: string; path: PathSegment[]; shape: string | null }[]
 ): AssetPaths => {
   const paths: AssetPaths = {};
   for (const field of fields) {
-    if (field.shape !== "string") continue;
+    if (field.shape !== "string" && field.shape !== "asset") continue;
     (paths[field.component] ??= []).push(field.path);
   }
   return paths;

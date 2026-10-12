@@ -1,4 +1,9 @@
-import type { File, Node, ObjectExpression } from "@babel/types";
+import type {
+  CallExpression,
+  File,
+  Node,
+  ObjectExpression,
+} from "@babel/types";
 import { tryParseModule, unwrapExpression } from "./parse";
 import { findProperty, keyName } from "./config-object";
 import { lineOf } from "./splice";
@@ -131,13 +136,16 @@ export interface PuckField {
   path: PathSegment[];
   /** The field's type, e.g. "text", or null when it isn't a literal */
   type: string | null;
-  /** The field's object literal */
-  node: ObjectExpression;
+  /** The field's object literal, or its assetField() call */
+  node: ObjectExpression | CallExpression;
   /** The component's (or root's) object literal */
   owner: ObjectExpression;
   line: number;
-  /** Text and textarea fields hold a URL; object fields with `src` hold { src, ... } */
-  shape: "string" | "object" | null;
+  /**
+   * Text and textarea fields hold a URL; object fields with `src` hold
+   * { src, ... }; "asset" fields already use assetField()
+   */
+  shape: "string" | "object" | "asset" | null;
   /** How strongly the field's name suggests an image or video */
   match: "strong" | "weak" | null;
 }
@@ -157,6 +165,19 @@ const stringValue = (obj: ObjectExpression, key: string) => {
   const prop = findProperty(obj, key);
   return prop?.value.type === "StringLiteral" ? prop.value.value : null;
 };
+
+const isAssetFieldCall = (node: Node) =>
+  node.type === "CallExpression" &&
+  node.callee.type === "Identifier" &&
+  node.callee.name === "assetField";
+
+/** `assetField()`, or `{ ...assetField(), ai: ... }` */
+const isAssetField = (node: Node) =>
+  isAssetFieldCall(node) ||
+  (node.type === "ObjectExpression" &&
+    node.properties.some(
+      (p) => p.type === "SpreadElement" && isAssetFieldCall(p.argument)
+    ));
 
 const objectValue = (obj: ObjectExpression, key: string) => {
   const prop = findProperty(obj, key);
@@ -181,6 +202,27 @@ export const listFields = (
       const key = keyName(property);
       if (!key || property.type !== "ObjectProperty") continue;
       const node = unwrapExpression(property.value);
+      const match = STRONG.test(key)
+        ? "strong"
+        : WEAK.test(key)
+        ? "weak"
+        : null;
+      const line = lineOf(code, property.start!);
+
+      if (isAssetField(node)) {
+        fields.push({
+          id: idOf(component, [...parent, { key, array: false }]),
+          component,
+          path: [...parent, { key, array: false }],
+          type: "custom",
+          node: node as ObjectExpression | CallExpression,
+          owner,
+          line,
+          shape: "asset",
+          match,
+        });
+        continue;
+      }
       if (node.type !== "ObjectExpression") continue;
 
       const type = stringValue(node, "type");
@@ -200,9 +242,9 @@ export const listFields = (
         type,
         node,
         owner,
-        line: lineOf(code, property.start!),
+        line,
         shape,
-        match: STRONG.test(key) ? "strong" : WEAK.test(key) ? "weak" : null,
+        match,
       });
       // An object field shaped like an asset is one field, not its parts
       if (sub && shape !== "object") visit(component, owner, sub, path);
@@ -228,4 +270,6 @@ export const listFields = (
 
 /** Fields assets could replace, whose names suggest images or videos */
 export const assetCandidates = (fields: PuckField[]) =>
-  fields.filter((f) => f.shape && f.match);
+  fields.filter(
+    (f) => (f.shape === "string" || f.shape === "object") && f.match
+  );

@@ -14,6 +14,7 @@ const SENTINEL = "sk-SENTINEL-do-not-print-9f3a";
 describe("--dry-run", () => {
   it.each([
     ["add cloud on a recipe", { recipe: "react-router" }, ["add", "cloud"]],
+    ["add assets on a recipe", { recipe: "next" }, ["add", "assets"]],
     ["add editor on a new app", { tree: nextMinimal() }, ["add", "editor"]],
     ["init on a new app", { tree: nextMinimal() }, ["init", "--ai"]],
     [

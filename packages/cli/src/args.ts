@@ -34,6 +34,8 @@ export interface Flags {
   canary: boolean;
   backend?: BackendChoice;
   backendUrl?: string;
+  field: string[];
+  noData: boolean;
 }
 
 /** Where a client-only app (Vite, static Astro) gets its server from */
@@ -75,6 +77,8 @@ const OPTIONS = {
   canary: { type: "boolean" },
   backend: { type: "string" },
   "backend-url": { type: "string" },
+  field: { type: "string", multiple: true },
+  "no-data": { type: "boolean" },
 } as const;
 
 type OptionName = keyof typeof OPTIONS;
@@ -123,6 +127,7 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
   frameworks: ["json", "help", "version"],
   telemetry: ["json", "help", "version"],
   pages: ["json", "yes", "dry-run", "help", "version", "cwd", "api-key"],
+  assets: [...GLOBAL, "api-key", "config", "field", "no-data"],
   help: GLOBAL,
 };
 
@@ -136,6 +141,7 @@ const COMMANDS: CommandName[] = [
   "frameworks",
   "telemetry",
   "pages",
+  "assets",
   "help",
 ];
 const FRAMEWORKS: readonly string[] = FRAMEWORK_IDS;
@@ -168,7 +174,10 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     command = first as CommandName;
   }
 
-  const values = parsed.values as Record<string, string | boolean | undefined>;
+  const values = parsed.values as Record<
+    string,
+    string | boolean | string[] | undefined
+  >;
   const allowed = COMMAND_OPTIONS[command ?? "help"];
   for (const key of Object.keys(values)) {
     if (!allowed.includes(key as OptionName)) {
@@ -262,6 +271,8 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       canary: Boolean(values.canary),
       backend: backend as BackendChoice | undefined,
       backendUrl: backendUrl?.replace(/\/+$/, ""),
+      field: (values.field as string[] | undefined) ?? [],
+      noData: Boolean(values["no-data"]),
     },
   };
 };
