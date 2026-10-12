@@ -96,4 +96,73 @@ export const Editor = ({ plugins }) => <Puck plugins={plugins} />;
   it("needs exactly one <Puck>", () => {
     expect(add(`import { Render } from "@puckeditor/core";\n`)).toBe("manual");
   });
+
+  describe("before", () => {
+    const ASSETS = {
+      factory: "createAssetsPlugin",
+      source: "@puckeditor/plugin-assets",
+      local: "assetsPlugin",
+      css: "@puckeditor/plugin-assets/styles.css",
+    };
+    const AUTH_FIRST = { ...AUTH, before: [ASSETS] };
+    const apply = (code: string, ...plugins: (typeof AUTH)[]) =>
+      plugins.reduce(
+        (current, plugin) =>
+          codeOf(ensurePuckPlugin(current, "e.tsx", plugin))!,
+        code
+      );
+
+    const MULTILINE = `import { Puck } from "@puckeditor/core";
+
+export const Editor = () => (
+  <Puck
+    plugins={[
+      pagesPlugin,
+    ]}
+  />
+);
+`;
+
+    it.each([
+      [
+        "no plugins prop",
+        readRecipe("next", "app/puck/[...puckPath]/client.tsx"),
+      ],
+      [
+        "a plugins array",
+        readRecipe("next-ai", "app/puck/[...puckPath]/client.tsx"),
+      ],
+      ["a multi-line plugins prop", MULTILINE],
+    ])("ends up the same whichever is added first, with %s", (_, code) => {
+      const canonical = apply(code, AUTH_FIRST, ASSETS);
+      expect(apply(code, ASSETS, AUTH_FIRST)).toBe(canonical);
+      // In the plugins Puck runs
+      expect(canonical.lastIndexOf("authPlugin")).toBeLessThan(
+        canonical.lastIndexOf("assetsPlugin")
+      );
+    });
+
+    it("goes before it in the array", () => {
+      expect(
+        apply(
+          readRecipe("next-ai", "app/puck/[...puckPath]/client.tsx"),
+          ASSETS,
+          AUTH_FIRST
+        )
+      ).toContain(
+        "const plugins = [aiPlugin, blocksPlugin(), outlinePlugin(), authPlugin, assetsPlugin];"
+      );
+    });
+
+    it("appends when the other plugin wasn't added the usual way", () => {
+      const code = `import { Puck } from "@puckeditor/core";
+import { createAssetsPlugin as assets } from "@puckeditor/plugin-assets";
+
+export const Editor = () => <Puck plugins={[assets()]} />;
+`;
+      expect(apply(code, AUTH_FIRST)).toContain(
+        "plugins={[assets(), authPlugin]}"
+      );
+    });
+  });
 });

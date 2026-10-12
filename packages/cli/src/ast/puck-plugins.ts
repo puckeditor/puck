@@ -14,6 +14,11 @@ export interface PuckPlugin {
   local: string;
   /** Stylesheet imported alongside it */
   css?: string;
+  /**
+   * Plugins this one goes before when they're already added, so editors end
+   * up the same whichever is added first
+   */
+  before?: PuckPlugin[];
 }
 
 const isPuckElement = (node: Node, puck: string): node is JSXOpeningElement =>
@@ -41,6 +46,38 @@ const pluginArray = (ast: File, value: Node) => {
     }
   }
   return null;
+};
+
+/** A plugin added the way ensurePuckPlugin adds it, which another goes before */
+const findAdded = (
+  ast: File,
+  code: string,
+  plugin: PuckPlugin,
+  items: Node[]
+) => {
+  const factoryImport = ast.program.body.find(
+    (s) =>
+      s.type === "ImportDeclaration" &&
+      s.source.value === plugin.source &&
+      s.specifiers.some(
+        (sp) =>
+          sp.type === "ImportSpecifier" &&
+          sp.imported.type === "Identifier" &&
+          sp.imported.name === plugin.factory
+      )
+  );
+  const created = ast.program.body.find(
+    (s) =>
+      s.type === "VariableDeclaration" &&
+      s.declarations.some(
+        (d) => d.id.type === "Identifier" && d.id.name === plugin.local
+      )
+  );
+  const item = items.find(
+    (i) => i.type === "Identifier" && i.name === plugin.local
+  );
+  if (!factoryImport || !created || !item) return null;
+  return { factoryImport, created, item };
 };
 
 /**
@@ -73,6 +110,7 @@ export const ensurePuckPlugin = (
   const element = elements[0];
 
   const edits: { at: number; end?: number; text: string }[] = [];
+  let ahead: ReturnType<typeof findAdded> = null;
   const attr = element.attributes.find(
     (a) =>
       a.type === "JSXAttribute" &&
@@ -106,8 +144,19 @@ export const ensurePuckPlugin = (
       };
     const singleLine = lineOf(code, list.start!) === lineOf(code, list.end!);
     const items = list.elements.filter(Boolean) as Node[];
+    ahead =
+      (plugin.before ?? [])
+        .map((other) => findAdded(ast, code, other, items))
+        .find(Boolean) ?? null;
     edits.push(
-      singleLine
+      ahead
+        ? {
+            at: ahead.item.start!,
+            text: singleLine
+              ? `${plugin.local}, `
+              : `${plugin.local},\n${indentationAt(code, ahead.item.start!)}`,
+          }
+        : singleLine
         ? items.length
           ? { at: items[items.length - 1].end!, text: `, ${plugin.local}` }
           : { at: list.start! + 1, text: plugin.local }
@@ -126,11 +175,18 @@ export const ensurePuckPlugin = (
     ...(plugin.css ? [`import ${q}${plugin.css}${q}${semi}`] : []),
   ].join("\n");
   const created = `const ${plugin.local} = ${plugin.factory}()${semi}`;
-  edits.push(
-    last
-      ? { at: last.end!, text: `\n${lines}\n\n${created}` }
-      : { at: 0, text: `${lines}\n\n${created}\n\n` }
-  );
+  if (ahead) {
+    edits.push(
+      { at: ahead.factoryImport.start!, text: `${lines}\n` },
+      { at: ahead.created.end!, text: `\n\n${created}` }
+    );
+  } else {
+    edits.push(
+      last
+        ? { at: last.end!, text: `\n${lines}\n\n${created}` }
+        : { at: 0, text: `${lines}\n\n${created}\n\n` }
+    );
+  }
 
   let next = code;
   for (const edit of [...edits].sort((a, b) => b.at - a.at))
