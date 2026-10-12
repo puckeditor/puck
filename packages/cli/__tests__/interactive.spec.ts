@@ -171,10 +171,11 @@ describe("interactive AI choice", () => {
       expect.objectContaining({ value: "ai", checked: true }),
       expect.objectContaining({ value: "pages", checked: true }),
       expect.objectContaining({ value: "auth", checked: true }),
+      expect.objectContaining({ value: "assets", checked: true }),
     ]);
     expect(code).toBe(0);
     expect(stdout).toContain(
-      "Set up Puck Editor, Puck Cloud, Puck AI, Puck Pages and Puck Auth."
+      "Set up Puck Editor, Puck Cloud, Puck AI, Puck Pages, Puck Auth and Puck Assets."
     );
   });
 
