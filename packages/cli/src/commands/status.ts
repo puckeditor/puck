@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { RunContext } from "../context";
 import type { CommandResult } from "../result";
 import { Vfs } from "../io/vfs";
@@ -17,6 +18,7 @@ import {
 } from "../output/summary";
 import { baseDir, resolveTarget } from "./target";
 import { CANONICAL_INVOCATION } from "../constants";
+import { assetCandidatesIn } from "../ast/puck-fields";
 
 export const runStatus = async (rc: RunContext): Promise<CommandResult> => {
   const base = baseDir(rc);
@@ -114,6 +116,15 @@ export const runStatus = async (rc: RunContext): Promise<CommandResult> => {
     !status.auth.satisfied
   )
     result.nextSteps.push(`${CANONICAL_INVOCATION} add auth${where}`);
+
+  // Image fields that could use the asset library
+  const config = state.puck.configFile;
+  if (
+    status.assets.satisfied &&
+    config &&
+    assetCandidatesIn(vfs.readText(path.join(ctx.root, config)), config).length
+  )
+    result.nextSteps.push(`${CANONICAL_INVOCATION} assets migrate${where}`);
 
   if (target.note) result.nextSteps.unshift(`# ${target.note}`);
   return result;

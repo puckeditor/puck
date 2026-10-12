@@ -44,6 +44,7 @@ import {
   puckSummary,
 } from "../output/summary";
 import { baseDir } from "./target";
+import { assetCandidatesIn } from "../ast/puck-fields";
 import { rerunCommand } from "../context";
 import { ENV_KEY, MANUAL_INTEGRATION_DOCS_URL } from "../constants";
 
@@ -466,6 +467,21 @@ export const runMutation = async (
     `${cdPrefix}${devCommand}`,
     `# then open ${adapterFor(verifiedCtx.framework ?? ctx.framework!).devUrl}`,
   ];
+
+  // Image fields can move to the asset library once it's set up
+  const config = verifiedState.puck.configFile;
+  if (
+    capabilities.includes("assets") &&
+    status.assets.satisfied &&
+    config &&
+    assetCandidatesIn(after.readText(path.join(root, config)), config).length
+  ) {
+    result.nextSteps.push(
+      `npx @puckeditor/cli assets migrate${
+        root === base ? "" : ` --cwd ${displayPath(base, root)}`
+      }`
+    );
+  }
 
   // Puck AI, Pages and Assets are what an editor uses Puck Cloud for
   const usesCloud = (["ai", "pages", "assets"] as const).some(
