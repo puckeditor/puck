@@ -204,3 +204,52 @@ describe("Puck Pages and Puck Auth", () => {
     expect(checks(json.findings)["auth.route"]).toBe("fail");
   });
 });
+
+describe("Puck Assets", () => {
+  const KEY = ["--api-key", "sk-valid-key"];
+
+  it("reports Assets, and suggests Auth until it's added", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "assets", "--yes", "--json", ...KEY], { cwd: root });
+
+    const assets = await run(["status", "--json"], { cwd: root });
+    expect(assets.json.assets).toEqual({ installed: true, configured: true });
+    expect(assets.json.nextSteps).toContain("npx @puckeditor/cli add auth");
+
+    const { stdout } = await run(["status"], { cwd: root });
+    expect(stdout).toMatch(/Puck Assets\s+configured/);
+  });
+
+  it("leaves Assets out of status until it's in use", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const { json } = await run(["status", "--json"], { cwd: root });
+    expect(json.assets).toEqual({ installed: false, configured: false });
+
+    const { stdout } = await run(["status"], { cwd: root });
+    expect(stdout).not.toContain("Puck Assets");
+  });
+
+  it("checks it in doctor", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "assets", "--yes", "--json", ...KEY], { cwd: root });
+
+    const { json } = await run(["doctor", "--json", "--offline"], {
+      cwd: root,
+    });
+    expect(checks(json.findings)).toMatchObject({
+      "assets.plugin_configured": "ok",
+      "cloud.client_version": "ok",
+    });
+  });
+
+  it("needs nothing more from the Cloud route for assets", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "assets", "--yes", "--json", ...KEY], { cwd: root });
+
+    const { json } = await run(["doctor", "--json", "--offline"], {
+      cwd: root,
+    });
+    expect(checks(json.findings)).not.toHaveProperty("assets.route");
+    expect(json.assets).toEqual({ installed: true, configured: true });
+  });
+});
