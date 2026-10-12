@@ -71,6 +71,16 @@ const FRAMEWORKS = [
     files: ["src/puck/editor.tsx", "src/puck/root.tsx"],
     viteConfig: "vite.config.ts",
   },
+  {
+    recipe: "astro",
+    editor: "src/puck/editor.tsx",
+    route: "src/pages/api/puck/[...all].ts",
+    files: [
+      "src/puck/editor.tsx",
+      "src/pages/[...puckPath].astro",
+      "src/pages/puck.astro",
+    ],
+  },
 ] as const;
 
 describe("add assets", () => {
