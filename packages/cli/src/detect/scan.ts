@@ -4,6 +4,7 @@ import {
   CLOUD_CLIENT_PACKAGE,
   CORE_PACKAGE,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -45,6 +46,8 @@ export interface SourceScan {
   pagesPluginFiles: string[];
   /** Files that create the Puck Auth plugin */
   authPluginFiles: string[];
+  /** Files that create the Puck Assets plugin */
+  assetsPluginFiles: string[];
   /** Files that read published pages from Puck Cloud */
   cloudPageFiles: string[];
   /** Files that use Sign in with Puck */
@@ -96,6 +99,7 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
     aiPluginFiles: [],
     pagesPluginFiles: [],
     authPluginFiles: [],
+    assetsPluginFiles: [],
     cloudPageFiles: [],
     signInFiles: [],
     cssImported: false,
@@ -150,6 +154,8 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
         scan.pagesPluginFiles.push(rel);
       if (ref.source === PLUGIN_AUTH_PACKAGE && imports("createAuthPlugin"))
         scan.authPluginFiles.push(rel);
+      if (ref.source === PLUGIN_ASSETS_PACKAGE && imports("createAssetsPlugin"))
+        scan.assetsPluginFiles.push(rel);
       // e.g. puckCloud().pages.getPublished(path)
       if (
         ref.source === CLOUD_CLIENT_PACKAGE &&
@@ -172,6 +178,7 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
   scan.aiPluginFiles = unique(scan.aiPluginFiles);
   scan.pagesPluginFiles = unique(scan.pagesPluginFiles);
   scan.authPluginFiles = unique(scan.authPluginFiles);
+  scan.assetsPluginFiles = unique(scan.assetsPluginFiles);
   scan.cloudPageFiles = unique(scan.cloudPageFiles);
   scan.signInFiles = unique(scan.signInFiles);
 

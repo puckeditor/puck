@@ -4,6 +4,7 @@ import type { ProjectState } from "../detect/state";
 import { adapterFor } from "../frameworks";
 import type {
   AiSummary,
+  AssetsSummary,
   AuthSummary,
   PagesSummary,
   CapabilityId,
@@ -29,6 +30,7 @@ export const capabilityLabels = (
   ai: "Puck AI",
   pages: "Puck Pages",
   auth: "Puck Auth",
+  assets: "Puck Assets",
 });
 
 export const projectSummary = (
@@ -91,4 +93,13 @@ export const authSummary = (state: ProjectState): AuthSummary => ({
       ? state.auth.routeAuthenticated
       : state.auth.pluginInstalled,
   configured: capabilityStatus(state).auth.satisfied,
+});
+
+/** A server's Cloud route serves assets; an app has the editor plugin */
+export const assetsSummary = (state: ProjectState): AssetsSummary => ({
+  installed:
+    state.target === "server"
+      ? Boolean(state.cloud.routeFile)
+      : state.assets.pluginInstalled,
+  configured: capabilityStatus(state).assets.satisfied,
 });
