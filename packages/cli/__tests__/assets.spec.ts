@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { read, run, tmpProject } from "./helpers/harness";
+import { exists, read, run, tmpProject } from "./helpers/harness";
 
 const KEY = ["--api-key", "sk-valid-key"];
 
@@ -23,14 +23,40 @@ const addInTurn = async (root: string, runs: string[][]) => {
   }
 };
 
+const contentOf = (root: string, file: string) =>
+  exists(root, file) ? read(root, file) : null;
+
 const expectSameFiles = (a: string, b: string, files: string[]) => {
   for (const file of files) {
-    expect({ file, content: read(a, file) }).toEqual({
+    expect({ file, content: contentOf(a, file) }).toEqual({
       file,
-      content: read(b, file),
+      content: contentOf(b, file),
     });
   }
 };
+
+/**
+ * Where each framework's editor and Cloud route are, the files Assets and the
+ * others rewrite, and the Vite config that has to prebundle the plugin
+ */
+const FRAMEWORKS = [
+  {
+    recipe: "next",
+    editor: "app/puck/[...puckPath]/client.tsx",
+    route: "app/api/puck/[...all]/route.ts",
+    files: [
+      "app/puck/[...puckPath]/client.tsx",
+      "app/puck/[...puckPath]/page.tsx",
+    ],
+  },
+  {
+    recipe: "react-router",
+    editor: "app/routes/puck-splat.tsx",
+    route: "app/routes/api.puck.ts",
+    files: ["app/routes/puck-splat.tsx", "app/routes/puck.tsx"],
+    viteConfig: "vite.config.ts",
+  },
+] as const;
 
 describe("add assets", () => {
   describe.each(["next", "vinext"] as const)("%s", (recipe) => {
@@ -91,29 +117,41 @@ describe("add assets", () => {
     );
   });
 
-  describe("ends up the same whichever comes first", () => {
-    const NEXT_FILES = [
-      "app/puck/[...puckPath]/client.tsx",
-      "app/puck/[...puckPath]/page.tsx",
-      "app/api/puck/[...all]/route.ts",
-    ];
+  describe.each(FRAMEWORKS)("$recipe editor", (framework) => {
+    const { recipe, editor, route, files } = framework;
+    it("adds the asset library to the editor and Cloud route", async () => {
+      const root = tmpProject({ recipe });
+      const { json } = await run(["add", "assets", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(read(root, editor)).toContain(ASSETS_IMPORTS);
+      expect(read(root, route)).toContain("puckHandler(");
+      expect(json.assets).toEqual({ installed: true, configured: true });
+      if ("viteConfig" in framework)
+        expect(read(root, framework.viteConfig)).toContain(
+          '"@puckeditor/plugin-assets"'
+        );
+    });
 
     it.each(
       [["auth"], ["pages"], ["ai"], ["pages", "auth"]].map(
         (others) => [others.join(" and "), others] as const
       )
-    )("with %s", async (_, others) => {
-      const together = tmpProject({ recipe: "next" });
+    )("ends up the same whichever comes first, with %s", async (_, others) => {
+      const together = tmpProject({ recipe });
       await addInTurn(together, [[...others, "assets"]]);
 
-      const assetsFirst = tmpProject({ recipe: "next" });
+      const assetsFirst = tmpProject({ recipe });
       await addInTurn(assetsFirst, [["assets"], others]);
 
-      const assetsLast = tmpProject({ recipe: "next" });
+      const assetsLast = tmpProject({ recipe });
       await addInTurn(assetsLast, [others, ["assets"]]);
 
-      expectSameFiles(assetsFirst, together, NEXT_FILES);
-      expectSameFiles(assetsLast, together, NEXT_FILES);
+      const all = [...files, route];
+      expectSameFiles(assetsFirst, together, all);
+      expectSameFiles(assetsLast, together, all);
     });
   });
 
