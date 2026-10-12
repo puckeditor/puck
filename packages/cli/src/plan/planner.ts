@@ -43,6 +43,8 @@ export class Planner {
   backend?: ResolvedBackend;
   /** Puck Cloud API host for puckHandler, when not the default */
   cloudHost?: string;
+  /** Exact versions to install instead, with --canary */
+  canary: Record<string, string> = {};
 
   constructor(
     public vfs: Vfs,
@@ -148,7 +150,12 @@ export class Planner {
     opts: { dev?: boolean } = {}
   ) {
     if (!this.#dependencies.some((d) => d.name === name)) {
-      this.#dependencies.push({ name, range, capability, dev: opts.dev });
+      this.#dependencies.push({
+        name,
+        range: this.canary[name] ?? range,
+        capability,
+        dev: opts.dev,
+      });
     }
   }
 

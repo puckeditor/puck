@@ -18,6 +18,8 @@ import { FRAMEWORK_LABELS, SUPPORTED_FRAMEWORKS } from "../detect/framework";
 import { ADAPTERS, adapterFor } from "../frameworks";
 import type { LegacyScaffold } from "../frameworks/adapter";
 import { Planner } from "../plan/planner";
+import { DEFAULT_REGISTRY, resolveCanaries } from "../plan/canary";
+import { isTruthyEnv } from "../env/truthy";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
 import { planEnvWrite, planGitignore } from "../plan/env";
 import { scaffoldApp } from "../plan/bootstrap";
@@ -141,6 +143,15 @@ export const runMutation = async (
     ? `${deps.env.PUCK_CLOUD_URL.replace(/\/+$/, "")}/api`
     : undefined;
 
+  // --canary installs the latest canaries of Puck's packages
+  const canary =
+    flags.canary || isTruthyEnv(deps.env.PUCK_CANARY)
+      ? await resolveCanaries(
+          deps.fetch,
+          deps.env.npm_config_registry || DEFAULT_REGISTRY
+        )
+      : null;
+
   let scaffoldStep: PlanStep | null = null;
   let legacy: LegacyScaffold | null = null;
   if (bootstrap) {
@@ -155,6 +166,7 @@ export const runMutation = async (
       cliVersion: deps.cliVersion,
       cloudHost,
       legacy,
+      canary: canary?.versions,
     });
     scaffoldStep = {
       id: "bootstrap:scaffold",
@@ -184,6 +196,17 @@ export const runMutation = async (
   const planner = new Planner(vfs, ctx, state, deps.templates, deps.cliVersion);
   planner.scaffolded = Boolean(bootstrap);
   planner.cloudHost = cloudHost;
+  if (canary) {
+    planner.canary = canary.versions;
+    if (canary.missing.length) {
+      planner.warn(
+        "PUCK-CLI-W-NO-CANARY",
+        `No canary of ${canary.missing.join(", ")} was found, so ${
+          canary.missing.length === 1 ? "its" : "their"
+        } usual version is installed.`
+      );
+    }
+  }
 
   if (legacy) planner.warn("PUCK-CLI-W-NODE-VERSION", legacy.warning);
   for (const warning of ctx.warnings)

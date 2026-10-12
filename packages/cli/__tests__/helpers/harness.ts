@@ -205,6 +205,8 @@ export class FakeCloud {
   /** Fails this page import request (1-based) with a server error */
   failImportAt?: number;
   imports = 0;
+  /** npm registry packuments, by package name */
+  packuments: Record<string, object> = {};
 
   approveAll() {
     for (const session of this.sessions.values())
@@ -222,6 +224,16 @@ export class FakeCloud {
       body,
       headers,
     });
+
+    if (url.hostname === "registry.npmjs.org") {
+      const packument =
+        this.packuments[decodeURIComponent(url.pathname.slice(1))];
+      return packument
+        ? new Response(JSON.stringify(packument), { status: 200 })
+        : new Response(JSON.stringify({ error: "Not found" }), {
+            status: 404,
+          });
+    }
 
     const json = (status: number, data: unknown) =>
       new Response(JSON.stringify(data), {

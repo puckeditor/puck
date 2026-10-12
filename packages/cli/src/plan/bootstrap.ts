@@ -33,6 +33,7 @@ export const scaffoldApp = (
     cliVersion,
     cloudHost,
     legacy,
+    canary,
   }: {
     recipe: RecipeName;
     dir: string;
@@ -40,6 +41,7 @@ export const scaffoldApp = (
     cliVersion: string;
     cloudHost?: string;
     legacy?: LegacyScaffold | null;
+    canary?: Record<string, string>;
   }
 ) => {
   const files = templates.list(recipe);
@@ -58,6 +60,7 @@ export const scaffoldApp = (
           appName,
           cliVersion,
           legacy,
+          canary,
         })
       );
     } else if (rel === "tsconfig.json") {

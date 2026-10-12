@@ -9,11 +9,19 @@ export const transformPackageJson = (
     appName,
     cliVersion,
     legacy,
-  }: { appName: string; cliVersion: string; legacy?: LegacyScaffold | null }
+    canary = {},
+  }: {
+    appName: string;
+    cliVersion: string;
+    legacy?: LegacyScaffold | null;
+    /** Exact versions to use instead, with --canary */
+    canary?: Record<string, string>;
+  }
 ) => {
   const pkg = JSON.parse(text);
   pkg.name = appName;
   const pinned: string[] = [];
+  let prerelease = false;
 
   for (const field of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[field] as Record<string, string> | undefined;
@@ -22,15 +30,19 @@ export const transformPackageJson = (
     delete deps["eslint-config-custom"];
     for (const [name, range] of Object.entries(deps)) {
       if (legacy?.dependencies[name]) deps[name] = legacy.dependencies[name];
-      if (!WORKSPACE_PROTOCOL.test(range)) continue;
-      deps[name] = `^${cliVersion}`;
-      pinned.push(name);
+      if (WORKSPACE_PROTOCOL.test(range)) {
+        deps[name] = canary[name] ?? `^${cliVersion}`;
+        pinned.push(name);
+        prerelease ||= deps[name].includes("-");
+      } else if (canary[name]) {
+        deps[name] = canary[name];
+      }
     }
   }
 
   // A canary never satisfies plugins' `^0` peer ranges, which npm treats as
   // an install error. Point those peers at the app's own version instead.
-  if (cliVersion.includes("-") && pinned.length > 0) {
+  if (prerelease) {
     pkg.overrides = {
       ...pkg.overrides,
       ...Object.fromEntries(pinned.map((name) => [name, `$${name}`])),

@@ -29,6 +29,7 @@ export interface Flags {
   auth: boolean;
   noAuth: boolean;
   editorOnly: boolean;
+  canary: boolean;
   backend?: BackendChoice;
   backendUrl?: string;
 }
@@ -67,6 +68,7 @@ const OPTIONS = {
   auth: { type: "boolean" },
   "no-auth": { type: "boolean" },
   "editor-only": { type: "boolean" },
+  canary: { type: "boolean" },
   backend: { type: "string" },
   "backend-url": { type: "string" },
 } as const;
@@ -105,8 +107,9 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
     "auth",
     "no-auth",
     "editor-only",
+    "canary",
   ],
-  add: [...GLOBAL, ...MUTATING],
+  add: [...GLOBAL, ...MUTATING, "canary"],
   connect: [...GLOBAL, "api-key", "config", "wait"],
   status: ["json", "help", "version", "cwd", "workspace", "config"],
   doctor: ["json", "help", "version", "cwd", "workspace", "config", "offline"],
@@ -248,6 +251,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       auth: Boolean(values.auth),
       noAuth: Boolean(values["no-auth"]),
       editorOnly: Boolean(values["editor-only"]),
+      canary: Boolean(values.canary),
       backend: backend as BackendChoice | undefined,
       backendUrl: backendUrl?.replace(/\/+$/, ""),
     },

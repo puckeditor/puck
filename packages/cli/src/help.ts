@@ -69,6 +69,8 @@ Flags:
   --no-ai, --no-pages, --no-auth
                           Include all of them except these (init)
   --editor-only           Include none of them (init)
+  --canary                Install the latest canaries of Puck's packages (init, add;
+                          or PUCK_CANARY=1)
   --backend <add|external|none>  Where a Vite or static Astro app gets its server:
                           add one, use one elsewhere, or none (editor only)
   --backend-url <url>     The server for --backend external, e.g. http://localhost:3000
