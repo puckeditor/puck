@@ -15,7 +15,7 @@ npx @puckeditor/cli init
 
 With Puck AI, the only manual step is logging in to Puck Cloud and approving the connection in your browser. When it's done, the CLI starts your dev server and opens the editor.
 
-Puck AI, [Puck Pages](#puck-pages) and [Puck Auth](#puck-auth) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all three selected. To choose up front, pass `--ai`, `--pages` or `--auth` to include only those, `--no-ai`, `--no-pages` or `--no-auth` to include all but those, or `--editor-only` for none.
+Puck AI, [Puck Pages](#puck-pages), [Puck Auth](#puck-auth) and [Puck Assets](#puck-assets) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all four selected. To choose up front, pass `--ai`, `--pages`, `--auth` or `--assets` to include only those, `--no-ai`, `--no-pages`, `--no-auth` or `--no-assets` to include all but those, or `--editor-only` for none.
 
 ## Supported projects
 
@@ -56,7 +56,7 @@ With [Puck Pages](#puck-pages), `/api/pages` serves pages published in Puck Clou
 
 It mounts both on your app before it starts serving, so your own middleware runs first. Node doesn't load `.env` files, so the CLI adds `--env-file-if-exists=.env.local` to a `tsx` or `node` dev script. Bun loads `.env.local` itself. On Cloudflare Workers, put `PUCK_API_KEY` in `.dev.vars` instead.
 
-Add the Puck AI plugin in the app with the editor. If that app runs on another origin, proxy `/api` to the server in development, or pass `host` to `createAiPlugin`.
+With [Puck Assets](#puck-assets), the Puck Cloud route also serves the asset library. Add the Puck AI and Puck Assets plugins in the app with the editor. If that app runs on another origin, proxy `/api` to the server in development, or pass `host` to `createAiPlugin`.
 
 ## For coding agents
 
@@ -66,7 +66,7 @@ Run with `--yes --json`. The CLI never prompts, and prints exactly one JSON docu
 npx @puckeditor/cli init --yes --json
 ```
 
-When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. Without any of those flags, the first run returns a `choose_capabilities` action, so the developer can choose which of Puck AI, Puck Pages and Puck Auth to add. With `--ai`, the first run asks the developer to log in:
+When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. Without any of those flags, the first run returns a `choose_capabilities` action, so the developer can choose which of Puck AI, Puck Pages, Puck Auth and Puck Assets to add. With `--ai`, the first run asks the developer to log in:
 
 ```json
 {
@@ -155,44 +155,45 @@ npx skills add puckeditor/skills --skill puck
 
 ## Commands
 
-| Command               | Description                                                                    |
-| --------------------- | ------------------------------------------------------------------------------ |
-| `init`                | Set up Puck, optionally with Puck AI, creating an app if needed                |
-| `add editor`          | Add the Puck editor                                                            |
-| `add cloud`           | Connect Puck Cloud (adds the editor first if needed)                           |
-| `add ai`              | Add the Puck AI plugin (adds Puck Cloud first if needed)                       |
-| `add pages`           | Store and publish pages in Puck Cloud (adds Puck Cloud first if needed)        |
-| `add auth`            | Require Sign in with Puck to edit (adds Puck Cloud first if needed)            |
-| `pages import <file>` | Publish pages from a JSON file to Puck Cloud                                   |
-| `connect [branch]`    | Log in to Puck Cloud again and replace `PUCK_API_KEY`, optionally for a branch |
-| `status`              | Show what's installed and configured                                           |
-| `doctor`              | Diagnose problems and suggest fixes. Never makes changes                       |
-| `frameworks`          | Show the supported frameworks and versions                                     |
-| `docs`                | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>`             |
-| `telemetry`           | Show or change anonymous usage data collection                                 |
+| Command               | Description                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------- |
+| `init`                | Set up Puck, optionally with Puck AI, creating an app if needed                    |
+| `add editor`          | Add the Puck editor                                                                |
+| `add cloud`           | Connect Puck Cloud (adds the editor first if needed)                               |
+| `add ai`              | Add the Puck AI plugin (adds Puck Cloud first if needed)                           |
+| `add pages`           | Store and publish pages in Puck Cloud (adds Puck Cloud first if needed)            |
+| `add auth`            | Require Sign in with Puck to edit (adds Puck Cloud first if needed)                |
+| `add assets`          | Upload and manage images and files in Puck Cloud (adds Puck Cloud first if needed) |
+| `pages import <file>` | Publish pages from a JSON file to Puck Cloud                                       |
+| `connect [branch]`    | Log in to Puck Cloud again and replace `PUCK_API_KEY`, optionally for a branch     |
+| `status`              | Show what's installed and configured                                               |
+| `doctor`              | Diagnose problems and suggest fixes. Never makes changes                           |
+| `frameworks`          | Show the supported frameworks and versions                                         |
+| `docs`                | Read these docs: `ls`, `cat <page>`, `find <query>`, `grep <text>`                 |
+| `telemetry`           | Show or change anonymous usage data collection                                     |
 
 ## Flags
 
-| Flag                                 | Description                                                                                                                                                                                                  |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--json`                             | Machine-readable output                                                                                                                                                                                      |
-| `--yes`, `-y`                        | Apply the plan without prompting                                                                                                                                                                             |
-| `--dry-run`                          | Show the plan without changing anything or logging in                                                                                                                                                        |
-| `--cwd <path>`                       | Run against another directory                                                                                                                                                                                |
-| `--workspace <name\|dir>`            | Choose an app when running from a monorepo root                                                                                                                                                              |
-| `--api-key <key>`                    | Use an existing API key instead of logging in                                                                                                                                                                |
-| `--no-env-write`                     | Don't write `PUCK_API_KEY` to a file                                                                                                                                                                         |
-| `--ai`, `--pages`, `--auth`          | Include only these of Puck AI, [Puck Pages](#puck-pages) and [Puck Auth](#puck-auth) (`init`)                                                                                                                |
-| `--no-ai`, `--no-pages`, `--no-auth` | Include all of them except these (`init`)                                                                                                                                                                    |
-| `--editor-only`                      | Include none of them (`init`)                                                                                                                                                                                |
-| `--canary`                           | Install the latest canaries of `@puckeditor/core`, `cloud-client` and the plugins, pinned to exact versions (`init` and `add`). `PUCK_CANARY=1` does the same. Private packages are read with your npm login |
-| `--backend <choice>`                 | Where a Vite app's server comes from: `add`, `external` or `none`                                                                                                                                            |
-| `--backend-url <url>`                | The server for `--backend external`                                                                                                                                                                          |
-| `--wait`                             | Wait for login approval instead of returning `action_required`                                                                                                                                               |
-| `--framework <name>`                 | Framework for a new app: `next`, `react-router`, `tanstack-start`, `vinext`, `vite`, `astro`, `hono` or `express`                                                                                            |
-| `--name <name>`                      | Directory for a new app                                                                                                                                                                                      |
-| `--package-manager <name>`           | Override the detected package manager                                                                                                                                                                        |
-| `--offline`                          | Skip the Puck Cloud connection check (`doctor`)                                                                                                                                                              |
+| Flag                                                | Description                                                                                                                                                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--json`                                            | Machine-readable output                                                                                                                                                                                      |
+| `--yes`, `-y`                                       | Apply the plan without prompting                                                                                                                                                                             |
+| `--dry-run`                                         | Show the plan without changing anything or logging in                                                                                                                                                        |
+| `--cwd <path>`                                      | Run against another directory                                                                                                                                                                                |
+| `--workspace <name\|dir>`                           | Choose an app when running from a monorepo root                                                                                                                                                              |
+| `--api-key <key>`                                   | Use an existing API key instead of logging in                                                                                                                                                                |
+| `--no-env-write`                                    | Don't write `PUCK_API_KEY` to a file                                                                                                                                                                         |
+| `--ai`, `--pages`, `--auth`, `--assets`             | Include only these of Puck AI, [Puck Pages](#puck-pages), [Puck Auth](#puck-auth) and [Puck Assets](#puck-assets) (`init`)                                                                                   |
+| `--no-ai`, `--no-pages`, `--no-auth`, `--no-assets` | Include all of them except these (`init`)                                                                                                                                                                    |
+| `--editor-only`                                     | Include none of them (`init`)                                                                                                                                                                                |
+| `--canary`                                          | Install the latest canaries of `@puckeditor/core`, `cloud-client` and the plugins, pinned to exact versions (`init` and `add`). `PUCK_CANARY=1` does the same. Private packages are read with your npm login |
+| `--backend <choice>`                                | Where a Vite app's server comes from: `add`, `external` or `none`                                                                                                                                            |
+| `--backend-url <url>`                               | The server for `--backend external`                                                                                                                                                                          |
+| `--wait`                                            | Wait for login approval instead of returning `action_required`                                                                                                                                               |
+| `--framework <name>`                                | Framework for a new app: `next`, `react-router`, `tanstack-start`, `vinext`, `vite`, `astro`, `hono` or `express`                                                                                            |
+| `--name <name>`                                     | Directory for a new app                                                                                                                                                                                      |
+| `--package-manager <name>`                          | Override the detected package manager                                                                                                                                                                        |
+| `--offline`                                         | Skip the Puck Cloud connection check (`doctor`)                                                                                                                                                              |
 
 ## API keys
 
@@ -259,6 +260,18 @@ Agents pass `--yes --json`. If Puck Cloud fails part way, the status is `partial
 Without Puck Pages, the editor still saves pages through your own route, which Sign in with Puck doesn't protect. On a Hono or Express server, `add auth` only changes the Cloud route, so run it in the editor's app too.
 
 Members sign in to the API key's project and edit its branch. Set `PUCK_API_KEY` on each deployment to a key for the branch it should edit, so a preview deployment can't edit production.
+
+## Puck Assets
+
+`add assets`, or `init --assets`, adds the asset library to the editor with the Puck Assets plugin, so editors can upload, browse and reuse images and files stored in Puck Cloud:
+
+- The Puck Assets plugin adds a library panel to the editor, and lets editors drop assets onto the page
+- `@puckeditor/cloud-client` is updated to a version that serves the library from the `/api/puck` route
+- In Vite apps, the plugin is prebundled in `vite.config`
+
+Fields don't use the library until they're switched to `assetField()` from `@puckeditor/plugin-assets`. Switch existing image fields with `assets migrate`.
+
+Until you add [Puck Auth](#puck-auth), anyone who can reach `/api/puck` can upload, replace and delete assets using your API key. On a Hono or Express server, `add assets` only changes the Cloud route, so run it in the editor's app too.
 
 ## Telemetry
 

@@ -11,7 +11,7 @@ npx @puckeditor/cli init
 For coding agents:
 
 ```sh
-npx @puckeditor/cli init --yes --json --ai --pages --auth  # or --editor-only
+npx @puckeditor/cli init --yes --json --ai --pages --auth --assets  # or --editor-only
 ```
 
 Other commands:
@@ -22,6 +22,7 @@ npx @puckeditor/cli add cloud    # connect Puck Cloud
 npx @puckeditor/cli add ai       # add the Puck AI plugin
 npx @puckeditor/cli add pages    # store and publish pages in Puck Cloud
 npx @puckeditor/cli add auth     # require Sign in with Puck to edit
+npx @puckeditor/cli add assets   # upload and manage images and files in Puck Cloud
 npx @puckeditor/cli pages import database.json  # publish pages to Puck Cloud
 npx @puckeditor/cli connect      # log in to Puck Cloud again for a new API key
 npx @puckeditor/cli connect preview  # ...for a branch of the project
