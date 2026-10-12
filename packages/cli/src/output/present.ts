@@ -67,6 +67,18 @@ const actionLines = (action: RequiredAction): string[] => {
       );
       break;
     }
+    case "choose_fields": {
+      const width = Math.max(...action.choices.map((c) => c.value.length));
+      lines.push(
+        ...action.choices.map(
+          (c) =>
+            `    ${action.flag} ${c.value.padEnd(width)}  ${pc.dim(
+              c.description
+            )}${c.recommended ? "" : pc.dim(" (maybe)")}`
+        )
+      );
+      break;
+    }
     case "choose_backend":
       lines.push(
         ...action.choices.map(

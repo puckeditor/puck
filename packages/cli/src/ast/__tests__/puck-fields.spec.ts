@@ -140,6 +140,27 @@ describe("listFields", () => {
     ]);
   });
 
+  it("knows fields that already use assetField()", () => {
+    const code = `export default {
+  components: {
+    Hero: {
+      fields: {
+        image: assetField({ accept: ["image/*"] }),
+        video: { ...assetField(), ai: { stream: false } },
+      },
+    },
+  },
+};
+`;
+    const listed = listFields(code, resolve(code));
+    expect(listed.map(({ id, shape }) => ({ id, shape }))).toEqual([
+      { id: "Hero.image", shape: "asset" },
+      { id: "Hero.video", shape: "asset" },
+    ]);
+    // They're done, so they aren't suggested again
+    expect(assetCandidates(listed)).toEqual([]);
+  });
+
   it("finds nothing to suggest in the recipes", () => {
     const code = readRecipe("next", "puck.config.tsx");
     expect(assetCandidates(listFields(code, resolve(code)))).toEqual([]);

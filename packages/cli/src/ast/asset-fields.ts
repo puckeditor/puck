@@ -52,15 +52,20 @@ const isVideo = (key: string) => /video/i.test(key);
 const text = (code: string, node: Node) => code.slice(node.start!, node.end!);
 
 /** `assetField({ ... })`, keeping the field's label and any other options */
-const assetFieldCall = (code: string, field: PuckField, q: string) => {
+const assetFieldCall = (
+  code: string,
+  field: PuckField,
+  node: ObjectExpression,
+  q: string
+) => {
   const key = field.path[field.path.length - 1].key;
-  const label = findProperty(field.node, "label");
+  const label = findProperty(node, "label");
   const options = [
     ...(label ? [text(code, label)] : []),
     `accept: [${q}${isVideo(key) ? "video/*" : "image/*"}${q}]`,
   ];
   const call = `assetField({ ${options.join(", ")} })`;
-  const kept = field.node.properties.filter((p) => {
+  const kept = node.properties.filter((p) => {
     const name = keyName(p);
     return !["type", "label", "objectFields"].includes(name ?? "");
   });
@@ -129,9 +134,10 @@ const defaultEdits = (
         f.path.length === i + 1 &&
         f.path.every((s, j) => s.key === field.path[j].key)
     );
-    const itemDefaults = arrayField
-      ? objectProp(arrayField.node, "defaultItemProps")
-      : null;
+    const itemDefaults =
+      arrayField?.node.type === "ObjectExpression"
+        ? objectProp(arrayField.node, "defaultItemProps")
+        : null;
     holders.push(...objectsAt(itemDefaults, parents.slice(i + 1)));
   });
 
@@ -476,12 +482,14 @@ export const toAssetFields = (
 
   for (const id of ids) {
     const field = fields.find((f) => f.id === id);
-    if (!field || !field.shape) continue;
+    // Fields already using assetField() have nothing left to change here
+    if (!field || field.shape === null || field.shape === "asset") continue;
+    if (field.node.type !== "ObjectExpression") continue;
 
     edits.push({
       start: field.node.start!,
       end: field.node.end!,
-      text: assetFieldCall(code, field, q),
+      text: assetFieldCall(code, field, field.node, q),
     });
 
     // { src, alt } objects already have an asset's shape

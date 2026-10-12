@@ -15,6 +15,7 @@ import { runDoctor } from "./commands/doctor";
 import { runDocs } from "./commands/docs";
 import { runFrameworks } from "./commands/frameworks";
 import { runPages } from "./commands/pages";
+import { runAssets } from "./commands/assets";
 import { runTelemetry } from "./commands/telemetry";
 import type { Telemetry } from "./telemetry/consent";
 import { loadTelemetry } from "./telemetry/consent";
@@ -150,6 +151,7 @@ export const runCli = async (
     else if (command === "telemetry")
       result = await runTelemetry(rc, positionals);
     else if (command === "pages") result = await runPages(rc, positionals);
+    else if (command === "assets") result = await runAssets(rc, positionals);
     else result = await runDoctor(rc);
   } catch (err) {
     result = errorResult(command, err, flags.dryRun);

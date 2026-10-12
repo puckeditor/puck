@@ -15,6 +15,7 @@ export type CommandName =
   | "frameworks"
   | "telemetry"
   | "pages"
+  | "assets"
   | "help";
 
 export type ResultStatus = "success" | "action_required" | "partial" | "error";
@@ -82,6 +83,17 @@ export type RequiredAction = ActionBase &
           recommended: boolean;
         }[];
         none: "--editor-only";
+      }
+    | {
+        /** Pick any number of choices, passing the flag with each one's value */
+        type: "choose_fields";
+        flag: "--field";
+        choices: {
+          value: string;
+          label: string;
+          description: string;
+          recommended: boolean;
+        }[];
       }
     | {
         type: "choose_backend";
@@ -248,6 +260,17 @@ export interface CommandResult {
     skipped: string[];
     /** Routes not sent because an earlier batch failed */
     notImported: string[];
+  };
+  /** Present on `puck assets migrate` */
+  assetsMigrate?: {
+    /** The Puck config, relative to the project */
+    config: string;
+    /** The fields switched to the asset library, e.g. Hero.image */
+    fields: string[];
+    /** Local page data rewritten, e.g. database.json */
+    files: string[];
+    /** Puck Cloud pages, by path */
+    pages: { migrated: string[]; unchanged: number; failed: string[] };
   };
   /** Present on `puck telemetry` */
   telemetry?: {
