@@ -18,6 +18,9 @@ const registry = () => {
     "@puckeditor/plugin-ai": {
       "dist-tags": { latest: "0.8.3", canary: "1.0.0-canary.ccc" },
     },
+    "@puckeditor/plugin-assets": {
+      "dist-tags": { latest: "0.8.3", canary: "1.0.0-canary.eee" },
+    },
     // No canary tag, so the newest prerelease
     "@puckeditor/plugin-pages": {
       "dist-tags": { latest: "0.8.3" },
@@ -96,6 +99,7 @@ describe("--canary", () => {
       "/@puckeditor%2fcloud-client",
       "/@puckeditor%2fcore",
       "/@puckeditor%2fplugin-ai",
+      "/@puckeditor%2fplugin-assets",
       "/@puckeditor%2fplugin-auth",
       "/@puckeditor%2fplugin-pages",
     ]);
