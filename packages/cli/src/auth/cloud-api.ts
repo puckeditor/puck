@@ -27,6 +27,14 @@ export interface ImportedPages {
   skipped: string[];
 }
 
+/** A page on the API key's branch, from GET /api/pages */
+export interface CloudPageSummary {
+  id: string;
+  path: string;
+  latestVersionId: string | null;
+  publishedVersionId: string | null;
+}
+
 export interface CloudApi {
   baseUrl: string;
   startConnect(client: {
@@ -46,6 +54,20 @@ export interface CloudApi {
     apiKey: string,
     pages: Record<string, unknown>
   ): Promise<ImportedPages>;
+  /** The pages on the API key's branch */
+  listPages(apiKey: string): Promise<CloudPageSummary[]>;
+  /** A version's Puck data */
+  getPageVersion(
+    apiKey: string,
+    id: string,
+    versionId: string
+  ): Promise<unknown>;
+  /** Saves data as a new version, publishing it if `status` is "published" */
+  savePage(
+    apiKey: string,
+    id: string,
+    version: { data: unknown; status: "published" | "unpublished" }
+  ): Promise<void>;
 }
 
 export class CloudRequestError extends Error {
@@ -104,6 +126,35 @@ export const createCloudApi = (
       return {};
     }
   };
+
+  /** A pages API response, throwing when Puck Cloud refused it */
+  const pagesResponse = async (res: Response, action: string) => {
+    const body = await json(res);
+    if (res.status === 401 || res.status === 403)
+      throw new CloudRequestError(
+        "Puck Cloud rejected the API key",
+        "rejected"
+      );
+    if (res.status === 429)
+      throw new CloudRequestError(
+        "Too many requests. Wait a minute and try again.",
+        "rate_limited"
+      );
+    if (!res.ok)
+      throw new CloudRequestError(
+        typeof body.error === "string"
+          ? `Puck Cloud couldn't ${action}: ${body.error}`
+          : `Puck Cloud returned an unexpected response (${res.status})`,
+        "bad_response"
+      );
+    return body;
+  };
+
+  const unexpected = (res: Response) =>
+    new CloudRequestError(
+      `Puck Cloud returned an unexpected response (${res.status})`,
+      "bad_response"
+    );
 
   return {
     baseUrl,
@@ -207,6 +258,47 @@ export const createCloudApi = (
         );
       }
       return { created: body.created, skipped: body.skipped };
+    },
+
+    async listPages(apiKey) {
+      const res = await request("api/pages", {
+        headers: { "x-api-key": apiKey },
+      });
+      const body = await pagesResponse(res, "list the pages");
+      if (!Array.isArray(body.sitePages)) throw unexpected(res);
+      return (body.sitePages as Record<string, unknown>[]).map((page) => ({
+        id: String(page.id),
+        path: String(page.path),
+        latestVersionId: (page.latestVersionId as string | null) ?? null,
+        publishedVersionId: (page.publishedVersionId as string | null) ?? null,
+      }));
+    },
+
+    async getPageVersion(apiKey, id, versionId) {
+      const res = await request(
+        `api/pages/${encodeURIComponent(id)}?versionId=${encodeURIComponent(
+          versionId
+        )}`,
+        { headers: { "x-api-key": apiKey } }
+      );
+      const body = await pagesResponse(res, "read the page");
+      const page = body.page as { versions?: { data?: unknown }[] } | undefined;
+      const version = page?.versions?.[0];
+      if (!version || version.data === undefined) throw unexpected(res);
+      return version.data;
+    },
+
+    async savePage(apiKey, id, version) {
+      const res = await request(
+        `api/pages/${encodeURIComponent(id)}`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-api-key": apiKey },
+          body: JSON.stringify(version),
+        },
+        IMPORT_TIMEOUT_MS
+      );
+      await pagesResponse(res, "save the page");
     },
   };
 };

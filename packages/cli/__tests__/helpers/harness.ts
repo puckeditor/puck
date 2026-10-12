@@ -206,11 +206,38 @@ export class FakeCloud {
   /** Fails this page import request (1-based) with a server error */
   failImportAt?: number;
   imports = 0;
+  /** Pages on the API key's branch, by id, with their versions oldest first */
+  branchPages = new Map<
+    string,
+    {
+      path: string;
+      versions: {
+        id: string;
+        data: unknown;
+        status: "published" | "unpublished";
+      }[];
+    }
+  >();
+  /** Fails this page save request (1-based) with a server error */
+  failSaveAt?: number;
+  saves = 0;
   /** npm registry packuments, by package name */
   packuments: Record<string, object> = {};
   /** Packuments only readable with npmToken, like unreleased plugins */
   privatePackuments: Record<string, object> = {};
   npmToken = "npm_SENTINEL_TOKEN";
+
+  /** Adds a page with versions, oldest first */
+  addPage(
+    id: string,
+    path: string,
+    versions: { data: unknown; status: "published" | "unpublished" }[]
+  ) {
+    this.branchPages.set(id, {
+      path,
+      versions: versions.map((v, i) => ({ id: `${id}-v${i + 1}`, ...v })),
+    });
+  }
 
   approveAll() {
     for (const session of this.sessions.values())
@@ -315,6 +342,66 @@ export class FakeCloud {
         created,
         skipped: routes.filter((r) => !created.includes(r)),
       });
+    }
+
+    if (url.pathname.startsWith("/api/pages")) {
+      if (!this.validKeys.has(headers["x-api-key"]))
+        return json(401, { error: "Unauthorized" });
+      const summary = (id: string) => {
+        const page = this.branchPages.get(id)!;
+        const published = page.versions.find((v) => v.status === "published");
+        return {
+          id,
+          path: page.path,
+          status: published ? "published" : "unpublished",
+          latestVersionId: page.versions[page.versions.length - 1]?.id ?? null,
+          publishedVersionId: published?.id ?? null,
+        };
+      };
+
+      if (url.pathname === "/api/pages" && (init?.method ?? "GET") === "GET")
+        return json(200, {
+          status: 200,
+          page: {},
+          sitePages: [...this.branchPages.keys()].map(summary),
+        });
+
+      const id = decodeURIComponent(url.pathname.split("/")[3] ?? "");
+      const page = this.branchPages.get(id);
+      if (!page) return json(404, { error: "Page not found" });
+
+      if ((init?.method ?? "GET") === "GET") {
+        const versionId = url.searchParams.get("versionId");
+        const version = versionId
+          ? page.versions.find((v) => v.id === versionId)
+          : page.versions[page.versions.length - 1];
+        return json(200, {
+          status: 200,
+          page: { id, path: page.path, versions: version ? [version] : [] },
+        });
+      }
+
+      if (init?.method === "POST") {
+        if (++this.saves === this.failSaveAt)
+          return json(500, { error: "Internal server error" });
+        const { data, status } = body as {
+          data: unknown;
+          status: "published" | "unpublished";
+        };
+        // Publishing a version unpublishes the others
+        if (status === "published")
+          page.versions.forEach((v) => (v.status = "unpublished"));
+        const version = {
+          id: `${id}-v${page.versions.length + 1}`,
+          data,
+          status,
+        };
+        page.versions.push(version);
+        return json(200, {
+          status: "ok",
+          page: { id, path: page.path, versions: [version] },
+        });
+      }
     }
 
     return json(404, {});
