@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { FakeCloud, read, run, tmpProject } from "./helpers/harness";
 import { nextMinimal } from "./helpers/fixtures";
@@ -110,5 +111,33 @@ describe("--canary", () => {
     expect(cloud.requests.some((r) => r.path.startsWith("/@puckeditor"))).toBe(
       false
     );
+  });
+
+  it("reads private packages with the npm token from .npmrc", async () => {
+    const root = tmpProject({ tree: nextMinimal() });
+    const home = path.join(root, "..", "home");
+    fs.mkdirSync(home, { recursive: true });
+    fs.writeFileSync(
+      path.join(home, ".npmrc"),
+      "registry=https://registry.npmjs.org/\n//registry.npmjs.org/:_authToken=${NPM_TOKEN}\n"
+    );
+    const cloud = registry();
+    cloud.privatePackuments["@puckeditor/plugin-auth"] = {
+      "dist-tags": { latest: "0.8.3", canary: "1.0.0-canary.ddd" },
+    };
+
+    const { json, runner, stdout } = await run(
+      ["add", "auth", "--canary", "--yes", "--json", ...KEY],
+      { cwd: root, cloud, env: { HOME: home, NPM_TOKEN: cloud.npmToken } }
+    );
+
+    expect(json.status).toBe("success");
+    expect(runner.calls[0].args).toContain(
+      "@puckeditor/plugin-auth@1.0.0-canary.ddd"
+    );
+    expect(json.warnings.map((w) => w.code)).not.toContain(
+      "PUCK-CLI-W-NO-CANARY"
+    );
+    expect(stdout).not.toContain(cloud.npmToken);
   });
 });

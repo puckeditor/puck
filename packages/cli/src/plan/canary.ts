@@ -31,14 +31,19 @@ interface Packument {
 const latestCanary = async (
   fetchImpl: typeof fetch,
   registry: string,
-  name: string
+  name: string,
+  token: string | null
 ) => {
   let packument: Packument;
   try {
     const res = await fetchImpl(
       `${registry.replace(/\/+$/, "")}/${name.replace("/", "%2f")}`,
       {
-        headers: { accept: "application/json" },
+        headers: {
+          accept: "application/json",
+          // Private packages, e.g. plugins before their release
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
         signal: AbortSignal.timeout(TIMEOUT_MS),
       }
     );
@@ -57,15 +62,41 @@ const latestCanary = async (
   return newest?.[0] ?? null;
 };
 
+/**
+ * The token npm sends to `registry`, from the first .npmrc that has one, e.g.
+ * `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`
+ */
+export const registryToken = (
+  registry: string,
+  npmrcs: (string | null)[],
+  env: Record<string, string | undefined>
+) => {
+  const url = new URL(registry);
+  const key = `//${url.host}${url.pathname.replace(/\/*$/, "/")}:_authToken`;
+  for (const npmrc of npmrcs) {
+    for (const line of npmrc?.split(/\r?\n/) ?? []) {
+      const match = /^\s*([^=#;\s]+)\s*=\s*(.*?)\s*$/.exec(line);
+      if (match?.[1] !== key) continue;
+      const token = match[2].replace(
+        /\$\{([^}]+)\}/g,
+        (_, name) => env[name] ?? ""
+      );
+      if (token) return token;
+    }
+  }
+  return null;
+};
+
 /** Exact versions of the latest canaries, and the packages without one */
 export const resolveCanaries = async (
   fetchImpl: typeof fetch,
-  registry = DEFAULT_REGISTRY
+  registry = DEFAULT_REGISTRY,
+  token: string | null = null
 ) => {
   const found = await Promise.all(
     CANARY_PACKAGES.map(
       async (name) =>
-        [name, await latestCanary(fetchImpl, registry, name)] as const
+        [name, await latestCanary(fetchImpl, registry, name, token)] as const
     )
   );
   return {

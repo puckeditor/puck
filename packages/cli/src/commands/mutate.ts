@@ -18,7 +18,11 @@ import { FRAMEWORK_LABELS, SUPPORTED_FRAMEWORKS } from "../detect/framework";
 import { ADAPTERS, adapterFor } from "../frameworks";
 import type { LegacyScaffold } from "../frameworks/adapter";
 import { Planner } from "../plan/planner";
-import { DEFAULT_REGISTRY, resolveCanaries } from "../plan/canary";
+import {
+  DEFAULT_REGISTRY,
+  registryToken,
+  resolveCanaries,
+} from "../plan/canary";
 import { isTruthyEnv } from "../env/truthy";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
 import { planEnvWrite, planGitignore } from "../plan/env";
@@ -144,11 +148,19 @@ export const runMutation = async (
     : undefined;
 
   // --canary installs the latest canaries of Puck's packages
+  const registry = deps.env.npm_config_registry || DEFAULT_REGISTRY;
   const canary =
     flags.canary || isTruthyEnv(deps.env.PUCK_CANARY)
       ? await resolveCanaries(
           deps.fetch,
-          deps.env.npm_config_registry || DEFAULT_REGISTRY
+          registry,
+          registryToken(
+            registry,
+            [base, deps.homedir].map((dir) =>
+              vfs.readText(path.join(dir, ".npmrc"))
+            ),
+            deps.env
+          )
         )
       : null;
 

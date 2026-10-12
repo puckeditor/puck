@@ -207,6 +207,9 @@ export class FakeCloud {
   imports = 0;
   /** npm registry packuments, by package name */
   packuments: Record<string, object> = {};
+  /** Packuments only readable with npmToken, like unreleased plugins */
+  privatePackuments: Record<string, object> = {};
+  npmToken = "npm_SENTINEL_TOKEN";
 
   approveAll() {
     for (const session of this.sessions.values())
@@ -226,8 +229,12 @@ export class FakeCloud {
     });
 
     if (url.hostname === "registry.npmjs.org") {
+      const name = decodeURIComponent(url.pathname.slice(1));
       const packument =
-        this.packuments[decodeURIComponent(url.pathname.slice(1))];
+        this.packuments[name] ??
+        (headers.authorization === `Bearer ${this.npmToken}`
+          ? this.privatePackuments[name]
+          : undefined);
       return packument
         ? new Response(JSON.stringify(packument), { status: 200 })
         : new Response(JSON.stringify({ error: "Not found" }), {
