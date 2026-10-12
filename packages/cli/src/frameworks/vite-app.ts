@@ -14,6 +14,7 @@ import {
   CORE_PACKAGE,
   ENV_KEY,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -24,9 +25,11 @@ import {
 } from "../templates/pages";
 import { REQUIRE_SESSION } from "../templates/auth";
 import {
+  planAssetsPlugin,
   planAuthPlugin,
   planRouteAuth,
   warnLocalPages,
+  withAssetsPlugin,
   withAuthPlugin,
 } from "./pages-auth";
 import {
@@ -412,7 +415,7 @@ const ROOT = "src/puck/root.tsx";
 const EDITOR = "src/puck/editor.tsx";
 const PAGES_API = "server/puck/pages.ts";
 
-type Flags = { ai: boolean; pages: boolean; auth: boolean };
+type Flags = { ai: boolean; pages: boolean; auth: boolean; assets: boolean };
 
 /** Gates the recipe's editor behind Sign in with Puck */
 const gateRecipeRoot = (code: string) =>
@@ -432,7 +435,7 @@ const rootVariants = (p: Planner, info: ViteInfo) => ({
   to: locate(info)(ROOT),
   opts: viteRelocation(p, info),
   combos: flagCombos("pages", "auth"),
-  source: ({ pages, auth }: Omit<Flags, "ai">) => {
+  source: ({ pages, auth }: Pick<Flags, "pages" | "auth">) => {
     if (pages) return vitePagesRoot({ auth });
     const code = templateText(p.templates, "vite", ROOT);
     return auth ? gateRecipeRoot(code) : code;
@@ -444,12 +447,13 @@ const editorVariants = (p: Planner, info: ViteInfo) => ({
   from: EDITOR,
   to: locate(info)(EDITOR),
   opts: viteRelocation(p, info),
-  combos: flagCombos("ai", "pages", "auth"),
-  source: ({ ai, pages, auth }: Flags) => {
-    const code = pages
+  combos: flagCombos("ai", "pages", "auth", "assets"),
+  source: ({ ai, pages, auth, assets }: Flags) => {
+    let code = pages
       ? vitePagesEditor({ ai })
       : templateText(p.templates, ai ? "vite-ai" : "vite", EDITOR);
-    return auth ? withAuthPlugin(code, EDITOR) : code;
+    if (auth) code = withAuthPlugin(code, EDITOR);
+    return assets ? withAssetsPlugin(code, EDITOR) : code;
   },
 });
 
@@ -571,6 +575,21 @@ export const planViteAuth = (p: Planner, info: ViteInfo) => {
   }
 };
 
+/** Adds the asset library to the editor; the Cloud route serves it */
+export const planViteAssets = (p: Planner, info: ViteInfo) => {
+  planAssetsPlugin(p, locate(info)(EDITOR));
+  planOptimizeDeps(p, info, [PLUGIN_ASSETS_PACKAGE], "assets");
+
+  if (modeOf(p, info) === "external") {
+    p.warn(
+      "PUCK-CLI-W-EXTERNAL-ASSETS",
+      `Asset requests go to ${
+        p.backend?.url ?? "the server /api is proxied to"
+      }. Run \`npx @puckeditor/cli add assets\` in that server's project, so its Puck Cloud route serves them.`
+    );
+  }
+};
+
 export const viteAdapter: FrameworkAdapter<ViteInfo> = {
   recipe: (withAi) => (withAi ? "vite-ai" : "vite"),
   recipeCloudRoute: CLOUD_ROUTE,
@@ -605,6 +624,7 @@ export const viteAdapter: FrameworkAdapter<ViteInfo> = {
   planAi: planViteAi,
   planPages: planVitePages,
   planAuth: planViteAuth,
+  planAssets: planViteAssets,
   devUrl: "http://localhost:5173/edit",
   deployEnvWarning: `npm start runs server/prod.ts. Set ${ENV_KEY} in the environment wherever it runs.`,
 };

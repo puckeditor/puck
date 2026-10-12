@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { exists, read, run, tmpProject } from "./helpers/harness";
+import { viteMinimal } from "./helpers/fixtures";
 
 const KEY = ["--api-key", "sk-valid-key"];
 
@@ -61,6 +62,13 @@ const FRAMEWORKS = [
     editor: "src/routes/$.tsx",
     route: "src/routes/api/puck/$.ts",
     files: ["src/routes/$.tsx", "src/routes/puck.tsx", "src/lib/pages.ts"],
+    viteConfig: "vite.config.ts",
+  },
+  {
+    recipe: "vite",
+    editor: "src/puck/editor.tsx",
+    route: "server/puck/cloud.ts",
+    files: ["src/puck/editor.tsx", "src/puck/root.tsx"],
     viteConfig: "vite.config.ts",
   },
 ] as const;
@@ -160,6 +168,31 @@ describe("add assets", () => {
       expectSameFiles(assetsFirst, together, all);
       expectSameFiles(assetsLast, together, all);
     });
+  });
+
+  it("leaves a Vite app's Cloud route to a server elsewhere", async () => {
+    const root = tmpProject({ tree: viteMinimal() });
+    await run(
+      [
+        "add",
+        "editor",
+        "--backend",
+        "external",
+        "--backend-url",
+        "http://localhost:3000",
+        "--yes",
+        "--json",
+      ],
+      { cwd: root }
+    );
+    const { json } = await run(["add", "assets", "--yes", "--json"], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(exists(root, "server")).toBe(false);
+    expect(codes(json.warnings)).toContain("PUCK-CLI-W-EXTERNAL-ASSETS");
+    expect(json.assets).toEqual({ installed: true, configured: true });
   });
 
   it("asks for a manual edit in a customised editor", async () => {
