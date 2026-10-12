@@ -281,6 +281,13 @@ const serverPlanner = (id: "hono" | "express") => {
     );
   };
 
+  const planAssets = (p: Planner) => {
+    p.warn(
+      "PUCK-CLI-W-ASSETS-EDITOR",
+      "The Puck Cloud route now serves the asset library. Run `npx @puckeditor/cli add assets` in the editor's app too, to add it to the editor."
+    );
+  };
+
   const adapter: FrameworkAdapter<ServerInfo> = {
     kind: "server",
     recipe: (withAi) => (withAi ? aiRecipe : recipe),
@@ -327,6 +334,7 @@ const serverPlanner = (id: "hono" | "express") => {
     planAi: () => {},
     planPages,
     planAuth,
+    planAssets,
     devUrl: "http://localhost:3000/api/pages?path=/",
     deployEnvWarning: `Node doesn't load .env files in production. Set ${ENV_KEY} in the environment wherever the server runs.`,
   };

@@ -205,6 +205,26 @@ describe("add assets", () => {
     expect(json.assets).toEqual({ installed: true, configured: true });
   });
 
+  it.each(["hono", "express-ai"])(
+    "serves the asset library from the %s Cloud route",
+    async (recipe) => {
+      const root = tmpProject({ recipe });
+      const { json } = await run(["add", "assets", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(json.message).toBe("Set up Puck Cloud and Puck Assets.");
+      // The plugin goes in the editor's app
+      const { dependencies } = JSON.parse(read(root, "package.json"));
+      expect(dependencies["@puckeditor/cloud-client"]).toBe("^0.9.0-0");
+      expect(dependencies).not.toHaveProperty("@puckeditor/plugin-assets");
+      expect(read(root, "src/puck/cloud.ts")).toContain("puckHandler(");
+      expect(codes(json.warnings)).toContain("PUCK-CLI-W-ASSETS-EDITOR");
+      expect(json.assets).toEqual({ installed: true, configured: true });
+    }
+  );
+
   it("asks for a manual edit in a customised editor", async () => {
     const root = tmpProject({ recipe: "next" });
     const client = path.join(root, "app/puck/[...puckPath]/client.tsx");
