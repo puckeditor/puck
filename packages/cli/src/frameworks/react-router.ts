@@ -11,6 +11,7 @@ import {
   CORE_PACKAGE,
   MANUAL_INTEGRATION_DOCS_URL,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -38,9 +39,11 @@ import {
 } from "../templates/pages";
 import { reactRouterPuckAuth } from "../templates/auth";
 import {
+  planAssetsPlugin,
   planAuthPlugin,
   planRouteAuth,
   warnLocalPages,
+  withAssetsPlugin,
   withAuthPlugin,
 } from "./pages-auth";
 import { planOptimizeDeps } from "./vite";
@@ -389,24 +392,27 @@ const splatVariants = (p: Planner, info: ReactRouterInfo) => ({
   from: `app/${SPLAT}`,
   to: `${info.appDir}/${SPLAT}`,
   opts: rrRelocation(p, info),
-  combos: flagCombos("ai", "pages", "auth"),
+  combos: flagCombos("ai", "pages", "auth", "assets"),
   source: ({
     ai,
     pages,
     auth,
+    assets,
   }: {
     ai: boolean;
     pages: boolean;
     auth: boolean;
+    assets: boolean;
   }) => {
     // With Pages, the editor is in routes/puck.tsx
     if (pages) return reactRouterPagesSplat({ ai });
-    const code = templateText(
+    let code = templateText(
       p.templates,
       ai ? "react-router-ai" : "react-router",
       `app/${SPLAT}`
     );
-    return auth ? withAuthPlugin(gateRecipeSplat(code), SPLAT) : code;
+    if (auth) code = withAuthPlugin(gateRecipeSplat(code), SPLAT);
+    return assets ? withAssetsPlugin(code, SPLAT) : code;
   },
 });
 
@@ -415,10 +421,19 @@ const pagesEditorVariants = (p: Planner, info: ReactRouterInfo) => ({
   from: `app/${PAGES_EDITOR}`,
   to: `${info.appDir}/${PAGES_EDITOR}`,
   opts: rrRelocation(p, info),
-  combos: flagCombos("ai", "auth"),
-  source: ({ ai, auth }: { ai: boolean; auth: boolean }) => {
-    const code = reactRouterPagesEditor({ ai, auth });
-    return auth ? withAuthPlugin(code, PAGES_EDITOR) : code;
+  combos: flagCombos("ai", "auth", "assets"),
+  source: ({
+    ai,
+    auth,
+    assets,
+  }: {
+    ai: boolean;
+    auth: boolean;
+    assets: boolean;
+  }) => {
+    let code = reactRouterPagesEditor({ ai, auth });
+    if (auth) code = withAuthPlugin(code, PAGES_EDITOR);
+    return assets ? withAssetsPlugin(code, PAGES_EDITOR) : code;
   },
 });
 
@@ -439,13 +454,14 @@ export const planReactRouterPages = (p: Planner, info: ReactRouterInfo) => {
       snippet,
     });
 
-  let flags = { ai: false, auth: false };
+  // The editor moves to routes/puck.tsx with what it had
+  let flags = { ai: false, auth: false, assets: false };
   const splat = upgradeVariant(p, {
     ...splatVariants(p, info),
     want: { pages: true },
     capability: "pages",
     summary: `Render pages published in Puck Cloud in ${A}/${SPLAT}`,
-    onMatch: ({ ai, auth }) => (flags = { ai, auth }),
+    onMatch: ({ ai, auth, assets }) => (flags = { ai, auth, assets }),
   });
 
   if (splat === "customized" || splat === "missing") {
@@ -553,6 +569,16 @@ export const planReactRouterAuth = (p: Planner, info: ReactRouterInfo) => {
   planRouteAuth(p, "signIn", "auth");
 };
 
+/** Adds the asset library to the editor; the Cloud route serves it */
+export const planReactRouterAssets = (p: Planner, info: ReactRouterInfo) => {
+  const A = info.appDir;
+  // With Pages, the editor is its own route
+  const pagesEditor = p.vfs.exists(p.abs(`${A}/${PAGES_EDITOR}`));
+  planAssetsPlugin(p, `${A}/${pagesEditor ? PAGES_EDITOR : SPLAT}`);
+  planOptimizeDeps(p, info, [PLUGIN_ASSETS_PACKAGE], "assets");
+  planRouteAuth(p, "unowned", "assets");
+};
+
 const REACT_ROUTER_7 = "^7.18.0";
 
 /** What React Router 8 does by default, which stops 7 warning about each */
@@ -614,6 +640,7 @@ export const reactRouterAdapter: FrameworkAdapter<ReactRouterInfo> = {
   planAi: planReactRouterAi,
   planPages: planReactRouterPages,
   planAuth: planReactRouterAuth,
+  planAssets: planReactRouterAssets,
   devUrl: "http://localhost:5173/edit",
   deployEnvWarning:
     "react-router-serve doesn't load .env files. Set PUCK_API_KEY in the environment wherever the app runs in production.",
