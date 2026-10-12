@@ -17,9 +17,11 @@ import {
 } from "../templates/pages";
 import { astroPuckAuth } from "../templates/auth";
 import {
+  planAssetsPlugin,
   planAuthPlugin,
   planRouteAuth,
   warnLocalPages,
+  withAssetsPlugin,
   withAuthPlugin,
 } from "./pages-auth";
 import {
@@ -331,19 +333,20 @@ const PAGES_EDITOR = "src/pages/puck.astro";
 const PAGES_LIB = "src/lib/pages.ts";
 const PAGES_API = "src/pages/api/pages.ts";
 
-type Flags = { ai: boolean; pages: boolean; auth: boolean };
+type Flags = { ai: boolean; pages: boolean; auth: boolean; assets: boolean };
 
 /** Every version of editor.tsx the CLI writes */
 const editorVariants = (p: Planner) => ({
   from: EDITOR,
   to: EDITOR,
   opts: astroRelocation(p),
-  combos: flagCombos("ai", "pages", "auth"),
-  source: ({ ai, pages, auth }: Flags) => {
-    const code = pages
+  combos: flagCombos("ai", "pages", "auth", "assets"),
+  source: ({ ai, pages, auth, assets }: Flags) => {
+    let code = pages
       ? vitePagesEditor({ ai })
       : templateText(p.templates, ai ? "astro-ai" : "astro", EDITOR);
-    return auth ? withAuthPlugin(code, EDITOR) : code;
+    if (auth) code = withAuthPlugin(code, EDITOR);
+    return assets ? withAssetsPlugin(code, EDITOR) : code;
   },
 });
 
@@ -373,7 +376,7 @@ const catchAllVariants = (p: Planner) => ({
   to: CATCH_ALL_PAGE,
   opts: astroRelocation(p),
   combos: flagCombos("pages", "auth"),
-  source: ({ pages, auth }: Omit<Flags, "ai">) => {
+  source: ({ pages, auth }: Pick<Flags, "pages" | "auth">) => {
     // With Pages, the editor is in puck.astro
     if (pages) return ASTRO_PAGES_CATCH_ALL;
     const code = templateText(p.templates, "astro", CATCH_ALL_PAGE);
@@ -552,6 +555,21 @@ export const planAstroAuth = (p: Planner, info: AstroInfo) => {
   planAuthPlugin(p, EDITOR);
 };
 
+/** Adds the asset library to the editor; the Cloud route serves it */
+export const planAstroAssets = (p: Planner, info: AstroInfo) => {
+  const mode = modeOf(p, info);
+  if (mode !== "local" && mode !== "add") {
+    p.warn(
+      "PUCK-CLI-W-EXTERNAL-ASSETS",
+      `Asset requests go to ${
+        p.backend?.url ?? "the server /api is proxied to"
+      }. Run \`npx @puckeditor/cli add assets\` in that server's project, so its Puck Cloud route serves them.`
+    );
+  }
+
+  planAssetsPlugin(p, EDITOR);
+};
+
 export const astroAdapter: FrameworkAdapter<AstroInfo> = {
   recipe: (withAi) => (withAi ? "astro-ai" : "astro"),
   recipeCloudRoute: CLOUD_ROUTE,
@@ -578,6 +596,7 @@ export const astroAdapter: FrameworkAdapter<AstroInfo> = {
   planAi: (p) => planAstroAi(p),
   planPages: planAstroPages,
   planAuth: planAstroAuth,
+  planAssets: planAstroAssets,
   devUrl: "http://localhost:4321/edit",
   deployEnvWarning: `.env.local is only loaded in development. Set ${ENV_KEY} in the environment wherever the Astro server runs.`,
 };
