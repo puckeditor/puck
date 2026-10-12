@@ -156,6 +156,14 @@ const statusTable = (result: CommandResult) => {
         : pc.yellow("installed, not set up"),
     ]);
   }
+  if (result.assets?.installed) {
+    rows.push([
+      "Puck Assets",
+      result.assets.configured
+        ? pc.green("configured")
+        : pc.yellow("installed, not set up"),
+    ]);
+  }
   const width = Math.max(...rows.map(([k]) => k.length), 0) + 2;
   return rows.map(([k, v]) => `${k.padEnd(width)}${v}`);
 };

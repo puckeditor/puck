@@ -7,6 +7,7 @@ import { capabilityStatus, detectState } from "../detect/state";
 import {
   capabilityLabels,
   aiSummary,
+  assetsSummary,
   authSummary,
   pagesSummary,
   cloudSummary,
@@ -82,6 +83,7 @@ export const runStatus = async (rc: RunContext): Promise<CommandResult> => {
   result.ai = aiSummary(state);
   result.pages = pagesSummary(state);
   result.auth = authSummary(state);
+  result.assets = assetsSummary(state);
   result.warnings = ctx.warnings.map((message) => ({
     code: "PUCK-CLI-W-DETECTION",
     message,
@@ -106,8 +108,11 @@ export const runStatus = async (rc: RunContext): Promise<CommandResult> => {
     result.nextSteps = [`${CANONICAL_INVOCATION} doctor${where}`];
   }
 
-  // Pages are editable by anyone who can reach /api/puck until Auth is added
-  if (status.pages.satisfied && !status.auth.satisfied)
+  // Pages and assets are editable by anyone who can reach /api/puck until Auth is added
+  if (
+    (status.pages.satisfied || status.assets.satisfied) &&
+    !status.auth.satisfied
+  )
     result.nextSteps.push(`${CANONICAL_INVOCATION} add auth${where}`);
 
   if (target.note) result.nextSteps.unshift(`# ${target.note}`);

@@ -8,6 +8,7 @@ import { capabilityStatus, detectState } from "../detect/state";
 import { isIgnored } from "../env/gitignore";
 import {
   aiSummary,
+  assetsSummary,
   authSummary,
   pagesSummary,
   cloudSummary,
@@ -22,6 +23,7 @@ import {
   CLOUD_CLIENT_PACKAGE,
   ENV_KEY,
   MANUAL_INTEGRATION_DOCS_URL,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -399,13 +401,15 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
     }
   }
 
-  // Puck Pages and Puck Auth, once they're in use
+  // Puck Pages, Auth and Assets, once they're in use
   const usesPages =
     state.pages.pluginInstalled || state.scan.cloudPageFiles.length > 0;
   const usesAuth =
     state.auth.pluginInstalled || state.scan.signInFiles.length > 0;
+  const usesAssets =
+    state.assets.pluginInstalled || state.scan.assetsPluginFiles.length > 0;
   const plugin = (
-    capability: "pages" | "auth",
+    capability: "pages" | "auth" | "assets",
     pkg: string,
     factory: string,
     files: string[]
@@ -469,8 +473,33 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
     }
   }
 
-  // Pages and Sign in with Puck arrived in a newer cloud-client
-  if ((usesPages || usesAuth) && state.cloud.clientInstalled) {
+  if (usesAssets) {
+    plugin(
+      "assets",
+      PLUGIN_ASSETS_PACKAGE,
+      "createAssetsPlugin",
+      state.scan.assetsPluginFiles
+    );
+    if (!state.cloud.external) {
+      findings.push(
+        state.assets.routeAuthenticates
+          ? finding(
+              "assets.route",
+              "ok",
+              `${state.cloud.routeFile} passes authenticate to asset requests`
+            )
+          : finding(
+              "assets.route",
+              "fail",
+              "The Puck Cloud API route doesn't set authenticate, which asset requests need",
+              `${CANONICAL_INVOCATION} add assets${where}`
+            )
+      );
+    }
+  }
+
+  // Pages, Sign in with Puck and Assets arrived in a newer cloud-client
+  if ((usesPages || usesAuth || usesAssets) && state.cloud.clientInstalled) {
     const min = rc.deps.templates.manifest().cloudClientPagesRange;
     findings.push(
       atLeast(state.cloud.declaredRange, min)
@@ -482,7 +511,7 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
         : finding(
             "cloud.client_version",
             "fail",
-            `${CLOUD_CLIENT_PACKAGE} ${state.cloud.declaredRange} doesn't have Puck Pages or Sign in with Puck`,
+            `${CLOUD_CLIENT_PACKAGE} ${state.cloud.declaredRange} doesn't have Puck Pages, Sign in with Puck or Puck Assets`,
             `npm install ${CLOUD_CLIENT_PACKAGE}@${min}`
           )
     );
@@ -534,5 +563,6 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
   result.ai = aiSummary(state);
   result.pages = pagesSummary(state);
   result.auth = authSummary(state);
+  result.assets = assetsSummary(state);
   return finish();
 };
