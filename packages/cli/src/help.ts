@@ -10,9 +10,9 @@ export const COMMANDS = [
       "Set up Puck in this project or create a new app, optionally with Puck AI",
   },
   {
-    name: "add <editor|cloud|ai|pages|auth>",
+    name: "add <editor|cloud|ai|pages|auth|assets>",
     description:
-      "Add capabilities (ai, pages and auth include cloud, cloud includes editor)",
+      "Add capabilities (ai, pages, auth and assets include cloud, cloud includes editor)",
   },
   {
     name: "connect [branch]",
@@ -37,6 +37,11 @@ export const COMMANDS = [
     name: "pages import <file>",
     description:
       "Publish pages from a JSON file of Puck data keyed by route to Puck Cloud",
+  },
+  {
+    name: "assets migrate",
+    description:
+      "Switch image fields to the asset library, and turn saved URLs into assets",
   },
   {
     name: "telemetry [status|enable|disable]",
@@ -65,8 +70,9 @@ Flags:
   --workspace <name|dir>  Choose an app when run from a monorepo root
   --api-key <key>         Use an existing Puck API key (prefer PUCK_API_KEY=… in the environment)
   --no-env-write          Don't write PUCK_API_KEY to .env.local
-  --ai, --pages, --auth   Include only these of Puck AI, Pages and Auth (init)
-  --no-ai, --no-pages, --no-auth
+  --ai, --pages, --auth, --assets
+                          Include only these of Puck AI, Pages, Auth and Assets (init)
+  --no-ai, --no-pages, --no-auth, --no-assets
                           Include all of them except these (init)
   --editor-only           Include none of them (init)
   --canary                Install the latest canaries of Puck's packages (init, add;
@@ -79,6 +85,9 @@ Flags:
                           ${FRAMEWORK_IDS.join(", ")}
   --name <name>           Directory name for new apps (init)
   --package-manager <pnpm|npm|yarn|bun>
+  --field <Component.field>  A field to switch to the asset library, e.g.
+                          Hero.image; repeat for more (assets migrate)
+  --no-data               Leave saved pages alone (assets migrate)
 
 For agents:
   Every command prints exactly one JSON document with --json. When "status" is
