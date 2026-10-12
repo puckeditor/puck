@@ -74,7 +74,7 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
   /** Requires Sign in with Puck for the editor and the Cloud route */
   planAuth: (p: Planner, info: I) => void;
   /** Adds the Puck Assets library to the editor and serves it from the Cloud route */
-  planAssets?: (p: Planner, info: I) => void;
+  planAssets: (p: Planner, info: I) => void;
   devUrl: string;
   deployEnvWarning: string;
 }

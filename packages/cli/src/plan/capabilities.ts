@@ -5,7 +5,6 @@ import { adapterFor } from "../frameworks";
 import {
   CANONICAL_INVOCATION,
   CLOUD_CLIENT_PACKAGE,
-  DOCS_URL,
   PLUGIN_AI_PACKAGE,
   PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
@@ -62,19 +61,6 @@ const planCloudClientUpgrade = (p: Planner, capability: CapabilityId) => {
   if (atLeast(p.state.cloud.declaredRange, range)) return;
   p.addDependency(CLOUD_CLIENT_PACKAGE, range, capability);
 };
-
-/** Frameworks the CLI can't set a capability up in yet */
-const unsupported = (p: Planner, capability: CapabilityId) =>
-  p.manual({
-    id: `${capability}:unsupported`,
-    type: "manual_edit",
-    capability,
-    required: true,
-    file: p.state.scan.editorFiles[0] ?? p.state.puck.configFile ?? "",
-    reason: "unsupported_shape",
-    message: `The CLI can't set up ${capability} in this framework yet.`,
-    instructions: `Follow ${DOCS_URL} to set it up by hand.`,
-  });
 
 export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
   const framework = p.ctx.framework!;
@@ -185,8 +171,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
           "assets"
         );
       }
-      if (adapter.planAssets) adapter.planAssets(p, framework);
-      else unsupported(p, "assets");
+      adapter.planAssets(p, framework);
 
       if (!withAuth) {
         p.warn(
