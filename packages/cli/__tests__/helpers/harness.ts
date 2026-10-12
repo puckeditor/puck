@@ -28,6 +28,7 @@ export const testTemplates = new DirTemplateSource(RECIPES, {
       cloudClientPagesRange: templatesConfig.ranges.cloudClientPages,
       pluginPagesRange: templatesConfig.ranges.pluginPages,
       pluginAuthRange: templatesConfig.ranges.pluginAuth,
+      pluginAssetsRange: templatesConfig.ranges.pluginAssets,
     };
   },
 });

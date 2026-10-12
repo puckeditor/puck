@@ -37,6 +37,7 @@
   "ranges": {
     "cloudClientPages": "^0.9.0-0",
     "pluginPages": "^0.9.0-0",
-    "pluginAuth": "^0.9.0-0"
+    "pluginAuth": "^0.9.0-0",
+    "pluginAssets": "^0.9.0-0"
   }
 }

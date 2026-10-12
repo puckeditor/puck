@@ -64,15 +64,16 @@ const aiPkg = JSON.parse(
 const manifest = {
   cloudClientRange: aiPkg.dependencies["@puckeditor/cloud-client"],
   pluginAiRange: aiPkg.dependencies["@puckeditor/plugin-ai"],
-  // No recipe uses Puck Pages or Puck Auth yet
+  // No recipe uses Puck Pages, Puck Auth or Puck Assets yet
   // TODO: pin these to exact versions once Puck Cloud publishes cloud-client,
-  // plugin-pages and plugin-auth with puckCloud(), getPuckIdentity and
-  // puckHandler's auth option. ^0.9.0-0 matches canaries by their hash
-  // suffix, which semver sorts alphabetically, so it installs whichever hash
-  // sorts last rather than the newest build.
+  // plugin-pages, plugin-auth and plugin-assets with puckCloud(),
+  // getPuckIdentity and puckHandler's auth option. ^0.9.0-0 matches canaries
+  // by their hash suffix, which semver sorts alphabetically, so it installs
+  // whichever hash sorts last rather than the newest build.
   cloudClientPagesRange: config.ranges.cloudClientPages,
   pluginPagesRange: config.ranges.pluginPages,
   pluginAuthRange: config.ranges.pluginAuth,
+  pluginAssetsRange: config.ranges.pluginAssets,
 };
 fs.writeFileSync(
   path.join(outDir, "manifest.json"),

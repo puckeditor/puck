@@ -13,6 +13,7 @@ export const CLOUD_CLIENT_PACKAGE = "@puckeditor/cloud-client";
 export const PLUGIN_AI_PACKAGE = "@puckeditor/plugin-ai";
 export const PLUGIN_PAGES_PACKAGE = "@puckeditor/plugin-pages";
 export const PLUGIN_AUTH_PACKAGE = "@puckeditor/plugin-auth";
+export const PLUGIN_ASSETS_PACKAGE = "@puckeditor/plugin-assets";
 
 export const CANONICAL_INVOCATION = "npx @puckeditor/cli";
 
