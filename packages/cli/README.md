@@ -24,6 +24,7 @@ npx @puckeditor/cli add pages    # store and publish pages in Puck Cloud
 npx @puckeditor/cli add auth     # require Sign in with Puck to edit
 npx @puckeditor/cli add assets   # upload and manage images and files in Puck Cloud
 npx @puckeditor/cli pages import database.json  # publish pages to Puck Cloud
+npx @puckeditor/cli assets migrate  # switch image fields to the asset library
 npx @puckeditor/cli connect      # log in to Puck Cloud again for a new API key
 npx @puckeditor/cli connect preview  # ...for a branch of the project
 npx @puckeditor/cli status       # show what's set up
