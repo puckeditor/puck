@@ -56,6 +56,13 @@ const FRAMEWORKS = [
     files: ["app/routes/puck-splat.tsx", "app/routes/puck.tsx"],
     viteConfig: "vite.config.ts",
   },
+  {
+    recipe: "tanstack-start",
+    editor: "src/routes/$.tsx",
+    route: "src/routes/api/puck/$.ts",
+    files: ["src/routes/$.tsx", "src/routes/puck.tsx", "src/lib/pages.ts"],
+    viteConfig: "vite.config.ts",
+  },
 ] as const;
 
 describe("add assets", () => {

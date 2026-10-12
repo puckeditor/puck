@@ -24,6 +24,7 @@ import { planOptimizeDeps } from "./vite";
 import {
   CORE_PACKAGE,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -35,9 +36,11 @@ import {
 } from "../templates/pages";
 import { tanstackPuckAuth } from "../templates/auth";
 import {
+  planAssetsPlugin,
   planAuthPlugin,
   planRouteAuth,
   warnLocalPages,
+  withAssetsPlugin,
   withAuthPlugin,
 } from "./pages-auth";
 
@@ -278,23 +281,24 @@ const gateRecipePagesLib = (code: string) => {
   );
 };
 
-type Flags = { ai: boolean; pages: boolean; auth: boolean };
+type Flags = { ai: boolean; pages: boolean; auth: boolean; assets: boolean };
 
 /** Every version of $.tsx the CLI writes */
 const splatVariants = (p: Planner, info: TanStackStartInfo) => ({
   from: SPLAT,
   to: locate(info)(SPLAT),
   opts: tanstackRelocation(p, info),
-  combos: flagCombos("ai", "pages", "auth"),
-  source: ({ ai, pages, auth }: Flags) => {
+  combos: flagCombos("ai", "pages", "auth", "assets"),
+  source: ({ ai, pages, auth, assets }: Flags) => {
     // With Pages, the editor is in routes/puck.tsx
     if (pages) return TANSTACK_PAGES_SPLAT;
-    const code = templateText(
+    let code = templateText(
       p.templates,
       ai ? "tanstack-start-ai" : "tanstack-start",
       SPLAT
     );
-    return auth ? withAuthPlugin(code, SPLAT) : code;
+    if (auth) code = withAuthPlugin(code, SPLAT);
+    return assets ? withAssetsPlugin(code, SPLAT) : code;
   },
 });
 
@@ -304,7 +308,7 @@ const pagesLibVariants = (p: Planner, info: TanStackStartInfo) => ({
   to: locate(info)(PAGES_LIB),
   opts: tanstackRelocation(p, info),
   combos: flagCombos("pages", "auth"),
-  source: ({ pages, auth }: Omit<Flags, "ai">) => {
+  source: ({ pages, auth }: Pick<Flags, "pages" | "auth">) => {
     if (pages) return tanstackPagesLib;
     const code = templateText(p.templates, "tanstack-start", PAGES_LIB);
     return auth ? gateRecipePagesLib(code) : code;
@@ -316,10 +320,11 @@ const pagesEditorVariants = (p: Planner, info: TanStackStartInfo) => ({
   from: PAGES_EDITOR,
   to: locate(info)(PAGES_EDITOR),
   opts: tanstackRelocation(p, info),
-  combos: flagCombos("ai", "auth"),
-  source: ({ ai, auth }: Omit<Flags, "pages">) => {
-    const code = tanstackPagesEditor({ ai, auth });
-    return auth ? withAuthPlugin(code, PAGES_EDITOR) : code;
+  combos: flagCombos("ai", "auth", "assets"),
+  source: ({ ai, auth, assets }: Omit<Flags, "pages">) => {
+    let code = tanstackPagesEditor({ ai, auth });
+    if (auth) code = withAuthPlugin(code, PAGES_EDITOR);
+    return assets ? withAssetsPlugin(code, PAGES_EDITOR) : code;
   },
 });
 
@@ -362,12 +367,13 @@ export const planTanStackStartPages = (p: Planner, info: TanStackStartInfo) => {
     return ok;
   };
 
-  let flags = { ai: false, auth: false };
+  // The editor moves to routes/puck.tsx with what it had
+  let flags = { ai: false, auth: false, assets: false };
   const splat = upgrade(
     splatVariants(p, info),
     `Render pages published in Puck Cloud in ${to(SPLAT)}`,
     TANSTACK_PAGES_SPLAT,
-    ({ ai, auth }) => (flags = { ai, auth })
+    ({ ai, auth, assets }) => (flags = { ai, auth, assets })
   );
   // The recipe's $.tsx saves pages with them, so only once that's gone
   if (splat) {
@@ -482,6 +488,19 @@ export const planTanStackStartAuth = (p: Planner, info: TanStackStartInfo) => {
   planRouteAuth(p, "signIn", "auth");
 };
 
+/** Adds the asset library to the editor; the Cloud route serves it */
+export const planTanStackStartAssets = (
+  p: Planner,
+  info: TanStackStartInfo
+) => {
+  const to = locate(info);
+  // With Pages, the editor is its own route
+  const pagesEditor = p.vfs.exists(p.abs(to(PAGES_EDITOR)));
+  planAssetsPlugin(p, to(pagesEditor ? PAGES_EDITOR : SPLAT));
+  planOptimizeDeps(p, info, [PLUGIN_ASSETS_PACKAGE], "assets");
+  planRouteAuth(p, "unowned", "assets");
+};
+
 export const tanstackStartAdapter: FrameworkAdapter<TanStackStartInfo> = {
   recipe: (withAi) => (withAi ? "tanstack-start-ai" : "tanstack-start"),
   recipeCloudRoute: AI_ROUTE,
@@ -502,6 +521,7 @@ export const tanstackStartAdapter: FrameworkAdapter<TanStackStartInfo> = {
   planAi: planTanStackStartAi,
   planPages: planTanStackStartPages,
   planAuth: planTanStackStartAuth,
+  planAssets: planTanStackStartAssets,
   devUrl: "http://localhost:3000/edit",
   deployEnvWarning:
     "Set PUCK_API_KEY in your hosting provider's environment variables before deploying.",
