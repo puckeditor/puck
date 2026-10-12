@@ -245,6 +245,33 @@ describe("assets migrate", () => {
     ]);
   });
 
+  it("is suggested once Puck Assets is added, while image fields remain", async () => {
+    const root = tmpProject({ recipe: "next" });
+    fs.writeFileSync(path.join(root, "puck.config.tsx"), CONFIG);
+    const added = await run(["add", "assets", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+    expect(added.json.nextSteps).toContain(
+      "npx @puckeditor/cli assets migrate"
+    );
+    const status = await run(["status", "--json"], { cwd: root });
+    expect(status.json.nextSteps).toContain(
+      "npx @puckeditor/cli assets migrate"
+    );
+
+    await migrate(root, [
+      "--field",
+      "HeadingBlock.image",
+      "--field",
+      "HeadingBlock.background",
+      "--yes",
+    ]);
+    const after = await run(["status", "--json"], { cwd: root });
+    expect(after.json.nextSteps).not.toContain(
+      "npx @puckeditor/cli assets migrate"
+    );
+  });
+
   it("says when there are no image fields", async () => {
     const root = tmpProject({ recipe: "next" });
     await run(["add", "assets", "--yes", "--json", ...KEY], { cwd: root });

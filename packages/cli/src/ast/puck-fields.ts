@@ -273,3 +273,9 @@ export const assetCandidates = (fields: PuckField[]) =>
   fields.filter(
     (f) => (f.shape === "string" || f.shape === "object") && f.match
   );
+
+/** The fields to suggest in a config's code, or none when it can't be read */
+export const assetCandidatesIn = (code: string | null, filename: string) => {
+  const found = code === null ? null : findConfigObject(code, filename);
+  return found?.ok ? assetCandidates(listFields(code!, found)) : [];
+};
