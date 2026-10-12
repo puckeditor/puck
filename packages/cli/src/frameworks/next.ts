@@ -28,9 +28,11 @@ import {
 } from "../templates/pages";
 import { nextPuckAuth } from "../templates/auth";
 import {
+  planAssetsPlugin,
   planAuthPlugin,
   planRouteAuth,
   warnLocalPages,
+  withAssetsPlugin,
   withAuthPlugin,
 } from "./pages-auth";
 
@@ -388,7 +390,12 @@ const EDITOR_CLIENT = "app/puck/[...puckPath]/client.tsx";
 const EDITOR_PAGE = "app/puck/[...puckPath]/page.tsx";
 const RENDER_PAGE = "app/[...puckPath]/page.tsx";
 
-type EditorFlags = { ai: boolean; pages: boolean; auth: boolean };
+type EditorFlags = {
+  ai: boolean;
+  pages: boolean;
+  auth: boolean;
+  assets: boolean;
+};
 
 const recipeText = (p: Planner, ai: boolean, file: string) =>
   templateText(p.templates, ai ? "next-ai" : "next", file);
@@ -423,11 +430,12 @@ const EDITOR_SOURCES: Record<
 > = {
   [EDITOR_CLIENT]:
     (p) =>
-    ({ ai, pages, auth }) => {
-      const code = pages
+    ({ ai, pages, auth, assets }) => {
+      let code = pages
         ? nextPagesEditorClient({ ai })
         : recipeText(p, ai, EDITOR_CLIENT);
-      return auth ? withAuthPlugin(code, EDITOR_CLIENT) : code;
+      if (auth) code = withAuthPlugin(code, EDITOR_CLIENT);
+      return assets ? withAssetsPlugin(code, EDITOR_CLIENT) : code;
     },
   [EDITOR_PAGE]:
     (p) =>
@@ -456,7 +464,7 @@ const upgradeEditor = (
     from,
     to: from.replace(/^app\//, `${info.appDir}/`),
     opts: nextRelocation(p, info),
-    combos: flagCombos("ai", "pages", "auth"),
+    combos: flagCombos("ai", "pages", "auth", "assets"),
     source: EDITOR_SOURCES[from](p),
     want,
     capability,
@@ -595,6 +603,12 @@ await requirePuckSession("/puck");
   planRouteAuth(p, "signIn", "auth");
 };
 
+/** Adds the asset library to the editor; the Cloud route serves it */
+export const planNextAssets = (p: Planner, info: NextLikeInfo) => {
+  planAssetsPlugin(p, `${info.appDir}/puck/[...puckPath]/client.tsx`);
+  planRouteAuth(p, "unowned", "assets");
+};
+
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   recipe: (withAi) => (withAi ? "next-ai" : "next"),
   recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
@@ -614,6 +628,7 @@ export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   planAi: planNextAi,
   planPages: planNextPages,
   planAuth: planNextAuth,
+  planAssets: planNextAssets,
   devUrl: "http://localhost:3000/edit",
   deployEnvWarning:
     "Set PUCK_API_KEY in your hosting provider's environment variables before deploying.",
