@@ -19,7 +19,13 @@ export type CommandName =
 
 export type ResultStatus = "success" | "action_required" | "partial" | "error";
 
-export type CapabilityId = "editor" | "cloud" | "ai" | "pages" | "auth";
+export type CapabilityId =
+  | "editor"
+  | "cloud"
+  | "ai"
+  | "pages"
+  | "auth"
+  | "assets";
 
 export type KeySource =
   | "flag"
@@ -70,7 +76,7 @@ export type RequiredAction = ActionBase &
         /** Pick any number of choices, passing each one's flag, or `none` */
         type: "choose_capabilities";
         choices: {
-          value: "--ai" | "--pages" | "--auth";
+          value: "--ai" | "--pages" | "--auth" | "--assets";
           label: string;
           description: string;
           recommended: boolean;
@@ -177,6 +183,11 @@ export interface AuthSummary {
   configured: boolean;
 }
 
+export interface AssetsSummary {
+  installed: boolean;
+  configured: boolean;
+}
+
 export interface FrameworkSupport {
   /** The value for `--framework` */
   id: FrameworkId;
@@ -206,6 +217,7 @@ export interface CommandResult {
   ai: AiSummary | null;
   pages: PagesSummary | null;
   auth: AuthSummary | null;
+  assets: AssetsSummary | null;
   plan?: { steps: SerializedStep[] };
   filesModified: string[];
   filesCreated: string[];
@@ -261,6 +273,7 @@ export const emptyResult = (
   ai: null,
   pages: null,
   auth: null,
+  assets: null,
   filesModified: [],
   filesCreated: [],
   packagesInstalled: [],

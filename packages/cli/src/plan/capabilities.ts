@@ -5,7 +5,9 @@ import { adapterFor } from "../frameworks";
 import {
   CANONICAL_INVOCATION,
   CLOUD_CLIENT_PACKAGE,
+  DOCS_URL,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -13,7 +15,8 @@ import { atLeast } from "../detect/package-json";
 
 /**
  * In the order they're planned. Puck AI comes before Pages and Auth, which
- * rewrite the editor knowing whether it has AI.
+ * rewrite the editor knowing whether it has AI. Assets only adds its plugin,
+ * so it comes last.
  */
 export const CAPABILITY_IDS: CapabilityId[] = [
   "editor",
@@ -21,6 +24,7 @@ export const CAPABILITY_IDS: CapabilityId[] = [
   "ai",
   "pages",
   "auth",
+  "assets",
 ];
 
 const DEPENDS_ON: Record<CapabilityId, CapabilityId[]> = {
@@ -31,6 +35,8 @@ const DEPENDS_ON: Record<CapabilityId, CapabilityId[]> = {
   // Pages are stored in Puck Cloud, and Sign in with Puck is served by it
   pages: ["cloud"],
   auth: ["cloud"],
+  // Assets are uploaded to and served from Puck Cloud
+  assets: ["cloud"],
 };
 
 /** Warnings Puck Auth takes care of */
@@ -50,12 +56,25 @@ export const resolveCapabilities = (
   return CAPABILITY_IDS.filter((id) => resolved.has(id));
 };
 
-/** Pages and Sign in with Puck need a newer cloud-client than Puck AI */
+/** Pages, Sign in with Puck and Assets need a newer cloud-client than Puck AI */
 const planCloudClientUpgrade = (p: Planner, capability: CapabilityId) => {
   const range = p.templates.manifest().cloudClientPagesRange;
   if (atLeast(p.state.cloud.declaredRange, range)) return;
   p.addDependency(CLOUD_CLIENT_PACKAGE, range, capability);
 };
+
+/** Frameworks the CLI can't set a capability up in yet */
+const unsupported = (p: Planner, capability: CapabilityId) =>
+  p.manual({
+    id: `${capability}:unsupported`,
+    type: "manual_edit",
+    capability,
+    required: true,
+    file: p.state.scan.editorFiles[0] ?? p.state.puck.configFile ?? "",
+    reason: "unsupported_shape",
+    message: `The CLI can't set up ${capability} in this framework yet.`,
+    instructions: `Follow ${DOCS_URL} to set it up by hand.`,
+  });
 
 export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
   const framework = p.ctx.framework!;
@@ -83,10 +102,11 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
         );
         continue;
       }
-      // Pages and Auth install a newer cloud-client
-      const pagesOrAuth =
-        capabilities.includes("pages") || capabilities.includes("auth");
-      if (!p.state.cloud.clientInstalled && !pagesOrAuth) {
+      // Pages, Auth and Assets install a newer cloud-client
+      const newerClient = (["pages", "auth", "assets"] as const).some((c) =>
+        capabilities.includes(c)
+      );
+      if (!p.state.cloud.clientInstalled && !newerClient) {
         p.addDependency(
           CLOUD_CLIENT_PACKAGE,
           p.templates.manifest().cloudClientRange,
@@ -151,6 +171,27 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
         p.warn(
           "PUCK-CLI-W-LOCAL-SAVE-PUBLIC",
           `Sign in with Puck protects the editor and Puck Cloud, but the editor still saves pages through your own route, which anyone can call. Store pages in Puck Cloud with \`${CANONICAL_INVOCATION} add pages\`, or protect that route.`
+        );
+      }
+    }
+
+    if (id === "assets") {
+      if (status.assets.satisfied) continue;
+      planCloudClientUpgrade(p, "assets");
+      if (adapter.kind !== "server" && !p.state.assets.pluginInstalled) {
+        p.addDependency(
+          PLUGIN_ASSETS_PACKAGE,
+          p.templates.manifest().pluginAssetsRange,
+          "assets"
+        );
+      }
+      if (adapter.planAssets) adapter.planAssets(p, framework);
+      else unsupported(p, "assets");
+
+      if (!withAuth) {
+        p.warn(
+          "PUCK-CLI-W-ASSETS-UNAUTHENTICATED",
+          `Anyone who can reach /api/puck can upload, replace and delete assets in Puck Cloud using your API key. Add Sign in with Puck with \`${CANONICAL_INVOCATION} add auth\` before deploying.`
         );
       }
     }

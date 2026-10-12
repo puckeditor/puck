@@ -7,6 +7,7 @@ import {
   CORE_PACKAGE,
   LEGACY_CORE_PACKAGE,
   PLUGIN_AI_PACKAGE,
+  PLUGIN_ASSETS_PACKAGE,
   PLUGIN_AUTH_PACKAGE,
   PLUGIN_PAGES_PACKAGE,
 } from "../constants";
@@ -65,6 +66,12 @@ export interface ProjectState {
     /** The Cloud route requires Sign in with Puck */
     routeAuthenticated: boolean;
   };
+  assets: {
+    pluginInstalled: boolean;
+    declaredRange: string | null;
+    /** The Cloud route passes the authenticate asset requests need */
+    routeAuthenticates: boolean;
+  };
 }
 
 const findConfig = (vfs: Vfs, ctx: ProjectContext, configFlag?: string) => {
@@ -117,6 +124,10 @@ export const detectState = (
       )
     : null;
 
+  const routeCode = route?.routeFile
+    ? vfs.readText(path.join(ctx.root, route.routeFile))
+    : null;
+
   const envDir = envDirFor(ctx);
   const apiKey = findApiKey(vfs, envDir, env);
   const gitignoreRoot = ctx.gitRoot ?? ctx.workspace?.root ?? ctx.root;
@@ -162,6 +173,13 @@ export const detectState = (
       declaredRange: ctx.deps[PLUGIN_AUTH_PACKAGE] ?? null,
       routeAuthenticated: Boolean(
         route?.routeFile && scan.signInFiles.includes(route.routeFile)
+      ),
+    },
+    assets: {
+      pluginInstalled: PLUGIN_ASSETS_PACKAGE in ctx.deps,
+      declaredRange: ctx.deps[PLUGIN_ASSETS_PACKAGE] ?? null,
+      routeAuthenticates: Boolean(
+        routeCode && /\bauthenticate\b/.test(routeCode)
       ),
     },
   };
@@ -232,11 +250,24 @@ export const capabilityStatus = (
   if (!state.cloud.external && !state.auth.routeAuthenticated)
     authMissing.push("The Puck Cloud API route doesn't use Sign in with Puck");
 
+  // Like Auth, a server only serves the routes; the plugin is in the editor
+  const assetsMissing: string[] =
+    state.target === "server" ? [...cloudMissing] : [];
+  if (state.target === "app") {
+    if (!state.assets.pluginInstalled)
+      assetsMissing.push(`${PLUGIN_ASSETS_PACKAGE} is not installed`);
+    if (state.scan.assetsPluginFiles.length === 0)
+      assetsMissing.push("The Puck Assets plugin isn't added to the editor");
+  }
+  if (!state.cloud.external && !state.assets.routeAuthenticates)
+    assetsMissing.push("The Puck Cloud API route doesn't set authenticate");
+
   return {
     editor: { satisfied: editorMissing.length === 0, missing: editorMissing },
     cloud: { satisfied: cloudMissing.length === 0, missing: cloudMissing },
     ai: { satisfied: aiMissing.length === 0, missing: aiMissing },
     pages: { satisfied: pagesMissing.length === 0, missing: pagesMissing },
     auth: { satisfied: authMissing.length === 0, missing: authMissing },
+    assets: { satisfied: assetsMissing.length === 0, missing: assetsMissing },
   };
 };

@@ -34,6 +34,7 @@ import { resolveCredential, CredentialResolution } from "../auth/credentials";
 import { applyPlan } from "../apply/applier";
 import {
   aiSummary,
+  assetsSummary,
   authSummary,
   pagesSummary,
   capabilityLabels,
@@ -231,6 +232,7 @@ export const runMutation = async (
     result.ai = aiSummary(state);
     result.pages = pagesSummary(state);
     result.auth = authSummary(state);
+    result.assets = assetsSummary(state);
   };
 
   const finishWithoutChanges = (
@@ -423,6 +425,7 @@ export const runMutation = async (
   result.ai = aiSummary(verifiedState);
   result.pages = pagesSummary(verifiedState);
   result.auth = authSummary(verifiedState);
+  result.assets = assetsSummary(verifiedState);
   result.plan = { steps: serializeSteps(base, planner.steps) };
   result.changed = planner.steps.length > 0;
   result.filesCreated = outcome.created.map((f) => displayPath(base, f)).sort();
@@ -464,8 +467,8 @@ export const runMutation = async (
     `# then open ${adapterFor(verifiedCtx.framework ?? ctx.framework!).devUrl}`,
   ];
 
-  // Puck AI and Puck Pages are what an editor uses Puck Cloud for
-  const usesCloud = (["ai", "pages"] as const).some(
+  // Puck AI, Pages and Assets are what an editor uses Puck Cloud for
+  const usesCloud = (["ai", "pages", "assets"] as const).some(
     (c) => capabilities.includes(c) || status[c].satisfied
   );
   if (wantsCloud && !usesCloud) {
