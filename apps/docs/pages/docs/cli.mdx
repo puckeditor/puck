@@ -115,6 +115,7 @@ Start with `npx @puckeditor/cli status --json` to see what's already set up and 
 | `provide_api_key`          | Ask for a Puck API key, then re-run with `PUCK_API_KEY` set                                                                          |
 | `confirm_plan`             | Review `plan.steps`, then re-run with `--yes`                                                                                        |
 | `choose_capabilities`      | Ask the developer which of `choices` to add, then re-run `init` with each one's flag, or `none` (`--editor-only`) for none           |
+| `choose_fields`            | Ask the developer which of `choices` to switch, then re-run with `--field` and each one's `value`                                    |
 | `choose_backend`           | Ask the developer, then re-run with `--backend add`, `--backend external --backend-url <url>` or `--backend none`                    |
 | `choose_framework`         | Re-run `init` with `--framework` and one of `next`, `react-router`, `tanstack-start`, `vinext`, `vite`, `astro`, `hono` or `express` |
 | `provide_app_name`         | Re-run `init` with `--name <name>`                                                                                                   |
@@ -165,6 +166,7 @@ npx skills add puckeditor/skills --skill puck
 | `add auth`            | Require Sign in with Puck to edit (adds Puck Cloud first if needed)                |
 | `add assets`          | Upload and manage images and files in Puck Cloud (adds Puck Cloud first if needed) |
 | `pages import <file>` | Publish pages from a JSON file to Puck Cloud                                       |
+| `assets migrate`      | Switch image fields to the asset library, and turn saved URLs into assets          |
 | `connect [branch]`    | Log in to Puck Cloud again and replace `PUCK_API_KEY`, optionally for a branch     |
 | `status`              | Show what's installed and configured                                               |
 | `doctor`              | Diagnose problems and suggest fixes. Never makes changes                           |
@@ -193,6 +195,8 @@ npx skills add puckeditor/skills --skill puck
 | `--framework <name>`                                | Framework for a new app: `next`, `react-router`, `tanstack-start`, `vinext`, `vite`, `astro`, `hono` or `express`                                                                                            |
 | `--name <name>`                                     | Directory for a new app                                                                                                                                                                                      |
 | `--package-manager <name>`                          | Override the detected package manager                                                                                                                                                                        |
+| `--field <Component.field>`                         | A field to switch to the asset library; repeat for more (`assets migrate`)                                                                                                                                   |
+| `--no-data`                                         | Leave saved pages alone (`assets migrate`)                                                                                                                                                                   |
 | `--offline`                                         | Skip the Puck Cloud connection check (`doctor`)                                                                                                                                                              |
 
 ## API keys
@@ -269,9 +273,27 @@ Members sign in to the API key's project and edit its branch. Set `PUCK_API_KEY`
 - `@puckeditor/cloud-client` is updated to a version that serves the library from the `/api/puck` route
 - In Vite apps, the plugin is prebundled in `vite.config`
 
-Fields don't use the library until they're switched to `assetField()` from `@puckeditor/plugin-assets`. Switch existing image fields with `assets migrate`.
+Fields don't use the library until they're switched to `assetField()` from `@puckeditor/plugin-assets`. Switch existing image fields with [`assets migrate`](#migrating-image-fields).
 
 Until you add [Puck Auth](#puck-auth), anyone who can reach `/api/puck` can upload, replace and delete assets using your API key. On a Hono or Express server, `add assets` only changes the Cloud route, so run it in the editor's app too.
+
+### Migrating image fields
+
+```sh copy
+npx @puckeditor/cli assets migrate
+```
+
+`assets migrate` switches fields in your Puck config to `assetField()`. It suggests text, textarea and `{ src }` object fields whose names suggest an image or video, like `image`, `logo` or `poster`, and asks which to switch. Pass `--field <Component.field>` for each field to choose up front, e.g. `--field Hero.image` or `--field Logos.items[].logo`, or `root.ogImage` for root fields. Agents get a `choose_fields` action.
+
+A field that held a URL now holds `{ src, alt, ... }`, so for each one the CLI also:
+
+- Changes `"url"` defaults to `{ src: "url" }`, and the field's props type to `AssetValue`
+- Reads the URL in its `render` with an `assetSrc()` helper, which also accepts URLs saved before the switch. Renders that pass their props to another component are left for you, with the code to add
+- Turns saved URLs into assets in `database.json` and, with [Puck Pages](#puck-pages), in every page on the API key's branch in Puck Cloud. Each page is saved as new versions: the published version is republished, and a newer draft stays the latest version
+
+Pass `--no-data` to leave saved pages alone. `{ src }` object fields already have an asset's shape, so only the field changes.
+
+If Puck Cloud fails part way, the status is `partial` and `assetsMigrate.pages.failed` lists the pages left. Run the command again to migrate them. Fields and values that are already assets are left alone.
 
 ## Telemetry
 
