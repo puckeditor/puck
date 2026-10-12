@@ -28,6 +28,8 @@ export interface Flags {
   noPages: boolean;
   auth: boolean;
   noAuth: boolean;
+  assets: boolean;
+  noAssets: boolean;
   editorOnly: boolean;
   canary: boolean;
   backend?: BackendChoice;
@@ -67,6 +69,8 @@ const OPTIONS = {
   "no-pages": { type: "boolean" },
   auth: { type: "boolean" },
   "no-auth": { type: "boolean" },
+  assets: { type: "boolean" },
+  "no-assets": { type: "boolean" },
   "editor-only": { type: "boolean" },
   canary: { type: "boolean" },
   backend: { type: "string" },
@@ -106,6 +110,8 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
     "no-pages",
     "auth",
     "no-auth",
+    "assets",
+    "no-assets",
     "editor-only",
     "canary",
   ],
@@ -210,7 +216,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     );
   }
 
-  for (const name of ["ai", "pages", "auth"]) {
+  for (const name of ["ai", "pages", "auth", "assets"]) {
     if (values[name] && values[`no-${name}`]) {
       throw new CliError(
         "PUCK-CLI-INVALID-ARGS",
@@ -250,6 +256,8 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       noPages: Boolean(values["no-pages"]),
       auth: Boolean(values.auth),
       noAuth: Boolean(values["no-auth"]),
+      assets: Boolean(values.assets),
+      noAssets: Boolean(values["no-assets"]),
       editorOnly: Boolean(values["editor-only"]),
       canary: Boolean(values.canary),
       backend: backend as BackendChoice | undefined,

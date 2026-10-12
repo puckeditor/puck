@@ -172,10 +172,15 @@ describe("init with Puck AI", () => {
             label: "Puck Auth",
             recommended: true,
           }),
+          expect.objectContaining({
+            value: "--assets",
+            label: "Puck Assets",
+            recommended: true,
+          }),
         ],
         none: "--editor-only",
         rerun:
-          "npx @puckeditor/cli init --yes --json [--ai] [--pages] [--auth]",
+          "npx @puckeditor/cli init --yes --json [--ai] [--pages] [--auth] [--assets]",
       }),
     ]);
     expect(treeSnapshot(root)).toEqual(before);

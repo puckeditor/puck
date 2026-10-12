@@ -39,7 +39,7 @@ const validateName = (name: string) => {
   }
 };
 
-type Extra = "ai" | "pages" | "auth";
+type Extra = "ai" | "pages" | "auth" | "assets";
 
 const EXTRAS: Record<
   "app" | "server",
@@ -61,6 +61,11 @@ const EXTRAS: Record<
       name: "Puck Auth",
       description: "Require Sign in with Puck to edit",
     },
+    {
+      value: "assets",
+      name: "Puck Assets",
+      description: "Upload and manage images and files in Puck Cloud",
+    },
   ],
   server: [
     {
@@ -78,20 +83,36 @@ const EXTRAS: Record<
       name: "Puck Auth",
       description: "Require Sign in with Puck for Puck Cloud requests",
     },
+    {
+      value: "assets",
+      name: "Puck Assets",
+      description: "Serve the asset library from Puck Cloud for your editor",
+    },
   ],
 };
 
-const EXTRA_IDS: Extra[] = ["ai", "pages", "auth"];
+const EXTRA_IDS: Extra[] = ["ai", "pages", "auth", "assets"];
 
 /**
- * Which of Puck AI, Pages and Auth the flags choose, or null when they don't
- * say. All three are included by default, like the checkboxes:
- * --editor-only leaves out all of them, --ai, --pages and --auth pick exactly
- * those, and --no-ai, --no-pages and --no-auth drop one from the default.
+ * Which of Puck AI, Pages, Auth and Assets the flags choose, or null when they
+ * don't say. All of them are included by default, like the checkboxes:
+ * --editor-only leaves out all of them, --ai, --pages, --auth and --assets
+ * pick exactly those, and --no-ai, --no-pages, --no-auth and --no-assets drop
+ * one from the default.
  */
 const chosenByFlags = ({ flags }: RunContext): Extra[] | null => {
-  const on = { ai: flags.ai, pages: flags.pages, auth: flags.auth };
-  const off = { ai: flags.noAi, pages: flags.noPages, auth: flags.noAuth };
+  const on = {
+    ai: flags.ai,
+    pages: flags.pages,
+    auth: flags.auth,
+    assets: flags.assets,
+  };
+  const off = {
+    ai: flags.noAi,
+    pages: flags.noPages,
+    auth: flags.noAuth,
+    assets: flags.noAssets,
+  };
   if (flags.editorOnly) return [];
   if (EXTRA_IDS.some((id) => on[id])) return EXTRA_IDS.filter((id) => on[id]);
   if (EXTRA_IDS.some((id) => off[id]))
@@ -100,7 +121,7 @@ const chosenByFlags = ({ flags }: RunContext): Extra[] | null => {
 };
 
 /**
- * Puck AI, Pages and Auth are optional. Each needs Puck Cloud, which
+ * Puck AI, Pages, Auth and Assets are optional. Each needs Puck Cloud, which
  * resolveCapabilities pulls in, so Cloud isn't offered on its own. Returns
  * null when the developer has to choose and can't be prompted.
  */
@@ -123,7 +144,7 @@ const chooseCapabilities = async (
   return ["editor", ...checked];
 };
 
-const CAPABILITY_FLAGS = "[--ai] [--pages] [--auth]";
+const CAPABILITY_FLAGS = "[--ai] [--pages] [--auth] [--assets]";
 
 const capabilitiesAction = (server = false): RequiredAction => ({
   id: "init:capabilities",

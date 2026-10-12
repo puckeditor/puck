@@ -40,11 +40,16 @@ describe("init", () => {
         { value: "express" },
       ],
       rerun: expect.stringContaining(
-        "--framework <next|react-router|tanstack-start|vinext|vite|astro|hono|express> --name <name> [--ai] [--pages] [--auth]"
+        "--framework <next|react-router|tanstack-start|vinext|vite|astro|hono|express> --name <name> [--ai] [--pages] [--auth] [--assets]"
       ),
     });
     expect(json.actions[2]).toMatchObject({
-      choices: [{ value: "--ai" }, { value: "--pages" }, { value: "--auth" }],
+      choices: [
+        { value: "--ai" },
+        { value: "--pages" },
+        { value: "--auth" },
+        { value: "--assets" },
+      ],
       none: "--editor-only",
     });
     expect(treeSnapshot(root)).toEqual(before);

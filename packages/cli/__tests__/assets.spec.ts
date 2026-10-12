@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { exists, read, run, tmpProject } from "./helpers/harness";
-import { viteMinimal } from "./helpers/fixtures";
+import { nextMinimal, viteMinimal } from "./helpers/fixtures";
 
 const KEY = ["--api-key", "sk-valid-key"];
 
@@ -257,4 +257,66 @@ export function Client() {
       })
     );
   });
+});
+
+describe("init --assets", () => {
+  it("scaffolds an app with the asset library", async () => {
+    const root = tmpProject("empty");
+    const { json } = await run(
+      [
+        "init",
+        "--assets",
+        "--framework",
+        "next",
+        "--name",
+        "site",
+        "--yes",
+        "--json",
+        ...KEY,
+      ],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(json.message).toBe(
+      "Set up Puck Editor, Puck Cloud and Puck Assets."
+    );
+    const app = path.join(root, "site");
+    expect(JSON.parse(read(app, "package.json")).dependencies).toMatchObject({
+      "@puckeditor/cloud-client": "^0.9.0-0",
+      "@puckeditor/plugin-assets": "^0.9.0-0",
+    });
+    expect(read(app, "app/puck/[...puckPath]/client.tsx")).toContain(
+      "plugins={[assetsPlugin]}"
+    );
+    expect(json.assets).toEqual({ installed: true, configured: true });
+  });
+
+  it("is included by default, and left out with --no-assets", async () => {
+    const all = tmpProject({ tree: nextMinimal() });
+    const { json } = await run(["init", "--no-ai", "--yes", "--json", ...KEY], {
+      cwd: all,
+    });
+    expect(json.status).toBe("success");
+    expect(json.assets).toEqual({ installed: true, configured: true });
+
+    const without = tmpProject({ tree: nextMinimal() });
+    const none = await run(["init", "--no-assets", "--yes", "--json", ...KEY], {
+      cwd: without,
+    });
+    expect(none.json.status).toBe("success");
+    expect(none.json.assets).toMatchObject({ installed: false });
+    expect(none.json.pages).toMatchObject({ installed: true });
+  });
+
+  it.each([[["--assets", "--no-assets"]], [["--assets", "--editor-only"]]])(
+    "rejects %j",
+    async (flags) => {
+      const { json, code } = await run(["init", ...flags, "--json"], {
+        cwd: tmpProject({ tree: nextMinimal() }),
+      });
+      expect(code).toBe(2);
+      expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+    }
+  );
 });

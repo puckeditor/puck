@@ -77,6 +77,11 @@ describe("servers (Hono and Express)", () => {
           value: "--auth",
           description: "Require Sign in with Puck for Puck Cloud requests",
         },
+        {
+          value: "--assets",
+          description:
+            "Serve the asset library from Puck Cloud for your editor",
+        },
       ],
     });
   });
