@@ -383,3 +383,8 @@ export function useAppStore<T>(selector: (state: AppStore) => T) {
 export function useAppStoreApi() {
   return useContext(appStoreContext) ?? getDefaultAppStore();
 }
+
+/** Returns true if the component is rendered within a appStore provider, false otherwise. */
+export function useIsWithinPuck() {
+  return useContext(appStoreContext) !== null;
+}

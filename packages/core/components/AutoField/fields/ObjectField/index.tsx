@@ -17,6 +17,8 @@ export const ObjectField = ({
   labelIcon,
   Label,
   readOnly,
+  expanded,
+  onToggle,
 }: FieldPropsInternal) => {
   const name = fieldName ?? id;
 
@@ -53,7 +55,13 @@ export const ObjectField = ({
   }
 
   return (
-    <FieldGroupInternal {...labelProps} Label={Label} variant={field.variant}>
+    <FieldGroupInternal
+      {...labelProps}
+      Label={Label}
+      variant={field.variant}
+      expanded={expanded}
+      onToggle={onToggle}
+    >
       {subNames.map((subName) => {
         const subField = field.objectFields![subName];
         const subPath = `${localName}.${subName}`;
