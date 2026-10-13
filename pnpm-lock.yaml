@@ -13,7 +13,7 @@ overrides:
   lerna>js-yaml: 4.3.1
   postcss: ^8.5.23
   axios: ^1.18.0
-  nx>brace-expansion: ^5.0.9
+  nx>brace-expansion: ^5.0.10
   qs: ^6.16.0
   '@xmldom/xmldom': ^0.9.12
   pacote: ^21.5.1
