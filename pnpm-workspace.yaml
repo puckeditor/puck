@@ -28,7 +28,7 @@ overrides:
   "lerna>js-yaml": "4.3.1"
   postcss: "^8.5.23"
   axios: "^1.18.0"
-  "nx>brace-expansion": "^5.0.9"
+  "nx>brace-expansion": "^5.0.10" # GHSA-6j4f-fj2g-mc7p (nx's minimatch otherwise resolves a stale 5.0.5)
   qs: "^6.16.0" # GHSA-4mjr-xmp4-gh2g, GHSA-x5fp-wj9c-mxmx (via express)
   "@xmldom/xmldom": "^0.9.12" # GHSA-6gmq-8vp8-gcm6 (via docs mathjax tooling)
   pacote: "^21.5.1" # GHSA-w4pp-8pjf-rmxw (via lerna release tooling)
