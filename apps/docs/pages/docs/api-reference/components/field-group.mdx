@@ -58,6 +58,7 @@ export function Editor() {
 | ----------------------- | ------------------------ | ---------------------------- | ------ |
 | [`children`](#children) | `children: <div />`      | ReactNode                    | -      |
 | [`icon`](#icon)         | `icon: <svg />`          | ReactNode                    | -      |
+| [`id`](#id)             | `id: "appearance"`       | String                       | -      |
 | [`label`](#label)       | `label: "Appearance"`    | String                       | -      |
 | [`variant`](#variant)   | `variant: "collapsible"` | "contained" \| "collapsible" | -      |
 
@@ -70,6 +71,10 @@ The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](
 ### `icon`
 
 Render an icon before the label text. Puck uses [lucide-react](https://lucide.dev/guide/packages/lucide-react) internally.
+
+### `id`
+
+An optional ID for this group, used as the key in [`ui.fieldGroupExpanded`](/docs/api-reference/data-model/app-state#uifieldgroupexpanded). This prop has no effect outside `<Puck>`.
 
 ### `label`
 

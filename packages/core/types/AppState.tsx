@@ -39,6 +39,7 @@ export type UiState = {
     controlsVisible: boolean;
     options: Viewport[];
   };
+  fieldGroupExpanded: Record<string, boolean>;
   field: { focus?: string | null; metadata?: Record<string, any> };
   plugin: {
     current: string | null;
