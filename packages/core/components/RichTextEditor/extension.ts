@@ -167,8 +167,8 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
     const extensions = [];
 
     const options: Partial<PuckRichTextOptions> = {
-      ...this.options,
       ...defaultPuckRichTextOptions,
+      ...this.options,
     };
 
     if (options.bold !== false) {
