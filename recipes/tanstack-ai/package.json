@@ -1,7 +1,6 @@
 {
   "name": "tanstack-ai-recipe",
   "private": true,
-  "sideEffects": false,
   "type": "module",
   "scripts": {
     "dev": "vite dev",
