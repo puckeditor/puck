@@ -14,22 +14,22 @@
     "@puckeditor/cloud-client": "^0",
     "@puckeditor/plugin-ai": "^0",
     "@tanstack/react-devtools": "^0.9.5",
-    "@tanstack/react-router": "^1.159.5",
+    "@tanstack/react-router": "^1.170.44",
     "@tanstack/react-router-devtools": "^1.159.5",
-    "@tanstack/react-start": "^1.159.5",
+    "@tanstack/react-start": "^1.169.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "srvx": "^1.0.4"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "^0.5.1",
+    "@tanstack/devtools-vite": "^0.8.5",
     "@tanstack/eslint-config": "^0.3.4",
     "@types/node": "^20",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^6",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite": "^8",
+    "vite-tsconfig-paths": "^6"
   }
 }
