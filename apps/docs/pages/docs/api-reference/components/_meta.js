@@ -8,6 +8,8 @@ const menu = {
   drawer: {},
   "drawer-item": {},
   "drop-zone": {},
+  "field-group": {},
+  "field-group-item": {},
   "field-label": {},
   "inline-text-field": {},
   puck: {},
