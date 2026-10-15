@@ -81,7 +81,11 @@ export const Hero: ComponentConfig<{
       },
       getItemSummary: (item) => item.label,
     },
-    title: { type: "text", contentEditable: true },
+    title: {
+      type: "text",
+      contentEditable: true,
+      placeholder: "Enter a title",
+    },
     description: {
       ...heroRenderFields.description,
       contentEditable: true,
@@ -174,7 +178,7 @@ export const Hero: ComponentConfig<{
     padding: { type: "userField", option: true },
   },
   defaultProps: {
-    title: "Hero",
+    title: "",
     align: "left",
     description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],

@@ -11,6 +11,7 @@ export const getInlineTextTransform = (): FieldTransforms => ({
           value={value}
           opts={{ disableLineBreaks: true }}
           isReadOnly={isReadOnly}
+          placeholder={field.placeholder}
         />
       );
     }
@@ -25,6 +26,7 @@ export const getInlineTextTransform = (): FieldTransforms => ({
           componentId={componentId}
           value={value}
           isReadOnly={isReadOnly}
+          placeholder={field.placeholder}
         />
       );
     }
