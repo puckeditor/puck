@@ -13,6 +13,10 @@
   padding-top: var(--puck-space-2);
 }
 
+.FieldsPlugin-header:has(+ * [data-puck-tablist]) {
+  border-bottom: none;
+}
+
 @media (min-width: 638px) {
   .FieldsPlugin-header {
     padding: var(--puck-space-4);

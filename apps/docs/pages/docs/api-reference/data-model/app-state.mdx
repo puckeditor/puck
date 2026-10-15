@@ -27,6 +27,7 @@ The current state of the Puck editor interface.
 | [`componentList`](#uicomponentlist)             | `{ typography: { components: [ "HeadingBlock" ] } }`  | Object                        |
 | [`field.focus`](#fieldfocus)                    | `"title"`                                             | String                        |
 | [`fieldGroupExpanded`](#uifieldgroupexpanded)   | `{ appearance: true }`                                | Object                        |
+| [`fieldTab`](#uifieldtab)                       | `"style"`                                             | String \| Number              |
 | [`isDragging`](#isdragging)                     | `false`                                               | Boolean                       |
 | [`itemSelector`](#uiitemselector)               | `{ index: 0, zone: "my-content" }`                    | [ItemSelector](item-selector) |
 | [`leftSideBarVisible`](#uileftsidebarvisible)   | `false`                                               | Boolean                       |
@@ -81,6 +82,12 @@ Metadata for the currently focused field.
 ### `ui.fieldGroupExpanded`
 
 An object describing which collapsible [field groups](/docs/api-reference/components/field-group) are expanded.
+
+---
+
+### `ui.fieldTab`
+
+The value of the selected [`<Tab>`](/docs/api-reference/components/tab) in the fields plugin.
 
 ---
 
