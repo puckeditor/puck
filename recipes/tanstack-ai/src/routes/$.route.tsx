@@ -36,21 +36,21 @@ export const Route = createFileRoute("/$")({
       data: page,
     };
   },
-  head: ({ loaderData }) => ({
-    links: loaderData?.isEditorRoute
-      ? [
-          { rel: "stylesheet", href: editorStyles },
-          { rel: "stylesheet", href: pluginStyles },
-        ]
-      : [],
-    meta: [
-      {
-        title: loaderData?.isEditorRoute
-          ? "Edit: " + loaderData.path
-          : loaderData?.data?.root?.props?.title ?? "",
-      },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const title = loaderData?.isEditorRoute
+      ? "Edit: " + loaderData.path
+      : loaderData?.data?.root?.props?.title;
+
+    return {
+      links: loaderData?.isEditorRoute
+        ? [
+            { rel: "stylesheet", href: editorStyles },
+            { rel: "stylesheet", href: pluginStyles },
+          ]
+        : [],
+      meta: title ? [{ title }] : [],
+    };
+  },
   component: Page,
   notFoundComponent: () => <p>Not Found</p>,
   pendingComponent: () => <p>Loading...</p>,
