@@ -10,26 +10,18 @@ import useFieldGroupExpanded from "./lib/use-field-group-expanded";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
 
-type FieldGroupVariant = "contained" | "collapsible";
+type NonExpandableFieldGroupProps = { expandable?: false; label?: string };
 
-type FieldContainedVariantProps = {
-  variant?: "contained";
-  label?: string;
-};
-
-type FieldCollapsibleVariantProps = {
-  variant: "collapsible";
-  label: string;
-};
+type ExpandableFieldGroupProps = { expandable: true; label: string };
 
 type FieldGroupProps = {
   icon?: ReactNode;
   children?: ReactNode;
   id?: string;
-} & (FieldContainedVariantProps | FieldCollapsibleVariantProps);
+} & (NonExpandableFieldGroupProps | ExpandableFieldGroupProps);
 
 type FieldGroupInternalProps = {
-  variant?: FieldGroupVariant;
+  expandable?: boolean;
   label?: string;
   icon?: ReactNode;
   children?: ReactNode;
@@ -50,7 +42,7 @@ type FieldGroupInternalProps = {
  * (standalone public AutoField vs AutoField used to render a field config).
  */
 export const FieldGroupInternal = ({
-  variant = "contained",
+  expandable = false,
   label,
   icon,
   children,
@@ -74,7 +66,7 @@ export const FieldGroupInternal = ({
     </div>
   );
 
-  if (variant === "collapsible") {
+  if (expandable) {
     const toggleIcon = (
       <span className={getClassName("toggleIcon")}>
         <ChevronDown size={16} />
@@ -95,7 +87,7 @@ export const FieldGroupInternal = ({
           onClick={() => onToggle?.(!expanded)}
         >
           {label ? (
-            // Collapsible fields need a visible label, so it always uses Puck's
+            // Expandable groups need a visible label, so it always uses Puck's
             <FieldLabelInternal
               label={label}
               icon={icon}

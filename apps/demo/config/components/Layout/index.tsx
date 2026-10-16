@@ -29,7 +29,7 @@ type LayoutProps = WithLayout<{
 
 export const layoutField: ObjectField<LayoutFieldProps> = {
   type: "object",
-  variant: "collapsible",
+  expandable: true,
   objectFields: {
     spanCol: {
       label: "Grid Columns",
