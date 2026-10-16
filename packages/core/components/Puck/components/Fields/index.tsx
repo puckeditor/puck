@@ -144,8 +144,8 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
       key={id}
       className={mergeClassNames(
         getClassName("field"),
-        field.type === "object" && field.variant === "collapsible"
-          ? getClassName("field--collapsible")
+        field.type === "object" && field.expandable
+          ? getClassName("field--expandable")
           : undefined
       )}
     >
