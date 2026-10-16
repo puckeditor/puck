@@ -74,12 +74,8 @@ export const FieldGroupInternal = ({
     );
 
     return (
-      <div
-        data-puck-field-group
-        className={getClassName({ collapsed: !expanded, expanded })}
-      >
+      <div className={getClassName({ collapsed: !expanded, expanded })}>
         <button
-          data-puck-field-group-toggle
           type="button"
           className={getClassName("toggle")}
           aria-expanded={expanded}
@@ -112,7 +108,7 @@ export const FieldGroupInternal = ({
   }
 
   return (
-    <div data-puck-field-group className={getClassName()}>
+    <div className={getClassName()}>
       <Label label={label} icon={icon} el="div" readOnly={readOnly}>
         {content}
       </Label>
