@@ -7,9 +7,9 @@ import { FieldGroup, AutoField, FieldLabel, FieldGroupItem } from "@/puck";
 
 # \<FieldGroup\>
 
-Group fields under a label in a fieldset.
+Render a set of fields in a group.
 
-Use it anywhere within `<Puck>`, like in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) or the [`fields` override](/docs/api-reference/overrides/fields).
+Use it in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) and the [`fields` override](/docs/api-reference/overrides/fields) to create logical groupings.
 
 <PuckPreview
   config={{ components: { Orange: { render: () => <div>Orange</div> } } }}
@@ -54,19 +54,64 @@ export function Editor() {
 
 ## Props
 
-| Param                   | Example                  | Type                         | Status |
-| ----------------------- | ------------------------ | ---------------------------- | ------ |
-| [`children`](#children) | `children: <div />`      | ReactNode                    | -      |
-| [`icon`](#icon)         | `icon: <svg />`          | ReactNode                    | -      |
-| [`id`](#id)             | `id: "appearance"`       | String                       | -      |
-| [`label`](#label)       | `label: "Appearance"`    | String                       | -      |
-| [`variant`](#variant)   | `variant: "collapsible"` | "contained" \| "collapsible" | -      |
+| Param                       | Example               | Type      | Status |
+| --------------------------- | --------------------- | --------- | ------ |
+| [`children`](#children)     | `children: <div />`   | ReactNode | -      |
+| [`expandable`](#expandable) | `expandable: true`    | Boolean   | -      |
+| [`icon`](#icon)             | `icon: <svg />`       | ReactNode | -      |
+| [`id`](#id)                 | `id: "appearance"`    | String    | -      |
+| [`label`](#label)           | `label: "Appearance"` | String    | -      |
 
 ## Optional props
 
 ### `children`
 
 The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
+
+### `expandable`
+
+Make the label expand and collapse the fields. **Defaults to `false`**.
+
+<PuckPreview
+  config={{ components: { Orange: { render: () => <div>Orange</div> } } }}
+  data={{ root: { props: {} }, content: [] }}
+>
+  <FieldGroup label="Appearance" expandable>
+    <FieldGroupItem>
+      <FieldLabel label="Color">
+        <AutoField
+          value="#000000"
+          onChange={() => {}}
+          field={{ type: "text" }}
+        />
+      </FieldLabel>
+    </FieldGroupItem>
+    <FieldGroupItem>
+      <FieldLabel label="Size">
+        <AutoField value="12" onChange={() => {}} field={{ type: "number" }} />
+      </FieldLabel>
+    </FieldGroupItem>
+  </FieldGroup>
+</PuckPreview>
+
+```tsx {6-13} copy
+import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
+
+export function Editor() {
+  return (
+    <Puck>
+      <FieldGroup label="Appearance" expandable>
+        <FieldGroupItem>
+          <input type="text" value="#000000" onChange={() => {}} />
+        </FieldGroupItem>
+        <FieldGroupItem>
+          <input type="number" value="12" onChange={() => {}} />
+        </FieldGroupItem>
+      </FieldGroup>
+    </Puck>
+  );
+}
+```
 
 ### `icon`
 
@@ -78,11 +123,4 @@ An optional ID for this group, used as the key in [`ui.fieldGroupExpanded`](/doc
 
 ### `label`
 
-The label for the group. Required for the `collapsible` variant.
-
-### `variant`
-
-Specify how to display the group. **Defaults to `"contained"`**.
-
-- `"contained"`: shows the fields in a box.
-- `"collapsible"`: shows the label which expands or collapses the fields in a box.
+The label for the group. Required when [`expandable`](#expandable) is `true`.

@@ -56,12 +56,12 @@
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
 }
 
-/* A collapsed field group (or collapsible object field) already has even padding above and below, so only space rows after other rows */
+/* A collapsed field group (or expandable object field) already has even padding above and below, so only space rows after other rows */
 .PuckFields--wrapFields
   :is(.PuckFields-field, [data-puck-field-group]):not(
     .PuckFields-field *,
     [data-puck-field-group] *,
-    :is([data-puck-field-group], .PuckFields-field--collapsible):has(
+    :is([data-puck-field-group], .PuckFields-field--expandable):has(
         [data-puck-field-group-toggle][aria-expanded="false"]:not(
             [data-puck-field-group] [data-puck-field-group] *
           )
@@ -74,7 +74,7 @@
   :is(.PuckFields-field, [data-puck-field-group]):not(
     .PuckFields-field *,
     [data-puck-field-group] *,
-    :is([data-puck-field-group], .PuckFields-field--collapsible):has(
+    :is([data-puck-field-group], .PuckFields-field--expandable):has(
         [data-puck-field-group-toggle][aria-expanded="false"]:not(
             [data-puck-field-group] [data-puck-field-group] *
           )

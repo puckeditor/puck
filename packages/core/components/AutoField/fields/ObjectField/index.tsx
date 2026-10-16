@@ -58,7 +58,7 @@ export const ObjectField = ({
     <FieldGroupInternal
       {...labelProps}
       Label={Label}
-      variant={field.variant}
+      expandable={field.expandable}
       expanded={expanded}
       onToggle={onToggle}
     >
