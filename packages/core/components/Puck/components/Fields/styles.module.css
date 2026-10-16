@@ -1,6 +1,10 @@
 .PuckFields {
   position: relative;
   font-family: var(--puck-font-family);
+  --_puck-field-label-font-size: var(
+    --puck-field-label-font-size,
+    var(--puck-font-size-xxs)
+  );
 }
 
 .PuckFields--isLoading {
@@ -29,57 +33,24 @@
   top: 0;
 }
 
-.PuckFields-field {
-  display: block;
-}
-
 .PuckFields-field * {
   box-sizing: border-box;
 }
 
-/* A row is a field or a group that isn't inside another field or group */
-.PuckFields--wrapFields
-  :is(.PuckFields-field, [data-puck-field-group]):not(
-    .PuckFields-field *,
-    [data-puck-field-group] *
-  ) {
+/* Remove its box to allow for proper layout of the children. This div is used for styling direct children of the fields container as a row. */
+.PuckFields-rows {
+  display: contents;
+}
+
+.PuckFields--wrapFields .PuckFields-rows > * {
   color: var(--puck-color-text-secondary);
   padding: var(--puck-space-4);
+  /* Add extra space to account for label visual empty space */
+  padding-bottom: calc(
+    var(--puck-space-4) + calc(var(--_puck-field-label-font-size) * 0.285)
+  );
 }
 
-.PuckFields--wrapFields
-  :is(.PuckFields-field, [data-puck-field-group]):not(
-    .PuckFields-field *,
-    [data-puck-field-group] *
-  )
-  + :is(.PuckFields-field, [data-puck-field-group]) {
+.PuckFields--wrapFields .PuckFields-rows > * + * {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
-}
-
-/* A collapsed field group (or expandable object field) already has even padding above and below, so only space rows after other rows */
-.PuckFields--wrapFields
-  :is(.PuckFields-field, [data-puck-field-group]):not(
-    .PuckFields-field *,
-    [data-puck-field-group] *,
-    :is([data-puck-field-group], .PuckFields-field--expandable):has(
-        [data-puck-field-group-toggle][aria-expanded="false"]:not(
-            [data-puck-field-group] [data-puck-field-group] *
-          )
-      )
-  ) {
-  padding-bottom: var(--puck-space-3);
-}
-
-.PuckFields--wrapFields
-  :is(.PuckFields-field, [data-puck-field-group]):not(
-    .PuckFields-field *,
-    [data-puck-field-group] *,
-    :is([data-puck-field-group], .PuckFields-field--expandable):has(
-        [data-puck-field-group-toggle][aria-expanded="false"]:not(
-            [data-puck-field-group] [data-puck-field-group] *
-          )
-      )
-  )
-  + :is(.PuckFields-field, [data-puck-field-group]) {
-  margin-top: var(--puck-space-2);
 }

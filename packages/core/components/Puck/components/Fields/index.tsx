@@ -10,7 +10,6 @@ import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../../lib";
-import mergeClassNames from "../../../../lib/merge-class-names";
 import {
   memo,
   ReactNode,
@@ -140,15 +139,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <FieldGroupItem
-      key={id}
-      className={mergeClassNames(
-        getClassName("field"),
-        field.type === "object" && field.expandable
-          ? getClassName("field--expandable")
-          : undefined
-      )}
-    >
+    <FieldGroupItem key={id} className={getClassName("field")}>
       <AutoFieldPrivate
         field={field}
         name={fieldName}
@@ -267,7 +258,9 @@ const FieldsInternal = ({ wrapFields = true }: { wrapFields?: boolean }) => {
         itemSelector={itemSelector}
         fields={fields}
       >
-        {fieldsReady && <RenderFields fields={fields} />}
+        <div className={getClassName("rows")}>
+          {fieldsReady && <RenderFields fields={fields} />}
+        </div>
       </Wrapper>
       {isLoading && (
         <div className={getClassName("loadingOverlay")}>

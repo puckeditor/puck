@@ -303,7 +303,6 @@ function AutoFieldPublicInternal<
 
   // Unset the expanded state when the component is unmounted and no id is provided since `useSafeId` changes between mounts.
   // TODO: Remove when #1834 (https://github.com/puckeditor/puck/issues/1834) is fixed. Currently is impossible to pass an explicit id to the AutoField API.
-  // Unset the expanded state when the component is unmounted and no id is provided
   useEffect(() => {
     return () => unsetExpanded();
   }, [unsetExpanded, props.id]);
