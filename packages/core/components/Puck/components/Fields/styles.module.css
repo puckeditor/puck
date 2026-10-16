@@ -1,6 +1,10 @@
 .PuckFields {
   position: relative;
   font-family: var(--puck-font-family);
+  --_puck-field-label-font-size: var(
+    --puck-field-label-font-size,
+    var(--puck-font-size-xxs)
+  );
 }
 
 .PuckFields--isLoading {
@@ -33,14 +37,20 @@
   box-sizing: border-box;
 }
 
-.PuckFields--wrapFields .PuckFields-field {
-  color: var(--puck-color-text-secondary);
-  padding: var(--puck-space-4);
-  padding-bottom: var(--puck-space-3);
-  display: block;
+/* Remove its box to allow for proper layout of the children. This div is used for styling direct children of the fields container as a row. */
+.PuckFields-rows {
+  display: contents;
 }
 
-.PuckFields--wrapFields .PuckFields-field + .PuckFields-field {
+.PuckFields--wrapFields .PuckFields-rows > * {
+  color: var(--puck-color-text-secondary);
+  padding: var(--puck-space-4);
+  /* Add extra space to account for label visual empty space */
+  padding-bottom: calc(
+    var(--puck-space-4) + calc(var(--_puck-field-label-font-size) * 0.285)
+  );
+}
+
+.PuckFields--wrapFields .PuckFields-rows > * + * {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
-  margin-top: var(--puck-space-2);
 }

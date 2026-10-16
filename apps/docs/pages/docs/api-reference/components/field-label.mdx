@@ -64,6 +64,7 @@ const config = {
 | [`children`](#children)   | `children: <div />`    | ReactNode        | -        |
 | [`className`](#classname) | `className: "MyLabel"` | String           | -        |
 | [`el`](#el)               | `el: false`            | "label" \| "div" | -        |
+| [`endIcon`](#endicon)     | `endIcon: <svg />`     | ReactNode        | -        |
 | [`icon`](#icon)           | `icon: <svg />`        | ReactNode        | -        |
 | [`readOnly`](#readonly)   | `readOnly: false`      | Boolean          | -        |
 
@@ -134,6 +135,10 @@ const CustomField = () => (
 
 // ...
 ```
+
+### `endIcon`
+
+Render an icon at the end of the label. Shown after the padlock when [`readOnly`](#readonly) is true.
 
 ### `icon`
 

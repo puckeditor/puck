@@ -44,10 +44,11 @@ const config = {
 
 ## Params
 
-| Param                           | Example                                     | Type    | Status   |
-| ------------------------------- | ------------------------------------------- | ------- | -------- |
-| [`type`](#type)                 | `type: "array"`                             | "array" | Required |
-| [`objectFields`](#objectfields) | `objectFields: { title: { type: "text" } }` | Object  | Required |
+| Param                           | Example                                     | Type     | Status   |
+| ------------------------------- | ------------------------------------------- | -------- | -------- |
+| [`type`](#type)                 | `type: "object"`                            | "object" | Required |
+| [`objectFields`](#objectfields) | `objectFields: { title: { type: "text" } }` | Object   | Required |
+| [`expandable`](#expandable)     | `expandable: true`                          | Boolean  | -        |
 
 ## Required params
 
@@ -96,3 +97,11 @@ const config = {
   },
 };
 ```
+
+## Optional params
+
+### `expandable`
+
+Make the `label` expand and collapse the subfields. **Defaults to `false`**.
+
+If using [`<AutoField>`](/docs/api-reference/components/auto-field), you need to pass a `label` to show the toggle.
