@@ -74,7 +74,10 @@ export const FieldGroupInternal = ({
     );
 
     return (
-      <div className={getClassName({ collapsed: !expanded, expanded })}>
+      <div
+        className={getClassName({ collapsed: !expanded, expanded })}
+        data-puck-field-group-expandable
+      >
         <button
           type="button"
           className={getClassName("toggle")}

@@ -2,6 +2,25 @@
   margin-top: var(--puck-space-3);
 }
 
+/* Add the space between fields as toggle padding for expandable groups so their click area includes the gap */
+.InputWrapper + .InputWrapper[data-puck-field-group-expandable] {
+  margin-top: 0;
+  --_puck-field-group-inset-top: var(--puck-space-3);
+}
+
+.InputWrapper[data-puck-field-group-expandable] + .InputWrapper {
+  margin-top: 0;
+}
+
+.InputWrapper[data-puck-field-group-expandable]:has(+ .InputWrapper) {
+  --_puck-field-group-inset-bottom: var(--puck-space-3);
+}
+
+.InputWrapper[data-puck-field-group-expandable]
+  + .InputWrapper[data-puck-field-group-expandable] {
+  --_puck-field-group-inset-top: 0px;
+}
+
 .Input-label {
   align-items: center;
   color: var(--puck-field-label-color-text, var(--puck-color-text-secondary));
