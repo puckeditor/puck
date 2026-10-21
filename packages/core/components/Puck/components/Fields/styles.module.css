@@ -1,10 +1,6 @@
 .PuckFields {
   position: relative;
   font-family: var(--puck-font-family);
-  --_puck-field-label-font-size: var(
-    --puck-field-label-font-size,
-    var(--puck-font-size-xxs)
-  );
 }
 
 .PuckFields--isLoading {
@@ -45,12 +41,21 @@
 .PuckFields--wrapFields .PuckFields-rows > * {
   color: var(--puck-color-text-secondary);
   padding: var(--puck-space-4);
-  /* Add extra space to account for label visual empty space */
-  padding-bottom: calc(
-    var(--puck-space-4) + calc(var(--_puck-field-label-font-size) * 0.285)
-  );
 }
 
 .PuckFields--wrapFields .PuckFields-rows > * + * {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
+}
+
+/* Make any expandable field groups toggles extend the full width and height of the row for a bigger click area */
+.PuckFields--wrapFields
+  .PuckFields-rows
+  > :is(
+    [data-puck-field-group-expandable],
+    .PuckFields-field:has(> [data-puck-field-group-expandable])
+  ) {
+  padding: 0;
+  --_puck-field-group-inset-x: var(--puck-space-4);
+  --_puck-field-group-inset-top: var(--puck-space-4);
+  --_puck-field-group-inset-bottom: var(--puck-space-4);
 }

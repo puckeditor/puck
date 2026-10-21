@@ -5,6 +5,9 @@
   border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
     var(--puck-field-color-border, var(--puck-color-border));
   border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  /* The space the group was given around it, if any (see FieldGroup-toggle below) */
+  margin: 0 var(--_puck-field-group-inset-x, 0px)
+    var(--_puck-field-group-inset-bottom, 0px);
 }
 
 .FieldGroup-fieldset {
@@ -19,10 +22,41 @@
           var(--puck-field-border-width, var(--puck-border-width-regular))
       )
     );
+  /* Reset the insets for any nested FieldGroups */
+  --_puck-field-group-inset-x: 0px;
+  --_puck-field-group-inset-top: 0px;
+  --_puck-field-group-inset-bottom: 0px;
 }
 
 .FieldGroup-fieldset > .FieldGroup-item + .FieldGroup-item {
   margin-top: var(--puck-space-3);
+}
+
+/* Add the margin between items as toggle padding for expandable groups so their click area includes the gap */
+.FieldGroup-fieldset
+  > .FieldGroup-item
+  + .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child) {
+  margin-top: 0;
+  --_puck-field-group-inset-top: var(--puck-space-3);
+}
+
+.FieldGroup-fieldset
+  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child)
+  + .FieldGroup-item {
+  margin-top: 0;
+}
+
+.FieldGroup-fieldset
+  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child):has(
+    + .FieldGroup-item
+  ) {
+  --_puck-field-group-inset-bottom: var(--puck-space-3);
+}
+
+.FieldGroup-fieldset
+  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child)
+  + .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child) {
+  --_puck-field-group-inset-top: 0px;
 }
 
 /* Remove the label vertical spacing when the group is collapsed */
@@ -30,24 +64,38 @@
   --puck-field-label-space-y: 0;
 }
 
+/* Keeps the box's bottom margin inside the group */
+.FieldGroup--expanded {
+  display: flow-root;
+}
+
 .FieldGroup-toggle {
   appearance: none;
   background: none;
   border: none;
   border-radius: var(--puck-field-radius, var(--puck-radius-m));
+  box-sizing: border-box;
   color: inherit;
   cursor: pointer;
   display: block;
   font: inherit;
   margin: 0;
-  padding: 0;
+  /* Explicit padding space for the toggle's clickable area */
+  padding: var(--_puck-field-group-inset-top, 0px)
+    var(--_puck-field-group-inset-x, 0px)
+    var(--_puck-field-group-inset-bottom, 0px);
   text-align: start;
   width: 100%;
 }
 
+/* The label's own bottom spacing separates the toggle from the box */
+.FieldGroup--expanded > .FieldGroup-toggle {
+  padding-bottom: 0;
+}
+
 .FieldGroup-toggle:focus-visible {
   outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
-  outline-offset: var(--puck-border-width-focus);
+  outline-offset: calc(var(--puck-border-width-focus) * -1);
 }
 
 @media (hover: hover) and (pointer: fine) {
