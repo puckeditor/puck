@@ -29,7 +29,7 @@
     --puck-tabs-color-bg-selected,
     var(--puck-color-interactive-soft)
   );
-  color: var(--puck-tabs-color-text-selected, var(--puck-color-text));
+  color: var(--puck-tabs-color-text-selected, var(--puck-color-interactive));
 }
 
 .Tabs-tab:focus-visible {
@@ -51,6 +51,6 @@
       --puck-tabs-color-bg-selected,
       var(--puck-color-interactive-soft)
     );
-    color: var(--puck-tabs-color-text-selected, var(--puck-color-text));
+    color: var(--puck-tabs-color-text-selected, var(--puck-color-interactive));
   }
 }
