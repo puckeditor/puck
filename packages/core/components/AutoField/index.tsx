@@ -259,7 +259,11 @@ export function AutoFieldPrivate<
 function AutoFieldPublicInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->({ value, ...props }: FieldProps<FieldType, ValueType> & { value: any }) {
+>({
+  value,
+  name,
+  ...props
+}: FieldProps<FieldType, ValueType> & { value: any; name: string }) {
   const DefaultLabel = useMemo(() => {
     const DefaultLabel = (labelProps: any) => (
       <div
@@ -275,24 +279,25 @@ function AutoFieldPublicInternal<
 
   const onChange = useCallback(
     (value: any) => {
-      if (!props.id) return;
+      if (!name) return;
 
-      fieldStore.setState({ [props.id]: value });
+      fieldStore.setState({ [name]: value });
 
       props.onChange(value);
     },
-    [fieldStore, props.onChange, props.id]
+    [fieldStore, props.onChange, name]
   );
 
   useEffect(() => {
-    if (!props.id) return;
+    if (!name) return;
 
-    fieldStore.setState({ [props.id]: value });
-  }, [props.id, value, fieldStore]);
+    fieldStore.setState({ [name]: value });
+  }, [name, value, fieldStore]);
 
   return (
     <AutoFieldInternal<ValueType, FieldType>
       {...props}
+      name={name}
       onChange={onChange}
       Label={DefaultLabel}
     />
@@ -303,15 +308,21 @@ export function AutoField<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(props: FieldProps<FieldType, ValueType> & { value: any }) {
-  const id = useSafeId();
+  const defaultId = useSafeId();
+  const internalKey = useSafeId();
+  const resolvedId = props.id || defaultId;
 
   if (props.field.type === "slot") {
     return null;
   }
 
   return (
-    <fieldContextStore.Provider value={{ [id]: props.value }}>
-      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={id} />
+    <fieldContextStore.Provider value={{ [internalKey]: props.value }}>
+      <AutoFieldPublicInternal<ValueType, FieldType>
+        {...props}
+        id={resolvedId}
+        name={internalKey}
+      />
     </fieldContextStore.Provider>
   );
 }
