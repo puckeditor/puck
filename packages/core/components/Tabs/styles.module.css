@@ -13,23 +13,29 @@
 
 .Tabs-tab {
   appearance: none;
-  background: var(--puck-tabs-color-bg, none);
+  background: var(--puck-fieldtabs-color-bg, none);
   border: none;
-  border-radius: var(--puck-tabs-radius, var(--puck-radius-m));
-  color: var(--puck-tabs-color-text, var(--puck-color-text-secondary));
+  border-radius: var(--puck-fieldtabs-radius, var(--puck-radius-m));
+  color: var(--puck-fieldtabs-color-text, var(--puck-color-text-secondary));
   cursor: pointer;
   font: inherit;
-  font-size: var(--puck-tabs-font-size, var(--puck-font-size-xxxs));
-  font-weight: var(--puck-tabs-font-weight, var(--puck-font-weight-medium));
-  padding: var(--puck-tabs-space, var(--puck-space-2));
+  font-size: var(--puck-fieldtabs-font-size, var(--puck-font-size-xxxs));
+  font-weight: var(
+    --puck-fieldtabs-font-weight,
+    var(--puck-font-weight-medium)
+  );
+  padding: var(--puck-fieldtabs-space, var(--puck-space-2));
 }
 
 .Tabs-tab--selected {
   background: var(
-    --puck-tabs-color-bg-selected,
+    --puck-fieldtabs-color-bg-selected,
     var(--puck-color-interactive-soft)
   );
-  color: var(--puck-tabs-color-text-selected, var(--puck-color-interactive));
+  color: var(
+    --puck-fieldtabs-color-text-selected,
+    var(--puck-color-interactive)
+  );
 }
 
 .Tabs-tab:focus-visible {
@@ -40,17 +46,23 @@
 @media (hover: hover) and (pointer: fine) {
   .Tabs-tab:hover {
     background: var(
-      --puck-tabs-color-bg-hover,
+      --puck-fieldtabs-color-bg-hover,
       var(--puck-color-interactive-soft)
     );
-    color: var(--puck-tabs-color-text-hover, var(--puck-color-text-secondary));
+    color: var(
+      --puck-fieldtabs-color-text-hover,
+      var(--puck-color-text-secondary)
+    );
   }
 
   .Tabs-tab--selected:hover {
     background: var(
-      --puck-tabs-color-bg-selected,
+      --puck-fieldtabs-color-bg-selected,
       var(--puck-color-interactive-soft)
     );
-    color: var(--puck-tabs-color-text-selected, var(--puck-color-interactive));
+    color: var(
+      --puck-fieldtabs-color-text-selected,
+      var(--puck-color-interactive)
+    );
   }
 }

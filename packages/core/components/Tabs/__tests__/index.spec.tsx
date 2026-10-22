@@ -244,7 +244,7 @@ describe("Tab", () => {
     const error = jest.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => render(<Tab label="Alone">Alone content</Tab>)).toThrow(
-      "Tab must be used inside the fields"
+      "FieldTab must be used inside the fields"
     );
 
     error.mockRestore();

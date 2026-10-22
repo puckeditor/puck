@@ -3,7 +3,7 @@
 import React, { ReactNode } from "react";
 import { Sliders } from "lucide-react";
 
-import { FieldGroup, Tab } from "@/core";
+import { FieldGroup, FieldTab } from "@/core";
 import type { HeadingProps } from ".";
 
 /**
@@ -14,12 +14,12 @@ export const HeadingFields = ({
 }: {
   fields: Partial<Record<keyof HeadingProps, ReactNode>>;
 }) => (
-  <Tab label="General">
+  <FieldTab label="General">
     {fields.text}
     {fields.level}
     <FieldGroup icon={<Sliders size={16} />} label="Appearance">
       {fields.size}
       {fields.align}
     </FieldGroup>
-  </Tab>
+  </FieldTab>
 );

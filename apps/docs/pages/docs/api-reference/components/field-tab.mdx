@@ -1,11 +1,11 @@
 ---
-title: <Tab>
+title: <FieldTab>
 ---
 
 import { ConfigPreview } from "@/docs/components/Preview";
-import { Tab } from "@/puck";
+import { FieldTab } from "@/puck";
 
-# \<Tab\>
+# \<FieldTab\>
 
 Group fields in a tab. Use it in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) or the [`fields` override](/docs/api-reference/overrides/fields).
 
@@ -38,11 +38,11 @@ Conditions:
     },
     renderFields: ({ fields }) => (
       <>
-        <Tab label="Content">{fields.title}</Tab>
-        <Tab label="Style">
+        <FieldTab label="Content">{fields.title}</FieldTab>
+        <FieldTab label="Style">
           {fields.size}
           {fields.weight}
-        </Tab>
+        </FieldTab>
       </>
     ),
     defaultProps: { title: "Hello, world", size: "l", weight: "regular" },
@@ -64,7 +64,7 @@ Conditions:
 />
 
 ```tsx {1,8-14} copy
-import { Tab } from "@puckeditor/core";
+import { FieldTab } from "@puckeditor/core";
 
 const config = {
   components: {
@@ -72,11 +72,11 @@ const config = {
       fields: { title, size, weight },
       renderFields: ({ fields }) => (
         <>
-          <Tab label="Content">{fields.title}</Tab>
-          <Tab label="Style">
+          <FieldTab label="Content">{fields.title}</FieldTab>
+          <FieldTab label="Style">
             {fields.size}
             {fields.weight}
-          </Tab>
+          </FieldTab>
         </>
       ),
       // ...

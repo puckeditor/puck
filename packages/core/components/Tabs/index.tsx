@@ -79,7 +79,7 @@ const useTabs = (): TabsContextValue => {
 
   if (!tabs) {
     throw new Error(
-      "Tab must be used inside the fields (renderFields or the fields override)."
+      "FieldTab must be used inside the fields (renderFields or the fields override)."
     );
   }
 
@@ -172,7 +172,7 @@ export const Tabs = ({ value, onChange, children }: TabsProps) => {
 
     if (new Set(values).size !== values.length) {
       console.warn(
-        "Each `Tab` needs a unique `value`, which defaults to its `label`"
+        "Each `FieldTab` needs a unique `value`, which defaults to its `label`"
       );
     }
   }, [tabs]);
@@ -260,14 +260,14 @@ export const Tabs = ({ value, onChange, children }: TabsProps) => {
 type TabProps = {
   /** The label to show for the tab in the tab list */
   label: string;
-  /** The value associated with the tab. Defaults to the label if not provided. */
+  /** The value associated with the tab to select it. Defaults to the label if not provided. */
   value?: TabValue;
   /** The content to show when the tab is selected */
   children?: ReactNode;
 };
 
 /**
- * Groups fields in a tab. Only the selected tab's content is rendered.
+ * Groups fields in a tab.
  */
 export const Tab = ({ label, value = label, children }: TabProps) => {
   const tabsList = useTabs();

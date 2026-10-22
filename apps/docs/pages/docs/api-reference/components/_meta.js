@@ -11,6 +11,7 @@ const menu = {
   "field-group": {},
   "field-group-item": {},
   "field-label": {},
+  "field-tab": {},
   "inline-text-field": {},
   puck: {},
   "puck-components": {},
@@ -22,7 +23,6 @@ const menu = {
   "rich-text-menu": {},
   "rich-text-menu-group": {},
   "rich-text-menu-control": {},
-  tab: {},
 };
 
 export default menu;

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactElement, ReactNode } from "react";
-import { Tab } from "@/core";
+import { FieldTab } from "@/core";
 
 /**
  * Renders the augmented component fields with a layout tab for the "layout" field.
@@ -23,14 +23,14 @@ const LayoutFields = ({
   const otherFields = AugmentedRenderFields ? (
     <AugmentedRenderFields fields={fieldsNoLayout} />
   ) : (
-    <Tab label="General">{Object.values(fieldsNoLayout)}</Tab>
+    <FieldTab label="General">{Object.values(fieldsNoLayout)}</FieldTab>
   );
 
   // Add the layout tab if it wasn't hidden
   return (
     <>
       {otherFields}
-      {layout && <Tab label="Layout">{layout}</Tab>}
+      {layout && <FieldTab label="Layout">{layout}</FieldTab>}
     </>
   );
 };

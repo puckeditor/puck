@@ -4,6 +4,7 @@ const menu = {
   button: {},
   canvas: {},
   drawer: {},
+  "field-tabs": {},
   fields: {},
   header: {},
   "icon-button": {},
@@ -11,7 +12,6 @@ const menu = {
   "plugin-bar": {},
   sidebar: {},
   slot: {},
-  tabs: {},
   "computed-values": {},
 };
 

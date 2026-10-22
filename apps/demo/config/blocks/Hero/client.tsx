@@ -2,7 +2,7 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
-import { AutoField, FieldLabel, RichTextMenu, Tab } from "@/core";
+import { AutoField, FieldLabel, FieldTab, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
@@ -19,17 +19,17 @@ export const Hero: ComponentConfig<{
   renderFields: ({ fields }) => {
     return (
       <>
-        <Tab label="General">
+        <FieldTab label="General">
           {fields.title}
           {fields.description}
           {fields.buttons}
           {fields.image}
-        </Tab>
-        <Tab label="Data">{fields.quote}</Tab>
-        <Tab label="Layout">
+        </FieldTab>
+        <FieldTab label="Data">{fields.quote}</FieldTab>
+        <FieldTab label="Layout">
           {fields.padding}
           {fields.align}
-        </Tab>
+        </FieldTab>
       </>
     );
   },
