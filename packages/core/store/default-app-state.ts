@@ -20,7 +20,7 @@ export const defaultAppState: PrivateAppState = {
       options: [],
       controlsVisible: true,
     },
-    fieldGroupExpanded: {},
+    expandedFieldGroups: {},
     field: { focus: null },
     plugin: { current: null },
   },

@@ -35,7 +35,7 @@ import type {
 import { FieldLabelInternal } from "./FieldLabel";
 import { useFieldStoreApi, fieldContextStore } from "./store";
 import { useLocalValue } from "./lib/use-local-value";
-import { useFieldGroupExpanded } from "../FieldGroup";
+import { useExpandedFieldGroup } from "../FieldGroup";
 
 const getClassName = getClassNameFactory("Input", styles);
 const getClassNameWrapper = getClassNameFactory("InputWrapper", styles);
@@ -268,7 +268,7 @@ export function AutoFieldPrivate<
     (s) => `${s.selectedItem?.type || "root"}.${props.name}`
   );
 
-  const { expanded, toggleExpanded } = useFieldGroupExpanded({
+  const { expanded, toggleExpanded } = useExpandedFieldGroup({
     fieldGroupKey,
   });
 
@@ -301,7 +301,7 @@ function AutoFieldPublicInternal<
 
   const fieldStore = useFieldStoreApi();
 
-  const { expanded, toggleExpanded, unsetExpanded } = useFieldGroupExpanded({
+  const { expanded, toggleExpanded, unsetExpanded } = useExpandedFieldGroup({
     fieldGroupKey: props.id,
   });
 

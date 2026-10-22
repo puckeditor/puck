@@ -6,7 +6,7 @@ import { useSafeId } from "../../lib/use-safe-id";
 import { FieldLabel, FieldLabelInternal } from "../AutoField/FieldLabel";
 import type { FieldLabelPropsInternal } from "../AutoField/FieldLabel";
 import styles from "./styles.module.css";
-import useFieldGroupExpanded from "./lib/use-field-group-expanded";
+import useExpandedFieldGroup from "./lib/use-field-group-expanded";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
 
@@ -123,7 +123,7 @@ export const FieldGroupInternal = ({
 export const FieldGroup = (props: FieldGroupProps) => {
   const defaultStoreId = useSafeId();
 
-  const { expanded, toggleExpanded, unsetExpanded } = useFieldGroupExpanded({
+  const { expanded, toggleExpanded, unsetExpanded } = useExpandedFieldGroup({
     fieldGroupKey: props.id ?? defaultStoreId,
   });
 

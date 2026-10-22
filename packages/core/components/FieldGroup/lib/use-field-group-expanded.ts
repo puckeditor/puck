@@ -20,7 +20,7 @@ export type UseFieldGroupAPI = {
  *
  * If used within the AppStore context, it will sync the expanded state with the AppStore.
  */
-const useFieldGroupExpanded = ({
+const useExpandedFieldGroup = ({
   fieldGroupKey,
 }: UseFieldGroupProps): UseFieldGroupAPI => {
   const dispatch = useAppStore((s) => s.dispatch);
@@ -28,7 +28,7 @@ const useFieldGroupExpanded = ({
   const isWithinPuck = useIsWithinPuck();
 
   const appStoreExpanded = useAppStore(
-    (s) => s.state.ui.fieldGroupExpanded[fieldGroupKey]
+    (s) => s.state.ui.expandedFieldGroups[fieldGroupKey]
   );
 
   const setAppStoreExpanded = useCallback(
@@ -37,15 +37,15 @@ const useFieldGroupExpanded = ({
         type: "setUi",
         ui: (prev) => {
           const newUi = {
-            fieldGroupExpanded: {
-              ...prev.fieldGroupExpanded,
+            expandedFieldGroups: {
+              ...prev.expandedFieldGroups,
             },
           };
 
           if (!expanded) {
-            delete newUi.fieldGroupExpanded[fieldGroupKey];
+            delete newUi.expandedFieldGroups[fieldGroupKey];
           } else {
-            newUi.fieldGroupExpanded[fieldGroupKey] = true;
+            newUi.expandedFieldGroups[fieldGroupKey] = true;
           }
 
           return newUi;
@@ -90,4 +90,4 @@ const useFieldGroupExpanded = ({
   };
 };
 
-export default useFieldGroupExpanded;
+export default useExpandedFieldGroup;

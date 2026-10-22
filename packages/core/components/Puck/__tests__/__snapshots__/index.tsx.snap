@@ -80,10 +80,10 @@ exports[`Puck should generate the correct state on mount 1`] = `
           "ui": {
             "arrayState": {},
             "componentList": {},
+            "expandedFieldGroups": {},
             "field": {
               "focus": null,
             },
-            "fieldGroupExpanded": {},
             "isDragging": false,
             "itemExpanded": {},
             "itemSelector": null,
@@ -144,10 +144,10 @@ exports[`Puck should generate the correct state on mount 1`] = `
       "ui": {
         "arrayState": {},
         "componentList": {},
+        "expandedFieldGroups": {},
         "field": {
           "focus": null,
         },
-        "fieldGroupExpanded": {},
         "isDragging": false,
         "itemExpanded": {},
         "itemSelector": null,
@@ -251,10 +251,10 @@ exports[`Puck should generate the correct state on mount 1`] = `
     "ui": {
       "arrayState": {},
       "componentList": {},
+      "expandedFieldGroups": {},
       "field": {
         "focus": null,
       },
-      "fieldGroupExpanded": {},
       "isDragging": false,
       "itemExpanded": {},
       "itemSelector": null,
