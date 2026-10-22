@@ -5,7 +5,6 @@ const menu = {
   "action-bar-label": {},
   "action-bar-separator": {},
   "auto-field": {},
-  "component-fields": {},
   drawer: {},
   "drawer-item": {},
   "drop-zone": {},
