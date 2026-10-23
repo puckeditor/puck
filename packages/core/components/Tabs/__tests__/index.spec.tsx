@@ -198,6 +198,16 @@ describe("Tabs", () => {
     expect(selectedTab()).toBe("A");
   });
 
+  it("keeps keyboard focus on the same tab when a tab is added before it", async () => {
+    const { rerender } = renderTabs(<Layout />);
+
+    screen.getByRole("tab", { name: "C" }).focus();
+
+    await rerender(<Layout showIntro />);
+
+    expect(document.activeElement).toHaveTextContent("C");
+  });
+
   it("reorders tabs that move without remounting", async () => {
     const { rerender } = renderTabs(<Layout />);
 

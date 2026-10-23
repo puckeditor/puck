@@ -228,7 +228,7 @@ export const Tabs = ({ value, onChange, children }: TabsProps) => {
 
             return (
               <button
-                key={getTabId(index)}
+                key={tab.value}
                 id={getTabId(index)}
                 type="button"
                 role="tab"
