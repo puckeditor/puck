@@ -18,6 +18,7 @@
   border-radius: var(--puck-fieldtabs-radius, var(--puck-radius-m));
   color: var(--puck-fieldtabs-color-text, var(--puck-color-text-secondary));
   cursor: pointer;
+  flex-shrink: 0;
   font: inherit;
   font-size: var(--puck-fieldtabs-font-size, var(--puck-font-size-xxxs));
   font-weight: var(
@@ -25,6 +26,7 @@
     var(--puck-font-weight-medium)
   );
   padding: var(--puck-fieldtabs-space, var(--puck-space-2));
+  white-space: nowrap;
 }
 
 .Tabs-tab--selected {
@@ -44,7 +46,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .Tabs-tab:hover {
+  .Tabs-tab:not(.Tabs-tab--selected):hover {
     background: var(
       --puck-fieldtabs-color-bg-hover,
       var(--puck-color-interactive-soft)
@@ -52,17 +54,6 @@
     color: var(
       --puck-fieldtabs-color-text-hover,
       var(--puck-color-text-secondary)
-    );
-  }
-
-  .Tabs-tab--selected:hover {
-    background: var(
-      --puck-fieldtabs-color-bg-selected,
-      var(--puck-color-interactive-soft)
-    );
-    color: var(
-      --puck-fieldtabs-color-text-selected,
-      var(--puck-color-interactive)
     );
   }
 }
