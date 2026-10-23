@@ -43,7 +43,11 @@
   padding: var(--puck-space-4);
 }
 
-.PuckFields--wrapFields .PuckFields-rows > * + * {
+/* Add a separator between any rows that are not the tabs markers */
+.PuckFields--wrapFields
+  .PuckFields-rows
+  > :not([data-puck-tab-marker])
+  ~ :not([data-puck-tab-marker]) {
   border-top: var(--puck-border-width-regular) solid var(--puck-color-border);
 }
 

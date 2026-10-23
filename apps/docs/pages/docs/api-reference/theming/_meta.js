@@ -4,6 +4,7 @@ const menu = {
   button: {},
   canvas: {},
   drawer: {},
+  "field-tabs": {},
   fields: {},
   header: {},
   "icon-button": {},

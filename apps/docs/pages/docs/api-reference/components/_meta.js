@@ -12,6 +12,7 @@ const menu = {
   "field-group": {},
   "field-group-item": {},
   "field-label": {},
+  "field-tab": {},
   "inline-text-field": {},
   puck: {},
   "puck-components": {},

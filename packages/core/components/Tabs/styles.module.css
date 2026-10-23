@@ -1,0 +1,59 @@
+.Tabs-list,
+.Tabs-list * {
+  box-sizing: border-box;
+}
+
+.Tabs-list {
+  border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
+  display: flex;
+  overflow-x: auto;
+  padding: var(--puck-space-2);
+  gap: var(--puck-space-1);
+}
+
+.Tabs-tab {
+  appearance: none;
+  background: var(--puck-fieldtabs-color-bg, none);
+  border: none;
+  border-radius: var(--puck-fieldtabs-radius, var(--puck-radius-m));
+  color: var(--puck-fieldtabs-color-text, var(--puck-color-text-secondary));
+  cursor: pointer;
+  flex-shrink: 0;
+  font: inherit;
+  font-size: var(--puck-fieldtabs-font-size, var(--puck-font-size-xxxs));
+  font-weight: var(
+    --puck-fieldtabs-font-weight,
+    var(--puck-font-weight-medium)
+  );
+  padding: var(--puck-fieldtabs-space, var(--puck-space-2));
+  white-space: nowrap;
+}
+
+.Tabs-tab--selected {
+  background: var(
+    --puck-fieldtabs-color-bg-selected,
+    var(--puck-color-interactive-soft)
+  );
+  color: var(
+    --puck-fieldtabs-color-text-selected,
+    var(--puck-color-interactive)
+  );
+}
+
+.Tabs-tab:focus-visible {
+  outline: var(--puck-border-width-focus) solid var(--puck-color-focus-ring);
+  outline-offset: var(--puck-border-width-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Tabs-tab:not(.Tabs-tab--selected):hover {
+    background: var(
+      --puck-fieldtabs-color-bg-hover,
+      var(--puck-color-interactive-soft)
+    );
+    color: var(
+      --puck-fieldtabs-color-text-hover,
+      var(--puck-color-text-secondary)
+    );
+  }
+}
