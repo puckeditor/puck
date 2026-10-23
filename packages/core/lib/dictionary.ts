@@ -15,6 +15,7 @@ export const defaultDictionary = {
   "header-toggle-menubar": "Toggle menu bar",
   // Component action bar
   "action-selectparent": "Select parent",
+  "action-drag": "Drag to reorder",
   "action-duplicate": "Duplicate",
   "action-delete": "Delete",
   // Fallback labels — shared by the breadcrumbs, fields panel and header
