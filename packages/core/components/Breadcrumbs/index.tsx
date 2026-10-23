@@ -17,6 +17,8 @@ export const Breadcrumbs = ({
   const setUi = useAppStore((s) => s.setUi);
   const breadcrumbs = useBreadcrumbs(numParents);
 
+  if (breadcrumbs.length === 0) return null;
+
   return (
     <div className={getClassName()}>
       {breadcrumbs.map((breadcrumb, i) => (
