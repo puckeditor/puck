@@ -307,12 +307,6 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       }
     }
 
-    const isCurrDropTarget = useContextStore(ZoneStoreContext, (s) => {
-      return (
-        !!s.previewIndex[zoneCompound] && !s.previewIndex[zoneCompound]?.ghost
-      );
-    });
-
     const isRootZone =
       zoneCompound === rootDroppableId ||
       zone === rootDroppableId ||
@@ -473,7 +467,6 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           isAreaSelected,
           hasChildren: contentIds.length > 0,
           isAnimating,
-          isCurrDropTarget,
         })}${className ? ` ${className}` : ""}`}
         ref={setRefs}
         data-testid={`dropzone:${zoneCompound}`}
