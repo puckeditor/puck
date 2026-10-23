@@ -6,7 +6,8 @@
  * @returns True if the node is an element that contains the given data attribute or has a descendant that contains the given data attribute.
  */
 const containsDataAttr = (node: Node, dataAttr: string) =>
-  node instanceof Element &&
+  // Use the node's own window, since elements from another document (e.g. an iframe) aren't instances of this one's Element
+  node instanceof (node.ownerDocument?.defaultView?.Element ?? Element) &&
   (node.matches(`[${dataAttr}]`) || !!node.querySelector(`[${dataAttr}]`));
 
 export default containsDataAttr;
