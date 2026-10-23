@@ -244,6 +244,8 @@ const FieldTabs = ({ children }: { children: ReactNode }) => {
       // so only replace a missing tab once they're ready
       if (reason === "missing" && !isFieldsReady(state)) return;
 
+      if (state.state.ui.fieldTab === value) return;
+
       state.dispatch({ type: "setUi", ui: { fieldTab: value } });
     },
     [appStore]
