@@ -249,4 +249,21 @@ describe("Tab", () => {
 
     error.mockRestore();
   });
+
+  it("shows a tab whose value is 0", () => {
+    renderTabs(
+      <>
+        <Tab label="Content" value={0}>
+          Content fields
+        </Tab>
+        <Tab label="Style" value={1}>
+          Style fields
+        </Tab>
+      </>,
+      { value: 0 }
+    );
+
+    expect(tabLabels()).toEqual(["Content", "Style"]);
+    expect(screen.getByText("Content fields")).toBeInTheDocument();
+  });
 });

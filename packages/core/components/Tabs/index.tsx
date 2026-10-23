@@ -277,7 +277,8 @@ export const Tab = ({ label, value = label, children }: TabProps) => {
   const register = tabsList.register;
 
   useLayoutEffect(() => {
-    if (!tabPanelRef.current || !value) return;
+    // Don't register empty values
+    if (!tabPanelRef.current || value === "") return;
 
     // Register the tab when the component mounts and unregister when it unmounts.
     return register({ value, label, marker: tabPanelRef.current });
