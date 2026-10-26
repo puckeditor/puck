@@ -1,0 +1,353 @@
+import { ConfigPreview, PuckPreview } from "@/docs/components/Preview";
+import { FieldGroup, FieldTab } from "@/puck";
+
+# Field Grouping
+
+Field grouping allows you to organize related fields into [expandable groups](/docs/api-reference/components/field-group#expandable) or [tabs](/docs/api-reference/components/field-tab).
+
+## Customizing field layouts
+
+Use the [`renderFields` API](/docs/api-reference/configuration/component-config#renderfieldsprops) to control how fields are rendered for a component.
+
+The function receives a [`fields` object](/docs/api-reference/configuration/component-config#propsfields) containing each visible field as a React node, keyed by field name. Fields appear in the order they are rendered:
+
+```tsx {15-21} copy showLineNumbers
+const config = {
+  components: {
+    Heading: {
+      fields: {
+        title: { type: "text" },
+        weight: {
+          type: "radio",
+          options: [
+            { label: "Light", value: "light" },
+            { label: "Bold", value: "bold" },
+          ],
+        },
+        size: { type: "number" },
+      },
+      renderFields: ({ fields }) => (
+        <>
+          {fields.title}
+          {fields.size}
+          {fields.weight}
+        </>
+      ),
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Custom field layout"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Light", value: "light" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      size: { type: "number", min: 16, max: 64 },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        {fields.title}
+        {fields.size}
+        {fields.weight}
+      </>
+    ),
+    defaultProps: {
+      title: "Hello, world",
+      weight: "light",
+      size: 24,
+    },
+    render: ({ title, weight, size }) => (
+      <p
+        style={{
+          fontSize: size,
+          fontWeight: weight === "light" ? 300 : 700,
+          margin: 0,
+        }}
+      >
+        {title}
+      </p>
+    ),
+  }}
+/>
+
+## Creating field groups
+
+Use the [`FieldGroup` component](/docs/api-reference/components/field-group) in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) to organize related fields under a shared label:
+
+```tsx {1,20-23} copy showLineNumbers
+import { FieldGroup } from "@puckeditor/core";
+
+const config = {
+  components: {
+    Heading: {
+      fields: {
+        title: { type: "text" },
+        weight: {
+          type: "radio",
+          options: [
+            { label: "Light", value: "light" },
+            { label: "Bold", value: "bold" },
+          ],
+        },
+        size: { type: "number" },
+      },
+      renderFields: ({ fields }) => (
+        <>
+          {fields.title}
+          <FieldGroup label="Appearance">
+            {fields.weight}
+            {fields.size}
+          </FieldGroup>
+        </>
+      ),
+      // ...
+    },
+  },
+};
+```
+
+<ConfigPreview
+  label="Field group"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Light", value: "light" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      size: { type: "number", min: 16, max: 64 },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        {fields.title}
+        <FieldGroup label="Appearance">
+          {fields.weight}
+          {fields.size}
+        </FieldGroup>
+      </>
+    ),
+    defaultProps: {
+      title: "Hello, world",
+      weight: "light",
+      size: 24,
+    },
+    render: ({ title, weight, size }) => (
+      <p
+        style={{
+          fontSize: size,
+          fontWeight: weight === "light" ? 300 : 700,
+          margin: 0,
+        }}
+      >
+        {title}
+      </p>
+    ),
+  }}
+/>
+
+### Expandable field groups
+
+Set the [`expandable` prop](/docs/api-reference/components/field-group#expandable) to `true` to let users expand and collapse a field group:
+
+```tsx /expandable/ copy
+<FieldGroup label="Appearance" expandable>
+  {fields.weight}
+  {fields.size}
+</FieldGroup>
+```
+
+<ConfigPreview
+  label="Expandable field group"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Light", value: "light" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      size: { type: "number", min: 16, max: 64 },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        {fields.title}
+        <FieldGroup label="Appearance" expandable>
+          {fields.weight}
+          {fields.size}
+        </FieldGroup>
+      </>
+    ),
+    defaultProps: {
+      title: "Hello, world",
+      weight: "light",
+      size: 24,
+    },
+    render: ({ title, weight, size }) => (
+      <p
+        style={{
+          fontSize: size,
+          fontWeight: weight === "light" ? 300 : 700,
+          margin: 0,
+        }}
+      >
+        {title}
+      </p>
+    ),
+  }}
+/>
+
+## Creating field tabs
+
+Use the [`FieldTab` component](/docs/api-reference/components/field-tab) in [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops) to organize fields into tabs:
+
+```tsx {1,19-23} copy showLineNumbers
+import { FieldTab } from "@puckeditor/core";
+
+const config = {
+  components: {
+    Heading: {
+      fields: {
+        title: { type: "text" },
+        weight: {
+          type: "radio",
+          options: [
+            { label: "Light", value: "light" },
+            { label: "Bold", value: "bold" },
+          ],
+        },
+        size: { type: "number", min: 16, max: 64 },
+      },
+      renderFields: ({ fields }) => (
+        <>
+          <FieldTab label="Content">{fields.title}</FieldTab>
+          <FieldTab label="Appearance">
+            {fields.weight}
+            {fields.size}
+          </FieldTab>
+        </>
+      ),
+      // ...
+    },
+  },
+};
+```
+
+Tabs appear in the order they are rendered.
+
+<ConfigPreview
+  label="Field tabs"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Light", value: "light" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      size: { type: "number", min: 16, max: 64 },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        <FieldTab label="Content">{fields.title}</FieldTab>
+        <FieldTab label="Appearance">
+          {fields.weight}
+          {fields.size}
+        </FieldTab>
+      </>
+    ),
+    defaultProps: {
+      title: "Hello, world",
+      weight: "light",
+      size: 24,
+    },
+    render: ({ title, weight, size }) => (
+      <p
+        style={{
+          fontSize: size,
+          fontWeight: weight === "light" ? 300 : 700,
+          margin: 0,
+        }}
+      >
+        {title}
+      </p>
+    ),
+  }}
+/>
+
+You can also use [`FieldGroup`](/docs/api-reference/components/field-group) inside a [`FieldTab`](/docs/api-reference/components/field-tab) to group related fields within a tab:
+
+```tsx copy
+<FieldTab label="Appearance">
+  <FieldGroup label="Typography">
+    {fields.weight}
+    {fields.size}
+  </FieldGroup>
+</FieldTab>
+```
+
+<ConfigPreview
+  label="Field tabs and groups"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Light", value: "light" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      size: { type: "number", min: 16, max: 64 },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        <FieldTab label="Content">{fields.title}</FieldTab>
+        <FieldTab label="Appearance">
+          <FieldGroup label="Typography">
+            {fields.weight}
+            {fields.size}
+          </FieldGroup>
+        </FieldTab>
+      </>
+    ),
+    defaultProps: {
+      title: "Hello, world",
+      weight: "light",
+      size: 24,
+    },
+    render: ({ title, weight, size }) => (
+      <p
+        style={{
+          fontSize: size,
+          fontWeight: weight === "light" ? 300 : 700,
+          margin: 0,
+        }}
+      >
+        {title}
+      </p>
+    ),
+  }}
+/>
+
+## Further reading
+
+- [`renderFields` API reference](/docs/api-reference/configuration/component-config#renderfieldsprops)
+- [`FieldGroup` API reference](/docs/api-reference/components/field-group)
+- [`object` field API reference](/docs/api-reference/fields/object)
+- [`FieldTab` API reference](/docs/api-reference/components/field-tab)
