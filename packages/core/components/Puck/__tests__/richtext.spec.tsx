@@ -1,4 +1,11 @@
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { Config, Data } from "../../../types";
 import "@testing-library/jest-dom";
 
@@ -270,13 +277,26 @@ describe("Puck - richtext programmatic updates", () => {
   });
 
   it("keeps inline richtext editable while its component is resolving", async () => {
+    let resolveUpdatedData: (() => void) | undefined;
+    const resolveData = jest.fn(
+      async ({ props }: { props: { body: string } }) => {
+        if (props.body.includes("updated")) {
+          await new Promise<void>((resolve) => {
+            resolveUpdatedData = resolve;
+          });
+        }
+
+        return { props };
+      }
+    );
+
     const config: Config = {
       components: {
         RichTextBlock: {
           fields: {
             body: { type: "richtext", contentEditable: true },
           },
-          resolveData: async ({ props }) => ({ props }),
+          resolveData,
           render: ({ body }) => <div>{body}</div>,
         },
       },
@@ -297,14 +317,56 @@ describe("Puck - richtext programmatic updates", () => {
 
     const { appStore } = getInternal();
 
+    const editorElement = await waitFor(() => {
+      const element = document.querySelector('[contenteditable="true"]');
+
+      expect(element).toBeInTheDocument();
+      return element as HTMLElement;
+    });
+
+    fireEvent.focus(editorElement);
+
+    await waitFor(() => {
+      expect(appStore.getState().currentRichText?.inlineComponentId).toBe(
+        "block-1"
+      );
+    });
+
     act(() => {
-      appStore.getState().setComponentLoading("block-1");
+      const editor = appStore.getState().currentRichText?.editor;
+
+      editor?.commands.insertContent(" updated");
+    });
+
+    await waitFor(() => {
+      expect(resolveUpdatedData).toBeDefined();
+      expect(
+        appStore.getState().componentState["block-1"]?.loadingCount
+      ).toBeGreaterThan(0);
+    });
+
+    // While the real resolver is pending, the inline editor must not be
+    // replaced with the read-only rich text renderer.
+    expect(document.querySelector('[contenteditable="true"]')).toBe(
+      editorElement
+    );
+
+    act(() => {
+      resolveUpdatedData?.();
     });
 
     await waitFor(() => {
       expect(
-        document.querySelector('[contenteditable="true"]')
-      ).toBeInTheDocument();
+        appStore.getState().componentState["block-1"]?.loadingCount ?? 0
+      ).toBe(0);
+      expect(editorElement.textContent).toContain("updated");
     });
+
+    // A remounted editor used to restart resolution after each completion.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    });
+
+    expect(resolveData).toHaveBeenCalledTimes(2);
   });
 });
