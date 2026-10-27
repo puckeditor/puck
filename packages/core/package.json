@@ -70,11 +70,12 @@
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
     "test": "jest",
-    "prepare": "cp ../../README.md . && pnpm build",
-    "postpublish": "rm README.md"
+    "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
+    "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
