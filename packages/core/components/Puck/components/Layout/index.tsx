@@ -285,6 +285,10 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   const hasDesktopFieldsPlugin =
     pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;
 
+  // Render the fields in one place only. The right sidebar is hidden on mobile,
+  // where the fields plugin tab is used instead.
+  const showFieldsPlugin = hasDesktopFieldsPlugin || currentPlugin === "fields";
+
   const mobilePanelExpanded = useAppStore(
     (s) => s.state.ui.mobilePanelExpanded ?? false
   );
@@ -315,8 +319,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                 className={getLayoutClassName({
                   leftSideBarVisible,
                   mounted,
-                  rightSideBarVisible:
-                    !hasDesktopFieldsPlugin && rightSideBarVisible,
+                  rightSideBarVisible: !showFieldsPlugin && rightSideBarVisible,
                   isExpanded: mobilePanelExpanded,
                   mobilePanelHeightToggle: mobilePanelHeightMode === "toggle",
                   mobilePanelHeightMinContent:
@@ -374,13 +377,13 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                           visible={currentPlugin === id}
                           mobileOnly={mobileOnly}
                         >
-                          <Render />
+                          {(id !== "fields" || showFieldsPlugin) && <Render />}
                         </PluginTab>
                       )
                     )}
                   </Sidebar>
                   <Canvas />
-                  {!hasDesktopFieldsPlugin && (
+                  {!showFieldsPlugin && (
                     <Sidebar
                       position="right"
                       sidebarRef={rightSidebarRef}
