@@ -289,6 +289,29 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   // where the fields plugin tab is used instead.
   const showFieldsPlugin = hasDesktopFieldsPlugin || currentPlugin === "fields";
 
+  useEffect(() => {
+    if (hasDesktopFieldsPlugin) return;
+
+    // The fields plugin is mobile-only. Deselect it on desktop, where the right
+    // sidebar shows the fields.
+    const deselectFieldsPlugin = () => {
+      if (
+        window.matchMedia("(min-width: 638px)").matches &&
+        appStoreApi.getState().state.ui.plugin?.current === "fields"
+      ) {
+        setUi({ plugin: { current: null } });
+      }
+    };
+
+    deselectFieldsPlugin();
+
+    window.addEventListener("resize", deselectFieldsPlugin);
+
+    return () => {
+      window.removeEventListener("resize", deselectFieldsPlugin);
+    };
+  }, [hasDesktopFieldsPlugin]);
+
   const mobilePanelExpanded = useAppStore(
     (s) => s.state.ui.mobilePanelExpanded ?? false
   );
