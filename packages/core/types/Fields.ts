@@ -104,6 +104,7 @@ export interface ObjectField<
   type: "object";
   collapsible?: boolean;
   defaultExpanded?: boolean;
+  variant?: "card" | "flush";
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
       ? Field<Props[SubPropName]> | UserField
