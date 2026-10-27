@@ -9,12 +9,16 @@ import styles from "./styles.module.css";
 import useExpandedFieldGroup from "./lib/use-field-group-expanded";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
+const getBoxClassName = getClassNameFactory("FieldGroup-box", styles);
+
+type FieldGroupVariant = "flush" | "card";
 
 type NonCollapsibleFieldGroupProps = { collapsible: false; label?: string };
 
 type CollapsibleFieldGroupProps = { collapsible?: true; label: string };
 
 type FieldGroupProps = {
+  variant?: FieldGroupVariant;
   icon?: ReactNode;
   children?: ReactNode;
   id?: string;
@@ -22,6 +26,7 @@ type FieldGroupProps = {
 } & (NonCollapsibleFieldGroupProps | CollapsibleFieldGroupProps);
 
 type FieldGroupInternalProps = {
+  variant?: FieldGroupVariant;
   collapsible?: boolean;
   label?: string;
   icon?: ReactNode;
@@ -43,6 +48,7 @@ type FieldGroupInternalProps = {
  * (standalone public AutoField vs AutoField used to render a field config).
  */
 export const FieldGroupInternal = ({
+  variant = "flush",
   collapsible = false,
   label,
   icon,
@@ -62,7 +68,13 @@ export const FieldGroupInternal = ({
   if (!hasContent) return null;
 
   const content = (
-    <div id={contentId} className={getClassName("box")}>
+    <div
+      id={contentId}
+      className={getBoxClassName({
+        flush: variant === "flush",
+        card: variant === "card",
+      })}
+    >
       <fieldset className={getClassName("fieldset")}>{children}</fieldset>
     </div>
   );

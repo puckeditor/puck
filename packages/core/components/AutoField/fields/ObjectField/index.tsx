@@ -58,6 +58,7 @@ export const ObjectField = ({
     <FieldGroupInternal
       {...labelProps}
       Label={Label}
+      variant="card"
       collapsible={field.collapsible}
       expanded={expanded}
       onToggle={onToggle}

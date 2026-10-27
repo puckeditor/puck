@@ -1,19 +1,30 @@
 .FieldGroup-box {
   display: flex;
   flex-direction: column;
+  /* Extra space below the label, and the space the group was given around it, if any (see FieldGroup-toggle below) */
+  margin: var(--puck-space-2) var(--_puck-field-group-inset-x, 0px)
+    var(--_puck-field-group-inset-bottom, 0px);
+}
+
+.FieldGroup-box--card {
   background-color: var(--puck-field-color-surface, var(--puck-color-surface));
   border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
     var(--puck-field-color-border, var(--puck-color-border));
   border-radius: var(--puck-field-radius, var(--puck-radius-m));
-  /* The space the group was given around it, if any (see FieldGroup-toggle below) */
-  margin: 0 var(--_puck-field-group-inset-x, 0px)
-    var(--_puck-field-group-inset-bottom, 0px);
 }
 
 .FieldGroup-fieldset {
   border: none;
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
+  padding: 0;
+  /* Reset the insets for any nested FieldGroups */
+  --_puck-field-group-inset-x: 0px;
+  --_puck-field-group-inset-top: 0px;
+  --_puck-field-group-inset-bottom: 0px;
+}
+
+.FieldGroup-box--card > .FieldGroup-fieldset {
   padding: var(--puck-field-space-surface-y, var(--puck-space-4))
     var(
       --puck-field-space-surface-x,
@@ -22,40 +33,73 @@
           var(--puck-field-border-width, var(--puck-border-width-regular))
       )
     );
-  /* Reset the insets for any nested FieldGroups */
-  --_puck-field-group-inset-x: 0px;
-  --_puck-field-group-inset-top: 0px;
-  --_puck-field-group-inset-bottom: 0px;
 }
 
-.FieldGroup-fieldset > .FieldGroup-item + .FieldGroup-item {
+/* Without a card, a guide line shows which fields belong to a nested group */
+.FieldGroup-fieldset .FieldGroup-box--flush > .FieldGroup-fieldset {
+  border-inline-start: var(
+      --puck-field-border-width,
+      var(--puck-border-width-regular)
+    )
+    solid var(--puck-color-border-muted);
+  padding-inline-start: var(--puck-space-3);
+}
+
+/* Groups can be nested directly or within an item, so both are spaced as items */
+.FieldGroup-fieldset
+  > :is(.FieldGroup-item, .FieldGroup)
+  + :is(.FieldGroup-item, .FieldGroup) {
   margin-top: var(--puck-space-3);
 }
 
 /* Add the margin between items as toggle padding for collapsible groups so their click area includes the gap */
 .FieldGroup-fieldset
-  > .FieldGroup-item
-  + .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child) {
+  > :is(.FieldGroup-item, .FieldGroup)
+  + :is(
+    [data-puck-field-group-collapsible],
+    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
+  ) {
   margin-top: 0;
   --_puck-field-group-inset-top: var(--puck-space-3);
 }
 
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  + .FieldGroup-item {
+  > :is(
+    [data-puck-field-group-collapsible],
+    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
+  )
+  + :is(.FieldGroup-item, .FieldGroup) {
   margin-top: 0;
 }
 
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child):has(
-    + .FieldGroup-item
-  ) {
+  > :is(
+    [data-puck-field-group-collapsible],
+    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
+  ):has(+ :is(.FieldGroup-item, .FieldGroup)) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
 }
 
+/* Give collapsed labels the space they'd have above their box (label spacing + box margin), so they don't read as the label of the next field */
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  + .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child) {
+  > :is(
+    .FieldGroup--collapsed,
+    .FieldGroup-item:has(> .FieldGroup--collapsed:only-child)
+  ):has(+ :is(.FieldGroup-item, .FieldGroup)) {
+  --_puck-field-group-inset-bottom: calc(
+    var(--puck-space-3) + var(--puck-space-2)
+  );
+}
+
+.FieldGroup-fieldset
+  > :is(
+    [data-puck-field-group-collapsible],
+    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
+  )
+  + :is(
+    [data-puck-field-group-collapsible],
+    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
+  ) {
   --_puck-field-group-inset-top: 0px;
 }
 

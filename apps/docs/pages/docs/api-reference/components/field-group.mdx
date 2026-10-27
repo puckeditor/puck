@@ -54,14 +54,15 @@ export function Editor() {
 
 ## Props
 
-| Param                                 | Example                 | Type      | Status |
-| ------------------------------------- | ----------------------- | --------- | ------ |
-| [`children`](#children)               | `children: <div />`     | ReactNode | -      |
-| [`collapsible`](#collapsible)         | `collapsible: false`    | Boolean   | -      |
-| [`defaultExpanded`](#defaultexpanded) | `defaultExpanded: true` | Boolean   | -      |
-| [`icon`](#icon)                       | `icon: <svg />`         | ReactNode | -      |
-| [`id`](#id)                           | `id: "appearance"`      | String    | -      |
-| [`label`](#label)                     | `label: "Appearance"`   | String    | -      |
+| Param                                 | Example                 | Type                  | Status |
+| ------------------------------------- | ----------------------- | --------------------- | ------ |
+| [`children`](#children)               | `children: <div />`     | ReactNode             | -      |
+| [`collapsible`](#collapsible)         | `collapsible: false`    | Boolean               | -      |
+| [`defaultExpanded`](#defaultexpanded) | `defaultExpanded: true` | Boolean               | -      |
+| [`icon`](#icon)                       | `icon: <svg />`         | ReactNode             | -      |
+| [`id`](#id)                           | `id: "appearance"`      | String                | -      |
+| [`label`](#label)                     | `label: "Appearance"`   | String                | -      |
+| [`variant`](#variant)                 | `variant: "card"`       | `"flush"` \| `"card"` | -      |
 
 ## Optional props
 
@@ -140,3 +141,10 @@ This prop has no effect outside `<Puck>`.
 ### `label`
 
 The label for the group. Required unless [`collapsible`](#collapsible) is `false`.
+
+### `variant`
+
+The visual style of the group. **Defaults to `"flush"`**.
+
+- `"flush"` (default): render the fields without a container. Nested groups are indented.
+- `"card"`: render the fields inside a bordered container.
