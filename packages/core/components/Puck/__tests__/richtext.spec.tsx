@@ -268,4 +268,43 @@ describe("Puck - richtext programmatic updates", () => {
       expect(screen.getByText("Plain text value")).toBeInTheDocument();
     });
   });
+
+  it("keeps inline richtext editable while its component is resolving", async () => {
+    const config: Config = {
+      components: {
+        RichTextBlock: {
+          fields: {
+            body: { type: "richtext", contentEditable: true },
+          },
+          resolveData: async ({ props }) => ({ props }),
+          render: ({ body }) => <div>{body}</div>,
+        },
+      },
+    };
+
+    const data: Data = {
+      root: { props: {} },
+      content: [
+        {
+          type: "RichTextBlock",
+          props: { id: "block-1", body: "<p>Hello world</p>" },
+        },
+      ],
+    };
+
+    render(<Puck config={config} data={data} iframe={{ enabled: false }} />);
+    await flush();
+
+    const { appStore } = getInternal();
+
+    act(() => {
+      appStore.getState().setComponentLoading("block-1");
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('[contenteditable="true"]')
+      ).toBeInTheDocument();
+    });
+  });
 });

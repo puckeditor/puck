@@ -34,9 +34,6 @@ const useEditorProps = ({
   const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
 
   const componentId = component.props.id;
-  const componentIsLoading = useAppStore(
-    (s) => s.componentState[componentId]?.loadingCount > 0
-  );
   const componentReadOnly = useAppStore(
     useShallow((s) => s.state.indexes.nodes[componentId]?.data.readOnly)
   );
@@ -66,8 +63,7 @@ const useEditorProps = ({
     config,
     component,
     combinedFieldTransforms,
-    componentReadOnly,
-    componentIsLoading
+    componentReadOnly
   );
 };
 
