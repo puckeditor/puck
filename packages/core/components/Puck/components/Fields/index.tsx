@@ -1,11 +1,12 @@
 import { Loader } from "../../../Loader";
 import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
+import { rendersCollapsibleGroup } from "../../../../lib/fields/renders-collapsible-group";
 import { rootDroppableId } from "../../../../lib/root-droppable-id";
 import { ItemSelector } from "../../../../lib/data/get-item";
 import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { ComponentConfig, UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
-import { FieldGroup } from "../../../FieldGroup";
+import { FieldGroupItemInternal } from "../../../FieldGroup";
 import { Tabs, TabsChangeReason, TabValue } from "../../../Tabs";
 import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
@@ -152,7 +153,11 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <FieldGroup.Item key={id} className={getClassName("field")}>
+    <FieldGroupItemInternal
+      key={id}
+      className={getClassName("field")}
+      collapsible={rendersCollapsibleGroup(field, fieldTypeOverrides)}
+    >
       <AutoFieldPrivate
         field={field}
         name={fieldName}
@@ -160,7 +165,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
         readOnly={!permissions.edit || isReadOnly}
         onChange={onChange}
       />
-    </FieldGroup.Item>
+    </FieldGroupItemInternal>
   );
 };
 
