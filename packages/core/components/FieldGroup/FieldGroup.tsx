@@ -18,6 +18,7 @@ type FieldGroupProps = {
   icon?: ReactNode;
   children?: ReactNode;
   id?: string;
+  defaultExpanded?: boolean;
 } & (NonExpandableFieldGroupProps | ExpandableFieldGroupProps);
 
 type FieldGroupInternalProps = {
@@ -125,6 +126,7 @@ export const FieldGroup = (props: FieldGroupProps) => {
 
   const { expanded, toggleExpanded, unsetExpanded } = useExpandedFieldGroup({
     fieldGroupKey: props.id ?? defaultStoreId,
+    defaultExpanded: props.defaultExpanded,
   });
 
   // Unset the expanded state when the component is unmounted and no explicit id is provided

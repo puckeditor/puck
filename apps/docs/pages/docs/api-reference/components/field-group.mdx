@@ -54,13 +54,14 @@ export function Editor() {
 
 ## Props
 
-| Param                       | Example               | Type      | Status |
-| --------------------------- | --------------------- | --------- | ------ |
-| [`children`](#children)     | `children: <div />`   | ReactNode | -      |
-| [`expandable`](#expandable) | `expandable: true`    | Boolean   | -      |
-| [`icon`](#icon)             | `icon: <svg />`       | ReactNode | -      |
-| [`id`](#id)                 | `id: "appearance"`    | String    | -      |
-| [`label`](#label)           | `label: "Appearance"` | String    | -      |
+| Param                                 | Example                 | Type      | Status |
+| ------------------------------------- | ----------------------- | --------- | ------ |
+| [`children`](#children)               | `children: <div />`     | ReactNode | -      |
+| [`defaultExpanded`](#defaultexpanded) | `defaultExpanded: true` | Boolean   | -      |
+| [`expandable`](#expandable)           | `expandable: true`      | Boolean   | -      |
+| [`icon`](#icon)                       | `icon: <svg />`         | ReactNode | -      |
+| [`id`](#id)                           | `id: "appearance"`      | String    | -      |
+| [`label`](#label)                     | `label: "Appearance"`   | String    | -      |
 
 ## Optional props
 
@@ -68,12 +69,49 @@ export function Editor() {
 
 The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
 
+### `defaultExpanded`
+
+Expand the children by default. Only applies when [`expandable`](#expandable) is `true`. **Defaults to `false`**.
+
+```tsx /defaultExpanded/ copy
+<FieldGroup label="Appearance" expandable defaultExpanded>
+  <FieldGroupItem>
+    <input type="text" value="#000000" onChange={() => {}} />
+  </FieldGroupItem>
+</FieldGroup>
+```
+
+<PuckPreview
+  config={{ components: {} }}
+  data={{ root: { props: {} }, content: [] }}
+>
+  <FieldGroup label="Appearance" expandable defaultExpanded>
+    <FieldGroupItem>
+      <FieldLabel label="Color">
+        <AutoField
+          value="#000000"
+          onChange={() => {}}
+          field={{ type: "text" }}
+        />
+      </FieldLabel>
+    </FieldGroupItem>
+  </FieldGroup>
+</PuckPreview>
+
 ### `expandable`
 
 Hide the children until the label is clicked. **Defaults to `false`**.
 
+```tsx /expandable/ copy
+<FieldGroup label="Appearance" expandable>
+  <FieldGroupItem>
+    <input type="text" value="#000000" onChange={() => {}} />
+  </FieldGroupItem>
+</FieldGroup>
+```
+
 <PuckPreview
-  config={{ components: { Orange: { render: () => <div>Orange</div> } } }}
+  config={{ components: {} }}
   data={{ root: { props: {} }, content: [] }}
 >
   <FieldGroup label="Appearance" expandable>
@@ -86,32 +124,8 @@ Hide the children until the label is clicked. **Defaults to `false`**.
         />
       </FieldLabel>
     </FieldGroupItem>
-    <FieldGroupItem>
-      <FieldLabel label="Size">
-        <AutoField value="12" onChange={() => {}} field={{ type: "number" }} />
-      </FieldLabel>
-    </FieldGroupItem>
   </FieldGroup>
 </PuckPreview>
-
-```tsx {6-13} copy
-import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
-
-export function Editor() {
-  return (
-    <Puck>
-      <FieldGroup label="Appearance" expandable>
-        <FieldGroupItem>
-          <input type="text" value="#000000" onChange={() => {}} />
-        </FieldGroupItem>
-        <FieldGroupItem>
-          <input type="number" value="12" onChange={() => {}} />
-        </FieldGroupItem>
-      </FieldGroup>
-    </Puck>
-  );
-}
-```
 
 ### `icon`
 
