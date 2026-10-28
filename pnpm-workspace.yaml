@@ -29,6 +29,15 @@ overrides:
   postcss: "^8.5.23"
   axios: "^1.18.0"
   "nx>brace-expansion": "^5.0.10" # GHSA-6j4f-fj2g-mc7p (nx's minimatch otherwise resolves a stale 5.0.5)
+  "nx>follow-redirects": "^1.16.1" # GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8 (nx 22 pins 1.16.0; lerna 9 caps nx <23)
   qs: "^6.16.0" # GHSA-4mjr-xmp4-gh2g, GHSA-x5fp-wj9c-mxmx (via express)
   "@xmldom/xmldom": "^0.9.12" # GHSA-6gmq-8vp8-gcm6 (via docs mathjax tooling)
   pacote: "^21.5.1" # GHSA-w4pp-8pjf-rmxw (via lerna release tooling)
+
+peerDependencyRules:
+  allowedVersions:
+    # @tiptap/html still declares happy-dom ^20, but GHSA fixes for happy-dom
+    # only ship in 21. The 21.0.0 break (CSS/iframe loading off by default)
+    # doesn't affect tiptap, which already disables both. Drop once tiptap
+    # widens its peer range (ueberdosis/tiptap#8586).
+    "@tiptap/html>happy-dom": "21"
