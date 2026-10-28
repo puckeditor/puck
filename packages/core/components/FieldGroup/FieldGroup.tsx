@@ -88,7 +88,11 @@ export const FieldGroupInternal = ({
 
     return (
       <div
-        className={getClassName({ collapsed: !expanded, expanded })}
+        className={getClassName({
+          collapsed: !expanded,
+          expanded,
+          flush: variant === "flush",
+        })}
         data-puck-field-group-collapsible
       >
         <button
@@ -124,7 +128,7 @@ export const FieldGroupInternal = ({
   }
 
   return (
-    <div className={getClassName()}>
+    <div className={getClassName({ flush: variant === "flush" })}>
       <Label label={label} icon={icon} el="div" readOnly={readOnly}>
         {content}
       </Label>

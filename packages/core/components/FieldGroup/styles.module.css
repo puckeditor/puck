@@ -1,8 +1,8 @@
 .FieldGroup-box {
   display: flex;
   flex-direction: column;
-  /* Extra space below the label, and the space the group was given around it, if any (see FieldGroup-toggle below) */
-  margin: var(--puck-space-2) var(--_puck-field-group-inset-x, 0px)
+  /* The space the group was given around it, if any (see FieldGroup-toggle below) */
+  margin: 0 var(--_puck-field-group-inset-x, 0px)
     var(--_puck-field-group-inset-bottom, 0px);
 }
 
@@ -35,7 +35,12 @@
     );
 }
 
-/* Without a card, a guide line shows which fields belong to a nested group */
+/* Without a card, flush groups need more space between their label (if any) and their fields */
+.FieldGroup-box--flush:not(:first-child) {
+  margin-top: var(--puck-space-2);
+}
+
+/* And nested flush groups have a guide line showing which fields belong to them */
 .FieldGroup-fieldset .FieldGroup-box--flush > .FieldGroup-fieldset {
   border-inline-start: var(
       --puck-field-border-width,
@@ -78,17 +83,6 @@
     .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
   ):has(+ :is(.FieldGroup-item, .FieldGroup)) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
-}
-
-/* Give collapsed labels the space they'd have above their box (label spacing + box margin), so they don't read as the label of the next field */
-.FieldGroup-fieldset
-  > :is(
-    .FieldGroup--collapsed,
-    .FieldGroup-item:has(> .FieldGroup--collapsed:only-child)
-  ):has(+ :is(.FieldGroup-item, .FieldGroup)) {
-  --_puck-field-group-inset-bottom: calc(
-    var(--puck-space-3) + var(--puck-space-2)
-  );
 }
 
 .FieldGroup-fieldset
@@ -135,6 +129,21 @@
 /* The label's own bottom spacing separates the toggle from the box */
 .FieldGroup--expanded > .FieldGroup-toggle {
   padding-bottom: 0;
+}
+
+/*
+ * Collapsed flush groups keep the extra space they'd have above their fields,
+ * so their label doesn't read as the label of the next field.
+ *
+ * Nested groups only get a bottom inset when something follows them, so min() only adds the space then.
+ */
+.FieldGroup-fieldset
+  .FieldGroup--flush.FieldGroup--collapsed
+  > .FieldGroup-toggle {
+  padding-bottom: calc(
+    var(--_puck-field-group-inset-bottom, 0px) +
+      min(var(--_puck-field-group-inset-bottom, 0px), var(--puck-space-2))
+  );
 }
 
 .FieldGroup-toggle:focus-visible {
