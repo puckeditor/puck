@@ -157,19 +157,19 @@ const config = {
   }}
 />
 
-### Collapsible field groups
+### Expanded by default
 
-Set the [`collapsible` prop](/docs/api-reference/components/field-group#collapsible) to `true` to let users expand and collapse a field group:
+Field groups are collapsed by default. Set the [`defaultExpanded` prop](/docs/api-reference/components/field-group#defaultexpanded) to `true` to expand them instead:
 
-```tsx /collapsible/ copy
-<FieldGroup label="Appearance" collapsible>
+```tsx /defaultExpanded/ copy
+<FieldGroup label="Appearance" defaultExpanded={true}>
   {fields.weight}
   {fields.size}
 </FieldGroup>
 ```
 
 <ConfigPreview
-  label="Collapsible field group"
+  label="Field group expanded by default"
   componentConfig={{
     fields: {
       title: { type: "text" },
@@ -185,7 +185,60 @@ Set the [`collapsible` prop](/docs/api-reference/components/field-group#collapsi
     renderFields: ({ fields }) => (
       <>
         {fields.title}
-        <FieldGroup label="Appearance" collapsible>
+        <FieldGroup label="Appearance" defaultExpanded={true}>
+          {fields.weight}
+          {fields.size}
+        </FieldGroup>
+      </>
+    ),
+    defaultProps: {
+      title: "Hello, world",
+      weight: "light",
+      size: 24,
+    },
+    render: ({ title, weight, size }) => (
+      <p
+        style={{
+          fontSize: size,
+          fontWeight: weight === "light" ? 300 : 700,
+          margin: 0,
+        }}
+      >
+        {title}
+      </p>
+    ),
+  }}
+/>
+
+### Non-collapsible field groups
+
+To always show the fields without the option to collapse them, set the [`collapsible` prop](/docs/api-reference/components/field-group#collapsible) to `false`:
+
+```tsx /collapsible/ copy
+<FieldGroup label="Appearance" collapsible={false}>
+  {fields.weight}
+  {fields.size}
+</FieldGroup>
+```
+
+<ConfigPreview
+  label="Non-collapsible field group"
+  componentConfig={{
+    fields: {
+      title: { type: "text" },
+      weight: {
+        type: "radio",
+        options: [
+          { label: "Light", value: "light" },
+          { label: "Bold", value: "bold" },
+        ],
+      },
+      size: { type: "number", min: 16, max: 64 },
+    },
+    renderFields: ({ fields }) => (
+      <>
+        {fields.title}
+        <FieldGroup label="Appearance" collapsible={false}>
           {fields.weight}
           {fields.size}
         </FieldGroup>
@@ -319,7 +372,7 @@ You can also use [`FieldGroup`](/docs/api-reference/components/field-group) insi
       <>
         <FieldTab label="Content">{fields.title}</FieldTab>
         <FieldTab label="Appearance">
-          <FieldGroup label="Typography">
+          <FieldGroup label="Typography" id="tabs-fieldgroup-typography">
             {fields.weight}
             {fields.size}
           </FieldGroup>

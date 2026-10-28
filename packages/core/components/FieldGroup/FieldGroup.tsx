@@ -10,9 +10,9 @@ import useExpandedFieldGroup from "./lib/use-field-group-expanded";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
 
-type NonCollapsibleFieldGroupProps = { collapsible?: false; label?: string };
+type NonCollapsibleFieldGroupProps = { collapsible: false; label?: string };
 
-type CollapsibleFieldGroupProps = { collapsible: true; label: string };
+type CollapsibleFieldGroupProps = { collapsible?: true; label: string };
 
 type FieldGroupProps = {
   icon?: ReactNode;
@@ -121,7 +121,10 @@ export const FieldGroupInternal = ({
 };
 
 /** Renders a group of related fields under a common label and layout */
-export const FieldGroup = (props: FieldGroupProps) => {
+export const FieldGroup = ({
+  collapsible = true,
+  ...props
+}: FieldGroupProps) => {
   const defaultStoreId = useSafeId();
 
   const { expanded, toggleExpanded, unsetExpanded } = useExpandedFieldGroup({
@@ -141,6 +144,7 @@ export const FieldGroup = (props: FieldGroupProps) => {
   return (
     <FieldGroupInternal
       {...props}
+      collapsible={collapsible}
       expanded={expanded}
       onToggle={toggleExpanded}
     />
