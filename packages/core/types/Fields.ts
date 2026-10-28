@@ -102,7 +102,7 @@ export interface ObjectField<
   UserField extends {} = {}
 > extends BaseField {
   type: "object";
-  expandable?: boolean;
+  collapsible?: boolean;
   defaultExpanded?: boolean;
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }

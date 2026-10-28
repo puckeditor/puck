@@ -10,19 +10,19 @@ import useExpandedFieldGroup from "./lib/use-field-group-expanded";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
 
-type NonExpandableFieldGroupProps = { expandable?: false; label?: string };
+type NonCollapsibleFieldGroupProps = { collapsible?: false; label?: string };
 
-type ExpandableFieldGroupProps = { expandable: true; label: string };
+type CollapsibleFieldGroupProps = { collapsible: true; label: string };
 
 type FieldGroupProps = {
   icon?: ReactNode;
   children?: ReactNode;
   id?: string;
   defaultExpanded?: boolean;
-} & (NonExpandableFieldGroupProps | ExpandableFieldGroupProps);
+} & (NonCollapsibleFieldGroupProps | CollapsibleFieldGroupProps);
 
 type FieldGroupInternalProps = {
-  expandable?: boolean;
+  collapsible?: boolean;
   label?: string;
   icon?: ReactNode;
   children?: ReactNode;
@@ -43,7 +43,7 @@ type FieldGroupInternalProps = {
  * (standalone public AutoField vs AutoField used to render a field config).
  */
 export const FieldGroupInternal = ({
-  expandable = false,
+  collapsible = false,
   label,
   icon,
   children,
@@ -67,7 +67,7 @@ export const FieldGroupInternal = ({
     </div>
   );
 
-  if (expandable) {
+  if (collapsible) {
     const toggleIcon = (
       <span className={getClassName("toggleIcon")}>
         <ChevronDown size={16} />
@@ -77,7 +77,7 @@ export const FieldGroupInternal = ({
     return (
       <div
         className={getClassName({ collapsed: !expanded, expanded })}
-        data-puck-field-group-expandable
+        data-puck-field-group-collapsible
       >
         <button
           type="button"
@@ -87,7 +87,7 @@ export const FieldGroupInternal = ({
           onClick={() => onToggle?.(!expanded)}
         >
           {label ? (
-            // Expandable groups need a visible label, so it always uses Puck's
+            // Collapsible groups need a visible label, so it always uses Puck's
             <FieldLabelInternal
               label={label}
               icon={icon}

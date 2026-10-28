@@ -32,30 +32,30 @@
   margin-top: var(--puck-space-3);
 }
 
-/* Add the margin between items as toggle padding for expandable groups so their click area includes the gap */
+/* Add the margin between items as toggle padding for collapsible groups so their click area includes the gap */
 .FieldGroup-fieldset
   > .FieldGroup-item
-  + .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child) {
+  + .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child) {
   margin-top: 0;
   --_puck-field-group-inset-top: var(--puck-space-3);
 }
 
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child)
+  > .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
   + .FieldGroup-item {
   margin-top: 0;
 }
 
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child):has(
+  > .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child):has(
     + .FieldGroup-item
   ) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
 }
 
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child)
-  + .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child) {
+  > .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
+  + .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child) {
   --_puck-field-group-inset-top: 0px;
 }
 

@@ -57,8 +57,8 @@ export function Editor() {
 | Param                                 | Example                 | Type      | Status |
 | ------------------------------------- | ----------------------- | --------- | ------ |
 | [`children`](#children)               | `children: <div />`     | ReactNode | -      |
+| [`collapsible`](#collapsible)         | `collapsible: true`     | Boolean   | -      |
 | [`defaultExpanded`](#defaultexpanded) | `defaultExpanded: true` | Boolean   | -      |
-| [`expandable`](#expandable)           | `expandable: true`      | Boolean   | -      |
 | [`icon`](#icon)                       | `icon: <svg />`         | ReactNode | -      |
 | [`id`](#id)                           | `id: "appearance"`      | String    | -      |
 | [`label`](#label)                     | `label: "Appearance"`   | String    | -      |
@@ -69,12 +69,12 @@ export function Editor() {
 
 The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
 
-### `defaultExpanded`
+### `collapsible`
 
-Expand the children by default. Only applies when [`expandable`](#expandable) is `true`. **Defaults to `false`**.
+Hide the children until the label is clicked. **Defaults to `false`**.
 
-```tsx /defaultExpanded/ copy
-<FieldGroup label="Appearance" expandable defaultExpanded>
+```tsx /collapsible/ copy
+<FieldGroup label="Appearance" collapsible>
   <FieldGroupItem>
     <input type="text" value="#000000" onChange={() => {}} />
   </FieldGroupItem>
@@ -85,7 +85,7 @@ Expand the children by default. Only applies when [`expandable`](#expandable) is
   config={{ components: {} }}
   data={{ root: { props: {} }, content: [] }}
 >
-  <FieldGroup label="Appearance" expandable defaultExpanded>
+  <FieldGroup label="Appearance" collapsible>
     <FieldGroupItem>
       <FieldLabel label="Color">
         <AutoField
@@ -98,12 +98,12 @@ Expand the children by default. Only applies when [`expandable`](#expandable) is
   </FieldGroup>
 </PuckPreview>
 
-### `expandable`
+### `defaultExpanded`
 
-Hide the children until the label is clicked. **Defaults to `false`**.
+Expand the children by default. Only applies when [`collapsible`](#collapsible) is `true`. **Defaults to `false`**.
 
-```tsx /expandable/ copy
-<FieldGroup label="Appearance" expandable>
+```tsx /defaultExpanded/ copy
+<FieldGroup label="Appearance" collapsible defaultExpanded>
   <FieldGroupItem>
     <input type="text" value="#000000" onChange={() => {}} />
   </FieldGroupItem>
@@ -114,7 +114,7 @@ Hide the children until the label is clicked. **Defaults to `false`**.
   config={{ components: {} }}
   data={{ root: { props: {} }, content: [] }}
 >
-  <FieldGroup label="Appearance" expandable>
+  <FieldGroup label="Appearance" collapsible defaultExpanded>
     <FieldGroupItem>
       <FieldLabel label="Color">
         <AutoField
@@ -137,4 +137,4 @@ An optional ID for this group, used as the key in [`ui.expandedFieldGroups`](/do
 
 ### `label`
 
-The label for the group. Required when [`expandable`](#expandable) is `true`.
+The label for the group. Required when [`collapsible`](#collapsible) is `true`.
