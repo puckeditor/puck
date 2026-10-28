@@ -6,6 +6,7 @@ import {
   RichTextSelector,
 } from "../components/RichTextEditor/types";
 import { PuckRichTextOptions } from "../components/RichTextEditor/extension";
+import type { FieldGroupVariant } from "../components/FieldGroup";
 
 type FieldOption = {
   label: string;
@@ -104,7 +105,7 @@ export interface ObjectField<
   type: "object";
   collapsible?: boolean;
   defaultExpanded?: boolean;
-  variant?: "card" | "flush";
+  variant?: FieldGroupVariant;
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
       ? Field<Props[SubPropName]> | UserField

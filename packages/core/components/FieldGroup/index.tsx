@@ -5,3 +5,5 @@ export {
   FieldGroupInternal,
   FieldGroupItemInternal,
 } from "./FieldGroup";
+
+export type { FieldGroupVariant } from "./FieldGroup";

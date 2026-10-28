@@ -11,7 +11,7 @@ import useExpandedFieldGroup from "./lib/use-field-group-expanded";
 const getClassName = getClassNameFactory("FieldGroup", styles);
 const getBoxClassName = getClassNameFactory("FieldGroup-box", styles);
 
-type FieldGroupVariant = "flush" | "card";
+export type FieldGroupVariant = "flush" | "card";
 
 type NonCollapsibleFieldGroupProps = { collapsible: false; label?: string };
 
