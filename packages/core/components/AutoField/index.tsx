@@ -268,17 +268,24 @@ export function AutoFieldPrivate<
     (s) => `${s.selectedItem?.type || "root"}.${props.name}`
   );
 
+  const field = props.field as Field<ValueType>;
+
   const { expanded, toggleExpanded } = useExpandedFieldGroup({
     fieldGroupKey,
+    defaultExpanded:
+      field.type === "object" ? field.defaultExpanded : undefined,
   });
 
-  return (
-    <AutoFieldInternal<ValueType, FieldType>
-      {...props}
-      expanded={expanded}
-      onToggle={toggleExpanded}
-    />
-  );
+  const internalProps: AutoFieldInternalProps<ValueType, FieldType> = {
+    ...props,
+  };
+
+  if (field.type === "object") {
+    internalProps.expanded = expanded;
+    internalProps.onToggle = toggleExpanded;
+  }
+
+  return <AutoFieldInternal<ValueType, FieldType> {...internalProps} />;
 }
 
 function AutoFieldPublicInternal<
@@ -301,8 +308,12 @@ function AutoFieldPublicInternal<
 
   const fieldStore = useFieldStoreApi();
 
+  const field = props.field as Field<ValueType>;
+
   const { expanded, toggleExpanded, unsetExpanded } = useExpandedFieldGroup({
     fieldGroupKey: props.id,
+    defaultExpanded:
+      field.type === "object" ? field.defaultExpanded : undefined,
   });
 
   // Unset the expanded state when the component is unmounted and no id is provided since `useSafeId` changes between mounts.
