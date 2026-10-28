@@ -5,7 +5,7 @@ import { useAppStore } from "../../../../store";
 import { getDeep } from "../../../../lib/data/get-deep";
 import { SubField } from "../../subfield";
 import { useFieldStoreApi } from "../../store";
-import { FieldGroupInternal, FieldGroupItem } from "../../../FieldGroup";
+import { FieldGroup, FieldGroupInternal } from "../../../FieldGroup";
 import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
 
 export const ObjectField = ({
@@ -67,7 +67,7 @@ export const ObjectField = ({
         const subPath = `${localName}.${subName}`;
 
         return (
-          <FieldGroupItem key={subPath}>
+          <FieldGroup.Item key={subPath}>
             <SubField
               id={`${id}_${subName}`}
               name={name}
@@ -86,7 +86,7 @@ export const ObjectField = ({
                 onChange({ ...value, [subName]: subValue }, ui);
               }}
             />
-          </FieldGroupItem>
+          </FieldGroup.Item>
         );
       })}
     </FieldGroupInternal>

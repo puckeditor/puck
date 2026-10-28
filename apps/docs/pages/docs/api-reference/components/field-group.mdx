@@ -3,7 +3,7 @@ title: <FieldGroup>
 ---
 
 import { PuckPreview } from "@/docs/components/Preview";
-import { FieldGroup, AutoField, FieldLabel, FieldGroupItem } from "@/puck";
+import { FieldGroup, AutoField, FieldLabel } from "@/puck";
 
 # \<FieldGroup\>
 
@@ -16,7 +16,7 @@ Use it in [`renderFields`](/docs/api-reference/configuration/component-config#re
   data={{ root: { props: {} }, content: [] }}
 >
   <FieldGroup label="Appearance">
-    <FieldGroupItem>
+    <FieldGroup.Item>
       <FieldLabel label="Color">
         <AutoField
           value="#000000"
@@ -24,28 +24,28 @@ Use it in [`renderFields`](/docs/api-reference/configuration/component-config#re
           field={{ type: "text" }}
         />
       </FieldLabel>
-    </FieldGroupItem>
-    <FieldGroupItem>
+    </FieldGroup.Item>
+    <FieldGroup.Item>
       <FieldLabel label="Size">
         <AutoField value="12" onChange={() => {}} field={{ type: "number" }} />
       </FieldLabel>
-    </FieldGroupItem>
+    </FieldGroup.Item>
   </FieldGroup>
 </PuckPreview>
 
 ```tsx {6-13} copy
-import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
+import { Puck, FieldGroup } from "@puckeditor/core";
 
 export function Editor() {
   return (
     <Puck>
       <FieldGroup label="Appearance">
-        <FieldGroupItem>
+        <FieldGroup.Item>
           <input type="text" value="#000000" onChange={() => {}} />
-        </FieldGroupItem>
-        <FieldGroupItem>
+        </FieldGroup.Item>
+        <FieldGroup.Item>
           <input type="number" value="12" onChange={() => {}} />
-        </FieldGroupItem>
+        </FieldGroup.Item>
       </FieldGroup>
     </Puck>
   );
@@ -67,7 +67,7 @@ export function Editor() {
 
 ### `children`
 
-The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
+The fields to render inside the group. Will likely contain [`<FieldGroup.Item>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
 
 ### `collapsible`
 
@@ -75,9 +75,9 @@ Let users show and hide the children by clicking the label. **Defaults to `true`
 
 ```tsx /collapsible/ copy
 <FieldGroup label="Appearance" collapsible={false}>
-  <FieldGroupItem>
+  <FieldGroup.Item>
     <input type="text" value="#000000" onChange={() => {}} />
-  </FieldGroupItem>
+  </FieldGroup.Item>
 </FieldGroup>
 ```
 
@@ -86,7 +86,7 @@ Let users show and hide the children by clicking the label. **Defaults to `true`
   data={{ root: { props: {} }, content: [] }}
 >
   <FieldGroup label="Appearance" collapsible={false}>
-    <FieldGroupItem>
+    <FieldGroup.Item>
       <FieldLabel label="Color">
         <AutoField
           value="#000000"
@@ -94,7 +94,7 @@ Let users show and hide the children by clicking the label. **Defaults to `true`
           field={{ type: "text" }}
         />
       </FieldLabel>
-    </FieldGroupItem>
+    </FieldGroup.Item>
   </FieldGroup>
 </PuckPreview>
 
@@ -104,9 +104,9 @@ Expand the children by default. Only applies when [`collapsible`](#collapsible) 
 
 ```tsx /defaultExpanded/ copy
 <FieldGroup label="Appearance" defaultExpanded>
-  <FieldGroupItem>
+  <FieldGroup.Item>
     <input type="text" value="#000000" onChange={() => {}} />
-  </FieldGroupItem>
+  </FieldGroup.Item>
 </FieldGroup>
 ```
 
@@ -115,7 +115,7 @@ Expand the children by default. Only applies when [`collapsible`](#collapsible) 
   data={{ root: { props: {} }, content: [] }}
 >
   <FieldGroup label="Appearance" defaultExpanded>
-    <FieldGroupItem>
+    <FieldGroup.Item>
       <FieldLabel label="Color">
         <AutoField
           value="#000000"
@@ -123,7 +123,7 @@ Expand the children by default. Only applies when [`collapsible`](#collapsible) 
           field={{ type: "text" }}
         />
       </FieldLabel>
-    </FieldGroupItem>
+    </FieldGroup.Item>
   </FieldGroup>
 </PuckPreview>
 
