@@ -52,12 +52,7 @@
 }
 
 /* Make any collapsible field groups toggles extend the full width and height of the row for a bigger click area */
-.PuckFields--wrapFields
-  .PuckFields-rows
-  > :is(
-    [data-puck-field-group-collapsible],
-    .PuckFields-field:has(> [data-puck-field-group-collapsible])
-  ) {
+.PuckFields--wrapFields .PuckFields-rows > [data-puck-field-group-collapsible] {
   padding: 0;
   --_puck-field-group-inset-x: var(--puck-space-4);
   --_puck-field-group-inset-top: var(--puck-space-4);

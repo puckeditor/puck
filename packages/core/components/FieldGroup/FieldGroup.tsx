@@ -167,16 +167,32 @@ export const FieldGroup = ({
   );
 };
 
-const FieldGroupItem = ({
-  children,
-  className,
-}: {
+type FieldGroupItemProps = {
   children: ReactNode;
   className?: string;
-}) => (
-  <div className={mergeClassNames(getClassName("item"), className)}>
+};
+
+/**
+ * Renders an item within a FieldGroup for internal use.
+ *
+ * The difference with the public FieldGroup.Item component
+ * is that this one can mark the item as a collapsible group, so it's spaced like one.
+ */
+export const FieldGroupItemInternal = ({
+  children,
+  className,
+  collapsible = false,
+}: FieldGroupItemProps & { collapsible?: boolean }) => (
+  <div
+    className={mergeClassNames(getClassName("item"), className)}
+    data-puck-field-group-collapsible={collapsible || undefined}
+  >
     {children}
   </div>
+);
+
+const FieldGroupItem = (props: FieldGroupItemProps) => (
+  <FieldGroupItemInternal {...props} />
 );
 
 /**

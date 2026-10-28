@@ -22,6 +22,7 @@
   --_puck-field-group-inset-x: 0px;
   --_puck-field-group-inset-top: 0px;
   --_puck-field-group-inset-bottom: 0px;
+  --_puck-field-group-collapsed-flush-inset-bottom: 0px;
   --_puck-field-group-guide-width: 0px;
   --_puck-field-group-guide-space: 0px;
 }
@@ -58,51 +59,26 @@
   padding-inline-start: var(--_puck-field-group-guide-space, 0px);
 }
 
-/* Groups can be nested directly or within an item, so both are spaced as items */
+/* Space between items */
 .FieldGroup-fieldset
-  > :is(.FieldGroup-item, .FieldGroup)
-  + :is(.FieldGroup-item, .FieldGroup) {
+  > :not([data-puck-field-group-collapsible])
+  + :not([data-puck-field-group-collapsible]) {
   margin-top: var(--puck-space-3);
 }
 
-/* Add the margin between items as toggle padding for collapsible groups so their click area includes the gap */
-.FieldGroup-fieldset
-  > :is(.FieldGroup-item, .FieldGroup)
-  + :is(
-    [data-puck-field-group-collapsible],
-    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  ) {
-  margin-top: 0;
-  --_puck-field-group-inset-top: var(--puck-space-3);
-}
-
-.FieldGroup-fieldset
-  > :is(
-    [data-puck-field-group-collapsible],
-    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  )
-  + :is(.FieldGroup-item, .FieldGroup) {
-  margin-top: 0;
-}
-
-.FieldGroup-fieldset
-  > :is(
-    [data-puck-field-group-collapsible],
-    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  ):has(+ :is(.FieldGroup-item, .FieldGroup)) {
+/* Collapsible items use the space below them as toggle padding instead, so their click area includes it */
+.FieldGroup-fieldset > [data-puck-field-group-collapsible]:not(:last-child) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
+  --_puck-field-group-collapsed-flush-inset-bottom: calc(
+    var(--puck-space-3) + var(--puck-space-2)
+  );
 }
 
+/* Or the space above them, if the item before isn't collapsible */
 .FieldGroup-fieldset
-  > :is(
-    [data-puck-field-group-collapsible],
-    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  )
-  + :is(
-    [data-puck-field-group-collapsible],
-    .FieldGroup-item:has(> [data-puck-field-group-collapsible]:only-child)
-  ) {
-  --_puck-field-group-inset-top: 0px;
+  > :not([data-puck-field-group-collapsible])
+  + [data-puck-field-group-collapsible] {
+  --_puck-field-group-inset-top: var(--puck-space-3);
 }
 
 /* Remove the label vertical spacing when the group is collapsed */
@@ -139,18 +115,11 @@
   padding-bottom: 0;
 }
 
-/*
- * Collapsed flush groups keep the extra space they'd have above their fields,
- * so their label doesn't read as the label of the next field.
- *
- * Nested groups only get a bottom inset when something follows them, so min() only adds the space then.
- */
-.FieldGroup-fieldset
-  .FieldGroup--flush.FieldGroup--collapsed
-  > .FieldGroup-toggle {
-  padding-bottom: calc(
-    var(--_puck-field-group-inset-bottom, 0px) +
-      min(var(--_puck-field-group-inset-bottom, 0px), var(--puck-space-2))
+/* Collapsed flush groups need more space below their label, so it doesn't read as the label of the next field */
+.FieldGroup--flush.FieldGroup--collapsed > .FieldGroup-toggle {
+  padding-bottom: var(
+    --_puck-field-group-collapsed-flush-inset-bottom,
+    var(--_puck-field-group-inset-bottom, 0px)
   );
 }
 
