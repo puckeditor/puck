@@ -6,7 +6,8 @@ import {
   RichTextSelector,
 } from "../components/RichTextEditor/types";
 import { PuckRichTextOptions } from "../components/RichTextEditor/extension";
-import type { FieldGroupVariant } from "../components/FieldGroup";
+
+export type FieldGroupVariant = "flush" | "card";
 
 type FieldOption = {
   label: string;

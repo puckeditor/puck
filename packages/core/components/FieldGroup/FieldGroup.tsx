@@ -5,13 +5,12 @@ import mergeClassNames from "../../lib/merge-class-names";
 import { useSafeId } from "../../lib/use-safe-id";
 import { FieldLabel, FieldLabelInternal } from "../AutoField/FieldLabel";
 import type { FieldLabelPropsInternal } from "../AutoField/FieldLabel";
+import type { FieldGroupVariant } from "../../types";
 import styles from "./styles.module.css";
 import useExpandedFieldGroup from "./lib/use-field-group-expanded";
 
 const getClassName = getClassNameFactory("FieldGroup", styles);
 const getBoxClassName = getClassNameFactory("FieldGroup-box", styles);
-
-export type FieldGroupVariant = "flush" | "card";
 
 type NonCollapsibleFieldGroupProps = { collapsible: false; label?: string };
 
