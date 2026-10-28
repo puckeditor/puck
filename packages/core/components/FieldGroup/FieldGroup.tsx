@@ -151,12 +151,7 @@ export const FieldGroup = ({
   );
 };
 
-/**
- * Renders an individual item within a FieldGroup.
- *
- * Wrap any subfields in this component for a consistent layout
- */
-export const FieldGroupItem = ({
+const FieldGroupItem = ({
   children,
   className,
 }: {
@@ -167,3 +162,10 @@ export const FieldGroupItem = ({
     {children}
   </div>
 );
+
+/**
+ * Renders an individual item within a FieldGroup.
+ *
+ * Wrap any subfields in this component for a consistent layout
+ */
+FieldGroup.Item = FieldGroupItem;

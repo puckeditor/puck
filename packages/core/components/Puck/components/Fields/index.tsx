@@ -5,7 +5,7 @@ import { ItemSelector } from "../../../../lib/data/get-item";
 import { getSelectorForId } from "../../../../lib/get-selector-for-id";
 import { ComponentConfig, UiState } from "../../../../types";
 import { AutoFieldPrivate } from "../../../AutoField";
-import { FieldGroupItem } from "../../../FieldGroup";
+import { FieldGroup } from "../../../FieldGroup";
 import { Tabs, TabsChangeReason, TabValue } from "../../../Tabs";
 import { fieldContextStore } from "../../../AutoField/store";
 import { AppStore, useAppStore, useAppStoreApi } from "../../../../store";
@@ -152,7 +152,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
   if (!id || !isFieldVisible(fieldTypeOverrides, field)) return null;
 
   return (
-    <FieldGroupItem key={id} className={getClassName("field")}>
+    <FieldGroup.Item key={id} className={getClassName("field")}>
       <AutoFieldPrivate
         field={field}
         name={fieldName}
@@ -160,7 +160,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
         readOnly={!permissions.edit || isReadOnly}
         onChange={onChange}
       />
-    </FieldGroupItem>
+    </FieldGroup.Item>
   );
 };
 
