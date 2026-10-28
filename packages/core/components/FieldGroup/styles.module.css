@@ -18,10 +18,12 @@
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
   padding: 0;
-  /* Reset the insets for any nested FieldGroups */
+  /* Reset the insets and guide line for any nested FieldGroups */
   --_puck-field-group-inset-x: 0px;
   --_puck-field-group-inset-top: 0px;
   --_puck-field-group-inset-bottom: 0px;
+  --_puck-field-group-guide-width: 0px;
+  --_puck-field-group-guide-space: 0px;
 }
 
 .FieldGroup-box--card > .FieldGroup-fieldset {
@@ -40,14 +42,20 @@
   margin-top: var(--puck-space-2);
 }
 
-/* And nested flush groups have a guide line showing which fields belong to them */
-.FieldGroup-fieldset .FieldGroup-box--flush > .FieldGroup-fieldset {
-  border-inline-start: var(
-      --puck-field-border-width,
-      var(--puck-border-width-regular)
-    )
-    solid var(--puck-color-border-muted);
-  padding-inline-start: var(--puck-space-3);
+/* Flush groups nested within a flush group (without a card or array in between) show a guide line for their fields */
+.FieldGroup-box--flush > .FieldGroup-fieldset {
+  --_puck-field-group-guide-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
+  --_puck-field-group-guide-space: var(--puck-space-3);
+}
+
+/* Read on the box, so it gets the value from the group above rather than its own */
+.FieldGroup-box--flush {
+  border-inline-start: var(--_puck-field-group-guide-width, 0px) solid
+    var(--puck-color-border-muted);
+  padding-inline-start: var(--_puck-field-group-guide-space, 0px);
 }
 
 /* Groups can be nested directly or within an item, so both are spaced as items */
