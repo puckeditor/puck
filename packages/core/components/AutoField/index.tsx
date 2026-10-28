@@ -27,7 +27,7 @@ import { NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
 import { setDeep } from "../../lib/data/set-deep";
 import { isFieldVisible } from "../../lib/fields/is-field-visible";
-import { rendersExpandableGroup } from "../../lib/fields/renders-expandable-group";
+import { rendersCollapsibleGroup } from "../../lib/fields/renders-collapsible-group";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
@@ -232,8 +232,8 @@ function AutoFieldInternal<
     >
       <div
         className={getClassNameWrapper()}
-        data-puck-field-group-expandable={
-          rendersExpandableGroup(field, overrides.fieldTypes) || undefined
+        data-puck-field-group-collapsible={
+          rendersCollapsibleGroup(field, overrides.fieldTypes) || undefined
         }
         onFocus={onFocus}
         onBlur={onBlur}

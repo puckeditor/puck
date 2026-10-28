@@ -2,22 +2,22 @@
   margin-top: var(--puck-space-3);
 }
 
-/* Add the space between fields as toggle padding for expandable groups so their click area includes the gap */
-.InputWrapper + .InputWrapper[data-puck-field-group-expandable] {
+/* Add the space between fields as toggle padding for collapsible groups so their click area includes the gap */
+.InputWrapper + .InputWrapper[data-puck-field-group-collapsible] {
   margin-top: 0;
   --_puck-field-group-inset-top: var(--puck-space-3);
 }
 
-.InputWrapper[data-puck-field-group-expandable] + .InputWrapper {
+.InputWrapper[data-puck-field-group-collapsible] + .InputWrapper {
   margin-top: 0;
 }
 
-.InputWrapper[data-puck-field-group-expandable]:has(+ .InputWrapper) {
+.InputWrapper[data-puck-field-group-collapsible]:has(+ .InputWrapper) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
 }
 
-.InputWrapper[data-puck-field-group-expandable]
-  + .InputWrapper[data-puck-field-group-expandable] {
+.InputWrapper[data-puck-field-group-collapsible]
+  + .InputWrapper[data-puck-field-group-collapsible] {
   --_puck-field-group-inset-top: 0px;
 }
 
