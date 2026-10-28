@@ -201,6 +201,75 @@ describe("Puck", () => {
     }
   });
 
+  describe("renders the fields once", () => {
+    const fieldsConfig: Config = {
+      root: { fields: { title: { type: "text" } } },
+      components: {},
+    };
+
+    it("in the right sidebar by default", async () => {
+      const { container } = render(
+        <Puck config={fieldsConfig} data={{}} iframe={{ enabled: false }} />
+      );
+
+      await flush();
+
+      expect(container.querySelectorAll('input[name="title"]')).toHaveLength(1);
+    });
+
+    it("in the fields plugin when it is selected", async () => {
+      const { container } = render(
+        <Puck
+          config={fieldsConfig}
+          data={{}}
+          iframe={{ enabled: false }}
+          ui={{ plugin: { current: "fields" } }}
+        />
+      );
+
+      await flush();
+
+      expect(container.querySelectorAll('input[name="title"]')).toHaveLength(1);
+    });
+
+    it("in the right sidebar after resizing to desktop", async () => {
+      const previousMatchMedia = window.matchMedia;
+
+      try {
+        const { container } = render(
+          <Puck
+            config={fieldsConfig}
+            data={{}}
+            iframe={{ enabled: false }}
+            ui={{ plugin: { current: "fields" } }}
+          />
+        );
+
+        await flush();
+
+        window.matchMedia = jest.fn((query: string) => ({
+          ...previousMatchMedia(query),
+          matches: true,
+        }));
+
+        act(() => {
+          window.dispatchEvent(new Event("resize"));
+        });
+
+        await flush();
+
+        const { appStore } = getInternal();
+
+        expect(appStore.getState().state.ui.plugin.current).not.toBe("fields");
+        expect(container.querySelectorAll('input[name="title"]')).toHaveLength(
+          1
+        );
+      } finally {
+        window.matchMedia = previousMatchMedia;
+      }
+    });
+  });
+
   it("should index slots on mount", async () => {
     render(
       <Puck
