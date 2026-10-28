@@ -44,11 +44,12 @@ const config = {
 
 ## Params
 
-| Param                           | Example                                     | Type     | Status   |
-| ------------------------------- | ------------------------------------------- | -------- | -------- |
-| [`type`](#type)                 | `type: "object"`                            | "object" | Required |
-| [`objectFields`](#objectfields) | `objectFields: { title: { type: "text" } }` | Object   | Required |
-| [`expandable`](#expandable)     | `expandable: true`                          | Boolean  | -        |
+| Param                                 | Example                                     | Type     | Status   |
+| ------------------------------------- | ------------------------------------------- | -------- | -------- |
+| [`type`](#type)                       | `type: "object"`                            | "object" | Required |
+| [`objectFields`](#objectfields)       | `objectFields: { title: { type: "text" } }` | Object   | Required |
+| [`defaultExpanded`](#defaultexpanded) | `defaultExpanded: true`                     | Boolean  | -        |
+| [`expandable`](#expandable)           | `expandable: true`                          | Boolean  | -        |
 
 ## Required params
 
@@ -100,8 +101,12 @@ const config = {
 
 ## Optional params
 
+### `defaultExpanded`
+
+Expand the subfields by default. Only applies when [`expandable`](#expandable) is `true`. **Defaults to `false`**.
+
 ### `expandable`
 
-Hide the subfields until the field is clicked. **Defaults to `false`**.
+Let users expand and collapse the subfields. **Defaults to `false`**.
 
 If using [`<AutoField>`](/docs/api-reference/components/auto-field), you need to pass a `label` to show the toggle.
