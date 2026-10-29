@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useCallback } from "react";
 
 import useRenderProps from "../../lib/props/render/use-render-props";
 import { DropZoneProps } from "../DropZone/types";
@@ -36,10 +36,8 @@ const Item = ({
 }) => {
   const Component = config.components[item.type];
 
-  const props = useRenderProps(
-    config,
-    item,
-    (slotProps) => (
+  const renderSlot = useCallback(
+    (slotProps: DropZoneProps & { content: Content }) => (
       <SlotRenderPure
         {...slotProps}
         config={config}
@@ -47,8 +45,10 @@ const Item = ({
         fieldTransforms={fieldTransforms}
       />
     ),
-    fieldTransforms
+    [config, metadata, fieldTransforms]
   );
+
+  const props = useRenderProps(config, item, renderSlot, fieldTransforms);
 
   return (
     <Component.render
