@@ -2,6 +2,44 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.24.0](https://github.com/measuredco/puck/compare/v0.23.0...v0.24.0) (2026-10-29)
+
+
+### Bug Fixes
+
+* accept custom fields for fieldTypes overrides ([169405a](https://github.com/measuredco/puck/commit/169405ab8d067ec091a6dc614f9c8ed1a29af3ba))
+* apply field transforms to root fields ([7eb6597](https://github.com/measuredco/puck/commit/7eb6597f9a00357869aabef9bd68efe669ced243))
+* apply user field transforms to root fields ([d104865](https://github.com/measuredco/puck/commit/d10486591ed490378480f063f4fb10273eb6411e))
+* Chrome translate causes crash ([90665df](https://github.com/measuredco/puck/commit/90665dfbe201398fe9fbe54cfac31e3d08391b90))
+* don't capture backspace from inputs used in interactive mode ([1839d14](https://github.com/measuredco/puck/commit/1839d14a11d9e0014108fcdb8ac9954118bf0926))
+* don't render rich text on transformed fields ([cc9313c](https://github.com/measuredco/puck/commit/cc9313cc7b47189a1d4b6af8ad0a16bb34c2546e))
+* don't trigger hotkeys from stuck modifier keys after switching windows ([6a396a5](https://github.com/measuredco/puck/commit/6a396a5dfd8e7a0c26f1a00f49a8d69a4b493e63))
+* preserve aspect ratio for explicit viewport heights ([a949a02](https://github.com/measuredco/puck/commit/a949a02531ee51b07a53b4a8c52ed7acef810abe))
+* prevent inline text fields from shifting layout on hover ([9e917a3](https://github.com/measuredco/puck/commit/9e917a398afa982b18101566303134830b25e7ab))
+* resolve each node once in resolveAllData ([c1e183e](https://github.com/measuredco/puck/commit/c1e183e7615f1b835610766c29eefed1bc2bc932)), closes [#1857](https://github.com/measuredco/puck/issues/1857)
+* respect disabled richtext textAlign options in pasted content ([dc29b7d](https://github.com/measuredco/puck/commit/dc29b7d9af7f5957f2ec03a8675633f48a60fa29))
+* stop field title from moving when no breadcrumbs exist ([03e660b](https://github.com/measuredco/puck/commit/03e660bb339bb0340fd355d8be7992f2095387a6))
+
+
+### Features
+
+* add field tabs ([6a823ce](https://github.com/measuredco/puck/commit/6a823cebae76234c3a69cdbeb677d49b9ba15d52)), closes [#64](https://github.com/measuredco/puck/issues/64)
+* add opt-in drag handle to action bar ([be1d341](https://github.com/measuredco/puck/commit/be1d341d64533e210299370f2fbb88d53942a687))
+* add option to hide fields through fieldTypes overrides ([9e95619](https://github.com/measuredco/puck/commit/9e956191d1a85f000a28c792f4c352da49a4858f))
+* add support for checkbox fields ([03d5085](https://github.com/measuredco/puck/commit/03d50854d044c8d792a145a16524ffaed22f1ecb))
+* add support for checkboxes on demo spacing ([18db77f](https://github.com/measuredco/puck/commit/18db77f339967f2a2b8d7e973d253975a1ec0a6f))
+* add variant to object fields to change appearance ([50ca904](https://github.com/measuredco/puck/commit/50ca904eece0668e055b6ba86a895559a4331f6d))
+* expose the inline text field component for creating new inline editable fields ([fcfd4b9](https://github.com/measuredco/puck/commit/fcfd4b94a736d1663738ec6d7ba15d518214bd27))
+* forward additional props to slot `as` component ([84e1764](https://github.com/measuredco/puck/commit/84e1764016d6c7fbb7dc5653c384de74fbd3e667)), closes [/linear.app/puckeditor/issue/PUCK-378/include-additional-props-when-using-the-as-prop-in-slots#agent-session-ae6d274](https://github.com//linear.app/puckeditor/issue/PUCK-378/include-additional-props-when-using-the-as-prop-in-slots/issues/agent-session-ae6d274)
+* provide rendered fields to fields override ([8c13910](https://github.com/measuredco/puck/commit/8c13910fa5f112aa99a8cf42d768649756cde156))
+* show placeholders in inline fields ([e0b31ba](https://github.com/measuredco/puck/commit/e0b31ba45d504c5d56f17efcd37d6031d29738ab))
+* support expandable object fields ([6a867c0](https://github.com/measuredco/puck/commit/6a867c03ce8835aaf21360902d31dce9167741f2))
+* support field grouping via renderFields ([62d23bd](https://github.com/measuredco/puck/commit/62d23bd117ac34c6089eeb47a4a356f9592cb4c5))
+* support field transforms in `<Render />` ([948ee04](https://github.com/measuredco/puck/commit/948ee043ade2fb73c07ada80bd489fe6a3c32014))
+
+
+
+
 ## [0.23.0](/compare/v0.22.4...v0.23.0) (2026-08-07)
 
 
