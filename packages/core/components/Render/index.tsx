@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { rootZone } from "../../lib/root-droppable-id";
 import useRenderProps from "../../lib/props/render/use-render-props";
 
 import {
   Config,
+  Content,
   Data,
   Metadata,
   UserGenerics,
   FieldTransforms,
 } from "../../types";
+import { DropZoneProps } from "../DropZone/types";
 
 import {
   DropZonePure,
@@ -32,13 +34,15 @@ export const renderContext = React.createContext<{
   metadata: {},
 });
 
+const EMPTY_METADATA: Metadata = {};
+
 export function Render<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >({
   config,
   data,
-  metadata = {},
+  metadata = EMPTY_METADATA,
   fieldTransforms: userFieldTransforms,
 }: {
   config: UserConfig;
@@ -56,30 +60,32 @@ export function Render<
     content: data.content || [],
   } as G["UserData"];
 
-  // DEPRECATED
-  const rootProps =
-    "props" in defaultedData.root
-      ? defaultedData.root.props
-      : defaultedData.root;
-  const title = rootProps?.title || "";
+  // Rebuild the root only when its data changes, so root slots keep their subtree mounted
+  const rootComponent = useMemo(() => {
+    const root = (data.root || {}) as G["UserData"]["root"];
 
-  const pageProps = {
-    ...rootProps,
-    puck: {
-      renderDropZone: DropZonePure,
-      isEditing: false,
-      dragRef: null,
-      metadata: metadata,
-    },
-    title,
-    editMode: false,
-    id: "puck-root",
-  };
+    // DEPRECATED
+    const rootProps = "props" in root ? root.props : root;
+    const title = rootProps?.title || "";
 
-  const renderProps = useRenderProps(
-    config,
-    { type: "root", props: pageProps },
-    (props) => (
+    const pageProps = {
+      ...rootProps,
+      puck: {
+        renderDropZone: DropZonePure,
+        isEditing: false,
+        dragRef: null,
+        metadata: metadata,
+      },
+      title,
+      editMode: false,
+      id: "puck-root",
+    };
+
+    return { type: "root" as const, props: pageProps };
+  }, [data.root, metadata]);
+
+  const renderSlot = useCallback(
+    (props: DropZoneProps & { content: Content }) => (
       <SlotRender
         {...props}
         config={config}
@@ -87,6 +93,13 @@ export function Render<
         fieldTransforms={fieldTransforms}
       />
     ),
+    [config, metadata, fieldTransforms]
+  );
+
+  const renderProps = useRenderProps(
+    config,
+    rootComponent,
+    renderSlot,
     fieldTransforms
   );
 
