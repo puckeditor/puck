@@ -109,8 +109,8 @@ export interface ObjectField<
   variant?: FieldGroupVariant;
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
-      ? Field<Props[SubPropName]> | UserField
-      : Field<Props[SubPropName]>;
+      ? Field<Props[SubPropName], UserField> | UserField
+      : Field<Props[SubPropName], UserField>;
   };
 }
 
