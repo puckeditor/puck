@@ -68,6 +68,7 @@ function AutoFieldInternal<
 >(
   props: FieldPropsInternalOptional<ValueType, FieldType> & {
     Label?: React.FC<FieldLabelPropsInternal>;
+    trackFocus?: boolean;
   }
 ) {
   const dispatch = useAppStore((s) => s.dispatch);
@@ -75,7 +76,7 @@ function AutoFieldInternal<
   const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
   const nestedFieldContext = useContext(NestedFieldContext);
 
-  const { id, Label = FieldLabelInternal } = props;
+  const { id, Label = FieldLabelInternal, trackFocus = true } = props;
 
   const field = props.field as Field<ValueType>;
   const label = field.label;
@@ -155,9 +156,9 @@ function AutoFieldInternal<
   const onFocus = useCallback(
     (e: React.FocusEvent) => {
       if (
+        trackFocus &&
         mergedProps.name &&
-        (e.target.nodeName === "INPUT" || e.target.nodeName === "TEXTAREA") &&
-        id === undefined
+        (e.target.nodeName === "INPUT" || e.target.nodeName === "TEXTAREA")
       ) {
         e.stopPropagation();
 
@@ -169,19 +170,22 @@ function AutoFieldInternal<
         });
       }
     },
-    [mergedProps.name, id]
+    [trackFocus, mergedProps.name]
   );
 
-  const onBlur = useCallback((e: React.FocusEvent) => {
-    if ("name" in e.target) {
-      dispatch({
-        type: "setUi",
-        ui: {
-          field: { focus: null },
-        },
-      });
-    }
-  }, []);
+  const onBlur = useCallback(
+    (e: React.FocusEvent) => {
+      if (trackFocus && "name" in e.target) {
+        dispatch({
+          type: "setUi",
+          ui: {
+            field: { focus: null },
+          },
+        });
+      }
+    },
+    [trackFocus]
+  );
 
   let Children = useMemo(() => {
     if (field.type !== "custom" && field.type !== "slot") {
@@ -298,6 +302,7 @@ function AutoFieldPublicInternal<
       name={name}
       onChange={onChange}
       Label={DefaultLabel}
+      trackFocus={false}
     />
   );
 }
