@@ -156,7 +156,8 @@ function AutoFieldInternal<
     (e: React.FocusEvent) => {
       if (
         mergedProps.name &&
-        (e.target.nodeName === "INPUT" || e.target.nodeName === "TEXTAREA")
+        (e.target.nodeName === "INPUT" || e.target.nodeName === "TEXTAREA") &&
+        id === undefined
       ) {
         e.stopPropagation();
 
@@ -168,7 +169,7 @@ function AutoFieldInternal<
         });
       }
     },
-    [mergedProps.name]
+    [mergedProps.name, id]
   );
 
   const onBlur = useCallback((e: React.FocusEvent) => {
