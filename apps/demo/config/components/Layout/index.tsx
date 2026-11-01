@@ -123,7 +123,7 @@ Layout.displayName = "Layout";
 export { Layout };
 
 export function withLayout<
-  ThisComponentConfig extends ComponentConfig<any> = ComponentConfig
+  ThisComponentConfig extends ComponentConfig<{ props: any }> = ComponentConfig
 >(componentConfig: ThisComponentConfig): ThisComponentConfig {
   return {
     ...componentConfig,
