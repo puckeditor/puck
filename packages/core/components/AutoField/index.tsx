@@ -307,13 +307,55 @@ function AutoFieldPublicInternal<
   );
 }
 
+// This map keeps track of active field IDs and their corresponding internal keys to prevent ID collisions across different instances of AutoField components.
+const activeFieldIds = new Map<string, string>();
+
 export function AutoField<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(props: FieldProps<FieldType, ValueType> & { value: any }) {
   const defaultId = useSafeId();
   const internalKey = useSafeId();
-  const resolvedId = props.id || defaultId;
+  const selectedItemId = useAppStore((s) => s.selectedItem?.props.id);
+
+  const isArray = props.field.type === "array";
+
+  const candidateId = useMemo(() => {
+    // If no ID is provided, use the default safe ID
+    if (!props.id) {
+      return defaultId;
+    }
+
+    // If the field is an array and a selected item ID exists, prefix the provided ID with the selected item ID to ensure uniqueness
+    if (isArray && selectedItemId) {
+      return `${selectedItemId}_${props.id}`;
+    }
+
+    // Otherwise, use the provided ID as is
+    return props.id;
+  }, [props.id, defaultId, isArray, selectedItemId]);
+
+  const currentOwner = props.id ? activeFieldIds.get(candidateId) : undefined;
+  const isColliding = props.id
+    ? currentOwner !== undefined && currentOwner !== internalKey
+    : false;
+
+  // If a collision is detected, fall back to the default safe ID; otherwise, use the candidate ID
+  const resolvedId = isColliding ? defaultId : candidateId;
+
+  // If this instance is the first to claim the candidateId, register it in the activeFieldIds map
+  if (props.id && !isColliding) {
+    activeFieldIds.set(candidateId, internalKey);
+  }
+
+  // Cleanup on unmount: if this instance owns the candidateId, remove it from the registry
+  useEffect(() => {
+    return () => {
+      if (props.id && activeFieldIds.get(candidateId) === internalKey) {
+        activeFieldIds.delete(candidateId);
+      }
+    };
+  }, [props.id, candidateId, internalKey]);
 
   if (props.field.type === "slot") {
     return null;
