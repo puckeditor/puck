@@ -93,6 +93,7 @@ Applied directly to input elements (`<input id={id}>`) for DOM and label targeti
 [`Array`](/docs/api-reference/fields/array) fields use this ID internally to key accordion expansion (`openId`) and drag-and-drop state in `state.ui.arrayState`.
 
 To prevent ID collisions when custom fields reuse the same `id`:
+
 - **Component Scoping**: Inside Puck, array IDs are automatically scoped by component instance (`${selectedItemId}_${id}`) so different components on the canvas do not share array state.
 - **Sibling Fallback**: If two array fields render with the same `id` simultaneously, colliding fields fall back to a generated safe ID so item additions, deletions, and expansions remain isolated.
 
