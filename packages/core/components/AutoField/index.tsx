@@ -348,6 +348,14 @@ export function AutoField<
     activeFieldIds.set(candidateId, internalKey);
   }
 
+  useEffect(() => {
+    if (isColliding) {
+      console.warn(
+        `Duplicate id "${props.id}" in AutoField. Falling back to generated ID.`
+      );
+    }
+  }, [isColliding, props.id]);
+
   // Cleanup on unmount: if this instance owns the candidateId, remove it from the registry
   useEffect(() => {
     return () => {
