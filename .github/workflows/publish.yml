@@ -5,6 +5,7 @@ on:
       - "releases/**"
 permissions:
   contents: write
+  id-token: write
 jobs:
   tag-and-publish-to-npm:
     runs-on: ubuntu-latest
@@ -21,7 +22,7 @@ jobs:
           tag: ${{ env.TAG_NAME }}
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -35,8 +36,6 @@ jobs:
 
       - name: Publish all packages
         run: ./scripts/publish.sh latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Trigger a new build to ensure Vercel creates a distinct release branch, rather than reusing latest
       - name: Triggering new build

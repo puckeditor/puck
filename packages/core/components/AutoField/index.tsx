@@ -12,6 +12,7 @@ import {
 } from "react";
 import {
   RadioField,
+  CheckboxField,
   SelectField,
   ExternalField,
   ArrayField,
@@ -26,6 +27,7 @@ import { NestedFieldContext } from "./context";
 import { useShallow } from "zustand/react/shallow";
 import { setDeep } from "../../lib/data/set-deep";
 import { isFieldVisible } from "../../lib/fields/is-field-visible";
+import { rendersCollapsibleGroup } from "../../lib/fields/renders-collapsible-group";
 import type {
   FieldLabelPropsInternal,
   FieldPropsInternalOptional,
@@ -33,6 +35,7 @@ import type {
 import { FieldLabelInternal } from "./FieldLabel";
 import { useFieldStoreApi, fieldContextStore } from "./store";
 import { useLocalValue } from "./lib/use-local-value";
+import { useExpandedFieldGroup } from "../FieldGroup";
 
 const getClassName = getClassNameFactory("Input", styles);
 const getClassNameWrapper = getClassNameFactory("InputWrapper", styles);
@@ -46,6 +49,8 @@ export type FieldPropsInternal<ValueType = any, F = Field<any>> = FieldProps<
   labelIcon?: ReactNode;
   id: string;
   name?: string;
+  onToggle?: () => void;
+  expanded?: boolean;
 };
 
 export { FieldLabel } from "./FieldLabel";
@@ -57,20 +62,24 @@ const defaultFields = {
   select: SelectField,
   textarea: TextareaField,
   radio: RadioField,
+  checkbox: CheckboxField,
   text: DefaultField,
   number: DefaultField,
   richtext: RichtextField,
 };
 
+type AutoFieldInternalProps<
+  ValueType = any,
+  FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
+> = FieldPropsInternalOptional<ValueType, FieldType> & {
+  Label?: React.FC<FieldLabelPropsInternal>;
+  trackFocus?: boolean;
+} & Pick<FieldPropsInternal<ValueType, FieldType>, "expanded" | "onToggle">;
+
 function AutoFieldInternal<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
->(
-  props: FieldPropsInternalOptional<ValueType, FieldType> & {
-    Label?: React.FC<FieldLabelPropsInternal>;
-    trackFocus?: boolean;
-  }
-) {
+>(props: AutoFieldInternalProps<ValueType, FieldType>) {
   const dispatch = useAppStore((s) => s.dispatch);
   const overrides = useAppStore((s) => s.overrides);
   const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
@@ -95,6 +104,7 @@ function AutoFieldInternal<
       select: overrides.fieldTypes?.select || defaultFields.select,
       textarea: overrides.fieldTypes?.textarea || defaultFields.textarea,
       radio: overrides.fieldTypes?.radio || defaultFields.radio,
+      checkbox: overrides.fieldTypes?.checkbox || defaultFields.checkbox,
       text: overrides.fieldTypes?.text || defaultFields.text,
       number: overrides.fieldTypes?.number || defaultFields.number,
       richtext: overrides.fieldTypes?.richtext || defaultFields.richtext,
@@ -227,6 +237,9 @@ function AutoFieldInternal<
     >
       <div
         className={getClassNameWrapper()}
+        data-puck-field-group-collapsible={
+          rendersCollapsibleGroup(field, overrides.fieldTypes) || undefined
+        }
         onFocus={onFocus}
         onBlur={onBlur}
         onClick={(e) => {
@@ -255,7 +268,29 @@ export function AutoFieldPrivate<
     value?: any;
   }
 ) {
-  return <AutoFieldInternal<ValueType, FieldType> {...props} />;
+  // Share expanded state per component type
+  const fieldGroupKey = useAppStore(
+    (s) => `${s.selectedItem?.type || "root"}.${props.name}`
+  );
+
+  const field = props.field as Field<ValueType>;
+
+  const { expanded, toggleExpanded } = useExpandedFieldGroup({
+    fieldGroupKey,
+    defaultExpanded:
+      field.type === "object" ? field.defaultExpanded : undefined,
+  });
+
+  const internalProps: AutoFieldInternalProps<ValueType, FieldType> = {
+    ...props,
+  };
+
+  if (field.type === "object") {
+    internalProps.expanded = expanded;
+    internalProps.onToggle = toggleExpanded;
+  }
+
+  return <AutoFieldInternal<ValueType, FieldType> {...internalProps} />;
 }
 
 function AutoFieldPublicInternal<
@@ -265,7 +300,11 @@ function AutoFieldPublicInternal<
   value,
   name,
   ...props
-}: FieldProps<FieldType, ValueType> & { value: any; name: string }) {
+}: FieldProps<FieldType, ValueType> & {
+  value: any;
+  id: string;
+  name: string;
+}) {
   const DefaultLabel = useMemo(() => {
     const DefaultLabel = (labelProps: any) => (
       <div
@@ -278,6 +317,20 @@ function AutoFieldPublicInternal<
   }, [props.readOnly]);
 
   const fieldStore = useFieldStoreApi();
+
+  const field = props.field as Field<ValueType>;
+
+  const { expanded, toggleExpanded, unsetExpanded } = useExpandedFieldGroup({
+    fieldGroupKey: props.id,
+    defaultExpanded:
+      field.type === "object" ? field.defaultExpanded : undefined,
+  });
+
+  // Unset the expanded state when the component is unmounted and no id is provided since `useSafeId` changes between mounts.
+  // TODO: Remove when #1834 (https://github.com/puckeditor/puck/issues/1834) is fixed. Currently is impossible to pass an explicit id to the AutoField API.
+  useEffect(() => {
+    return () => unsetExpanded();
+  }, [unsetExpanded, props.id]);
 
   const onChange = useCallback(
     (value: any) => {
@@ -296,15 +349,20 @@ function AutoFieldPublicInternal<
     fieldStore.setState({ [name]: value });
   }, [name, value, fieldStore]);
 
-  return (
-    <AutoFieldInternal<ValueType, FieldType>
-      {...props}
-      name={name}
-      onChange={onChange}
-      Label={DefaultLabel}
-      trackFocus={false}
-    />
-  );
+  const internalProps: AutoFieldInternalProps<ValueType, FieldType> = {
+    ...props,
+    name,
+    onChange,
+    Label: DefaultLabel,
+    trackFocus: false,
+  };
+
+  if (props.field.type === "object") {
+    internalProps.expanded = expanded;
+    internalProps.onToggle = toggleExpanded;
+  }
+
+  return <AutoFieldInternal<ValueType, FieldType> {...internalProps} />;
 }
 
 // This map keeps track of active field IDs and their corresponding internal keys to prevent ID collisions across different instances of AutoField components.

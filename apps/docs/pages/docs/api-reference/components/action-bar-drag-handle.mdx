@@ -1,0 +1,50 @@
+---
+title: <ActionBar.DragHandle>
+---
+
+import { PuckPreview } from "@/docs/components/Preview";
+import { ActionBar } from "@/puck";
+
+# \<ActionBar.DragHandle\>
+
+Render a drag handle in the [`<ActionBar>`](action-bar). Used by the [actionBar override](/docs/api-reference/overrides/action-bar) when [`dnd.enableDragHandle`](/docs/api-reference/components/puck#enabledraghandle) is enabled.
+
+```tsx showLineNumbers {3} copy
+<ActionBar>
+  <ActionBar.Group>
+    <ActionBar.DragHandle label="Drag to reorder" />
+  </ActionBar.Group>
+</ActionBar>
+```
+
+<PuckPreview>
+  <div style={{ display: "flex" }}>
+    <ActionBar>
+      <ActionBar.Group>
+        <ActionBar.DragHandle label="Drag to reorder" />
+      </ActionBar.Group>
+    </ActionBar>
+  </div>
+</PuckPreview>
+
+## Props
+
+| Prop                    | Example             | Type    | Status |
+| ----------------------- | ------------------- | ------- | ------ |
+| [`label`](#label)       | `"Drag to reorder"` | String  | -      |
+| [`disabled`](#disabled) | `true`              | Boolean | -      |
+| [`ref`](#ref)           | `dragHandleRef`     | Ref     | -      |
+
+## Optional Props
+
+### `label`
+
+An accessible label for the handle. Defaults to the [`action-drag`](/docs/api-reference/dictionary) dictionary token when rendered by Puck.
+
+### `disabled`
+
+Prevent the handle from initiating a drag.
+
+### `ref`
+
+A [ref](https://react.dev/learn/manipulating-the-dom-with-refs) passed to the underlying `button`. Pass the override's [`dragHandleRef`](/docs/api-reference/overrides/action-bar#draghandleref) when using it within the [`actionBar`](/docs/api-reference/overrides/action-bar) override.

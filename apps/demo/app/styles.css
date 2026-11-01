@@ -45,7 +45,7 @@ body {
     --puck-color-interactive-hover: var(--puck-color-azure-07);
     --puck-color-interactive-active: var(--puck-color-azure-08);
     --puck-color-interactive-subtle: #1b2a40; /* active plugin bar, category, outline */
-    --puck-color-interactive-soft: #18212f; /* secondary button, selected item */
+    --puck-color-interactive-soft: #202938; /* secondary button, selected item */
     --puck-color-interactive-soft-hover: #1f2a3c; /* row and item hover */
     --puck-color-interactive-neutral-hover: #29292b; /* icon button hover */
     --puck-color-interactive-inverse-hover: var(
@@ -70,5 +70,7 @@ body {
     /* The primary (Publish) button fills with the bright azure, so its label
        flips to a dark neutral to stay readable on top. */
     --puck-button-primary-color-text: #161618;
+
+    --puck-field-checkbox-color-check: var(--puck-button-primary-color-text);
   }
 }

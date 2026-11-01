@@ -348,4 +348,36 @@ describe("Puck", () => {
 
     expect(entry?.getAttribute("data-puck-preview-mode")).toBe("interactive");
   });
+
+  it("marks the canvas entry as non-translatable so browser translation can't break drag-and-drop", async () => {
+    // Browser translators (e.g. Google Translate) wrap text nodes in <font>
+    // elements, which desyncs React's fiber tree and throws removeChild /
+    // insertBefore NotFoundErrors when a drag reconciles the DOM. translate="no"
+    // (inherited) plus the legacy notranslate class opt the canvas subtree out.
+    render(<Puck config={config} data={{}} iframe={{ enabled: false }} />);
+
+    await flush();
+
+    const entry = document.querySelector("[data-puck-entry]");
+
+    expect(entry?.getAttribute("translate")).toBe("no");
+    expect(entry?.classList.contains("notranslate")).toBe(true);
+  });
+
+  it("marks the editor chrome root as non-translatable so browser translation can't break chrome re-renders", async () => {
+    // The whole editor UI is React-controlled; a translator rewriting its DOM
+    // (wrapping text in <font>) desyncs React and crashes keyed-list re-renders
+    // like Breadcrumbs (insertBefore NotFoundError). translate="no" is inherited,
+    // so marking the root opts the entire chrome out in one place. See PUCK-569.
+    const { container } = render(
+      <Puck config={config} data={{}} iframe={{ enabled: false }} />
+    );
+
+    await flush();
+
+    const root = container.querySelector("div.Puck");
+
+    expect(root?.getAttribute("translate")).toBe("no");
+    expect(root?.classList.contains("notranslate")).toBe(true);
+  });
 });

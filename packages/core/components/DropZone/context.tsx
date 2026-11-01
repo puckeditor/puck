@@ -59,6 +59,11 @@ export type ZoneStore = {
   enabledIndex: Record<string, boolean>;
   previewIndex: Record<string, Preview>;
   draggedItem?: Draggable | null;
+  draggingFromHandle: boolean;
+  /**
+   * True while the current drag renders a static placeholder (i.e. a line placeholder).
+   */
+  staticDrag: boolean;
   hoveringComponent: string | null;
   registerRootVirtualizer: (
     zoneCompound: string,
@@ -78,6 +83,8 @@ export const ZoneStoreContext = createContext<StoreApi<ZoneStore>>(
     previewIndex: {},
     enabledIndex: {},
     hoveringComponent: null,
+    draggingFromHandle: false,
+    staticDrag: false,
     registerRootVirtualizer: () => {},
     unregisterRootVirtualizer: () => {},
     scrollToComponent: () => false,

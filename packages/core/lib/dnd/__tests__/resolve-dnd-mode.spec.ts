@@ -12,12 +12,21 @@ describe("resolveDndMode", () => {
     expect(resolveDndMode("auto", { isNewComponent: true })).toBe("static");
   });
 
+  it("uses static mode when dragging from the handle for auto behavior", () => {
+    expect(resolveDndMode("auto", { isDraggingFromHandle: true })).toBe(
+      "static"
+    );
+  });
+
   it("always uses fluid mode for fluid behavior", () => {
     expect(resolveDndMode("fluid")).toBe("fluid");
     expect(resolveDndMode("fluid", { isDraggingBetweenSlots: true })).toBe(
       "fluid"
     );
     expect(resolveDndMode("fluid", { isNewComponent: true })).toBe("fluid");
+    expect(resolveDndMode("fluid", { isDraggingFromHandle: true })).toBe(
+      "fluid"
+    );
   });
 
   it("always uses static mode for static behavior", () => {
@@ -26,5 +35,8 @@ describe("resolveDndMode", () => {
       "static"
     );
     expect(resolveDndMode("static", { isNewComponent: true })).toBe("static");
+    expect(resolveDndMode("static", { isDraggingFromHandle: true })).toBe(
+      "static"
+    );
   });
 });

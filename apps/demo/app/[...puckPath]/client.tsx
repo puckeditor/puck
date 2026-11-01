@@ -51,6 +51,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           }}
           dnd={{
             behavior: dndBehavior,
+            enableDragHandle: true,
           }}
           fieldTransforms={{
             userField: ({ value }) => value, // Included to check types

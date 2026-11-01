@@ -1,14 +1,21 @@
 import { CSSProperties } from "react";
+
 import {
   rootAreaId,
   rootDroppableId,
   rootZone,
 } from "../../lib/root-droppable-id";
+import useRenderProps from "../../lib/props/render/use-render-props";
 import { setupZone } from "../../lib/data/setup-zone";
-import { Config, Data, Metadata, UserGenerics } from "../../types";
-import { useSlots } from "../../lib/use-slots";
+import {
+  Config,
+  Data,
+  Metadata,
+  UserGenerics,
+  FieldTransforms,
+} from "../../types";
+
 import { SlotRenderPure } from "../SlotRender/server";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 type DropZoneRenderProps = {
   zone: string;
@@ -17,6 +24,7 @@ type DropZoneRenderProps = {
   areaId?: string;
   style?: CSSProperties;
   metadata?: Metadata;
+  fieldTransforms?: FieldTransforms;
 };
 
 type DropZoneRenderItemProps = {
@@ -24,6 +32,7 @@ type DropZoneRenderItemProps = {
   data: Data;
   config: Config;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 };
 
 function DropZoneRenderItem({
@@ -31,6 +40,7 @@ function DropZoneRenderItem({
   data,
   config,
   metadata,
+  fieldTransforms,
 }: DropZoneRenderItemProps) {
   const Component = config.components[item.type];
 
@@ -44,6 +54,7 @@ function DropZoneRenderItem({
           areaId={item.props.id}
           config={config}
           metadata={metadata}
+          fieldTransforms={fieldTransforms}
         />
       ),
       metadata,
@@ -53,16 +64,25 @@ function DropZoneRenderItem({
   };
 
   const renderItem = { ...item, props };
-  const propsWithSlots = useSlots(config, renderItem, (slotProps) => (
-    <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
-  ));
-  const richtextProps = useRichtextProps(Component?.fields, propsWithSlots);
+  const renderProps = useRenderProps(
+    config,
+    renderItem,
+    (slotProps) => (
+      <SlotRenderPure
+        {...slotProps}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
+  );
 
   if (!Component) {
     return null;
   }
 
-  return <Component.render {...propsWithSlots} {...richtextProps} />;
+  return <Component.render {...renderProps} />;
 }
 
 export function DropZoneRender({
@@ -71,6 +91,7 @@ export function DropZoneRender({
   areaId = "root",
   config,
   metadata = {},
+  fieldTransforms,
 }: DropZoneRenderProps) {
   let zoneCompound = rootDroppableId;
   let content = data?.content || [];
@@ -94,6 +115,7 @@ export function DropZoneRender({
             data={data}
             config={config}
             metadata={metadata}
+            fieldTransforms={fieldTransforms}
           />
         );
       })}
@@ -108,11 +130,17 @@ export function Render<
   config,
   data,
   metadata = {},
+  fieldTransforms: userFieldTransforms,
 }: {
   config: UserConfig;
   data: G["UserData"];
   metadata?: Metadata;
+  fieldTransforms?: FieldTransforms<UserConfig>;
 }) {
+  // The generic only exists to type the user's transforms against their own
+  // field types. Everything downstream works off the unparameterised type.
+  const fieldTransforms = userFieldTransforms as FieldTransforms | undefined;
+
   // DEPRECATED
   const rootProps = "props" in data.root ? data.root.props : data.root;
 
@@ -127,6 +155,7 @@ export function Render<
           data={data}
           config={config}
           metadata={metadata}
+          fieldTransforms={fieldTransforms}
         />
       ),
       isEditing: false,
@@ -138,20 +167,29 @@ export function Render<
     id: "puck-root",
   };
 
-  const propsWithSlots = useSlots(config, { type: "root", props }, (props) => (
-    <SlotRenderPure {...props} config={config} metadata={metadata} />
-  ));
-
-  const richtextProps = useRichtextProps(config.root?.fields, props);
+  const renderProps = useRenderProps(
+    config,
+    { type: "root", props },
+    (props) => (
+      <SlotRenderPure
+        {...props}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
+  );
 
   if (config.root?.render) {
     return (
-      <config.root.render {...propsWithSlots} {...richtextProps}>
+      <config.root.render {...renderProps}>
         <DropZoneRender
           config={config}
           data={data}
           zone={rootZone}
           metadata={metadata}
+          fieldTransforms={fieldTransforms}
         />
       </config.root.render>
     );
@@ -163,6 +201,7 @@ export function Render<
       data={data}
       zone={rootZone}
       metadata={metadata}
+      fieldTransforms={fieldTransforms}
     />
   );
 }

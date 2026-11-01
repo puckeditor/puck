@@ -8,8 +8,10 @@ import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("Space", styles);
 
+type Direction = "vertical" | "horizontal";
+
 export type SpaceProps = {
-  direction?: "" | "vertical" | "horizontal";
+  directions?: Direction[];
   size: string;
 };
 
@@ -20,25 +22,26 @@ export const Space: ComponentConfig<SpaceProps> = {
       type: "select",
       options: spacingOptions,
     },
-    direction: {
-      type: "radio",
+    directions: {
+      type: "checkbox",
       options: [
         { value: "vertical", label: "Vertical" },
         { value: "horizontal", label: "Horizontal" },
-        { value: "", label: "Both" },
       ],
     },
   },
   defaultProps: {
-    direction: "",
+    directions: ["vertical", "horizontal"],
     size: "24px",
   },
   inline: true,
-  render: ({ direction, size, puck }) => {
+  render: ({ directions, size, puck }) => {
+    const modifier = directions?.length === 1 ? directions[0] : null;
+
     return (
       <div
         ref={puck.dragRef}
-        className={getClassName(direction ? { [direction]: direction } : {})}
+        className={getClassName(modifier ? { [modifier]: true } : {})}
         style={{ "--size": size } as any}
       />
     );

@@ -2,7 +2,7 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
-import { AutoField, FieldLabel, RichTextMenu } from "@/core";
+import { AutoField, FieldLabel, FieldTab, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
@@ -16,6 +16,23 @@ export const Hero: ComponentConfig<{
     };
   };
 }> = {
+  renderFields: ({ fields }) => {
+    return (
+      <>
+        <FieldTab label="General">
+          {fields.title}
+          {fields.description}
+          {fields.buttons}
+          {fields.image}
+        </FieldTab>
+        <FieldTab label="Data">{fields.quote}</FieldTab>
+        <FieldTab label="Layout">
+          {fields.padding}
+          {fields.align}
+        </FieldTab>
+      </>
+    );
+  },
   fields: {
     quote: {
       type: "external",
@@ -81,7 +98,11 @@ export const Hero: ComponentConfig<{
       },
       getItemSummary: (item) => item.label,
     },
-    title: { type: "text", contentEditable: true },
+    title: {
+      type: "text",
+      contentEditable: true,
+      placeholder: "Enter a title",
+    },
     description: {
       ...heroRenderFields.description,
       contentEditable: true,
@@ -174,7 +195,7 @@ export const Hero: ComponentConfig<{
     padding: { type: "userField", option: true },
   },
   defaultProps: {
-    title: "Hero",
+    title: "",
     align: "left",
     description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],

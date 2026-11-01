@@ -5,6 +5,7 @@ import { Heading as _Heading } from "@/core/components/Heading";
 import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { HeadingFields } from "./HeadingFields";
 
 export type HeadingProps = WithLayout<{
   align: "left" | "center" | "right";
@@ -56,6 +57,7 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
       ],
     },
   },
+  renderFields: ({ fields }) => <HeadingFields fields={fields} />,
   defaultProps: {
     align: "left",
     text: "Heading",

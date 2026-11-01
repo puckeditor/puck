@@ -1,4 +1,5 @@
 export * from "./ArrayField";
+export * from "./CheckboxField";
 export * from "./DefaultField";
 export * from "./ExternalField";
 export * from "./RadioField";

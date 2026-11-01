@@ -6,6 +6,9 @@ const menu = {
   "rich-text-editing": {},
   "dynamic-props": {},
   "dynamic-fields": {},
+  "field-grouping": {
+    title: "Field Grouping",
+  },
   "external-data-sources": {},
   "server-components": {},
   "data-migration": {},

@@ -35,6 +35,7 @@ const CONSUMED_PROP_KEYS: Record<ConsumedPropKey, true> = {
   content: true,
   config: true,
   metadata: true,
+  fieldTransforms: true,
 };
 
 const NON_FORWARDABLE_PROP_KEYS: Record<NonForwardableKey, true> = {

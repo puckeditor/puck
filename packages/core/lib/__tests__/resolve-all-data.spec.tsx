@@ -375,4 +375,19 @@ describe("resolve-data", () => {
     // resolveAllData returns, not accumulate in the shared cache.
     expect(cache.lastChange).toEqual({});
   });
+
+  it("should call resolveData once per component", async () => {
+    await resolveAllData(data, config);
+
+    const ids = resolveData.mock.calls.map(([item]) => item.props.id);
+    expect(ids.sort()).toEqual(
+      [
+        "MyComponent-1",
+        "MyComponent-2",
+        "MyComponent-3",
+        "MyComponent-4",
+        "MyComponent-7",
+      ].sort()
+    );
+  });
 });

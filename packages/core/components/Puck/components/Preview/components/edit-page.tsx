@@ -1,10 +1,8 @@
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppStore } from "../../../../../store";
 import { toComponent } from "../../../../../lib/data/to-component";
-import { getSlotTransform } from "../../../../../lib/field-transforms/default-transforms/slot-transform";
-import { useFieldTransformsTracked } from "../../../../../lib/field-transforms/use-field-transforms-tracked";
 import { expandNode } from "../../../../../lib/data/flatten-node";
 import { rootDroppableId } from "../../../../../lib/root-droppable-id";
 import {
@@ -13,15 +11,13 @@ import {
   RootData,
 } from "../../../../../types";
 
-import { useRichtextProps } from "../../../../RichTextEditor/lib/use-richtext-props";
-import { DropZoneEditPure, DropZonePure } from "../../../../DropZone";
-
-const slotFieldTransforms = getSlotTransform(DropZoneEditPure);
+import { DropZonePure } from "../../../../DropZone";
+import useEditorProps from "../../../../../lib/props/editor/use-editor-props";
 
 /**
- * Renders the puck data in the editor where this component is rendered as an editable page.
+ * Renders the puck data as an editable page.
  */
-const EditorPage = memo(() => {
+const EditPage = () => {
   // All the props, slot props are defaulted to null
   const flatRootProps = useAppStore(
     useShallow((s) => s.state.indexes.nodes.root?.flatData.props)
@@ -40,11 +36,7 @@ const EditorPage = memo(() => {
 
   // Get the props with stable slot render functions
   // (tracked only sees `null` for slot props across calls, so prev always === next)
-  const propsWithSlots = useFieldTransformsTracked(
-    config,
-    rootAsComponent,
-    slotFieldTransforms
-  );
+  const propsWithSlots = useEditorProps({ component: rootAsComponent });
 
   // Build the final props to be passed to the user provided root render
   const renderProps: DefaultRootRenderProps = useMemo(() => {
@@ -61,23 +53,14 @@ const EditorPage = memo(() => {
     };
   }, [propsWithSlots, metadata]);
 
-  // Get the richtext props for the root render
-  const richtextProps = useRichtextProps(
-    config.root?.fields ?? {},
-    renderProps
-  );
-
   return config.root?.render ? (
     config.root?.render({
       ...renderProps,
-      ...richtextProps,
       id: "puck-root",
     })
   ) : (
     <>{renderProps.children}</>
   );
-});
+};
 
-EditorPage.displayName = "EditorPage";
-
-export default EditorPage;
+export default EditPage;

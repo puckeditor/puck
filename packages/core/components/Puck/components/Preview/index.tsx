@@ -5,9 +5,9 @@ import { getClassNameFactory } from "../../../../lib";
 import { BubbledPointerEvent } from "../../../../lib/bubble-pointer-event";
 
 import AutoFrame, { autoFrameContext } from "../../../AutoFrame";
-import { Render } from "../../../Render";
 
-import EditorPage from "./components/editor-page";
+import InteractivePage from "./components/interactive-page";
+import EditPage from "./components/edit-page";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("PuckPreview", styles);
@@ -83,14 +83,10 @@ const usePreviewModeAttribute = (ref: RefObject<HTMLIFrameElement | null>) => {
 
 export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   const dispatch = useAppStore((s) => s.dispatch);
-  const config = useAppStore((s) => s.config);
   const setStatus = useAppStore((s) => s.setStatus);
   const iframe = useAppStore((s) => s.iframe);
   const overrides = useAppStore((s) => s.overrides);
-  const metadata = useAppStore((s) => s.metadata);
-  const renderData = useAppStore((s) =>
-    s.state.ui.previewMode === "edit" ? null : s.state.data
-  );
+  const isEditMode = useAppStore((s) => s.state.ui.previewMode === "edit");
 
   const Frame = useMemo(() => overrides.iframe, [overrides]);
 
@@ -99,11 +95,7 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
   useBubbleIframeEvents(ref);
   usePreviewModeAttribute(ref);
 
-  const inner = !renderData ? (
-    <EditorPage />
-  ) : (
-    <Render data={renderData} config={config} metadata={metadata} />
-  );
+  const inner = isEditMode ? <EditPage /> : <InteractivePage />;
 
   useEffect(() => {
     if (!iframe.enabled) {
@@ -154,9 +146,12 @@ export const Preview = ({ id = "puck-preview" }: { id?: string }) => {
       ) : (
         <div
           id="preview-frame"
-          className={getClassName("frame")}
+          // Opt out the preview out of automatic translations.
+          // Browser translators modify the dom and are incompatible with dnd-kit
+          className={`${getClassName("frame")} notranslate`}
           ref={ref}
           data-puck-entry
+          translate="no"
         >
           {inner}
         </div>
