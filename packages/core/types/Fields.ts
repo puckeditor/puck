@@ -7,6 +7,8 @@ import {
 } from "../components/RichTextEditor/types";
 import { PuckRichTextOptions } from "../components/RichTextEditor/extension";
 
+export type FieldGroupVariant = "flush" | "card";
+
 type FieldOption = {
   label: string;
   value: string | number | boolean | undefined | null | object;
@@ -102,7 +104,9 @@ export interface ObjectField<
   UserField extends {} = {}
 > extends BaseField {
   type: "object";
-  expandable?: boolean;
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
+  variant?: FieldGroupVariant;
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
       ? Field<Props[SubPropName]> | UserField

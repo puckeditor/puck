@@ -1,24 +1,21 @@
-.InputWrapper + .InputWrapper {
+/* Space between fields */
+.InputWrapper:not([data-puck-field-group-collapsible])
+  + .InputWrapper:not([data-puck-field-group-collapsible]) {
   margin-top: var(--puck-space-3);
 }
 
-/* Add the space between fields as toggle padding for expandable groups so their click area includes the gap */
-.InputWrapper + .InputWrapper[data-puck-field-group-expandable] {
-  margin-top: 0;
-  --_puck-field-group-inset-top: var(--puck-space-3);
-}
-
-.InputWrapper[data-puck-field-group-expandable] + .InputWrapper {
-  margin-top: 0;
-}
-
-.InputWrapper[data-puck-field-group-expandable]:has(+ .InputWrapper) {
+/* Collapsible fields use the space below them as toggle padding instead, so their click area includes it */
+.InputWrapper[data-puck-field-group-collapsible]:has(+ .InputWrapper) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
+  --_puck-field-group-collapsed-flush-inset-bottom: calc(
+    var(--puck-space-3) + var(--puck-space-2)
+  );
 }
 
-.InputWrapper[data-puck-field-group-expandable]
-  + .InputWrapper[data-puck-field-group-expandable] {
-  --_puck-field-group-inset-top: 0px;
+/* Or the space above them, if the field before isn't collapsible */
+.InputWrapper:not([data-puck-field-group-collapsible])
+  + .InputWrapper[data-puck-field-group-collapsible] {
+  --_puck-field-group-inset-top: var(--puck-space-3);
 }
 
 .Input-label {

@@ -5,8 +5,12 @@ import { useAppStore } from "../../../../store";
 import { getDeep } from "../../../../lib/data/get-deep";
 import { SubField } from "../../subfield";
 import { useFieldStoreApi } from "../../store";
-import { FieldGroupInternal, FieldGroupItem } from "../../../FieldGroup";
+import {
+  FieldGroupInternal,
+  FieldGroupItemInternal,
+} from "../../../FieldGroup";
 import { isFieldVisible } from "../../../../lib/fields/is-field-visible";
+import { rendersCollapsibleGroup } from "../../../../lib/fields/renders-collapsible-group";
 
 export const ObjectField = ({
   field,
@@ -58,7 +62,8 @@ export const ObjectField = ({
     <FieldGroupInternal
       {...labelProps}
       Label={Label}
-      expandable={field.expandable}
+      variant={field.variant ?? "card"}
+      collapsible={field.collapsible}
       expanded={expanded}
       onToggle={onToggle}
     >
@@ -67,7 +72,10 @@ export const ObjectField = ({
         const subPath = `${localName}.${subName}`;
 
         return (
-          <FieldGroupItem key={subPath}>
+          <FieldGroupItemInternal
+            key={subPath}
+            collapsible={rendersCollapsibleGroup(subField, fieldTypeOverrides)}
+          >
             <SubField
               id={`${id}_${subName}`}
               name={name}
@@ -86,7 +94,7 @@ export const ObjectField = ({
                 onChange({ ...value, [subName]: subValue }, ui);
               }}
             />
-          </FieldGroupItem>
+          </FieldGroupItemInternal>
         );
       })}
     </FieldGroupInternal>

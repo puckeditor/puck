@@ -1,19 +1,33 @@
 .FieldGroup-box {
   display: flex;
   flex-direction: column;
+  /* The space the group was given around it, if any (see FieldGroup-toggle below) */
+  margin: 0 var(--_puck-field-group-inset-x, 0px)
+    var(--_puck-field-group-inset-bottom, 0px);
+}
+
+.FieldGroup-box--card {
   background-color: var(--puck-field-color-surface, var(--puck-color-surface));
   border: var(--puck-field-border-width, var(--puck-border-width-regular)) solid
     var(--puck-field-color-border, var(--puck-color-border));
   border-radius: var(--puck-field-radius, var(--puck-radius-m));
-  /* The space the group was given around it, if any (see FieldGroup-toggle below) */
-  margin: 0 var(--_puck-field-group-inset-x, 0px)
-    var(--_puck-field-group-inset-bottom, 0px);
 }
 
 .FieldGroup-fieldset {
   border: none;
   margin: 0;
   min-width: 0; /* Needed to ensure External input doesn't overflow, see https://stackoverflow.com/a/53784508 */
+  padding: 0;
+  /* Reset the insets and guide line for any nested FieldGroups */
+  --_puck-field-group-inset-x: 0px;
+  --_puck-field-group-inset-top: 0px;
+  --_puck-field-group-inset-bottom: 0px;
+  --_puck-field-group-collapsed-flush-inset-bottom: 0px;
+  --_puck-field-group-guide-width: 0px;
+  --_puck-field-group-guide-space: 0px;
+}
+
+.FieldGroup-box--card > .FieldGroup-fieldset {
   padding: var(--puck-field-space-surface-y, var(--puck-space-4))
     var(
       --puck-field-space-surface-x,
@@ -22,41 +36,49 @@
           var(--puck-field-border-width, var(--puck-border-width-regular))
       )
     );
-  /* Reset the insets for any nested FieldGroups */
-  --_puck-field-group-inset-x: 0px;
-  --_puck-field-group-inset-top: 0px;
-  --_puck-field-group-inset-bottom: 0px;
 }
 
-.FieldGroup-fieldset > .FieldGroup-item + .FieldGroup-item {
+/* Without a card, flush groups need more space between their label (if any) and their fields */
+.FieldGroup-box--flush:not(:first-child) {
+  margin-top: var(--puck-space-2);
+}
+
+/* Flush groups nested within a flush group (without a card or array in between) show a guide line for their fields */
+.FieldGroup-box--flush > .FieldGroup-fieldset {
+  --_puck-field-group-guide-width: var(
+    --puck-field-border-width,
+    var(--puck-border-width-regular)
+  );
+  --_puck-field-group-guide-space: var(--puck-space-3);
+}
+
+/* Read on the box, so it gets the value from the group above rather than its own */
+.FieldGroup-box--flush {
+  border-inline-start: var(--_puck-field-group-guide-width, 0px) solid
+    var(--puck-color-border-muted);
+  padding-inline-start: var(--_puck-field-group-guide-space, 0px);
+}
+
+/* Space between items */
+.FieldGroup-fieldset
+  > :not([data-puck-field-group-collapsible])
+  + :not([data-puck-field-group-collapsible]) {
   margin-top: var(--puck-space-3);
 }
 
-/* Add the margin between items as toggle padding for expandable groups so their click area includes the gap */
-.FieldGroup-fieldset
-  > .FieldGroup-item
-  + .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child) {
-  margin-top: 0;
-  --_puck-field-group-inset-top: var(--puck-space-3);
-}
-
-.FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child)
-  + .FieldGroup-item {
-  margin-top: 0;
-}
-
-.FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child):has(
-    + .FieldGroup-item
-  ) {
+/* Collapsible items use the space below them as toggle padding instead, so their click area includes it */
+.FieldGroup-fieldset > [data-puck-field-group-collapsible]:not(:last-child) {
   --_puck-field-group-inset-bottom: var(--puck-space-3);
+  --_puck-field-group-collapsed-flush-inset-bottom: calc(
+    var(--puck-space-3) + var(--puck-space-2)
+  );
 }
 
+/* Or the space above them, if the item before isn't collapsible */
 .FieldGroup-fieldset
-  > .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child)
-  + .FieldGroup-item:has(> [data-puck-field-group-expandable]:only-child) {
-  --_puck-field-group-inset-top: 0px;
+  > :not([data-puck-field-group-collapsible])
+  + [data-puck-field-group-collapsible] {
+  --_puck-field-group-inset-top: var(--puck-space-3);
 }
 
 /* Remove the label vertical spacing when the group is collapsed */
@@ -91,6 +113,14 @@
 /* The label's own bottom spacing separates the toggle from the box */
 .FieldGroup--expanded > .FieldGroup-toggle {
   padding-bottom: 0;
+}
+
+/* Collapsed flush groups need more space below their label, so it doesn't read as the label of the next field */
+.FieldGroup--flush.FieldGroup--collapsed > .FieldGroup-toggle {
+  padding-bottom: var(
+    --_puck-field-group-collapsed-flush-inset-bottom,
+    var(--_puck-field-group-inset-bottom, 0px)
+  );
 }
 
 .FieldGroup-toggle:focus-visible {

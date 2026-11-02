@@ -245,6 +245,9 @@
       --puck-field-space-surface-x,
       calc(var(--puck-space-4) - var(--_puck-field-array-border-width))
     );
+  /* Items are a container, so flush groups within them don't get a FieldGroup guide line */
+  --_puck-field-group-guide-width: 0px;
+  --_puck-field-group-guide-space: 0px;
 }
 
 .ArrayFieldItem-rhs {

@@ -3,7 +3,7 @@ title: <FieldGroup>
 ---
 
 import { PuckPreview } from "@/docs/components/Preview";
-import { FieldGroup, AutoField, FieldLabel, FieldGroupItem } from "@/puck";
+import { FieldGroup, AutoField, FieldLabel } from "@/puck";
 
 # \<FieldGroup\>
 
@@ -16,7 +16,7 @@ Use it in [`renderFields`](/docs/api-reference/configuration/component-config#re
   data={{ root: { props: {} }, content: [] }}
 >
   <FieldGroup label="Appearance">
-    <FieldGroupItem>
+    <FieldGroup.Item>
       <FieldLabel label="Color">
         <AutoField
           value="#000000"
@@ -24,28 +24,28 @@ Use it in [`renderFields`](/docs/api-reference/configuration/component-config#re
           field={{ type: "text" }}
         />
       </FieldLabel>
-    </FieldGroupItem>
-    <FieldGroupItem>
+    </FieldGroup.Item>
+    <FieldGroup.Item>
       <FieldLabel label="Size">
         <AutoField value="12" onChange={() => {}} field={{ type: "number" }} />
       </FieldLabel>
-    </FieldGroupItem>
+    </FieldGroup.Item>
   </FieldGroup>
 </PuckPreview>
 
 ```tsx {6-13} copy
-import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
+import { Puck, FieldGroup } from "@puckeditor/core";
 
 export function Editor() {
   return (
     <Puck>
       <FieldGroup label="Appearance">
-        <FieldGroupItem>
+        <FieldGroup.Item>
           <input type="text" value="#000000" onChange={() => {}} />
-        </FieldGroupItem>
-        <FieldGroupItem>
+        </FieldGroup.Item>
+        <FieldGroup.Item>
           <input type="number" value="12" onChange={() => {}} />
-        </FieldGroupItem>
+        </FieldGroup.Item>
       </FieldGroup>
     </Puck>
   );
@@ -54,30 +54,40 @@ export function Editor() {
 
 ## Props
 
-| Param                       | Example               | Type      | Status |
-| --------------------------- | --------------------- | --------- | ------ |
-| [`children`](#children)     | `children: <div />`   | ReactNode | -      |
-| [`expandable`](#expandable) | `expandable: true`    | Boolean   | -      |
-| [`icon`](#icon)             | `icon: <svg />`       | ReactNode | -      |
-| [`id`](#id)                 | `id: "appearance"`    | String    | -      |
-| [`label`](#label)           | `label: "Appearance"` | String    | -      |
+| Param                                 | Example                 | Type                  | Status |
+| ------------------------------------- | ----------------------- | --------------------- | ------ |
+| [`children`](#children)               | `children: <div />`     | ReactNode             | -      |
+| [`collapsible`](#collapsible)         | `collapsible: false`    | Boolean               | -      |
+| [`defaultExpanded`](#defaultexpanded) | `defaultExpanded: true` | Boolean               | -      |
+| [`icon`](#icon)                       | `icon: <svg />`         | ReactNode             | -      |
+| [`id`](#id)                           | `id: "appearance"`      | String                | -      |
+| [`label`](#label)                     | `label: "Appearance"`   | String                | -      |
+| [`variant`](#variant)                 | `variant: "card"`       | `"flush"` \| `"card"` | -      |
 
 ## Optional props
 
 ### `children`
 
-The fields to render inside the group. Will likely contain [`<FieldGroupItem>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
+The fields to render inside the group. Will likely contain [`<FieldGroup.Item>`](field-group-item) nodes. Nothing is rendered if there are no children, or only empty strings.
 
-### `expandable`
+### `collapsible`
 
-Hide the children until the label is clicked. **Defaults to `false`**.
+Let users show and hide the children by clicking the label. **Defaults to `true`**.
+
+```tsx /collapsible/ copy
+<FieldGroup label="Appearance" collapsible={false}>
+  <FieldGroup.Item>
+    <input type="text" value="#000000" onChange={() => {}} />
+  </FieldGroup.Item>
+</FieldGroup>
+```
 
 <PuckPreview
-  config={{ components: { Orange: { render: () => <div>Orange</div> } } }}
+  config={{ components: {} }}
   data={{ root: { props: {} }, content: [] }}
 >
-  <FieldGroup label="Appearance" expandable>
-    <FieldGroupItem>
+  <FieldGroup label="Appearance" collapsible={false}>
+    <FieldGroup.Item>
       <FieldLabel label="Color">
         <AutoField
           value="#000000"
@@ -85,33 +95,38 @@ Hide the children until the label is clicked. **Defaults to `false`**.
           field={{ type: "text" }}
         />
       </FieldLabel>
-    </FieldGroupItem>
-    <FieldGroupItem>
-      <FieldLabel label="Size">
-        <AutoField value="12" onChange={() => {}} field={{ type: "number" }} />
-      </FieldLabel>
-    </FieldGroupItem>
+    </FieldGroup.Item>
   </FieldGroup>
 </PuckPreview>
 
-```tsx {6-13} copy
-import { Puck, FieldGroup, FieldGroupItem } from "@puckeditor/core";
+### `defaultExpanded`
 
-export function Editor() {
-  return (
-    <Puck>
-      <FieldGroup label="Appearance" expandable>
-        <FieldGroupItem>
-          <input type="text" value="#000000" onChange={() => {}} />
-        </FieldGroupItem>
-        <FieldGroupItem>
-          <input type="number" value="12" onChange={() => {}} />
-        </FieldGroupItem>
-      </FieldGroup>
-    </Puck>
-  );
-}
+Expand the children by default. Only applies when [`collapsible`](#collapsible) is `true`. **Defaults to `false`**.
+
+```tsx /defaultExpanded/ copy
+<FieldGroup label="Appearance" defaultExpanded>
+  <FieldGroup.Item>
+    <input type="text" value="#000000" onChange={() => {}} />
+  </FieldGroup.Item>
+</FieldGroup>
 ```
+
+<PuckPreview
+  config={{ components: {} }}
+  data={{ root: { props: {} }, content: [] }}
+>
+  <FieldGroup label="Appearance" defaultExpanded>
+    <FieldGroup.Item>
+      <FieldLabel label="Color">
+        <AutoField
+          value="#000000"
+          onChange={() => {}}
+          field={{ type: "text" }}
+        />
+      </FieldLabel>
+    </FieldGroup.Item>
+  </FieldGroup>
+</PuckPreview>
 
 ### `icon`
 
@@ -119,8 +134,17 @@ Render an icon before the label text. Puck uses [lucide-react](https://lucide.de
 
 ### `id`
 
-An optional ID for this group, used as the key in [`ui.expandedFieldGroups`](/docs/api-reference/data-model/app-state#uiexpandedfieldgroups). This prop has no effect outside `<Puck>`.
+An optional ID for this group, used as the key in [`ui.expandedFieldGroups`](/docs/api-reference/data-model/app-state#uiexpandedfieldgroups). Use it to preserve the group's expanded state across remounts.
+
+This prop has no effect outside `<Puck>`.
 
 ### `label`
 
-The label for the group. Required when [`expandable`](#expandable) is `true`.
+The label for the group. Required unless [`collapsible`](#collapsible) is `false`.
+
+### `variant`
+
+The visual style of the group. **Defaults to `"flush"`**.
+
+- `"flush"` (default): render the fields without a container. Nested groups are indented.
+- `"card"`: render the fields inside a bordered container.

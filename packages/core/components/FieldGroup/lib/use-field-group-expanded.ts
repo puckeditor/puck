@@ -4,6 +4,8 @@ import { useAppStore, useIsWithinPuck } from "../../../store";
 export type UseFieldGroupProps = {
   /** The unique key identifying the field group to use when using within the appStore. */
   fieldGroupKey: string;
+  /** Whether the field group should start expanded or not. */
+  defaultExpanded?: boolean;
 };
 
 export type UseFieldGroupAPI = {
@@ -11,7 +13,7 @@ export type UseFieldGroupAPI = {
   expanded: boolean;
   /** Function to toggle the expanded state of the field group. */
   toggleExpanded: () => void;
-  /** Unset the expanded state of the field group. Removing it from app store if within Puck. */
+  /** Remove the field group's entry from the appStore. Does nothing outside Puck. */
   unsetExpanded: () => void;
 };
 
@@ -22,6 +24,7 @@ export type UseFieldGroupAPI = {
  */
 const useExpandedFieldGroup = ({
   fieldGroupKey,
+  defaultExpanded = false,
 }: UseFieldGroupProps): UseFieldGroupAPI => {
   const dispatch = useAppStore((s) => s.dispatch);
 
@@ -31,57 +34,46 @@ const useExpandedFieldGroup = ({
     (s) => s.state.ui.expandedFieldGroups[fieldGroupKey]
   );
 
-  const setAppStoreExpanded = useCallback(
-    ({ expanded }: { expanded: boolean }) => {
-      dispatch({
-        type: "setUi",
-        ui: (prev) => {
-          const newUi = {
-            expandedFieldGroups: {
-              ...prev.expandedFieldGroups,
-            },
-          };
-
-          if (!expanded) {
-            delete newUi.expandedFieldGroups[fieldGroupKey];
-          } else {
-            newUi.expandedFieldGroups[fieldGroupKey] = true;
-          }
-
-          return newUi;
-        },
-      });
-    },
-    [dispatch, fieldGroupKey]
-  );
-
-  const toggleAppStoreExpanded = useCallback(
-    () => setAppStoreExpanded({ expanded: !appStoreExpanded }),
-    [setAppStoreExpanded, appStoreExpanded]
-  );
-
-  const [localExpanded, setLocalExpanded] = useState(false);
+  const [localExpanded, setLocalExpanded] = useState(defaultExpanded);
 
   // If it's not within Puck, use the local state
-  const expanded = isWithinPuck ? appStoreExpanded : localExpanded;
+  const expanded = isWithinPuck
+    ? appStoreExpanded ?? defaultExpanded
+    : localExpanded;
 
   const toggleExpanded = useCallback(() => {
-    if (isWithinPuck) {
-      toggleAppStoreExpanded();
+    if (!isWithinPuck) {
+      setLocalExpanded((prev) => !prev);
       return;
     }
 
-    setLocalExpanded((prev) => !prev);
-  }, [isWithinPuck, toggleAppStoreExpanded]);
+    dispatch({
+      type: "setUi",
+      ui: (prev) => ({
+        expandedFieldGroups: {
+          ...prev.expandedFieldGroups,
+          [fieldGroupKey]: !(
+            prev.expandedFieldGroups[fieldGroupKey] ?? defaultExpanded
+          ),
+        },
+      }),
+    });
+  }, [isWithinPuck, dispatch, fieldGroupKey, defaultExpanded]);
 
   const unsetExpanded = useCallback(() => {
-    if (isWithinPuck) {
-      setAppStoreExpanded({ expanded: false });
-      return;
-    }
+    if (!isWithinPuck) return;
 
-    setLocalExpanded(false);
-  }, [isWithinPuck, setAppStoreExpanded]);
+    dispatch({
+      type: "setUi",
+      ui: (prev) => {
+        const expandedFieldGroups = { ...prev.expandedFieldGroups };
+
+        delete expandedFieldGroups[fieldGroupKey];
+
+        return { expandedFieldGroups };
+      },
+    });
+  }, [isWithinPuck, dispatch, fieldGroupKey]);
 
   return {
     expanded,
