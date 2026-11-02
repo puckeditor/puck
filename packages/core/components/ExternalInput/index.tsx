@@ -129,6 +129,7 @@ export const ExternalInput = ({
   }, []);
 
   const externalItemLabel = useMessage("field-external-item");
+  const detachLabel = useMessage("field-external-detach");
   const searchLabel = useMessage("field-external-search");
   const toggleFiltersLabel = useMessage("field-external-togglefilters");
   const selectDataLabel = useMessage("field-external-selectdata");
@@ -167,6 +168,7 @@ export const ExternalInput = ({
           <button
             type="button"
             className={getClassName("detachButton")}
+            aria-label={detachLabel}
             onClick={() => {
               onChange(null);
             }}

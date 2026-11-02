@@ -147,6 +147,7 @@ export const ViewportControls = ({
 
   const zoomOutLabel = useMessage("viewport-zoom-out");
   const zoomInLabel = useMessage("viewport-zoom-in");
+  const zoomLevelLabel = useMessage("viewport-zoom-level");
   const toggleMenuLabel = useMessage("viewport-toggle-menu");
 
   return (
@@ -210,6 +211,7 @@ export const ViewportControls = ({
             <div className={getClassName("divider")} />
             <select
               className={getClassName("zoomSelect")}
+              aria-label={zoomLevelLabel}
               value={zoom.toString()}
               onClick={(e) => {
                 e.stopPropagation();

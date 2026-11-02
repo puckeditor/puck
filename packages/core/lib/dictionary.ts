@@ -38,12 +38,14 @@ export const defaultDictionary = {
   // Fields
   "field-readonly": "Read-only",
   "field-arrayitem-summary": "Item #{index}",
+  "field-arrayitem-add": "Add",
   "field-arrayitem-duplicate": "Duplicate",
   "field-arrayitem-delete": "Delete",
   "field-external-selectdata": "Select data",
   "field-external-search": "Search",
   "field-external-togglefilters": "Toggle filters",
   "field-external-item": "External item",
+  "field-external-detach": "Detach external item",
   "field-external-result-singular": "{count} result",
   "field-external-result-plural": "{count} results",
   // Rich text field
@@ -77,6 +79,7 @@ export const defaultDictionary = {
   // Viewport controls
   "viewport-zoom-in": "Zoom viewport in",
   "viewport-zoom-out": "Zoom viewport out",
+  "viewport-zoom-level": "Zoom level",
   "viewport-zoom-auto": "{zoom}% (Auto)",
   "viewport-toggle-menu": "Toggle viewport menu",
   "viewport-switch": "Switch to {label} viewport",

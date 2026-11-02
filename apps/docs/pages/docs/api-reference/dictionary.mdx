@@ -94,22 +94,24 @@ Many tokens set an element's HTML `title` attribute, a tooltip that only appears
 
 #### Array field
 
-| Token                       | Default           | Used for              |
-| --------------------------- | ----------------- | --------------------- |
-| `field-arrayitem-summary`   | `"Item #{index}"` | Item default label    |
-| `field-arrayitem-duplicate` | `"Duplicate"`     | Item action (tooltip) |
-| `field-arrayitem-delete`    | `"Delete"`        | Item action (tooltip) |
+| Token                       | Default           | Used for                     |
+| --------------------------- | ----------------- | ---------------------------- |
+| `field-arrayitem-summary`   | `"Item #{index}"` | Item default label           |
+| `field-arrayitem-add`       | `"Add"`           | Add item button (aria-label) |
+| `field-arrayitem-duplicate` | `"Duplicate"`     | Item action (tooltip)        |
+| `field-arrayitem-delete`    | `"Delete"`        | Item action (tooltip)        |
 
 #### External field
 
-| Token                            | Default             | Used for                         |
-| -------------------------------- | ------------------- | -------------------------------- |
-| `field-external-selectdata`      | `"Select data"`     | Trigger button and modal heading |
-| `field-external-search`          | `"Search"`          | Modal search                     |
-| `field-external-togglefilters`   | `"Toggle filters"`  | Modal filter toggle (tooltip)    |
-| `field-external-item`            | `"External item"`   | Selected item default label      |
-| `field-external-result-singular` | `"{count} result"`  | Modal footer                     |
-| `field-external-result-plural`   | `"{count} results"` | Modal footer                     |
+| Token                            | Default                  | Used for                         |
+| -------------------------------- | ------------------------ | -------------------------------- |
+| `field-external-selectdata`      | `"Select data"`          | Trigger button and modal heading |
+| `field-external-search`          | `"Search"`               | Modal search                     |
+| `field-external-togglefilters`   | `"Toggle filters"`       | Modal filter toggle (tooltip)    |
+| `field-external-item`            | `"External item"`        | Selected item default label      |
+| `field-external-detach`          | `"Detach external item"` | Detach button (aria-label)       |
+| `field-external-result-singular` | `"{count} result"`       | Modal footer                     |
+| `field-external-result-plural`   | `"{count} results"`      | Modal footer                     |
 
 #### Rich text field
 
@@ -149,6 +151,7 @@ Many tokens set an element's HTML `title` attribute, a tooltip that only appears
 | ------------------------- | ------------------------------ | --------------------------------------- |
 | `viewport-zoom-in`        | `"Zoom viewport in"`           | Zoom button (tooltip)                   |
 | `viewport-zoom-out`       | `"Zoom viewport out"`          | Zoom button (tooltip)                   |
+| `viewport-zoom-level`     | `"Zoom level"`                 | Zoom select (aria-label)                |
 | `viewport-zoom-auto`      | `"{zoom}% (Auto)"`             | Auto zoom select option                 |
 | `viewport-toggle-menu`    | `"Toggle viewport menu"`       | Menu toggle (tooltip)                   |
 | `viewport-switch`         | `"Switch to {label} viewport"` | Viewport button (tooltip)               |
