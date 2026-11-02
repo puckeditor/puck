@@ -169,6 +169,7 @@ export const ExternalInput = ({
             type="button"
             className={getClassName("detachButton")}
             aria-label={detachLabel}
+            title={detachLabel}
             onClick={() => {
               onChange(null);
             }}
