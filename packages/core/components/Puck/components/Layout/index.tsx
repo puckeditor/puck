@@ -285,6 +285,33 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   const hasDesktopFieldsPlugin =
     pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;
 
+  // Render the fields in one place only. The right sidebar is hidden on mobile,
+  // where the fields plugin tab is used instead.
+  const showFieldsPlugin = hasDesktopFieldsPlugin || currentPlugin === "fields";
+
+  useEffect(() => {
+    if (hasDesktopFieldsPlugin) return;
+
+    // The fields plugin is mobile-only. Deselect it on desktop, where the right
+    // sidebar shows the fields.
+    const deselectFieldsPlugin = () => {
+      if (
+        window.matchMedia("(min-width: 638px)").matches &&
+        appStoreApi.getState().state.ui.plugin?.current === "fields"
+      ) {
+        setUi({ plugin: { current: null } });
+      }
+    };
+
+    deselectFieldsPlugin();
+
+    window.addEventListener("resize", deselectFieldsPlugin);
+
+    return () => {
+      window.removeEventListener("resize", deselectFieldsPlugin);
+    };
+  }, [hasDesktopFieldsPlugin]);
+
   const mobilePanelExpanded = useAppStore(
     (s) => s.state.ui.mobilePanelExpanded ?? false
   );
@@ -315,8 +342,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                 className={getLayoutClassName({
                   leftSideBarVisible,
                   mounted,
-                  rightSideBarVisible:
-                    !hasDesktopFieldsPlugin && rightSideBarVisible,
+                  rightSideBarVisible: !showFieldsPlugin && rightSideBarVisible,
                   isExpanded: mobilePanelExpanded,
                   mobilePanelHeightToggle: mobilePanelHeightMode === "toggle",
                   mobilePanelHeightMinContent:
@@ -374,13 +400,13 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                           visible={currentPlugin === id}
                           mobileOnly={mobileOnly}
                         >
-                          <Render />
+                          {(id !== "fields" || showFieldsPlugin) && <Render />}
                         </PluginTab>
                       )
                     )}
                   </Sidebar>
                   <Canvas />
-                  {!hasDesktopFieldsPlugin && (
+                  {!showFieldsPlugin && (
                     <Sidebar
                       position="right"
                       sidebarRef={rightSidebarRef}
