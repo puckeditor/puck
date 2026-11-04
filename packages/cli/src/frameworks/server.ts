@@ -256,7 +256,7 @@ const serverPlanner = (id: "hono" | "express") => {
         file,
         reason: "unsupported_shape",
         message: `${file} was customised or moved, so it wasn't changed to serve pages from Puck Cloud.`,
-        instructions: `Serve published pages from Puck Cloud with getPage from @puckeditor/cloud-client.`,
+        instructions: `Serve published pages from Puck Cloud with puckCloud().pages.getPublished() from @puckeditor/cloud-client.`,
         snippet: published(p.cloudHost),
       });
     } else {

@@ -151,7 +151,12 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
         scan.pagesPluginFiles.push(rel);
       if (ref.source === PLUGIN_AUTH_PACKAGE && imports("createAuthPlugin"))
         scan.authPluginFiles.push(rel);
-      if (ref.source === CLOUD_CLIENT_PACKAGE && imports("getPage"))
+      // e.g. puckCloud().pages.getPublished(path)
+      if (
+        ref.source === CLOUD_CLIENT_PACKAGE &&
+        imports("puckCloud", "PuckCloud", "default") &&
+        code.includes(".getPublished(")
+      )
         scan.cloudPageFiles.push(rel);
       if (
         ref.source === CLOUD_CLIENT_AUTH_ENTRY &&

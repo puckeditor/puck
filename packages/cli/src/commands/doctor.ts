@@ -437,7 +437,7 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
           : finding(
               "pages.render",
               "warn",
-              "Nothing reads published pages from Puck Cloud with getPage",
+              "Nothing reads published pages from Puck Cloud with puckCloud().pages.getPublished()",
               `${CANONICAL_INVOCATION} add pages${where}`
             )
       );

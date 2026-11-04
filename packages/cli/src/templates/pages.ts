@@ -4,9 +4,11 @@
  * /puck?path=/about, and saves to Puck Cloud through /api/puck/pages.
  */
 
-/** `getPage` options, pointed at PUCK_CLOUD_URL when set */
-export const getPageArgs = (host?: string) =>
-  host ? `{ path, host: ${JSON.stringify(host)} }` : "{ path }";
+/** The data of the page published at `path`, from PUCK_CLOUD_URL when set */
+export const publishedData = (host?: string) =>
+  `(await puckCloud(${
+    host ? `{ host: ${JSON.stringify(host)} }` : ""
+  }).pages.getPublished(path))?.data ?? null`;
 
 const AI_PLUGIN = `const aiPlugin = createAiPlugin({
   // Allow users to switch between design and assembly mode.
@@ -113,11 +115,11 @@ export const dynamic = "force-dynamic";
 export const nextPagesRenderPage = (host?: string) => `/**
  * This file implements a catch-all route that renders the pages published in
  * Puck Cloud. For any route visited (with exception of other hardcoded pages
- * in /app), it reads the published page with \`getPage\` and renders it using
+ * in /app), it reads the published page with \`getPublished\` and renders it using
  * <Render>.
  */
 
-import { getPage } from "@puckeditor/cloud-client";
+import { puckCloud } from "@puckeditor/cloud-client";
 import { Client } from "./client";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -129,7 +131,7 @@ const getPublishedPage = cache(async (path: string) => {
   // Pages are published in Puck Cloud, so render them on each request
   await connection();
 
-  return getPage(${getPageArgs(host)});
+  return ${publishedData(host)};
 });
 
 export async function generateMetadata({
@@ -187,11 +189,11 @@ export async function proxy(req: NextRequest) {
 /** React Router and TanStack Start: lib/pages.server.ts */
 export const cloudPagesServer = (
   host?: string
-) => `import { getPage as getPublishedPage } from "@puckeditor/cloud-client";
+) => `import { puckCloud } from "@puckeditor/cloud-client";
 
 // Pages are edited and published in Puck Cloud
 export async function getPage(path: string) {
-  return getPublishedPage(${getPageArgs(host)});
+  return ${publishedData(host)};
 }
 `;
 
@@ -528,11 +530,11 @@ export const honoPublishedPages = (
 ) => `// Serves pages published in Puck Cloud
 // Learn more: https://puckeditor.com/docs/cli
 import { Hono } from "hono";
-import { getPage } from "@puckeditor/cloud-client";
+import { puckCloud } from "@puckeditor/cloud-client";
 
 export const puckPages = new Hono().get("/api/pages", async (c) => {
   const path = c.req.query("path") ?? "/";
-  const page = await getPage(${getPageArgs(host)});
+  const page = ${publishedData(host)};
 
   return page ? c.json(page) : c.json({ error: "Not found" }, 404);
 });
@@ -546,12 +548,12 @@ if (import.meta.env.DEV && fs.existsSync(".env.local"))
 
 /** Astro: src/lib/pages.ts */
 export const astroPagesLib = (host?: string) => `import fs from "node:fs";
-import { getPage as getPublishedPage } from "@puckeditor/cloud-client";
+import { puckCloud } from "@puckeditor/cloud-client";
 
 ${ASTRO_LOAD_ENV}
 
 // Pages are edited and published in Puck Cloud
-export const getPage = (path: string) => getPublishedPage(${getPageArgs(host)});
+export const getPage = async (path: string) => ${publishedData(host)};
 `;
 
 /** Astro: src/pages/api/pages.ts, for the pages the site renders */
@@ -650,7 +652,7 @@ export const expressPublishedPages = (
 ) => `// Serves pages published in Puck Cloud
 // Learn more: https://puckeditor.com/docs/cli
 import express from "express";
-import { getPage } from "@puckeditor/cloud-client";
+import { puckCloud } from "@puckeditor/cloud-client";
 
 export const puckPages = express.Router();
 
@@ -658,7 +660,7 @@ puckPages.get("/api/pages", async (req, res, next) => {
   // Express 4 doesn't pass errors from async handlers to next()
   try {
     const path = typeof req.query.path === "string" ? req.query.path : "/";
-    const page = await getPage(${getPageArgs(host)});
+    const page = ${publishedData(host)};
 
     if (page) res.json(page);
     else res.status(404).json({ error: "Not found" });
