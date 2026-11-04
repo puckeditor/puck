@@ -232,31 +232,9 @@ export const createCloudApi = (
         },
         IMPORT_TIMEOUT_MS
       );
-      const body = await json(res);
-      if (res.status === 401 || res.status === 403) {
-        throw new CloudRequestError(
-          "Puck Cloud rejected the API key",
-          "rejected"
-        );
-      }
-      if (res.status === 429) {
-        throw new CloudRequestError(
-          "Too many requests. Wait a minute and try again.",
-          "rate_limited"
-        );
-      }
-      if (
-        !res.ok ||
-        !Array.isArray(body.created) ||
-        !Array.isArray(body.skipped)
-      ) {
-        throw new CloudRequestError(
-          typeof body.error === "string"
-            ? `Puck Cloud couldn't import the pages: ${body.error}`
-            : `Puck Cloud returned an unexpected response (${res.status})`,
-          "bad_response"
-        );
-      }
+      const body = await pagesResponse(res, "import the pages");
+      if (!Array.isArray(body.created) || !Array.isArray(body.skipped))
+        throw unexpected(res);
       return { created: body.created, skipped: body.skipped };
     },
 
