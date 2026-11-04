@@ -360,6 +360,7 @@ describe("assets migrate", () => {
     it("reports pages that failed, so a re-run migrates them", async () => {
       const root = await project(["assets", "pages"]);
       const cloud = cloudWith();
+      // Publishing / fails, after its migrated version is saved
       cloud.failSaveAt = 2;
 
       const { json, code } = await migrate(
@@ -371,8 +372,8 @@ describe("assets migrate", () => {
       expect(code).toBe(11);
       expect(json.status).toBe("partial");
       expect(json.assetsMigrate?.pages).toMatchObject({
-        migrated: ["/", "/new"],
-        failed: ["/draft"],
+        migrated: ["/draft", "/new"],
+        failed: ["/"],
       });
       expect(json.nextSteps).toEqual([
         "npx @puckeditor/cli assets migrate --json --field HeadingBlock.image --yes",
@@ -384,7 +385,34 @@ describe("assets migrate", () => {
         cloud
       );
       expect(again.json.status).toBe("success");
-      expect(again.json.assetsMigrate?.pages.migrated).toEqual(["/draft"]);
+      expect(again.json.assetsMigrate?.pages.migrated).toEqual(["/"]);
+      expect(
+        versions(cloud, "page_live").find((v) => v.status === "published")
+      ).toEqual({ status: "published", image: { src: "/live.png" } });
+    });
+
+    it("names a draft it saved over without saving it again", async () => {
+      const root = await project(["assets", "pages"]);
+      const cloud = cloudWith();
+      // /draft's migrated draft, after its migrated live version
+      cloud.failSaveAt = 4;
+
+      const { json } = await migrate(
+        root,
+        ["--field", "HeadingBlock.image", "--yes", ...KEY],
+        cloud
+      );
+
+      expect(json.assetsMigrate?.pages.failed).toEqual(["/draft"]);
+      expect(json.message).toContain(
+        "/draft's draft is no longer its latest version: restore version 2 from its history, then re-run."
+      );
+      // What's live is unchanged
+      expect(versions(cloud, "page_draft")).toEqual([
+        { status: "published", image: "/live.png" },
+        { status: "unpublished", image: "/draft.png" },
+        { status: "unpublished", image: { src: "/live.png" } },
+      ]);
     });
 
     it("needs an API key, and makes no requests on a dry run", async () => {

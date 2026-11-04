@@ -31,8 +31,10 @@ export interface ImportedPages {
 export interface CloudPageSummary {
   id: string;
   path: string;
-  latestVersionId: string | null;
-  publishedVersionId: string | null;
+  /** The latest version's number */
+  version: number;
+  /** The published version's number, if the page is published */
+  publishedVersion: number | null;
 }
 
 export interface CloudApi {
@@ -57,17 +59,19 @@ export interface CloudApi {
   /** The pages on the API key's branch */
   listPages(apiKey: string): Promise<CloudPageSummary[]>;
   /** A version's Puck data */
-  getPageVersion(
+  getPageVersion(apiKey: string, id: string, version: number): Promise<unknown>;
+  /**
+   * Saves data as the page's latest version, refused if a version newer than
+   * `previousVersion` was saved. Returns the new version's number.
+   */
+  saveVersion(
     apiKey: string,
     id: string,
-    versionId: string
-  ): Promise<unknown>;
-  /** Saves data as a new version, publishing it if `status` is "published" */
-  savePage(
-    apiKey: string,
-    id: string,
-    version: { data: unknown; status: "published" | "unpublished" }
-  ): Promise<void>;
+    data: unknown,
+    previousVersion: number
+  ): Promise<number>;
+  /** Publishes one of the page's versions */
+  publishVersion(apiKey: string, id: string, version: number): Promise<void>;
 }
 
 export class CloudRequestError extends Error {
@@ -239,44 +243,60 @@ export const createCloudApi = (
     },
 
     async listPages(apiKey) {
-      const res = await request("api/pages", {
-        headers: { "x-api-key": apiKey },
-      });
-      const body = await pagesResponse(res, "list the pages");
-      if (!Array.isArray(body.sitePages)) throw unexpected(res);
-      return (body.sitePages as Record<string, unknown>[]).map((page) => ({
-        id: String(page.id),
-        path: String(page.path),
-        latestVersionId: (page.latestVersionId as string | null) ?? null,
-        publishedVersionId: (page.publishedVersionId as string | null) ?? null,
-      }));
+      const pages: CloudPageSummary[] = [];
+      // The list comes a page at a time
+      for (;;) {
+        const res = await request(`api/pages?offset=${pages.length}`, {
+          headers: { "x-api-key": apiKey },
+        });
+        const body = await pagesResponse(res, "list the pages");
+        if (!Array.isArray(body.results)) throw unexpected(res);
+        for (const page of body.results as Record<string, unknown>[]) {
+          // Without versions, every page would look like it had nothing to migrate
+          if (typeof page.version !== "number") throw unexpected(res);
+          pages.push({
+            id: String(page.id),
+            path: String(page.path),
+            version: page.version,
+            publishedVersion: (page.publishedVersion as number | null) ?? null,
+          });
+        }
+        if (body.hasMore !== true || !body.results.length) return pages;
+      }
     },
 
-    async getPageVersion(apiKey, id, versionId) {
+    async getPageVersion(apiKey, id, version) {
       const res = await request(
-        `api/pages/${encodeURIComponent(id)}?versionId=${encodeURIComponent(
-          versionId
-        )}`,
+        `api/pages/${encodeURIComponent(id)}?version=${version}`,
         { headers: { "x-api-key": apiKey } }
       );
       const body = await pagesResponse(res, "read the page");
-      const page = body.page as { versions?: { data?: unknown }[] } | undefined;
-      const version = page?.versions?.[0];
-      if (!version || version.data === undefined) throw unexpected(res);
-      return version.data;
+      if (body.data === undefined) throw unexpected(res);
+      return body.data;
     },
 
-    async savePage(apiKey, id, version) {
+    async saveVersion(apiKey, id, data, previousVersion) {
       const res = await request(
-        `api/pages/${encodeURIComponent(id)}`,
+        `api/pages/${encodeURIComponent(id)}/versions`,
         {
           method: "POST",
           headers: { "content-type": "application/json", "x-api-key": apiKey },
-          body: JSON.stringify(version),
+          body: JSON.stringify({ data, previousVersion }),
         },
         IMPORT_TIMEOUT_MS
       );
-      await pagesResponse(res, "save the page");
+      const body = await pagesResponse(res, "save the page");
+      if (typeof body.version !== "number") throw unexpected(res);
+      return body.version;
+    },
+
+    async publishVersion(apiKey, id, version) {
+      const res = await request(`api/pages/${encodeURIComponent(id)}/publish`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": apiKey },
+        body: JSON.stringify({ version }),
+      });
+      await pagesResponse(res, "publish the page");
     },
   };
 };

@@ -212,14 +212,16 @@ export class FakeCloud {
     {
       path: string;
       versions: {
-        id: string;
+        version: number;
         data: unknown;
         status: "published" | "unpublished";
       }[];
     }
   >();
-  /** Fails this page save request (1-based) with a server error */
+  /** Fails this page save or publish request (1-based) with a server error */
   failSaveAt?: number;
+  /** Pages per page list request */
+  pageListLimit = 100;
   saves = 0;
   /** npm registry packuments, by package name */
   packuments: Record<string, object> = {};
@@ -235,7 +237,7 @@ export class FakeCloud {
   ) {
     this.branchPages.set(id, {
       path,
-      versions: versions.map((v, i) => ({ id: `${id}-v${i + 1}`, ...v })),
+      versions: versions.map((v, i) => ({ version: i + 1, ...v })),
     });
   }
 
@@ -347,60 +349,71 @@ export class FakeCloud {
     if (url.pathname.startsWith("/api/pages")) {
       if (!this.validKeys.has(headers["x-api-key"]))
         return json(401, { error: "Unauthorized" });
-      const summary = (id: string) => {
+
+      // A page at one of its versions, as Puck Cloud returns it
+      const pageAt = (id: string, version: number) => {
         const page = this.branchPages.get(id)!;
         const published = page.versions.find((v) => v.status === "published");
         return {
           id,
           path: page.path,
-          status: published ? "published" : "unpublished",
-          latestVersionId: page.versions[page.versions.length - 1]?.id ?? null,
-          publishedVersionId: published?.id ?? null,
+          data: page.versions[version - 1].data,
+          version,
+          publishedVersion: published?.version ?? null,
         };
       };
+      const latestOf = (id: string) =>
+        this.branchPages.get(id)!.versions.length;
 
-      if (url.pathname === "/api/pages" && (init?.method ?? "GET") === "GET")
+      if (url.pathname === "/api/pages" && (init?.method ?? "GET") === "GET") {
+        const ids = [...this.branchPages.keys()];
+        const offset = Number(url.searchParams.get("offset") ?? 0);
         return json(200, {
-          status: 200,
-          page: {},
-          sitePages: [...this.branchPages.keys()].map(summary),
+          results: ids
+            .slice(offset, offset + this.pageListLimit)
+            .map((id) => pageAt(id, latestOf(id))),
+          hasMore: offset + this.pageListLimit < ids.length,
         });
+      }
 
-      const id = decodeURIComponent(url.pathname.split("/")[3] ?? "");
+      const [, , , rawId, action] = url.pathname.split("/");
+      const id = decodeURIComponent(rawId ?? "");
       const page = this.branchPages.get(id);
       if (!page) return json(404, { error: "Page not found" });
 
-      if ((init?.method ?? "GET") === "GET") {
-        const versionId = url.searchParams.get("versionId");
-        const version = versionId
-          ? page.versions.find((v) => v.id === versionId)
-          : page.versions[page.versions.length - 1];
-        return json(200, {
-          status: 200,
-          page: { id, path: page.path, versions: version ? [version] : [] },
-        });
-      }
+      if ((init?.method ?? "GET") === "GET")
+        return json(
+          200,
+          pageAt(id, Number(url.searchParams.get("version") ?? latestOf(id)))
+        );
 
       if (init?.method === "POST") {
         if (++this.saves === this.failSaveAt)
           return json(500, { error: "Internal server error" });
-        const { data, status } = body as {
+        const { data, previousVersion, version } = body as {
           data: unknown;
-          status: "published" | "unpublished";
+          previousVersion?: number;
+          version: number;
         };
+
         // Publishing a version unpublishes the others
-        if (status === "published")
-          page.versions.forEach((v) => (v.status = "unpublished"));
-        const version = {
-          id: `${id}-v${page.versions.length + 1}`,
+        if (action === "publish") {
+          page.versions.forEach(
+            (v) =>
+              (v.status = v.version === version ? "published" : "unpublished")
+          );
+          return json(200, pageAt(id, version));
+        }
+
+        // Saves a version as the latest, leaving what's published
+        if (previousVersion && previousVersion !== latestOf(id))
+          return json(409, { error: "A newer version was saved" });
+        page.versions.push({
+          version: latestOf(id) + 1,
           data,
-          status,
-        };
-        page.versions.push(version);
-        return json(200, {
-          status: "ok",
-          page: { id, path: page.path, versions: [version] },
+          status: "unpublished",
         });
+        return json(200, pageAt(id, latestOf(id)));
       }
     }
 

@@ -140,8 +140,9 @@ const planLocalPages = (p: Planner, paths: AssetPaths) => {
 
 /**
  * Migrates each Cloud page as new versions, keeping what's live and what's
- * a draft: the published version is republished migrated, then a newer
- * draft is saved again on top
+ * a draft. Each save becomes the latest version, so the published data is
+ * saved first, a newer draft goes back on top, and only then is the
+ * migrated published data published.
  */
 const migrateCloudPages = async (
   cloud: CloudApi,
@@ -153,39 +154,36 @@ const migrateCloudPages = async (
     migrated: [] as string[],
     unchanged: 0,
     failed: [] as string[],
+    /** Drafts a newer version was saved over, by page path */
+    buriedDrafts: [] as { path: string; version: number }[],
   };
   const pages = await cloud.listPages(key);
 
   for (const [i, page] of pages.entries()) {
+    let buried: number | null = null;
     try {
-      const { latestVersionId: latestId, publishedVersionId: publishedId } =
-        page;
-      if (!latestId) {
-        outcome.unchanged++;
-        continue;
-      }
-      const published = publishedId
-        ? await cloud.getPageVersion(key, page.id, publishedId)
+      const { version: latest, publishedVersion } = page;
+      const published = publishedVersion
+        ? await cloud.getPageVersion(key, page.id, publishedVersion)
         : null;
       const draft =
-        latestId !== publishedId
-          ? await cloud.getPageVersion(key, page.id, latestId)
+        latest !== publishedVersion
+          ? await cloud.getPageVersion(key, page.id, latest)
           : null;
       const publishedChanged =
         published !== null && migratePageData(published, paths) > 0;
       const draftChanged = draft !== null && migratePageData(draft, paths) > 0;
 
-      if (publishedChanged)
-        await cloud.savePage(key, page.id, {
-          data: published,
-          status: "published",
-        });
-      // Republishing puts the published version on top, so the draft goes back above it
-      if (draft !== null && (draftChanged || publishedChanged))
-        await cloud.savePage(key, page.id, {
-          data: draft,
-          status: "unpublished",
-        });
+      const live = publishedChanged
+        ? await cloud.saveVersion(key, page.id, published, latest)
+        : null;
+      // Each save becomes the latest version, so the draft goes back on top
+      if (draft !== null && (draftChanged || live)) {
+        buried = live && latest;
+        await cloud.saveVersion(key, page.id, draft, live ?? latest);
+        buried = null;
+      }
+      if (live) await cloud.publishVersion(key, page.id, live);
 
       if (publishedChanged || draftChanged) {
         outcome.migrated.push(page.path);
@@ -195,6 +193,8 @@ const migrateCloudPages = async (
       }
     } catch (err) {
       if (!(err instanceof CloudRequestError)) throw err;
+      if (buried)
+        outcome.buriedDrafts.push({ path: page.path, version: buried });
       // The rest would fail the same way
       if (err.kind !== "bad_response") {
         outcome.failed.push(...pages.slice(i).map((p) => p.path));
@@ -460,12 +460,16 @@ const runAssetsMigrate = async (rc: RunContext): Promise<CommandResult> => {
     }
     if (cloud.failed.length) {
       result.status = "partial";
+      const buried = cloud.buriedDrafts.map(
+        (d) =>
+          ` ${d.path}'s draft is no longer its latest version: restore version ${d.version} from its history, then re-run.`
+      );
       result.message = `${done.join(", ")}, but ${plural(
         cloud.failed.length,
         "page"
       )} couldn't be migrated${
         cloud.error ? `: ${cloud.error.message}` : ""
-      }. Re-run the command to migrate the rest.`;
+      }.${buried.join("")} Re-run the command to migrate the rest.`;
       result.nextSteps = [rerunCommand(rc)];
       return result;
     }
