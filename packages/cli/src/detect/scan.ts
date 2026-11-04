@@ -1,7 +1,6 @@
 import path from "node:path";
 import type { Vfs } from "../io/vfs";
 import {
-  CLOUD_CLIENT_AUTH_ENTRY,
   CLOUD_CLIENT_PACKAGE,
   CORE_PACKAGE,
   PLUGIN_AI_PACKAGE,
@@ -159,8 +158,8 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
       )
         scan.cloudPageFiles.push(rel);
       if (
-        ref.source === CLOUD_CLIENT_AUTH_ENTRY &&
-        imports("authenticate", "getSession", "loginUrl", "createPuckAuth")
+        ref.source === CLOUD_CLIENT_PACKAGE &&
+        imports("getPuckIdentity", "loginUrl")
       )
         scan.signInFiles.push(rel);
     }
