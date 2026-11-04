@@ -4,7 +4,7 @@ import type { CommandResult, RequiredAction } from "../result";
 import { Vfs } from "../io/vfs";
 import { CliError } from "../errors";
 import { emptyResult } from "../result";
-import { rerunCommand } from "../context";
+import { rerunCommand, shellArg } from "../context";
 import { detectProject } from "../detect/project";
 import { capabilityStatus, detectState } from "../detect/state";
 import { Planner } from "../plan/planner";
@@ -205,6 +205,12 @@ const migrateCloudPages = async (
   }
   return { ...outcome, error: null };
 };
+
+/** The command again, with any fields chosen in the checkboxes */
+const retryCommand = (rc: RunContext, ids: string[]) =>
+  [rerunCommand(rc)]
+    .concat(ids.filter((id) => !rc.flags.field.includes(id)).map(shellArg))
+    .join(" --field ");
 
 const runAssetsMigrate = async (rc: RunContext): Promise<CommandResult> => {
   const { deps, flags } = rc;
@@ -433,6 +439,8 @@ const runAssetsMigrate = async (rc: RunContext): Promise<CommandResult> => {
   ];
 
   if (cloudPages && key) {
+    // The re-run command leaves the key out, as it's a secret
+    const keyAgain = flags.apiKey ? ", passing --api-key again" : "";
     let cloud: Awaited<ReturnType<typeof migrateCloudPages>>;
     try {
       cloud = await migrateCloudPages(rc.cloud, key, paths, rc.log);
@@ -443,8 +451,8 @@ const runAssetsMigrate = async (rc: RunContext): Promise<CommandResult> => {
         ", "
       )}, but couldn't read pages from Puck Cloud: ${
         err.message
-      }. Re-run the command to migrate them.`;
-      result.nextSteps = [rerunCommand(rc)];
+      }. Re-run the command to migrate them${keyAgain}.`;
+      result.nextSteps = [retryCommand(rc, ids)];
       return result;
     }
     migrate.pages = {
@@ -469,8 +477,8 @@ const runAssetsMigrate = async (rc: RunContext): Promise<CommandResult> => {
         "page"
       )} couldn't be migrated${
         cloud.error ? `: ${cloud.error.message}` : ""
-      }.${buried.join("")} Re-run the command to migrate the rest.`;
-      result.nextSteps = [rerunCommand(rc)];
+      }.${buried.join("")} Re-run the command to migrate the rest${keyAgain}.`;
+      result.nextSteps = [retryCommand(rc, ids)];
       return result;
     }
   }

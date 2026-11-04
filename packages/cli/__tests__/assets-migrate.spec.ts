@@ -375,6 +375,9 @@ describe("assets migrate", () => {
         migrated: ["/draft", "/new"],
         failed: ["/"],
       });
+      expect(json.message).toContain(
+        "Re-run the command to migrate the rest, passing --api-key again."
+      );
       expect(json.nextSteps).toEqual([
         "npx @puckeditor/cli assets migrate --json --field HeadingBlock.image --yes",
       ]);
@@ -413,6 +416,27 @@ describe("assets migrate", () => {
         { status: "unpublished", image: "/draft.png" },
         { status: "unpublished", image: { src: "/live.png" } },
       ]);
+    });
+
+    it("re-runs with the fields chosen in the checkboxes", async () => {
+      const root = await project(["assets", "pages"]);
+      const cloud = cloudWith();
+      cloud.failSaveAt = 2;
+      const prompter = {
+        checkbox: async () => ["HeadingBlock.image"],
+        confirm: async () => true,
+      } as unknown as Prompter;
+
+      const { stdout } = await run(["assets", "migrate"], {
+        cwd: root,
+        cloud,
+        interactive: true,
+        prompter,
+      });
+
+      expect(stdout).toContain(
+        "npx @puckeditor/cli assets migrate --field HeadingBlock.image"
+      );
     });
 
     it("needs an API key, and makes no requests on a dry run", async () => {

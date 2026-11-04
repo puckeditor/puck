@@ -61,6 +61,10 @@ export const createRunContext = (
   };
 };
 
+/** An argument as a shell would read it back, quoted if it has to be */
+export const shellArg = (arg: string) =>
+  /[\s"'$`*?[\]]/.test(arg) ? JSON.stringify(arg) : arg;
+
 /** The command to re-run after completing an action, without secrets */
 export const rerunCommand = (rc: RunContext) => {
   const args: string[] = [];
@@ -71,7 +75,7 @@ export const rerunCommand = (rc: RunContext) => {
       continue;
     }
     if (arg.startsWith("--api-key=")) continue;
-    args.push(/[\s"'$`]/.test(arg) ? JSON.stringify(arg) : arg);
+    args.push(shellArg(arg));
   }
   return ["npx", "@puckeditor/cli", ...args].join(" ");
 };
