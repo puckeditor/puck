@@ -231,8 +231,8 @@ The `/api/puck` route and the editor are public by default. Add [Puck Auth](#puc
 `add pages`, or `init --pages`, stores pages in Puck Cloud with the [Pages plugin](https://puckeditor.com/docs/pages/overview), which adds page management, drafts, publishing and version history to the editor:
 
 - The editor opens at `/puck`, with the page to edit in the `path` query parameter, e.g. `/puck?path=/about`. URLs ending in `/edit` redirect there
-- Published pages are rendered from Puck Cloud with `getPage` from `@puckeditor/cloud-client`. In Vite apps and on [servers](#servers), `/api/pages` serves them read-only
-- `@puckeditor/cloud-client` is updated to a version with Puck Pages, and the `/api/puck` route gets the `authenticate` option it requires
+- Published pages are rendered from Puck Cloud with `puckCloud().pages.getPublished()` from `@puckeditor/cloud-client`. In Vite apps and on [servers](#servers), `/api/pages` serves them read-only
+- `@puckeditor/cloud-client` is updated to a version with Puck Pages, which the `/api/puck` route serves as it is
 
 Pages in `database.json`, or wherever your app saved them, aren't moved automatically. Import them with `pages import`, then delete the old routes.
 
@@ -252,8 +252,8 @@ Agents pass `--yes --json`. If Puck Cloud fails part way, the status is `partial
 
 `add auth`, or `init --auth`, requires [Sign in with Puck](https://puckeditor.com/docs/auth/overview) to edit:
 
-- The `/api/puck` route passes `authenticate` from `@puckeditor/cloud-client/auth` to `puckHandler`, which serves the sign-in routes under `/api/puck/auth` and rejects requests from anyone not signed in to your Puck Cloud organization
-- The editor sends signed-out visitors to sign in. Server-rendered apps check before rendering it. Vite apps, and Astro sites without a server, check in the browser with `<RequireSession>`
+- The `/api/puck` route passes `auth: { provider: "puck" }` to `puckHandler`, which serves the sign-in routes under `/api/puck/auth` and rejects requests from anyone not signed in to your Puck Cloud organization
+- The editor sends signed-out visitors to sign in. Server-rendered apps check with `getPuckIdentity` from `@puckeditor/cloud-client` before rendering it. Vite apps, and Astro sites without a server, check in the browser with `<RequireSession>`
 - The Puck Auth plugin adds an account menu to the editor
 
 Without Puck Pages, the editor still saves pages through your own route, which Sign in with Puck doesn't protect. On a Hono or Express server, `add auth` only changes the Cloud route, so run it in the editor's app too.
