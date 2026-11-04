@@ -136,6 +136,19 @@ describe("migratePageData", () => {
     expect(data.root).toEqual({ ogImage: { src: "/og.png" } });
   });
 
+  it("migrates components in root slots", () => {
+    const data = {
+      root: {
+        props: {
+          header: [{ type: "Hero", props: { id: "Hero-1", image: "/a.png" } }],
+        },
+      },
+      content: [],
+    };
+    expect(migratePageData(data, PATHS)).toBe(1);
+    expect(data.root.props.header[0].props.image).toEqual({ src: "/a.png" });
+  });
+
   it("ignores data that isn't Puck data", () => {
     expect(migratePageData(null, PATHS)).toBe(0);
     expect(migratePageData({ content: "nope" }, PATHS)).toBe(0);

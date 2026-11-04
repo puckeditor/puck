@@ -68,6 +68,7 @@ export const migratePageData = (data: unknown, paths: AssetPaths): number => {
     // Older data keeps root props on root itself
     const root = isObject(data.root.props) ? data.root.props : data.root;
     for (const path of paths.root ?? []) changed += migrateAt(root, path);
+    visitSlots(root);
   }
   if (Array.isArray(data.content)) visitSlots(data.content);
   if (isObject(data.zones)) {
