@@ -410,7 +410,6 @@ export const planTanStackStartPages = (p: Planner, info: TanStackStartInfo) => {
   }
 
   planOptimizeDeps(p, info, [PLUGIN_PAGES_PACKAGE], "pages");
-  planRouteAuth(p, "unowned", "pages");
   warnLocalPages(p);
 };
 
@@ -479,7 +478,7 @@ export const planTanStackStartAuth = (p: Planner, info: TanStackStartInfo) => {
 
   planAuthPlugin(p, to(pagesEditor ? PAGES_EDITOR : SPLAT));
   planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
-  planRouteAuth(p, "signIn", "auth");
+  planRouteAuth(p);
 };
 
 export const tanstackStartAdapter: FrameworkAdapter<TanStackStartInfo> = {

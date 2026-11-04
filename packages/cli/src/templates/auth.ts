@@ -1,15 +1,5 @@
 import { CLOUD_CLIENT_AUTH_ENTRY } from "../constants";
-import { tryParseModule } from "../ast/parse";
 import { quoteOf } from "../ast/config-object";
-
-/**
- * How a Cloud route identifies who's calling. Puck Pages needs every route to
- * say: "unowned" keeps today's behaviour, where anyone who can reach the
- * route acts with the API key, and "signIn" requires Sign in with Puck.
- */
-export type RouteAuth = "unowned" | "signIn";
-
-const UNOWNED = "() => ({ id: null })";
 
 /**
  * Imports Sign in with Puck's functions, or creates them against a
@@ -30,60 +20,21 @@ export const signInSetup = (names: string[], host?: string) =>
         create: "",
       };
 
-const insertAfterImports = (code: string, filename: string, text: string) => {
-  const ast = tryParseModule(code, filename);
-  const imports = ast?.program.body.filter(
-    (s) => s.type === "ImportDeclaration"
-  );
-  const last = imports?.[imports.length - 1];
-  if (!last) return `${text}\n${code}`;
-  return code.slice(0, last.end!) + `\n${text}` + code.slice(last.end!);
-};
-
-const importAuthenticate = (code: string, filename: string, host?: string) => {
-  const q = quoteOf(code);
-  const setup = signInSetup(["authenticate"], host);
-  return insertAfterImports(
-    code,
-    filename,
-    `${setup.imports.replace(/"/g, q)}${
-      setup.create ? `\n${setup.create.trimEnd()}` : ""
-    }`
-  );
-};
-
-const usesSignIn = (code: string) =>
-  code.includes(`"${CLOUD_CLIENT_AUTH_ENTRY}"`) ||
-  code.includes(`'${CLOUD_CLIENT_AUTH_ENTRY}'`);
+/** Whether a Cloud route requires Sign in with Puck */
+export const requiresSignIn = (route: string) =>
+  /\bprovider:\s*["']puck["']/.test(route);
 
 /**
- * Sets `authenticate` on a Cloud route the CLI generated, keeping any other
- * options. Returns null when the route isn't one it recognises, or already
- * authenticates some other way and Sign in with Puck was asked for.
- *
- * `host` is the non-default Puck Cloud the route uses, which Sign in with
- * Puck must use too.
+ * Requires Sign in with Puck on a Cloud route the CLI generated, keeping any
+ * other options. Returns null when the route isn't one it recognises, or
+ * already says who its requests are for some other way.
  */
-export const withRouteAuth = (
-  route: string,
-  filename: string,
-  auth: RouteAuth,
-  host?: string
-): string | null => {
-  // Sign in with Puck's authenticate is imported under its own name
-  const property =
-    auth === "signIn" ? "authenticate" : `authenticate: ${UNOWNED}`;
+export const withRouteAuth = (route: string): string | null => {
+  if (requiresSignIn(route)) return route;
+  if (/\bauth\s*:/.test(route)) return null;
 
-  if (/\bauthenticate\b/.test(route)) {
-    if (auth === "unowned" || usesSignIn(route)) return route;
-    if (!route.includes(`authenticate: ${UNOWNED}`)) return null;
-    return importAuthenticate(
-      route.replace(`authenticate: ${UNOWNED}`, property),
-      filename,
-      host
-    );
-  }
-
+  const q = quoteOf(route);
+  const property = `auth: { provider: ${q}puck${q} }`;
   // Each object is `{}`, `{ a, b }` or spread over lines
   const options = /const options: PuckCloudOptions = \{(\}|\n([ \t]*)| )/;
   const call = /puckHandler\(request(\)|, \{(\n([ \t]*)| ))/;
@@ -93,30 +44,20 @@ export const withRouteAuth = (
       : rest === " "
       ? ` ${property}, `
       : `\n${indent}${property},\n${indent}`;
-  let next: string;
 
-  if (options.test(route)) {
-    next = route
-      .replace(
-        options,
-        (_, rest, indent) =>
-          `const options: PuckHandlerOptions = {${entry(rest, indent)}`
-      )
-      .replace(
-        "import type { PuckCloudOptions }",
-        "import type { PuckHandlerOptions }"
-      );
-  } else if (call.test(route)) {
-    next = route.replace(call, (_, rest, inner, indent) =>
+  if (options.test(route))
+    return route.replace(
+      options,
+      (_, rest, indent) =>
+        `const options: PuckCloudOptions = {${entry(rest, indent)}`
+    );
+  if (call.test(route))
+    return route.replace(call, (_, rest, inner, indent) =>
       rest === ")"
         ? `puckHandler(request, {${entry("}")})`
         : `puckHandler(request, {${entry(inner, indent)}`
     );
-  } else {
-    return null;
-  }
-
-  return auth === "signIn" ? importAuthenticate(next, filename, host) : next;
+  return null;
 };
 
 /** Next.js: lib/puck-auth.ts */
@@ -140,22 +81,16 @@ export async function requirePuckSession(returnTo: string) {
 };
 
 /**
- * `next` with the same authenticate as `current`, when `current` is `base`
- * with or without one. Lets other edits recognise routes Pages or Auth set
- * authenticate on.
+ * `next` with the same auth as `current`, when `current` is `base` with or
+ * without Sign in with Puck. Lets other edits recognise routes Auth changed.
  */
 export const withSameRouteAuth = (
   current: string,
   base: string,
-  next: string,
-  filename: string,
-  host?: string
+  next: string
 ): string | null => {
   if (current === base) return next;
-  for (const auth of ["unowned", "signIn"] as const) {
-    if (current === withRouteAuth(base, filename, auth, host))
-      return withRouteAuth(next, filename, auth, host);
-  }
+  if (current === withRouteAuth(base)) return withRouteAuth(next);
   return null;
 };
 

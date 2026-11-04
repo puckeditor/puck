@@ -18,6 +18,7 @@ import { adapterFor } from "../frameworks";
 import type { PagesApiDetection } from "../frameworks/adapter";
 import { findApiKey, KeyLocation } from "../env/files";
 import { isIgnored } from "../env/gitignore";
+import { requiresSignIn } from "../templates/auth";
 
 export const CONFIG_CANDIDATES = ["tsx", "ts", "jsx", "js"].map(
   (ext) => `puck.config.${ext}`
@@ -117,6 +118,10 @@ export const detectState = (
       )
     : null;
 
+  const routeCode = route?.routeFile
+    ? vfs.readText(path.join(ctx.root, route.routeFile))
+    : null;
+
   const envDir = envDirFor(ctx);
   const apiKey = findApiKey(vfs, envDir, env);
   const gitignoreRoot = ctx.gitRoot ?? ctx.workspace?.root ?? ctx.root;
@@ -160,9 +165,7 @@ export const detectState = (
     auth: {
       pluginInstalled: PLUGIN_AUTH_PACKAGE in ctx.deps,
       declaredRange: ctx.deps[PLUGIN_AUTH_PACKAGE] ?? null,
-      routeAuthenticated: Boolean(
-        route?.routeFile && scan.signInFiles.includes(route.routeFile)
-      ),
+      routeAuthenticated: Boolean(routeCode && requiresSignIn(routeCode)),
     },
   };
 };

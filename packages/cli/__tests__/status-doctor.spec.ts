@@ -192,8 +192,10 @@ describe("Puck Pages and Puck Auth", () => {
       route,
       fs
         .readFileSync(route, "utf8")
-        .replace(/import \{ authenticate \}.*\n/, "")
-        .replace("{ authenticate }", "{ authenticate: () => ({ id: null }) }")
+        .replace(
+          'puckHandler(request, { auth: { provider: "puck" } })',
+          "puckHandler(request)"
+        )
     );
 
     const { json } = await run(["doctor", "--json", "--offline"], {

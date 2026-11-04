@@ -539,7 +539,6 @@ export const planNextPages = (p: Planner, info: NextLikeInfo) => {
   if (proxyOutcome === "customized")
     manual(proxy, proxySource(p, info, NEXT_PAGES_PROXY), false);
 
-  planRouteAuth(p, "unowned", "pages");
   warnLocalPages(p);
 };
 
@@ -592,7 +591,7 @@ await requirePuckSession("/puck");
   }
 
   planAuthPlugin(p, `${A}/puck/[...puckPath]/client.tsx`);
-  planRouteAuth(p, "signIn", "auth");
+  planRouteAuth(p);
 };
 
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {

@@ -518,7 +518,6 @@ export const planVitePages = (p: Planner, info: ViteInfo) => {
       summary: `Serve pages published in Puck Cloud from ${PAGES_API}`,
     });
     if (failed(api)) manual(PAGES_API, honoPublishedPages(p.cloudHost));
-    planRouteAuth(p, "unowned", "pages");
     warnLocalPages(p);
   }
 
@@ -568,7 +567,7 @@ export const planViteAuth = (p: Planner, info: ViteInfo) => {
       }. Run \`npx @puckeditor/cli add auth\` in that server's project to require Sign in with Puck there.`
     );
   } else {
-    planRouteAuth(p, "signIn", "auth");
+    planRouteAuth(p);
   }
 };
 

@@ -19,8 +19,6 @@ const KEY = ["--api-key", "sk-valid-key"];
 
 const codes = (warnings: { code: string }[]) => warnings.map((w) => w.code);
 
-const SIGN_IN_ROUTE = `import { authenticate } from "@puckeditor/cloud-client/auth";`;
-
 describe("add auth", () => {
   describe.each(["next", "vinext"] as const)("%s", (recipe) => {
     it("requires Sign in with Puck for the editor and Cloud route", async () => {
@@ -54,8 +52,9 @@ describe("add auth", () => {
       expect(client).toContain("plugins={[authPlugin]}");
 
       const route = read(root, "app/api/puck/[...all]/route.ts");
-      expect(route).toContain(SIGN_IN_ROUTE);
-      expect(route).toContain("puckHandler(request, { authenticate })");
+      expect(route).toContain(
+        'puckHandler(request, { auth: { provider: "puck" } })'
+      );
 
       expect(codes(json.warnings)).not.toContain("PUCK-CLI-W-PUBLIC-ROUTE");
       expect(codes(json.warnings)).not.toContain("PUCK-CLI-W-EDITOR-PUBLIC");
@@ -85,7 +84,7 @@ describe("add auth", () => {
       nextPagesEditorPage({ ai: true, auth: true })
     );
     expect(read(root, "app/api/puck/[...all]/route.ts")).toContain(
-      "puckHandler(request, {\n    authenticate,\n    ai: {"
+      'puckHandler(request, {\n    auth: { provider: "puck" },\n    ai: {'
     );
   });
 
@@ -124,7 +123,7 @@ describe("add auth", () => {
 import { getUser } from "../../../../lib/user";
 
 export const GET = (request: Request) =>
-  puckHandler(request, { authenticate: getUser });
+  puckHandler(request, { auth: { identity: getUser(request) } });
 export const POST = GET;
 `
     );
@@ -164,7 +163,7 @@ export const POST = GET;
       );
       expect(splat).toContain("plugins={[authPlugin]}");
       expect(read(root, "app/routes/api.puck.ts")).toContain(
-        "const options: PuckHandlerOptions = { authenticate };"
+        'const options: PuckCloudOptions = { auth: { provider: "puck" } };'
       );
     });
 
@@ -212,7 +211,7 @@ export const POST = GET;
         "plugins={[authPlugin]}"
       );
       expect(read(root, "src/routes/api/puck/$.ts")).toContain(
-        "const options: PuckHandlerOptions = { authenticate };"
+        'const options: PuckCloudOptions = { auth: { provider: "puck" } };'
       );
     });
 
@@ -260,7 +259,7 @@ export const POST = GET;
         "plugins={[authPlugin]}"
       );
       expect(read(root, "server/puck/cloud.ts")).toContain(
-        "const options: PuckHandlerOptions = { authenticate };"
+        'const options: PuckCloudOptions = { auth: { provider: "puck" } };'
       );
 
       const pages = await run(["add", "pages", "--yes", "--json"], {
@@ -332,7 +331,9 @@ export const POST = GET;
       });
 
       expect(json.status).toBe("success");
-      expect(read(root, "src/puck/cloud.ts")).toContain(SIGN_IN_ROUTE);
+      expect(read(root, "src/puck/cloud.ts")).toContain(
+        'auth: { provider: "puck" }'
+      );
       expect(codes(json.warnings)).toContain("PUCK-CLI-W-AUTH-EDITOR");
     }
   );

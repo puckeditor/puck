@@ -33,83 +33,51 @@ const ROUTES: [string, string][] = [
 ]);
 
 describe("withRouteAuth", () => {
-  it.each(ROUTES)("authenticates the %s route", (_, route) => {
-    for (const auth of ["unowned", "signIn"] as const) {
-      const code = withRouteAuth(route, "route.ts", auth)!;
-      expect(code).not.toBeNull();
-      expect(() => parseModule(code, "route.ts")).not.toThrow();
-      // One authenticate property, shorthand for Sign in with Puck's
-      expect(code.match(/authenticate[:,} ]/g)).toHaveLength(
-        auth === "signIn" ? 2 : 1
-      );
-      expect(code).not.toContain("PuckCloudOptions");
-      // Idempotent
-      expect(withRouteAuth(code, "route.ts", auth)).toBe(code);
-    }
+  it.each(ROUTES)("requires Sign in with Puck in the %s route", (_, route) => {
+    const code = withRouteAuth(route)!;
+    expect(code).not.toBeNull();
+    expect(() => parseModule(code, "route.ts")).not.toThrow();
+    expect(code.match(/auth: \{ provider: "puck" \}/g)).toHaveLength(1);
+    // Nothing to import: puckHandler serves the sign-in routes itself
+    expect(code).not.toContain("@puckeditor/cloud-client/auth");
+    // Idempotent
+    expect(withRouteAuth(code)).toBe(code);
   });
 
-  it("keeps routes open to anyone with the API key when unowned", () => {
-    expect(withRouteAuth(NEXT_CLOUD_ROUTE, "route.ts", "unowned")).toContain(
-      "return puckHandler(request, { authenticate: () => ({ id: null }) });"
+  it("adds auth to a one-line call or options", () => {
+    expect(withRouteAuth(NEXT_CLOUD_ROUTE)).toContain(
+      'return puckHandler(request, { auth: { provider: "puck" } });'
     );
-    expect(
-      withRouteAuth(REACT_ROUTER_CLOUD_ROUTE, "route.ts", "unowned")
-    ).toContain(
-      "const options: PuckHandlerOptions = { authenticate: () => ({ id: null }) };"
+    expect(withRouteAuth(REACT_ROUTER_CLOUD_ROUTE)).toContain(
+      'const options: PuckCloudOptions = { auth: { provider: "puck" } };'
     );
   });
 
-  it("adds authenticate first in multi-line options", () => {
-    expect(
-      withRouteAuth(
-        readRecipe("hono-ai", "src/puck/cloud.ts"),
-        "cloud.ts",
-        "signIn"
-      )
-    ).toContain(`import { authenticate } from "@puckeditor/cloud-client/auth";
-
-const options: PuckHandlerOptions = {
-  authenticate,
+  it("adds auth first in multi-line options", () => {
+    expect(withRouteAuth(readRecipe("hono-ai", "src/puck/cloud.ts")))
+      .toContain(`const options: PuckCloudOptions = {
+  auth: { provider: "puck" },
   ai: {`);
   });
 
-  it("signs in to a custom host", () => {
-    const code = withRouteAuth(
-      withCloudHost(NEXT_CLOUD_ROUTE, HOST),
-      "route.ts",
-      "signIn",
-      HOST
-    );
-    expect(code).toContain(
-      `return puckHandler(request, { authenticate, host: "${HOST}" });`
-    );
-    expect(code).toContain(
-      `const { authenticate } = createPuckAuth({ host: "${HOST}" });`
+  it("keeps a custom host", () => {
+    expect(withRouteAuth(withCloudHost(NEXT_CLOUD_ROUTE, HOST))).toContain(
+      `return puckHandler(request, { auth: { provider: "puck" }, host: "${HOST}" });`
     );
   });
 
-  it("switches an unowned route to Sign in with Puck", () => {
-    const unowned = withRouteAuth(NEXT_CLOUD_ROUTE, "route.ts", "unowned")!;
-    expect(withRouteAuth(unowned, "route.ts", "signIn")).toBe(
-      withRouteAuth(NEXT_CLOUD_ROUTE, "route.ts", "signIn")
-    );
-  });
-
-  it("leaves custom authentication to the developer", () => {
+  it("leaves the developer's own auth alone", () => {
     const custom = NEXT_CLOUD_ROUTE.replace(
       "puckHandler(request)",
-      "puckHandler(request, { authenticate: getUser })"
+      "puckHandler(request, { auth: { identity: await getUser(request) } })"
     );
-    expect(withRouteAuth(custom, "route.ts", "unowned")).toBe(custom);
-    expect(withRouteAuth(custom, "route.ts", "signIn")).toBeNull();
+    expect(withRouteAuth(custom)).toBeNull();
   });
 
   it("doesn't guess at routes it didn't write", () => {
     expect(
       withRouteAuth(
-        `export const GET = (req: Request) => puckHandler(req, opts);\n`,
-        "route.ts",
-        "unowned"
+        `export const GET = (req: Request) => puckHandler(req, opts);\n`
       )
     ).toBeNull();
   });

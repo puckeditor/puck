@@ -494,7 +494,6 @@ export const planReactRouterPages = (p: Planner, info: ReactRouterInfo) => {
     position: "before-splat",
   });
   planOptimizeDeps(p, info, [PLUGIN_PAGES_PACKAGE], "pages");
-  planRouteAuth(p, "unowned", "pages");
   warnLocalPages(p);
 };
 
@@ -550,7 +549,7 @@ export const planReactRouterAuth = (p: Planner, info: ReactRouterInfo) => {
 
   planAuthPlugin(p, file);
   planOptimizeDeps(p, info, [PLUGIN_AUTH_PACKAGE], "auth");
-  planRouteAuth(p, "signIn", "auth");
+  planRouteAuth(p);
 };
 
 const REACT_ROUTER_7 = "^7.18.0";

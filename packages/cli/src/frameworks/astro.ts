@@ -466,7 +466,6 @@ export const planAstroPages = (p: Planner, info: AstroInfo) => {
       manual(PAGES_LIB, astroPagesLib(p.cloudHost));
     }
 
-    planRouteAuth(p, "unowned", "pages");
     warnLocalPages(p);
   } else {
     p.warn(
@@ -540,7 +539,7 @@ export const planAstroAuth = (p: Planner, info: AstroInfo) => {
         snippet: `import { puckSignInUrl } from "../lib/puck-auth";\n\nconst signIn = await puckSignInUrl(Astro.request);\nif (signIn) return Astro.redirect(signIn);\n`,
       });
     }
-    planRouteAuth(p, "signIn", "auth");
+    planRouteAuth(p);
   } else {
     p.warn(
       "PUCK-CLI-W-EXTERNAL-AUTH",

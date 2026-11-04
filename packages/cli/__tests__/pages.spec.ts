@@ -51,9 +51,9 @@ describe("add pages", () => {
         nextPagesRenderPage()
       );
       expect(read(root, "proxy.ts")).toBe(NEXT_PAGES_PROXY);
-      // cloud-client's Pages release requires authenticate
+      // Puck Pages needs nothing more from the route
       expect(read(root, "app/api/puck/[...all]/route.ts")).toContain(
-        "puckHandler(request, { authenticate: () => ({ id: null }) })"
+        "return puckHandler(request);"
       );
       expect(codes(json.warnings)).toEqual(
         expect.arrayContaining([
@@ -85,10 +85,7 @@ describe("add pages", () => {
     );
     // Keeps the route's AI options
     expect(read(root, "app/api/puck/[...all]/route.ts")).toBe(
-      readRecipe("next-ai", "app/api/puck/[...all]/route.ts").replace(
-        "puckHandler(request, {\n",
-        "puckHandler(request, {\n    authenticate: () => ({ id: null }),\n"
-      )
+      readRecipe("next-ai", "app/api/puck/[...all]/route.ts")
     );
   });
 
@@ -107,7 +104,7 @@ describe("add pages", () => {
       nextPagesEditorClient({ ai: true })
     );
     expect(read(root, "app/api/puck/[...all]/route.ts")).toContain(
-      "authenticate: () => ({ id: null }),\n    ai: {"
+      "puckHandler(request, {\n    ai: {"
     );
     // Pages are saved to Puck Cloud, not /api/pages
     expect(fs.existsSync(path.join(root, "app/api/pages/route.ts"))).toBe(
@@ -187,7 +184,7 @@ describe("add pages", () => {
         'include: ["@puckeditor/core", "@puckeditor/plugin-pages"]'
       );
       expect(read(root, "app/routes/api.puck.ts")).toContain(
-        "const options: PuckHandlerOptions = { authenticate: () => ({ id: null }) };"
+        "const options: PuckCloudOptions = {};"
       );
 
       const again = await run(["add", "pages", "--yes", "--json"], {

@@ -2,7 +2,7 @@ import type { Planner } from "../plan/planner";
 import type { CapabilityId } from "../result";
 import type { PuckPlugin } from "../ast/puck-plugins";
 import { ensurePuckPlugin } from "../ast/puck-plugins";
-import { RouteAuth, withRouteAuth } from "../templates/auth";
+import { withRouteAuth } from "../templates/auth";
 import { PLUGIN_AUTH_PACKAGE } from "../constants";
 
 export const AUTH_PLUGIN: PuckPlugin = {
@@ -27,47 +27,34 @@ const authPlugin = createAuthPlugin();
 `;
 
 /**
- * Sets `authenticate` on the Cloud route, including one created earlier in
- * this plan. Pages needs it ("unowned"), and Auth makes it Sign in with Puck.
+ * Requires Sign in with Puck on the Cloud route, including one created
+ * earlier in this plan
  */
-export const planRouteAuth = (
-  p: Planner,
-  auth: RouteAuth,
-  capability: CapabilityId
-) => {
+export const planRouteAuth = (p: Planner) => {
   const file = p.state.cloud.routeFile ?? p.state.cloud.expectedRouteFile;
   const current = file && p.vfs.readText(p.abs(file));
   if (!file || current === null) return;
 
-  const next = withRouteAuth(current, file, auth, p.cloudHost);
+  const next = withRouteAuth(current);
   if (next === current) return;
   if (next !== null) {
     p.modifyFile(file, next, {
-      capability,
-      summary:
-        auth === "signIn"
-          ? `Require Sign in with Puck in ${file}`
-          : `Set authenticate in ${file}`,
+      capability: "auth",
+      summary: `Require Sign in with Puck in ${file}`,
     });
     return;
   }
 
   p.manual({
-    id: `${capability}:route-auth`,
+    id: "auth:route-auth",
     type: "manual_edit",
-    capability,
+    capability: "auth",
     required: true,
     file,
     reason: "unsupported_shape",
-    message: `${file} was customised, so authenticate wasn't set automatically.`,
-    instructions:
-      auth === "signIn"
-        ? `Pass Sign in with Puck to puckHandler in ${file}.`
-        : `Pass an authenticate option to puckHandler in ${file}, which the version of @puckeditor/cloud-client with Puck Pages requires. () => ({ id: null }) lets anyone who can reach the route use your API key.`,
-    snippet:
-      auth === "signIn"
-        ? `import { authenticate } from "@puckeditor/cloud-client/auth";\n\npuckHandler(request, { authenticate });\n`
-        : `puckHandler(request, { authenticate: () => ({ id: null }) });\n`,
+    message: `${file} was customised, so Sign in with Puck wasn't required automatically.`,
+    instructions: `Pass auth: { provider: "puck" } to puckHandler in ${file}, so it serves Sign in with Puck and only lets signed-in members through.`,
+    snippet: `puckHandler(request, { auth: { provider: "puck" } });\n`,
   });
 };
 
