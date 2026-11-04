@@ -29,6 +29,23 @@ const SKIP_KEYS = new Set([
   "innerComments",
 ]);
 
+const isNode = (value: unknown): value is Node =>
+  !!value &&
+  typeof value === "object" &&
+  typeof (value as Node).type === "string";
+
+/** A node's direct children, in source order */
+export const childNodes = (node: Node): Node[] => {
+  const children: Node[] = [];
+  for (const key of Object.keys(node)) {
+    if (SKIP_KEYS.has(key)) continue;
+    const value = (node as unknown as Record<string, unknown>)[key];
+    if (Array.isArray(value)) children.push(...value.filter(isNode));
+    else if (isNode(value)) children.push(value);
+  }
+  return children;
+};
+
 /** Depth-first walk over every AST node */
 export const walk = (
   node: Node,
@@ -36,27 +53,7 @@ export const walk = (
 ) => {
   const visitNode = (current: Node, parent: Node | null) => {
     visit(current, parent);
-    for (const key of Object.keys(current)) {
-      if (SKIP_KEYS.has(key)) continue;
-      const value = (current as unknown as Record<string, unknown>)[key];
-      if (Array.isArray(value)) {
-        for (const child of value) {
-          if (
-            child &&
-            typeof child === "object" &&
-            typeof (child as Node).type === "string"
-          ) {
-            visitNode(child as Node, current);
-          }
-        }
-      } else if (
-        value &&
-        typeof value === "object" &&
-        typeof (value as Node).type === "string"
-      ) {
-        visitNode(value as Node, current);
-      }
-    }
+    for (const child of childNodes(current)) visitNode(child, current);
   };
 
   visitNode(node, null);
