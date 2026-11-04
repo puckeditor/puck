@@ -5,7 +5,7 @@ import type {
   ObjectExpression,
   TSType,
 } from "@babel/types";
-import { unwrapExpression, walk } from "./parse";
+import { childNodes, unwrapExpression } from "./parse";
 import { findProperty, keyName, quoteOf } from "./config-object";
 import type { TextEdit } from "./splice";
 import { applyEdits } from "./splice";
@@ -14,8 +14,11 @@ import { findConfigObject, listFields } from "./puck-fields";
 import { PLUGIN_ASSETS_PACKAGE } from "../constants";
 
 export interface AssetFieldManual {
+  /** What the CLI couldn't change: the field's render, or its props type */
+  kind: "render" | "type";
   field: string;
   detail: string;
+  instructions: string;
   snippet: string;
 }
 
@@ -156,12 +159,6 @@ const defaultEdits = (
   return edits;
 };
 
-const typeLiteralMembers = (type: TSType | null | undefined) => {
-  if (!type) return null;
-  if (type.type === "TSTypeLiteral") return type.members;
-  return null;
-};
-
 const memberType = (members: Node[], key: string): TSType | null => {
   for (const m of members) {
     if (
@@ -175,6 +172,17 @@ const memberType = (members: Node[], key: string): TSType | null => {
   return null;
 };
 
+const typeLiteralMembers = (
+  ast: File,
+  type: TSType | null | undefined
+): Node[] | null => {
+  if (type?.type === "TSTypeLiteral") return type.members;
+  // A local type's name, e.g. Hero: HeroProps
+  if (type?.type === "TSTypeReference" && type.typeName.type === "Identifier")
+    return propsMembers(ast, type.typeName.name);
+  return null;
+};
+
 /** The local `type Props = {...}` or `interface Props {...}` members */
 const propsMembers = (ast: File, name: string): Node[] | null => {
   for (const statement of ast.program.body) {
@@ -183,27 +191,32 @@ const propsMembers = (ast: File, name: string): Node[] | null => {
         ? statement.declaration
         : statement;
     if (decl?.type === "TSTypeAliasDeclaration" && decl.id.name === name)
-      return typeLiteralMembers(decl.typeAnnotation);
+      return typeLiteralMembers(ast, decl.typeAnnotation);
     if (decl?.type === "TSInterfaceDeclaration" && decl.id.name === name)
       return decl.body.body;
   }
   return null;
 };
 
-/** `image: string` in the props type becomes `image: AssetValue` */
+/**
+ * `image: string` in the props type becomes `image: AssetValue`. Returns
+ * "unresolved" when the type can't be followed to the field, e.g. it's
+ * imported or generic.
+ */
 const typeEdit = (
   { ast, propsType }: ConfigObject,
   field: PuckField
-): TextEdit | null => {
+): TextEdit | "unresolved" | null => {
   if (!propsType || field.component === "root") return null;
   let members = propsMembers(ast, propsType);
-  if (!members) return null;
+  if (!members) return "unresolved";
   let type = memberType(members, field.component);
 
   for (const segment of field.path) {
-    members = typeLiteralMembers(type) ?? [];
+    members = typeLiteralMembers(ast, type);
+    if (!members) return "unresolved";
     type = memberType(members, segment.key);
-    if (!type) return null;
+    if (!type) return "unresolved";
     if (segment.array) {
       const item =
         type.type === "TSArrayType"
@@ -213,13 +226,18 @@ const typeEdit = (
             type.typeName.name === "Array"
           ? type.typeParameters?.params[0] ?? null
           : null;
-      if (!item) return null;
+      if (!item) return "unresolved";
       type = item;
     }
   }
 
-  return type?.type === "TSStringKeyword"
-    ? { start: type.start!, end: type.end!, text: "AssetValue" }
+  // string, or the string in string | undefined
+  const string =
+    type?.type === "TSUnionType"
+      ? type.types.find((t) => t.type === "TSStringKeyword")
+      : type;
+  return string?.type === "TSStringKeyword"
+    ? { start: string.start!, end: string.end!, text: "AssetValue" }
     : null;
 };
 
@@ -241,158 +259,192 @@ const renderFunction = (owner: ObjectExpression): FunctionNode | null => {
     : null;
 };
 
-/** Whether `node` is where `name` is read, rather than a key or a binding */
-const isRead = (node: Node, parent: Node | null) => {
-  if (!parent) return true;
-  if (
-    (parent.type === "MemberExpression" ||
-      parent.type === "OptionalMemberExpression") &&
-    parent.property === node &&
-    !parent.computed
-  )
-    return false;
-  if (
-    parent.type === "ObjectProperty" &&
-    parent.key === node &&
-    !parent.shorthand
-  )
-    return false;
-  if (
-    parent.type === "ObjectProperty" &&
-    parent.shorthand &&
-    parent.value !== node
-  )
-    return false;
-  if (parent.type === "JSXAttribute" || parent.type === "JSXMemberExpression")
-    return false;
-  if (parent.type === "VariableDeclarator" && parent.id === node) return false;
-  if (parent.type === "AssignmentPattern" && parent.left === node) return false;
-  if (parent.type === "ObjectPattern" || parent.type === "ArrayPattern")
-    return false;
-  return true;
-};
+/** Array methods whose callback's first parameter is an item */
+const ITEM_CALLBACK = /^(map|flatMap|forEach|filter|find|findLast|some|every)$/;
+
+/**
+ * What a name or expression in render holds: an object holding
+ * path[depth], the array at path[depth], or the field's value
+ */
+type Ref = { kind: "holder" | "array"; depth: number } | { kind: "value" };
+type Scope = Map<string, Ref>;
+
+/** Where reading a value hands it to code the CLI can't see */
+const passesOn = (node: Node, parent: Node) =>
+  parent.type === "JSXSpreadAttribute" ||
+  parent.type === "SpreadElement" ||
+  parent.type === "JSXExpressionContainer" ||
+  ((parent.type === "CallExpression" ||
+    parent.type === "OptionalCallExpression" ||
+    parent.type === "NewExpression") &&
+    parent.arguments.includes(node as never));
 
 /**
  * Wraps each read of the field's value in the component's render with
- * assetSrc(), so `src={image}` keeps rendering a URL. Returns null when the
- * render passes its props somewhere the CLI can't follow.
+ * assetSrc(), so `src={image}` keeps rendering a URL. Follows the value
+ * through destructuring and array callbacks, respecting names that shadow
+ * it. Returns null when the render passes its props somewhere the CLI can't
+ * follow.
  */
 const renderEdits = (code: string, field: PuckField): TextEdit[] | null => {
   const render = renderFunction(field.owner);
   if (!render) return field.component === "root" ? [] : null;
-  const key = field.path[field.path.length - 1].key;
-  const topLevel = field.path.length === 1;
-  const [param] = render.params;
-
-  // Names the value is read through: destructured, or nested in an item
-  const locals = new Set<string>();
-  const bad: string[] = [];
-  let props: string | null = null;
-
-  if (param?.type === "Identifier") props = param.name;
-  else if (param?.type === "ObjectPattern") {
-    for (const p of param.properties) {
-      if (p.type === "RestElement") {
-        if (p.argument.type === "Identifier") props = p.argument.name;
-        continue;
-      }
-      if (topLevel && keyName(p) === key) {
-        const value = p.value;
-        if (value.type === "Identifier") locals.add(value.name);
-        else bad.push("its value is destructured with a default or pattern");
-      }
-    }
-  } else if (param) {
-    return null;
-  }
-
-  // Nested values are read as item.key, or destructured from items
-  walk(render.body, (node, parent) => {
-    if (
-      !topLevel &&
-      node.type === "ObjectPattern" &&
-      parent?.type !== "VariableDeclarator"
-    ) {
-      for (const p of node.properties) {
-        if (p.type === "ObjectProperty" && keyName(p) === key) {
-          if (p.value.type === "Identifier") locals.add(p.value.name);
-          else bad.push("its value is destructured with a default or pattern");
-        }
-      }
-    }
-    if (
-      node.type === "VariableDeclarator" &&
-      node.id.type === "ObjectPattern"
-    ) {
-      for (const p of node.id.properties) {
-        if (p.type === "ObjectProperty" && keyName(p) === key) {
-          if (p.value.type === "Identifier") locals.add(p.value.name);
-          else bad.push("its value is destructured with a default or pattern");
-        }
-      }
-    }
-  });
-
+  const { path } = field;
   const edits: TextEdit[] = [];
-  let passedOn = false;
+  let unfollowed = false;
 
-  walk(render.body, (node, parent) => {
-    // props.image, or item.logo for nested fields
+  /** What reading `.key` on `ref` gives */
+  const member = (ref: Ref | null, key: string | null): Ref | null => {
+    if (ref?.kind !== "holder" || path[ref.depth].key !== key) return null;
+    if (ref.depth === path.length - 1) return { kind: "value" };
+    return path[ref.depth].array
+      ? { kind: "array", depth: ref.depth }
+      : { kind: "holder", depth: ref.depth + 1 };
+  };
+
+  const item = (ref: Ref | null): Ref | null =>
+    ref?.kind === "array" ? { kind: "holder", depth: ref.depth + 1 } : null;
+
+  const refOf = (node: Node, scope: Scope): Ref | null => {
+    const inner = unwrapExpression(node);
+    if (inner.type === "Identifier") return scope.get(inner.name) ?? null;
     if (
-      (node.type === "MemberExpression" ||
-        node.type === "OptionalMemberExpression") &&
-      !node.computed &&
-      node.property.type === "Identifier" &&
-      node.property.name === key &&
-      (topLevel
-        ? node.object.type === "Identifier" && node.object.name === props
-        : true) &&
-      !(
-        parent?.type === "MemberExpression" ||
-        parent?.type === "OptionalMemberExpression"
-      ) &&
-      !(parent?.type === "AssignmentExpression" && parent.left === node)
-    ) {
-      edits.push({
-        start: node.start!,
-        end: node.end!,
-        text: `${HELPER}(${text(code, node)})`,
-      });
-    }
+      inner.type !== "MemberExpression" &&
+      inner.type !== "OptionalMemberExpression"
+    )
+      return null;
+    const object = refOf(inner.object, scope);
+    const { property } = inner;
+    if (!inner.computed)
+      return member(
+        object,
+        property.type === "Identifier" ? property.name : null
+      );
+    // props["image"], or items[0]
+    return property.type === "StringLiteral"
+      ? member(object, property.value)
+      : item(object);
+  };
 
-    if (node.type === "Identifier" && locals.has(node.name)) {
-      if (!isRead(node, parent)) return;
-      if (parent?.type === "ObjectProperty" && parent.shorthand) {
-        edits.push({
-          start: parent.start!,
-          end: parent.end!,
-          text: `${node.name}: ${HELPER}(${node.name})`,
-        });
-      } else {
-        edits.push({
-          start: node.start!,
-          end: node.end!,
-          text: `${HELPER}(${node.name})`,
-        });
+  const wrap = (node: Node, prefix = "") =>
+    void edits.push({
+      start: node.start!,
+      end: node.end!,
+      text: `${prefix}${HELPER}(${text(code, node)})`,
+    });
+
+  /** Binds the names in a parameter or declaration to what they hold */
+  const bind = (pattern: Node, ref: Ref | null, scope: Scope): void => {
+    if (pattern.type === "Identifier") {
+      if (ref) scope.set(pattern.name, ref);
+      else scope.delete(pattern.name);
+      return;
+    }
+    // A default or a pattern doesn't hold the value as it's stored
+    if (ref?.kind === "value") unfollowed = true;
+    if (pattern.type === "AssignmentPattern") bind(pattern.left, ref, scope);
+    if (pattern.type === "RestElement") bind(pattern.argument, null, scope);
+    if (pattern.type === "ArrayPattern")
+      for (const el of pattern.elements) if (el) bind(el, item(ref), scope);
+    if (pattern.type === "ObjectPattern")
+      for (const p of pattern.properties) {
+        if (p.type === "ObjectProperty")
+          bind(p.value, member(ref, keyName(p)), scope);
+        // { title, ...rest } leaves the rest holding the field
+        else bind(p.argument, ref?.kind === "holder" ? ref : null, scope);
       }
-    }
+  };
 
-    // <Hero {...props} /> or fn(props): the value is read somewhere else
-    if (props && node.type === "Identifier" && node.name === props) {
-      const spread =
-        parent?.type === "JSXSpreadAttribute" ||
-        parent?.type === "SpreadElement";
-      const argument =
-        parent?.type === "CallExpression" &&
-        parent.arguments.includes(node as never);
-      const attribute = parent?.type === "JSXExpressionContainer";
-      if (spread || argument || attribute) passedOn = true;
-    }
-  });
+  const visitFunction = (
+    fn: FunctionNode,
+    parent: Node,
+    outer: Scope,
+    first: Ref | null = null
+  ) => {
+    // items.map((item) => ...): the callback's first parameter is an item
+    const callee =
+      (parent.type === "CallExpression" ||
+        parent.type === "OptionalCallExpression") &&
+      parent.arguments[0] === fn
+        ? parent.callee
+        : null;
+    if (
+      (callee?.type === "MemberExpression" ||
+        callee?.type === "OptionalMemberExpression") &&
+      callee.property.type === "Identifier" &&
+      ITEM_CALLBACK.test(callee.property.name)
+    )
+      first = item(refOf(callee.object, outer));
 
-  if (bad.length || passedOn) return null;
+    const scope = new Map(outer);
+    fn.params.forEach((param, i) => bind(param, i ? null : first, scope));
+    visit(fn.body, fn, scope);
+  };
+
+  const visit = (node: Node, parent: Node, scope: Scope): void => {
+    // Types never read values
+    if (node.type.startsWith("TS")) {
+      if ("expression" in node) visit(node.expression as Node, node, scope);
+      return;
+    }
+    if ("params" in node)
+      return visitFunction(node as FunctionNode, parent, scope);
+
+    switch (node.type) {
+      case "Identifier":
+      case "MemberExpression":
+      case "OptionalMemberExpression": {
+        const ref = refOf(node, scope);
+        if (ref?.kind === "value") return wrap(node);
+        if (ref && passesOn(node, parent)) unfollowed = true;
+        if (node.type === "Identifier") return;
+        visit(node.object, node, scope);
+        if (node.computed) visit(node.property, node, scope);
+        return;
+      }
+      case "ObjectProperty":
+        if (node.shorthand && refOf(node.value, scope)?.kind === "value")
+          return wrap(node.value, `${text(code, node.value)}: `);
+        if (node.computed) visit(node.key, node, scope);
+        return visit(node.value, node, scope);
+      case "VariableDeclarator": {
+        // const image = props.image is followed as the value, not read
+        const ref = node.init ? refOf(node.init, scope) : null;
+        if (node.init && !ref) visit(node.init, node, scope);
+        return bind(node.id, ref, scope);
+      }
+      case "AssignmentExpression":
+        visit(node.right, node, scope);
+        return bind(node.left, null, scope);
+      case "ForOfStatement":
+        visit(node.right, node, scope);
+        scope = new Map(scope);
+        bind(
+          node.left.type === "VariableDeclaration"
+            ? node.left.declarations[0].id
+            : node.left,
+          item(refOf(node.right, scope)),
+          scope
+        );
+        return visit(node.body, node, scope);
+      case "CatchClause":
+        scope = new Map(scope);
+        if (node.param) bind(node.param, null, scope);
+        break;
+      case "BlockStatement":
+        scope = new Map(scope);
+    }
+    for (const child of childNodes(node)) visit(child, node, scope);
+  };
+
+  const [param] = render.params;
+  if (param && param.type !== "Identifier" && param.type !== "ObjectPattern")
+    return null;
+  visitFunction(render, render, new Map(), { kind: "holder", depth: 0 });
+
+  if (unfollowed) return null;
   // A nested value has to be read somewhere the CLI can see
-  if (!edits.length && !topLevel) return null;
+  if (!edits.length && path.length > 1) return null;
   return edits;
 };
 
@@ -497,7 +549,17 @@ export const toAssetFields = (
 
     edits.push(...defaultEdits(code, field, fields));
     const type = ts ? typeEdit(found, field) : null;
-    if (type) {
+    if (type === "unresolved") {
+      manual.push({
+        kind: "type",
+        field: id,
+        detail: `The CLI couldn't find ${id} in ${found.propsType}, so it may still be typed as a string`,
+        instructions: `Type ${id} as AssetValue in ${found.propsType}.`,
+        snippet: `${field.path[field.path.length - 1].key}: AssetValue;\n`,
+      });
+      // The import is ready for the manual change
+      usesType = true;
+    } else if (type) {
       edits.push(type);
       usesType = true;
     }
@@ -505,8 +567,10 @@ export const toAssetFields = (
     const reads = renderEdits(code, field);
     if (reads === null) {
       manual.push({
+        kind: "render",
         field: id,
         detail: `${field.component}'s render passes its props on, so it still reads ${id} as a URL`,
+        instructions: `${id} now holds { src, alt, ... }. Read its URL with ${HELPER}() wherever it's rendered.`,
         snippet: RENDER_SNIPPET,
       });
     } else if (reads.length) {
@@ -549,5 +613,14 @@ export const toAssetFields = (
     });
   }
 
-  return { status: "edited", code: applyEdits(code, edits), manual };
+  try {
+    return { status: "edited", code: applyEdits(code, edits), manual };
+  } catch {
+    return {
+      status: "error",
+      detail: `Couldn't switch ${ids.join(
+        ", "
+      )} together; try them one at a time`,
+    };
+  }
 };

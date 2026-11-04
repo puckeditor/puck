@@ -1,4 +1,5 @@
 import { toAssetFields } from "../asset-fields";
+import { parseModule } from "../parse";
 import { readRecipe } from "../../../__tests__/helpers/harness";
 
 const CONFIG = `import type { Config } from "@puckeditor/core";
@@ -121,6 +122,8 @@ const ALL = ["Hero.image", "Hero.video", "Logos.items[].logo", "Card.photo"];
 const edited = (code: string, ids: string[], file = "puck.config.tsx") => {
   const result = toAssetFields(code, file, ids);
   if (result.status !== "edited") throw new Error(JSON.stringify(result));
+  // Every rewrite has to stay valid code
+  parseModule(result.code, file);
   return result;
 };
 
@@ -128,6 +131,35 @@ const edited = (code: string, ids: string[], file = "puck.config.tsx") => {
 const hero = (render: string) => `export default {
   components: {
     Hero: { fields: { image: { type: "text" } }, render: ${render} },
+  },
+};
+`;
+
+/** A config typed with HeroProps, which `types` declares or imports */
+const typed = (
+  types: string
+) => `import type { Config } from "@puckeditor/core";
+${types}
+type Props = { Hero: HeroProps };
+
+export const config: Config<Props> = {
+  components: {
+    Hero: { fields: { image: { type: "text" } }, render: ({ image }) => <img src={image} /> },
+  },
+};
+`;
+
+/** A config whose Logos component has an array of logos */
+const logos = (render: string) => `const styles = { logo: "logo" };
+
+export default {
+  components: {
+    Logos: {
+      fields: {
+        items: { type: "array", arrayFields: { logo: { type: "text" } } },
+      },
+      render: ${render},
+    },
   },
 };
 `;
@@ -218,6 +250,94 @@ export default {
       "Hero.image",
     ]);
     expect(code).toContain("<Picture {...{ image: assetSrc(image) }} />");
+  });
+
+  it("leaves parameters that shadow the value", () => {
+    const { code } = edited(
+      hero(
+        "({ image, gallery }) => <div><img src={image} />{gallery.map((image) => <img src={image.url} />)}</div>"
+      ),
+      ["Hero.image"]
+    );
+    expect(code).toContain(
+      "<img src={assetSrc(image)} />{gallery.map((image) => <img src={image.url} />)}"
+    );
+  });
+
+  it.each([
+    ["destructured items", "items.map(({ logo }) => <img src={logo} />)"],
+    [
+      "items",
+      "items.map((item) => <img className={styles.logo} src={item.logo} />)",
+    ],
+    ["for...of items", "{ for (const { logo } of items) use(logo); }"],
+    [
+      "aliased items",
+      "{ const list = items; return list.map((i) => i.logo); }",
+    ],
+  ])("follows nested values through %s", (_, body) => {
+    const render = `({ items }) => ${body}`;
+    const { code, manual } = edited(logos(render), ["Logos.items[].logo"]);
+    expect(manual).toEqual([]);
+    expect(code).toMatch(/assetSrc\((item\.|i\.)?logo\)/);
+    expect(code).not.toContain("logo: assetSrc");
+    // Only reads along the field's path
+    expect(code).not.toContain("assetSrc(styles");
+  });
+
+  it("switches a field and a nested field with the same key", () => {
+    const { code } = edited(
+      `export default {
+  components: {
+    Hero: {
+      fields: {
+        image: { type: "text" },
+        items: { type: "array", arrayFields: { image: { type: "text" } } },
+      },
+      render: (props) => <div><img src={props.image} />{props.items.map((item) => <img src={item.image} />)}</div>,
+    },
+  },
+};
+`,
+      ["Hero.image", "Hero.items[].image"]
+    );
+    expect(code).toContain(
+      "<img src={assetSrc(props.image)} />{props.items.map((item) => <img src={assetSrc(item.image)} />)}"
+    );
+  });
+
+  it("asks for a manual edit when items are passed on", () => {
+    const { manual } = edited(
+      logos("({ items }) => items.map((item) => <Logo {...item} />)"),
+      ["Logos.items[].logo"]
+    );
+    expect(manual).toEqual([
+      expect.objectContaining({ field: "Logos.items[].logo" }),
+    ]);
+  });
+
+  it("follows props types through local type names and unions", () => {
+    const { code, manual } = edited(
+      typed("interface HeroProps { image: string | undefined }"),
+      ["Hero.image"]
+    );
+    expect(manual).toEqual([]);
+    expect(code).toContain(
+      "interface HeroProps { image: AssetValue | undefined }"
+    );
+  });
+
+  it("asks for a manual edit when the props type can't be followed", () => {
+    const { code, manual } = edited(
+      typed('import type { HeroProps } from "./hero";'),
+      ["Hero.image"]
+    );
+    expect(manual).toEqual([
+      expect.objectContaining({ kind: "type", field: "Hero.image" }),
+    ]);
+    expect(code).toContain(
+      'import type { AssetValue } from "@puckeditor/plugin-assets";'
+    );
   });
 
   it("reads the recipes' config", () => {

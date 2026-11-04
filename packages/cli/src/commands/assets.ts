@@ -318,14 +318,14 @@ const runAssetsMigrate = async (rc: RunContext): Promise<CommandResult> => {
     });
     for (const m of rewrite.manual) {
       planner.manual({
-        id: `assets:render:${m.field}`,
+        id: `assets:${m.kind}:${m.field}`,
         type: "manual_edit",
         capability: "assets",
         required: true,
         file: config,
         reason: "unsupported_shape",
         message: `${m.detail}.`,
-        instructions: `${m.field} now holds { src, alt, ... }. Read its URL with assetSrc() wherever it's rendered.`,
+        instructions: m.instructions,
         snippet: m.snippet,
       });
     }
