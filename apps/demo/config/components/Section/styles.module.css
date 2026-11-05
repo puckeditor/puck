@@ -21,3 +21,52 @@
   margin-inline-start: 0;
   margin-inline-end: 0;
 }
+
+/* The shared vertical spacing for sectional components, on every background.
+   The padding shrinks on smaller screens, but not below 80px */
+.Section--spaced {
+  padding-block: min(var(--section-padding, 160px), max(80px, 11vw));
+}
+
+.Section--subtle {
+  background: var(--site-color-background-subtle);
+}
+
+/* Contrasting bands, dark or light in dark mode, where primary buttons switch
+   to the inverse accent */
+.Section--inverse {
+  --site-color-accent: var(--site-color-accent-inverse);
+  --site-color-accent-hover: var(--site-color-accent-inverse-hover);
+  --site-color-on-accent: var(--site-color-on-accent-inverse);
+
+  background: var(--site-color-background-inverse);
+  color: var(--site-color-text-inverse);
+}
+
+/* A faint grid behind the content. It fades out before the section's edges,
+   so it's never cut off */
+.Section--grid {
+  isolation: isolate;
+  position: relative;
+}
+
+.Section--grid::before {
+  background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, currentColor 8%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, currentColor 8%, transparent) 1px,
+      transparent 1px
+    );
+  background-position: center;
+  background-size: 56px 56px;
+  content: "";
+  inset: 0;
+  mask-image: radial-gradient(farthest-side, black, transparent);
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
