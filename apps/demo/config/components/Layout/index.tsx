@@ -3,6 +3,7 @@ import {
   ComponentConfig,
   DefaultComponentProps,
   ObjectField,
+  SelectField,
 } from "@/core/types";
 import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
@@ -29,6 +30,13 @@ type LayoutProps = WithLayout<{
   style?: CSSProperties;
 }>;
 
+/** Field for vertical padding, shared by every component that has one */
+export const verticalPaddingField: SelectField = {
+  type: "select",
+  label: "Vertical Padding",
+  options: [{ label: "0px", value: "0px" }, ...spacingOptions],
+};
+
 export const layoutField: ObjectField<LayoutFieldProps> = {
   type: "object",
   objectFields: {
@@ -52,11 +60,7 @@ export const layoutField: ObjectField<LayoutFieldProps> = {
         { label: "false", value: false },
       ],
     },
-    padding: {
-      type: "select",
-      label: "Vertical Padding",
-      options: [{ label: "0px", value: "0px" }, ...spacingOptions],
-    },
+    padding: verticalPaddingField,
   },
 };
 
