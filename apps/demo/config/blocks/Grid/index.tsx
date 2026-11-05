@@ -32,6 +32,17 @@ export const GridInternal: ComponentConfig<GridProps> = {
     },
     items: {
       type: "slot",
+      disallow: [
+        "Hero",
+        "Stats",
+        "Logos",
+        "FeatureGrid",
+        "CTA",
+        "FAQ",
+        "Steps",
+        "FeatureSplit",
+        "Bento",
+      ],
     },
   },
   defaultProps: {
@@ -44,7 +55,6 @@ export const GridInternal: ComponentConfig<GridProps> = {
       <Section>
         <Items
           as={CustomSlot}
-          disallow={["Hero", "Stats"]}
           className={getClassName()}
           style={{
             gap,

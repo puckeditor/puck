@@ -59,6 +59,17 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     items: {
       type: "slot",
+      disallow: [
+        "Hero",
+        "Stats",
+        "Logos",
+        "FeatureGrid",
+        "CTA",
+        "FAQ",
+        "Steps",
+        "FeatureSplit",
+        "Bento",
+      ],
     },
   },
   defaultProps: {
@@ -91,7 +102,6 @@ const FlexInternal: ComponentConfig<FlexProps> = {
             flexWrap: wrap,
             alignItems,
           }}
-          disallow={["Hero", "Stats"]}
         />
       </Section>
     );

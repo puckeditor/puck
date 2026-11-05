@@ -6,36 +6,18 @@ import { AutoField, FieldLabel, FieldTab, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
+import {
+  sectionBackdropField,
+  sectionBackgroundField,
+} from "../../components/Section";
+import { sectionHeaderFields } from "../../components/SectionHeader";
+import { verticalPaddingField } from "../../components/Layout";
 
-export const Hero: ComponentConfig<{
-  props: HeroProps;
-  fields: {
-    userField: {
-      type: "userField";
-      option: boolean;
-    };
-  };
-}> = {
-  renderFields: ({ fields }) => {
-    return (
-      <>
-        <FieldTab label="General">
-          {fields.title}
-          {fields.description}
-          {fields.buttons}
-          {fields.image}
-        </FieldTab>
-        <FieldTab label="Data">{fields.quote}</FieldTab>
-        <FieldTab label="Layout">
-          {fields.padding}
-          {fields.align}
-        </FieldTab>
-      </>
-    );
-  },
+export const Hero: ComponentConfig<HeroProps> = {
   fields: {
     quote: {
       type: "external",
+      label: "Quote",
       placeholder: "Select a quote",
       showSearch: false,
       renderFooter: ({ items }) => {
@@ -48,6 +30,7 @@ export const Hero: ComponentConfig<{
       filterFields: {
         author: {
           type: "select",
+          label: "Author",
           options: [
             { value: "", label: "Select an author" },
             { value: "Mark Twain", label: "Mark Twain" },
@@ -98,13 +81,26 @@ export const Hero: ComponentConfig<{
       },
       getItemSummary: (item) => item.label,
     },
+    layout: {
+      type: "select",
+      label: "Style",
+      options: [
+        { label: "Split", value: "split" },
+        { label: "Centered", value: "centered" },
+        { label: "Cinematic", value: "cinematic" },
+        { label: "Browser", value: "browser" },
+      ],
+    },
+    eyebrow: sectionHeaderFields.eyebrow,
     title: {
       type: "text",
+      label: "Title",
       contentEditable: true,
       placeholder: "Enter a title",
     },
     description: {
       ...heroRenderFields.description,
+      label: "Description",
       contentEditable: true,
       options: {
         heading: false,
@@ -133,40 +129,15 @@ export const Hero: ComponentConfig<{
         );
       },
     },
-    buttons: {
-      type: "array",
-      min: 1,
-      max: 4,
-      getItemSummary: (item) => item.label || "Button",
-      arrayFields: {
-        label: { type: "text", contentEditable: true },
-        href: { type: "text" },
-        variant: {
-          type: "select",
-          options: [
-            { label: "primary", value: "primary" },
-            { label: "secondary", value: "secondary" },
-          ],
-        },
-      },
-      defaultItemProps: {
-        label: "Button",
-        href: "#",
-      },
-    },
-    align: {
-      type: "radio",
-      options: [
-        { label: "left", value: "left" },
-        { label: "center", value: "center" },
-      ],
-    },
+    buttons: sectionHeaderFields.buttons,
     image: {
       ...heroRenderFields.image,
+      label: "Image",
       objectFields: {
         ...heroRenderFields.image.objectFields,
-        url: {
+        source: {
           type: "custom",
+          label: "Source",
           render: ({ value, field, name, onChange, readOnly }) => (
             <FieldLabel
               label={field.label || name}
@@ -175,8 +146,8 @@ export const Hero: ComponentConfig<{
             >
               <AutoField
                 field={{ type: "text" }}
-                value={value}
-                onChange={onChange}
+                value={value?.src}
+                onChange={(src) => onChange({ ...value, src })}
                 readOnly={readOnly}
               />
             </FieldLabel>
@@ -184,22 +155,53 @@ export const Hero: ComponentConfig<{
         },
         mode: {
           type: "radio",
+          label: "Mode",
           options: [
-            { label: "inline", value: "inline" },
-            { label: "bg", value: "background" },
-            { label: "custom", value: "custom" },
+            { label: "Image", value: "image" },
+            { label: "Custom", value: "custom" },
           ],
         },
       },
     },
-    padding: { type: "userField", option: true },
+    background: {
+      ...sectionBackgroundField,
+    },
+    backdrop: sectionBackdropField,
+    padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <>
+      <FieldTab label="General">
+        {fields.eyebrow}
+        {fields.title}
+        {fields.description}
+        {fields.buttons}
+        {fields.image}
+      </FieldTab>
+      <FieldTab label="Data">{fields.quote}</FieldTab>
+      <FieldTab label="Layout">
+        {fields.layout}
+        {fields.background}
+        {fields.backdrop}
+        {fields.padding}
+      </FieldTab>
+    </>
+  ),
   defaultProps: {
+    layout: "split",
+    background: "default",
+    backdrop: "none",
+    padding: "160px",
     title: "",
-    align: "left",
     description: "<p>Description</p>",
     buttons: [{ label: "Learn more", href: "#" }],
-    padding: "64px",
+    image: {
+      source: {
+        src: "https://images.unsplash.com/photo-1687204209659-3bded6aecd79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+        alt: "Hero image",
+      },
+      mode: "image",
+    },
   },
   /**
    * The resolveData method allows us to modify component data after being
@@ -230,16 +232,12 @@ export const Hero: ComponentConfig<{
       readOnly: { title: true, description: true },
     };
   },
-  resolveFields: async (data, { fields }) => {
-    if (data.props.align === "center") {
-      return {
-        ...fields,
-        image: undefined,
-      };
-    }
-
-    return fields;
-  },
+  resolveFields: async (data, { fields }) => ({
+    ...fields,
+    background:
+      data.props.layout === "cinematic" ? undefined : fields.background,
+    backdrop: data.props.layout === "cinematic" ? undefined : fields.backdrop,
+  }),
   resolvePermissions: async (data, params) => {
     if (!params.changed.quote) return params.lastPermissions;
 

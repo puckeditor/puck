@@ -6,6 +6,12 @@ import { Heading } from "./blocks/Heading";
 import { Flex } from "./blocks/Flex";
 import { Logos } from "./blocks/Logos";
 import { Stats } from "./blocks/Stats";
+import { FeatureGrid } from "./blocks/FeatureGrid";
+import { CTA } from "./blocks/CTA";
+import { FAQ } from "./blocks/FAQ";
+import { Steps } from "./blocks/Steps";
+import { FeatureSplit } from "./blocks/FeatureSplit";
+import { Bento } from "./blocks/Bento";
 import { Template } from "./blocks/Template";
 import { Text } from "./blocks/Text";
 import { Space } from "./blocks/Space";
@@ -19,6 +25,26 @@ import { initialData } from "./initial-data";
 export const conf: UserConfig = {
   root: Root,
   categories: {
+    introduction: {
+      title: "Introduction",
+      components: ["Hero"],
+    },
+    content: {
+      title: "Content",
+      components: [
+        "FeatureGrid",
+        "Card",
+        "CTA",
+        "FAQ",
+        "Steps",
+        "FeatureSplit",
+        "Bento",
+      ],
+    },
+    socialProof: {
+      title: "Social Proof",
+      components: ["Logos", "Stats"],
+    },
     layout: {
       components: ["Grid", "Flex", "Space"],
     },
@@ -31,7 +57,7 @@ export const conf: UserConfig = {
     },
     other: {
       title: "Other",
-      components: ["Card", "Hero", "Logos", "Stats", "Template"],
+      components: ["Template"],
     },
   },
   components: {
@@ -43,6 +69,12 @@ export const conf: UserConfig = {
     Flex,
     Logos,
     Stats,
+    FeatureGrid,
+    CTA,
+    FAQ,
+    Steps,
+    FeatureSplit,
+    Bento,
     Template,
     Text,
     Space,
