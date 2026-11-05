@@ -95,12 +95,14 @@ export const defaultDictionary = {
 
 export type DictionaryKey = keyof typeof defaultDictionary;
 
+type BaseDictionary = Partial<
+  Record<DictionaryKey, string> & Record<string, string>
+>;
+
 /**
  * Override any of Puck's built-in UI strings, or provide your own custom strings.
  */
-export type Dictionary = Partial<
-  Record<DictionaryKey, string> & Record<string, string>
->;
+export interface Dictionary extends BaseDictionary {}
 
 /**
  * Replace `{placeholder}` tokens in a template.
