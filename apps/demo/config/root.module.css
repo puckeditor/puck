@@ -1,0 +1,88 @@
+/* The site's own design tokens, independent of Puck's, for a neutral look.
+   They're set on :root with the same specificity as a theme's, so a theme that
+   sets them on :root in the global stylesheet still wins. Only documents with a
+   page match, so the editor around the page keeps Puck's. */
+:root:where(:has(.Root)) {
+  --site-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --site-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --site-color-background: #ffffff;
+  --site-color-background-subtle: #f5f5f5;
+  --site-color-background-inverse: #171717;
+  --site-color-surface: #ffffff;
+  --site-color-text: #171717;
+  --site-color-text-muted: #616161;
+  --site-color-text-inverse: #fafafa;
+  --site-color-border: #e5e5e5;
+  --site-color-accent: #171717;
+  --site-color-accent-hover: #404040;
+  --site-color-on-accent: #ffffff;
+  --site-color-accent-inverse: #fafafa;
+  --site-color-accent-inverse-hover: #d4d4d4;
+  --site-color-on-accent-inverse: #171717;
+
+  --site-heading-1: clamp(48px, 7vw, 96px);
+  --site-heading-2: clamp(36px, 5vw, 64px);
+  --site-heading-3: clamp(22px, 2vw, 28px);
+  --site-text-lead: clamp(18px, 1.8vw, 22px);
+  --site-text-body: 16px;
+  --site-text-small: 14px;
+  --site-text-caption: 12px;
+
+  --site-space-1: 4px;
+  --site-space-2: 8px;
+  --site-space-3: 12px;
+  --site-space-4: 16px;
+  --site-space-5: 24px;
+  --site-space-6: 32px;
+
+  --site-radius-s: 8px;
+  --site-radius-m: 12px;
+  --site-radius-l: 20px;
+  --site-radius-full: 999px;
+
+  --site-shadow: 0 1px 2px rgb(0 0 0 / 4%), 0 8px 24px rgb(0 0 0 / 6%);
+  --site-shadow-l: 0 2px 4px rgb(0 0 0 / 4%), 0 24px 64px rgb(0 0 0 / 14%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:has(.Root)) {
+    --site-color-background: #0a0a0a;
+    --site-color-background-subtle: #141414;
+    --site-color-background-inverse: #fafafa;
+    --site-color-surface: #171717;
+    --site-color-text: #fafafa;
+    --site-color-text-muted: #a3a3a3;
+    --site-color-text-inverse: #171717;
+    --site-color-border: #2e2e2e;
+    --site-color-accent: #fafafa;
+    --site-color-accent-hover: #d4d4d4;
+    --site-color-on-accent: #171717;
+    --site-color-accent-inverse: #171717;
+    --site-color-accent-inverse-hover: #404040;
+    --site-color-on-accent-inverse: #fafafa;
+
+    --site-shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 40%);
+    --site-shadow-l: 0 2px 4px rgb(0 0 0 / 40%), 0 24px 64px rgb(0 0 0 / 60%);
+  }
+}
+
+.Root {
+  /* The page's accent. Inverse bands switch the accent, so surfaces inside
+     them switch back to these */
+  --site-page-accent: var(--site-color-accent);
+  --site-page-accent-hover: var(--site-color-accent-hover);
+  --site-page-on-accent: var(--site-color-on-accent);
+
+  background: var(--site-color-background);
+  color: var(--site-color-text);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--site-font-sans);
+  font-size: var(--site-text-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

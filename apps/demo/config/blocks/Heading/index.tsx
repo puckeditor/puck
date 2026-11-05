@@ -1,17 +1,19 @@
 import React from "react";
 
 import { ComponentConfig } from "@/core/types";
-import { Heading as _Heading } from "@/core/components/Heading";
-import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
+import { getClassNameFactory } from "@/core/lib";
+import styles from "./styles.module.css";
 import { WithLayout, withLayout } from "../../components/Layout";
 import { HeadingFields } from "./HeadingFields";
+
+const getClassName = getClassNameFactory("Heading", styles);
 
 export type HeadingProps = WithLayout<{
   align: "left" | "center" | "right";
   text?: string;
-  level?: _HeadingProps["rank"];
-  size: _HeadingProps["size"];
+  level?: "1" | "2" | "3" | "4" | "5" | "6";
+  size: "xxxl" | "xxl" | "xl" | "l" | "m" | "s" | "xs";
 }>;
 
 const sizeOptions = [
@@ -67,13 +69,16 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
     },
   },
   render: ({ align, text, size, level }) => {
+    const Tag = level ? (`h${level}` as const) : "span";
+
     return (
       <Section>
-        <_Heading size={size} rank={level as any}>
-          <span style={{ display: "block", textAlign: align, width: "100%" }}>
-            {text}
-          </span>
-        </_Heading>
+        <Tag
+          className={getClassName({ [size]: true })}
+          style={{ textAlign: align }}
+        >
+          {text}
+        </Tag>
       </Section>
     );
   },

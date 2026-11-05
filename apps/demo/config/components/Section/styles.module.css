@@ -1,12 +1,12 @@
 .Section:not(.Section .Section) {
-  padding-inline-start: var(--puck-space-4);
-  padding-inline-end: var(--puck-space-4);
+  padding-inline-start: var(--site-space-4);
+  padding-inline-end: var(--site-space-4);
 }
 
 @media (min-width: 768px) {
   .Section:not(.Section .Section) {
-    padding-inline-start: var(--puck-space-5);
-    padding-inline-end: var(--puck-space-5);
+    padding-inline-start: var(--site-space-5);
+    padding-inline-end: var(--site-space-5);
   }
 }
 

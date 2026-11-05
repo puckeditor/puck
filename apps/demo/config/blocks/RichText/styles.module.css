@@ -1,0 +1,45 @@
+/* Text styles for the rich text content. The editor's own rich text styles
+   use the same specificity and load first, so these take over. */
+.RichText :global(.rich-text) :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 1.5em 0 0.5em;
+}
+
+.RichText :global(.rich-text) h1 {
+  font-size: var(--site-heading-2);
+}
+
+.RichText :global(.rich-text) h2 {
+  font-size: clamp(24px, 2.6vw, 32px);
+}
+
+.RichText :global(.rich-text) h3 {
+  font-size: var(--site-heading-3);
+}
+
+.RichText :global(.rich-text) :is(p, ul, ol) {
+  line-height: 1.7;
+  margin: 0 0 1em;
+}
+
+.RichText :global(.rich-text) a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.RichText :global(.rich-text) blockquote {
+  border-left: 3px solid var(--site-color-border);
+  color: var(--site-color-text-muted);
+  margin: 1.5em 0;
+  padding: 0 0 0 var(--site-space-4);
+}
+
+.RichText :global(.rich-text) code {
+  background: var(--site-color-background-subtle);
+  border-radius: var(--site-radius-s);
+  font-family: var(--site-font-mono);
+  font-size: 0.9em;
+  padding: 2px var(--site-space-1);
+}
