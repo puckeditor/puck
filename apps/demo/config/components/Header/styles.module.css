@@ -1,5 +1,11 @@
 .Header {
-  background-color: var(--puck-color-surface);
+  backdrop-filter: blur(12px);
+  background-color: color-mix(
+    in srgb,
+    var(--site-color-background) 85%,
+    transparent
+  );
+  border-bottom: 1px solid var(--site-color-border);
   position: sticky;
   top: 0;
   z-index: 2;
@@ -11,25 +17,24 @@
   margin-inline-start: auto;
   margin-inline-end: auto;
   max-width: 1280px;
-  padding: var(--puck-space-5) var(--puck-space-4);
+  padding: var(--site-space-4);
 }
 
 @media (min-width: 768px) {
   .Header-inner {
-    padding: var(--puck-space-5);
+    padding: var(--site-space-4) var(--site-space-5);
   }
 }
 
 .Header-logo {
-  font-size: 24px;
-  font-weight: var(--puck-font-weight-heavy);
-  letter-spacing: 1.4;
-  opacity: 0.8;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
 }
 
 .Header-items {
   display: flex;
-  gap: var(--puck-space-5);
+  gap: var(--site-space-5);
   margin-inline-start: auto;
 }
 
@@ -40,11 +45,12 @@
 }
 
 .HeaderItem {
+  color: var(--site-color-text-muted);
+  font-size: var(--site-text-small);
+  font-weight: 500;
   text-decoration: none;
-  color: var(--puck-color-grey-06);
 }
 
 .HeaderItem--isActive {
-  color: var(--puck-color-text-muted);
-  font-weight: 600;
+  color: var(--site-color-text);
 }

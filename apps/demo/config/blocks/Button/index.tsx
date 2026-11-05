@@ -1,6 +1,6 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
-import { Button as _Button } from "@/core/components/Button";
+import { Button as _Button } from "../../components/Button";
 
 export type ButtonProps = {
   label: string;

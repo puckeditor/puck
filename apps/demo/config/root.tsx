@@ -1,6 +1,10 @@
 import { DefaultRootProps, RootConfig } from "@/core";
+import { getClassNameFactory } from "@/core/lib";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
+import styles from "./root.module.css";
+
+const getClassName = getClassNameFactory("Root", styles);
 
 export type RootProps = DefaultRootProps;
 
@@ -15,9 +19,7 @@ export const Root: RootConfig<{
   },
   render: ({ puck: { isEditing, renderDropZone: DropZone } }) => {
     return (
-      <div
-        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-      >
+      <div className={getClassName()}>
         <Header editMode={isEditing} />
         <DropZone zone="default-zone" style={{ flexGrow: 1 }} />
 
