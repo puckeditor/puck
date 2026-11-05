@@ -13,6 +13,7 @@ export type FlexProps = WithLayout<{
   gap: number;
   wrap: "wrap" | "nowrap";
   items: Slot;
+  alignItems: "start" | "center" | "end";
 }>;
 
 const FlexInternal: ComponentConfig<FlexProps> = {
@@ -27,6 +28,15 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     justifyContent: {
       label: "Justify Content",
+      type: "radio",
+      options: [
+        { label: "Start", value: "start" },
+        { label: "Center", value: "center" },
+        { label: "End", value: "end" },
+      ],
+    },
+    alignItems: {
+      label: "Align Items",
       type: "radio",
       options: [
         { label: "Start", value: "start" },
@@ -53,6 +63,7 @@ const FlexInternal: ComponentConfig<FlexProps> = {
   },
   defaultProps: {
     justifyContent: "start",
+    alignItems: "start",
     direction: "row",
     gap: 24,
     wrap: "wrap",
@@ -61,7 +72,14 @@ const FlexInternal: ComponentConfig<FlexProps> = {
     },
     items: [],
   },
-  render: ({ justifyContent, direction, gap, wrap, items: Items }) => {
+  render: ({
+    justifyContent,
+    direction,
+    gap,
+    wrap,
+    alignItems,
+    items: Items,
+  }) => {
     return (
       <Section style={{ height: "100%" }}>
         <Items
@@ -71,6 +89,7 @@ const FlexInternal: ComponentConfig<FlexProps> = {
             flexDirection: direction,
             gap,
             flexWrap: wrap,
+            alignItems,
           }}
           disallow={["Hero", "Stats"]}
         />
