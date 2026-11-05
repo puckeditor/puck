@@ -11,6 +11,10 @@ export type ButtonProps = {
 
 export const Button: ComponentConfig<ButtonProps> = {
   label: "Button",
+  ai: {
+    instructions:
+      "Displays a button. Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     label: {
       type: "text",
@@ -21,10 +25,18 @@ export const Button: ComponentConfig<ButtonProps> = {
     href: {
       type: "text",
       label: "URL",
+      ai: {
+        instructions:
+          "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
+      },
     },
     variant: {
       type: "radio",
       label: "Variant",
+      ai: {
+        instructions:
+          "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
+      },
       options: [
         { label: "Primary", value: "primary" },
         { label: "Secondary", value: "secondary" },

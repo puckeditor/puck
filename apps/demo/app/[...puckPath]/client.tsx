@@ -1,14 +1,42 @@
 "use client";
 
-import { AutoField, Button, FieldLabel, Puck, Render } from "@/core";
+import {
+  AutoField,
+  Button,
+  FieldLabel,
+  Puck,
+  Render,
+  outlinePlugin,
+  blocksPlugin,
+} from "@/core";
+import { withDynamicConfig } from "@puckeditor/plugin-ai";
+import type { Data } from "@/core/types";
 import headingAnalyzer from "@/plugin-heading-analyzer/src/HeadingAnalyzer";
 import config from "../../config";
 import { useDemoData } from "../../lib/use-demo-data";
-import { useEffect, useState } from "react";
+import { useAuthedAiPlugin } from "../../lib/use-authed-ai-plugin";
+import { useEffect, useMemo, useState } from "react";
 import { Type } from "lucide-react";
 import { DocsBarCta } from "../../components/docs-bar-cta";
+import { PuckSignInIdentity } from "@puckeditor/cloud-client";
+import { createAuthPlugin } from "@puckeditor/plugin-auth";
 
-export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
+const authPlugin = createAuthPlugin();
+
+const blocksPluginInstance = blocksPlugin();
+const outlinePluginInstance = outlinePlugin();
+
+export function Client({
+  path,
+  isEdit,
+  identity,
+}: {
+  path: string;
+  isEdit: boolean;
+  identity: PuckSignInIdentity | null;
+}) {
+  const { aiPlugin, ui } = useAuthedAiPlugin(identity);
+
   const metadata = {
     example: "Hello, world",
   };
@@ -20,6 +48,11 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
   });
 
   const [isClient, setIsClient] = useState(false);
+
+  const dynamicConfig = useMemo(
+    () => withDynamicConfig(config, data as Data),
+    [data]
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -46,12 +79,19 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
           <Puck
             _experimentalFullScreenCanvas
             height="100%"
-            config={config}
+            config={dynamicConfig}
             data={data}
+            ui={ui}
             onPublish={async (data) => {
               localStorage.setItem(key, JSON.stringify(data));
             }}
-            plugins={[headingAnalyzer]}
+            plugins={[
+              blocksPluginInstance,
+              outlinePluginInstance,
+              aiPlugin,
+              ...(identity ? [authPlugin] : []),
+              headingAnalyzer,
+            ]}
             headerPath={path}
             iframe={{
               enabled: params.get("disableIframe") === "true" ? false : true,
@@ -102,7 +142,9 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
   }
 
   if (data.content) {
-    return <Render config={config} data={resolvedData} metadata={metadata} />;
+    return (
+      <Render config={dynamicConfig} data={resolvedData} metadata={metadata} />
+    );
   }
 
   return (

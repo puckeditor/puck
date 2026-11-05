@@ -30,10 +30,12 @@ async function createComponent<T extends keyof Components>(
 type TemplateData = Record<string, { label: string; data: Slot }>;
 
 export const TemplateInternal: ComponentConfig<TemplateProps> = {
+  ai: { exclude: true },
   fields: {
     template: {
       type: "custom",
       label: "Template",
+      ai: { exclude: true },
       render: ({ field, name, value, onChange }) => {
         const templateKey = `puck-demo-templates:${componentKey}`;
 

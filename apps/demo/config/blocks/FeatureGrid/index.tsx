@@ -31,6 +31,9 @@ export type FeatureGridProps = SectionHeaderProps & {
 
 export const FeatureGrid: ComponentConfig<FeatureGridProps> = {
   label: "Feature Grid",
+  ai: {
+    instructions: "A page section with an optional header and a grid of Cards.",
+  },
   fields: {
     background: sectionBackgroundField,
     ...sectionHeaderFields,
@@ -39,6 +42,10 @@ export const FeatureGrid: ComponentConfig<FeatureGridProps> = {
       label: "Columns",
       min: 2,
       max: 4,
+      ai: {
+        instructions:
+          "Use 3 by default. Use 2 for 2 or 4 Cards and 4 for 4 or 8 Cards.",
+      },
     },
     cardMode: {
       type: "radio",
@@ -47,10 +54,17 @@ export const FeatureGrid: ComponentConfig<FeatureGridProps> = {
         { label: "Card", value: "card" },
         { label: "Flat", value: "flat" },
       ],
+      ai: {
+        instructions:
+          "The style of every Card in this grid. Use 'card' for elevated, left-aligned cards or 'flat' for transparent, centered ones.",
+      },
     },
     cards: {
       type: "slot",
       allow: ["Card"],
+      ai: {
+        instructions: "Add 3 to 6 Cards.",
+      },
     },
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,

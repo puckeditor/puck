@@ -32,6 +32,10 @@ export type FAQProps = SectionHeaderProps & {
 };
 
 export const FAQ: ComponentConfig<FAQProps> = {
+  ai: {
+    instructions:
+      "A page section of frequently asked questions with expandable answers, next to an optional header.",
+  },
   fields: {
     background: sectionBackgroundField,
     ...sectionHeaderFields,
@@ -40,6 +44,9 @@ export const FAQ: ComponentConfig<FAQProps> = {
       label: "Items",
       min: 2,
       max: 10,
+      ai: {
+        instructions: "Use 4 to 6 questions.",
+      },
       getItemSummary: (item) => item.question || "Question",
       defaultItemProps: {
         question: "Question",
@@ -50,11 +57,17 @@ export const FAQ: ComponentConfig<FAQProps> = {
           type: "text",
           label: "Question",
           contentEditable: true,
+          ai: {
+            instructions: "A question a visitor would ask, 12 words or fewer.",
+          },
         },
         answer: {
           type: "textarea",
           label: "Answer",
           contentEditable: true,
+          ai: {
+            instructions: "A direct answer in 1 to 3 sentences.",
+          },
         },
       },
     },

@@ -36,6 +36,10 @@ export const sectionHeaderFields: Required<
   eyebrow: {
     type: "text",
     label: "Eyebrow",
+    ai: {
+      instructions:
+        "Optional short label above the title, 2 to 4 words, such as a category or an announcement.",
+    },
   },
   title: { type: "text", label: "Title", contentEditable: true },
   description: {
@@ -53,10 +57,18 @@ export const sectionHeaderFields: Required<
       href: {
         type: "text",
         label: "URL",
+        ai: {
+          instructions:
+            "Use a URL supplied by the user or verified in the business context. Otherwise, use '#'.",
+        },
       },
       variant: {
         type: "select",
         label: "Variant",
+        ai: {
+          instructions:
+            "Use 'primary' for the main action in a group and 'secondary' for supporting actions.",
+        },
         options: [
           { label: "Primary", value: "primary" },
           { label: "Secondary", value: "secondary" },

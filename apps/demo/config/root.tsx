@@ -14,6 +14,11 @@ export const Root: RootConfig<{
     userField: { type: "userField"; option: boolean };
   };
 }> = {
+  ai: {
+    defaultZone: {
+      disallow: ["Button", "Card"],
+    },
+  },
   fields: {
     title: { type: "text", label: "Title" },
   },

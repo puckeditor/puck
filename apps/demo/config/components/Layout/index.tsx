@@ -38,6 +38,11 @@ export const verticalPaddingField: SelectField = {
   type: "select",
   label: "Vertical padding",
   options: [{ label: "0px", value: "0px" }, ...spacingOptions],
+  ai: {
+    required: false,
+    instructions:
+      "Vertical padding inside this component. Avoid padding both a parent and its child.",
+  },
 };
 
 export const layoutField: ObjectField<LayoutFieldProps> = {
@@ -54,12 +59,22 @@ export const layoutField: ObjectField<LayoutFieldProps> = {
       type: "number",
       min: 1,
       max: 12,
+      ai: {
+        required: false,
+        instructions:
+          "Applies only when this component is a direct child of a Grid. Do not exceed that Grid's numColumns value.",
+      },
     },
     spanRow: {
       label: "Grid rows",
       type: "number",
       min: 1,
       max: 12,
+      ai: {
+        required: false,
+        instructions:
+          "Applies only when this component is a direct child of a Grid. Sets how many rows this component spans. The Grid creates rows automatically as its items wrap.",
+      },
     },
     grow: {
       label: "Flex grow",
@@ -68,6 +83,11 @@ export const layoutField: ObjectField<LayoutFieldProps> = {
         { label: "True", value: true },
         { label: "False", value: false },
       ],
+      ai: {
+        required: false,
+        instructions:
+          "Applies only when this component is a direct child of a Flex. Use true to fill available space.",
+      },
     },
     padding: verticalPaddingField,
   },

@@ -28,6 +28,10 @@ export type CTAProps = SectionHeaderProps & {
 };
 
 export const CTA: ComponentConfig<CTAProps> = {
+  ai: {
+    instructions:
+      "A page section with a call to action that asks the reader to take a next step. Usually the last section of the page.",
+  },
   fields: {
     layout: {
       type: "radio",
@@ -36,9 +40,16 @@ export const CTA: ComponentConfig<CTAProps> = {
         { label: "Centered", value: "centered" },
         { label: "Panel", value: "panel" },
       ],
+      ai: {
+        instructions:
+          "Use 'centered' by default. Use 'panel' to set the call to action apart in a dark card, with the description beside the title.",
+      },
     },
     background: {
       ...sectionBackgroundField,
+      ai: {
+        instructions: `${sectionBackgroundField.ai?.instructions} The panel layout ignores it.`,
+      },
     },
     ...sectionHeaderFields,
     backdrop: sectionBackdropField,

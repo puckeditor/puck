@@ -39,6 +39,10 @@ export type FeatureSplitProps = SectionHeaderProps & {
 
 export const FeatureSplit: ComponentConfig<FeatureSplitProps> = {
   label: "Feature Split",
+  ai: {
+    instructions:
+      "A page section with a photo beside a header and a short list of features, for explaining one topic in depth.",
+  },
   fields: {
     background: sectionBackgroundField,
     mediaPosition: {
@@ -48,12 +52,19 @@ export const FeatureSplit: ComponentConfig<FeatureSplitProps> = {
         { label: "Right", value: "right" },
         { label: "Left", value: "left" },
       ],
+      ai: {
+        instructions:
+          "Use 'right' by default. When Feature Splits follow each other, alternate the side.",
+      },
     },
     ...sectionHeaderFields,
     features: {
       type: "array",
       label: "Features",
       max: 4,
+      ai: {
+        instructions: "Use 3 or 4 features.",
+      },
       getItemSummary: (item) => item.title || "Feature",
       defaultItemProps: {
         icon: "sparkles",
@@ -66,11 +77,17 @@ export const FeatureSplit: ComponentConfig<FeatureSplitProps> = {
           type: "text",
           label: "Title",
           contentEditable: true,
+          ai: {
+            instructions: "The feature's name, 2 to 5 words.",
+          },
         },
         description: {
           type: "textarea",
           label: "Description",
           contentEditable: true,
+          ai: {
+            instructions: "One sentence on why this feature matters.",
+          },
         },
       },
     },
@@ -80,6 +97,11 @@ export const FeatureSplit: ComponentConfig<FeatureSplitProps> = {
       objectFields: {
         src: { type: "text", label: "URL" },
         alt: { type: "text", label: "Alt text" },
+      },
+      ai: {
+        bind: "puck:unsplash",
+        instructions: "A photo of this section's subject.",
+        stream: false,
       },
     },
     backdrop: sectionBackdropField,
