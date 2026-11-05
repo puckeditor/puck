@@ -5,6 +5,7 @@ import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
 
 import styles from "./styles.module.css";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const getClassName = getClassNameFactory("Space", styles);
 
@@ -20,16 +21,21 @@ export const Space: ComponentConfig<SpaceProps> = {
   fields: {
     size: {
       type: "select",
+      label: "Size",
       options: spacingOptions,
     },
     directions: {
       type: "checkbox",
+      label: "Directions",
       options: [
         { value: "vertical", label: "Vertical" },
         { value: "horizontal", label: "Horizontal" },
       ],
     },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs appearance={[fields.size, fields.directions]} />
+  ),
   defaultProps: {
     directions: ["vertical", "horizontal"],
     size: "24px",

@@ -5,7 +5,7 @@ import { Section } from "../../components/Section";
 import { getClassNameFactory } from "@/core/lib";
 import styles from "./styles.module.css";
 import { WithLayout, withLayout } from "../../components/Layout";
-import { HeadingFields } from "./HeadingFields";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const getClassName = getClassNameFactory("Heading", styles);
 
@@ -40,18 +40,22 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
   fields: {
     text: {
       type: "textarea",
+      label: "Text",
       contentEditable: true,
     },
     size: {
       type: "select",
+      label: "Size",
       options: sizeOptions,
     },
     level: {
       type: "select",
+      label: "Level",
       options: levelOptions,
     },
     align: {
       type: "radio",
+      label: "Align",
       options: [
         { label: "Left", value: "left" },
         { label: "Center", value: "center" },
@@ -59,7 +63,12 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
       ],
     },
   },
-  renderFields: ({ fields }) => <HeadingFields fields={fields} />,
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[fields.text, fields.level]}
+      appearance={[fields.size, fields.align, fields.layout]}
+    />
+  ),
   defaultProps: {
     align: "left",
     text: "Heading",

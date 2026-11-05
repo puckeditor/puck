@@ -15,6 +15,7 @@ import {
   sectionHeaderFields,
   type SectionHeaderProps,
 } from "../../components/SectionHeader";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("Stats", styles);
@@ -89,6 +90,21 @@ export const Stats: ComponentConfig<StatsProps> = {
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+        fields.items,
+        fields.image,
+      ]}
+      appearance={[fields.layout]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
+  ),
   defaultProps: {
     layout: "row",
     background: "default",

@@ -16,6 +16,7 @@ import {
   type SectionHeaderProps,
 } from "../../components/SectionHeader";
 import { Icon, iconField } from "../../components/Icon";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("FeatureSplit", styles);
@@ -84,6 +85,21 @@ export const FeatureSplit: ComponentConfig<FeatureSplitProps> = {
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+        fields.features,
+        fields.image,
+      ]}
+      appearance={[fields.mediaPosition]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
+  ),
   defaultProps: {
     background: "default",
     backdrop: "none",

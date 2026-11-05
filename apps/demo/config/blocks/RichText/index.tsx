@@ -2,6 +2,7 @@ import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { WithLayout, withLayout } from "../../components/Layout";
 import { Section } from "../../components/Section";
+import { FieldTabs } from "../../components/FieldTabs";
 import { getClassNameFactory } from "@/core/lib";
 import styles from "./styles.module.css";
 
@@ -15,8 +16,12 @@ const RichTextInner: ComponentConfig<RichTextProps> = {
   fields: {
     richtext: {
       type: "richtext",
+      label: "Rich text",
     },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs content={[fields.richtext]} appearance={[fields.layout]} />
+  ),
   render: ({ richtext }) => {
     return <Section className={getClassName()}>{richtext}</Section>;
   },

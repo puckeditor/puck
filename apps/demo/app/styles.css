@@ -74,3 +74,9 @@ body {
     --puck-field-checkbox-color-check: var(--puck-button-primary-color-text);
   }
 }
+
+/* Field labels can drop their icon, like the layout field's, so hide the
+   icon's wrapper when it's empty rather than leave a gap */
+[class*="Input-labelIcon"]:empty {
+  display: none;
+}

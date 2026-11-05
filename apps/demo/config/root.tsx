@@ -14,6 +14,9 @@ export const Root: RootConfig<{
     userField: { type: "userField"; option: boolean };
   };
 }> = {
+  fields: {
+    title: { type: "text", label: "Title" },
+  },
   defaultProps: {
     title: "My Page",
   },

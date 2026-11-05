@@ -16,6 +16,7 @@ import {
   type SectionHeaderProps,
 } from "../../components/SectionHeader";
 import FAQItem from "./faq-item";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("FAQ", styles);
@@ -60,6 +61,19 @@ export const FAQ: ComponentConfig<FAQProps> = {
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+        fields.items,
+      ]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
+  ),
   defaultProps: {
     background: "default",
     backdrop: "none",

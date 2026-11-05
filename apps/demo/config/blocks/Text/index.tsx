@@ -4,6 +4,7 @@ import { ALargeSmall, AlignLeft } from "lucide-react";
 import { ComponentConfig } from "@/core/types";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { FieldTabs } from "../../components/FieldTabs";
 
 export type TextProps = WithLayout<{
   align: "left" | "center" | "right";
@@ -18,10 +19,12 @@ const TextInner: ComponentConfig<TextProps> = {
   fields: {
     text: {
       type: "textarea",
+      label: "Text",
       contentEditable: true,
     },
     size: {
       type: "select",
+      label: "Size",
       labelIcon: <ALargeSmall size={16} />,
       options: [
         { label: "S", value: "s" },
@@ -30,6 +33,7 @@ const TextInner: ComponentConfig<TextProps> = {
     },
     align: {
       type: "radio",
+      label: "Align",
       labelIcon: <AlignLeft size={16} />,
       options: [
         { label: "Left", value: "left" },
@@ -39,13 +43,29 @@ const TextInner: ComponentConfig<TextProps> = {
     },
     color: {
       type: "radio",
+      label: "Color",
       options: [
         { label: "Default", value: "default" },
         { label: "Muted", value: "muted" },
       ],
     },
-    maxWidth: { type: "text" },
+    maxWidth: {
+      type: "text",
+      label: "Max width",
+    },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[fields.text]}
+      appearance={[
+        fields.size,
+        fields.align,
+        fields.color,
+        fields.maxWidth,
+        fields.layout,
+      ]}
+    />
+  ),
   defaultProps: {
     align: "left",
     text: "Text",

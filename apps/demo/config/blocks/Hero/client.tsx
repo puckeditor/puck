@@ -2,7 +2,7 @@
 import React from "react";
 import { ComponentConfig } from "@/core/types";
 import { quotes } from "./quotes";
-import { AutoField, FieldLabel, FieldTab, RichTextMenu } from "@/core";
+import { AutoField, FieldLabel, RichTextMenu } from "@/core";
 import { Link2, Quote } from "lucide-react";
 import HeroComponent, { HeroProps } from "./Hero";
 import { heroRenderFields } from "./render-fields";
@@ -11,6 +11,7 @@ import {
   sectionBackgroundField,
 } from "../../components/Section";
 import { sectionHeaderFields } from "../../components/SectionHeader";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 export const Hero: ComponentConfig<HeroProps> = {
@@ -170,22 +171,19 @@ export const Hero: ComponentConfig<HeroProps> = {
     padding: verticalPaddingField,
   },
   renderFields: ({ fields }) => (
-    <>
-      <FieldTab label="General">
-        {fields.eyebrow}
-        {fields.title}
-        {fields.description}
-        {fields.buttons}
-        {fields.image}
-      </FieldTab>
-      <FieldTab label="Data">{fields.quote}</FieldTab>
-      <FieldTab label="Layout">
-        {fields.layout}
-        {fields.background}
-        {fields.backdrop}
-        {fields.padding}
-      </FieldTab>
-    </>
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+        fields.image,
+      ]}
+      data={[fields.quote]}
+      appearance={[fields.layout]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
   ),
   defaultProps: {
     layout: "split",

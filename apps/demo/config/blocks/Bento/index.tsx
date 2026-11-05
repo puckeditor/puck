@@ -16,6 +16,7 @@ import {
   type SectionHeaderProps,
 } from "../../components/SectionHeader";
 import { Icon, iconField } from "../../components/Icon";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("Bento", styles);
@@ -78,6 +79,19 @@ export const Bento: ComponentConfig<BentoProps> = {
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+        fields.tiles,
+      ]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
+  ),
   defaultProps: {
     background: "default",
     backdrop: "none",

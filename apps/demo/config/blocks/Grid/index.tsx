@@ -3,15 +3,16 @@ import { ComponentConfig, Slot } from "@/core/types";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
-import { withLayout } from "../../components/Layout";
+import { WithLayout, withLayout } from "../../components/Layout";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const getClassName = getClassNameFactory("Grid", styles);
 
-export type GridProps = {
+export type GridProps = WithLayout<{
   numColumns: number;
   gap: number;
   items: Slot;
-};
+}>;
 
 const CustomSlot = (props: any) => {
   return <span {...props} />;
@@ -45,6 +46,9 @@ export const GridInternal: ComponentConfig<GridProps> = {
       ],
     },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs appearance={[fields.numColumns, fields.gap, fields.layout]} />
+  ),
   defaultProps: {
     numColumns: 4,
     gap: 24,
