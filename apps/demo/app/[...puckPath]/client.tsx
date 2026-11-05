@@ -39,6 +39,7 @@ export function Client({ path, isEdit }: { path: string; isEdit: boolean }) {
     return (
       <div>
         <Puck
+          _experimentalFullScreenCanvas
           config={config}
           data={data}
           onPublish={async (data) => {
