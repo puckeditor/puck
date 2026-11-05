@@ -15,6 +15,7 @@ import {
   sectionHeaderFields,
   type SectionHeaderProps,
 } from "../../components/SectionHeader";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("CTA", styles);
@@ -43,6 +44,19 @@ export const CTA: ComponentConfig<CTAProps> = {
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+      ]}
+      appearance={[fields.layout]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
+  ),
   defaultProps: {
     layout: "centered",
     background: "default",

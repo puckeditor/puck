@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { withLayout, WithLayout } from "../../components/Layout";
 import { Icon, iconField } from "../../components/Icon";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const getClassName = getClassNameFactory("Card", styles);
 
@@ -19,23 +20,32 @@ const CardInner: ComponentConfig<CardProps> = {
   fields: {
     title: {
       type: "text",
+      label: "Title",
       contentEditable: true,
       placeholder: "Enter a title",
     },
     description: {
       type: "textarea",
+      label: "Description",
       contentEditable: true,
       placeholder: "Enter a description",
     },
     icon: iconField,
     mode: {
       type: "radio",
+      label: "Mode",
       options: [
-        { label: "card", value: "card" },
-        { label: "flat", value: "flat" },
+        { label: "Card", value: "card" },
+        { label: "Flat", value: "flat" },
       ],
     },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[fields.title, fields.description, fields.icon]}
+      appearance={[fields.mode, fields.layout]}
+    />
+  ),
   defaultProps: {
     title: "",
     description: "",

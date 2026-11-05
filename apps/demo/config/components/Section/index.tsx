@@ -39,7 +39,7 @@ export type SectionProps = {
 /** Field for the section background options */
 export const sectionBackgroundField: RadioField = {
   type: "radio",
-  label: "Background",
+  label: "Color",
   options: [
     { label: "Default", value: "default" },
     { label: "Subtle", value: "subtle" },
@@ -50,7 +50,7 @@ export const sectionBackgroundField: RadioField = {
 /** Field for the section backdrop options */
 export const sectionBackdropField: RadioField = {
   type: "radio",
-  label: "Backdrop",
+  label: "Pattern",
   options: [
     { label: "None", value: "none" },
     { label: "Grid", value: "grid" },

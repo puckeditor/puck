@@ -15,6 +15,7 @@ import {
   sectionHeaderFields,
   type SectionHeaderProps,
 } from "../../components/SectionHeader";
+import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 const getClassName = getClassNameFactory("FeatureGrid", styles);
@@ -54,6 +55,19 @@ export const FeatureGrid: ComponentConfig<FeatureGridProps> = {
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[
+        fields.eyebrow,
+        fields.title,
+        fields.description,
+        fields.buttons,
+      ]}
+      appearance={[fields.columns, fields.cardMode]}
+      backgroundGroup={[fields.background, fields.backdrop]}
+      layoutGroup={[fields.padding]}
+    />
+  ),
   defaultProps: {
     background: "default",
     backdrop: "none",

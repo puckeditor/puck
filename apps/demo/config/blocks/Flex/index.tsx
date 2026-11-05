@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
 import { WithLayout, withLayout } from "../../components/Layout";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const getClassName = getClassNameFactory("Flex", styles);
 
@@ -27,7 +28,7 @@ const FlexInternal: ComponentConfig<FlexProps> = {
       ],
     },
     justifyContent: {
-      label: "Justify Content",
+      label: "Justify content",
       type: "radio",
       options: [
         { label: "Start", value: "start" },
@@ -36,7 +37,7 @@ const FlexInternal: ComponentConfig<FlexProps> = {
       ],
     },
     alignItems: {
-      label: "Align Items",
+      label: "Align items",
       type: "radio",
       options: [
         { label: "Start", value: "start" },
@@ -53,8 +54,8 @@ const FlexInternal: ComponentConfig<FlexProps> = {
       label: "Wrap",
       type: "radio",
       options: [
-        { label: "true", value: "wrap" },
-        { label: "false", value: "nowrap" },
+        { label: "True", value: "wrap" },
+        { label: "False", value: "nowrap" },
       ],
     },
     items: {
@@ -72,6 +73,18 @@ const FlexInternal: ComponentConfig<FlexProps> = {
       ],
     },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      appearance={[
+        fields.direction,
+        fields.justifyContent,
+        fields.alignItems,
+        fields.gap,
+        fields.wrap,
+        fields.layout,
+      ]}
+    />
+  ),
   defaultProps: {
     justifyContent: "start",
     alignItems: "start",
