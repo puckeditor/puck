@@ -119,10 +119,15 @@ export function withLayout<
         AugmentedRenderFields={componentConfig.renderFields}
       />
     ),
-    resolveFields: (_, params) => {
+    resolveFields: async (data, params) => {
+      // Let the wrapped component adjust its own fields first
+      const fields = componentConfig.resolveFields
+        ? await componentConfig.resolveFields(data, params)
+        : componentConfig.fields;
+
       if (params.parent?.type === "Grid") {
         return {
-          ...componentConfig.fields,
+          ...fields,
           layout: {
             ...layoutField,
             objectFields: {
@@ -135,7 +140,7 @@ export function withLayout<
       }
       if (params.parent?.type === "Flex") {
         return {
-          ...componentConfig.fields,
+          ...fields,
           layout: {
             ...layoutField,
             objectFields: {
@@ -147,7 +152,7 @@ export function withLayout<
       }
 
       return {
-        ...componentConfig.fields,
+        ...fields,
         layout: {
           ...layoutField,
           objectFields: {
