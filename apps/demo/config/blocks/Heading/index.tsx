@@ -37,6 +37,10 @@ const levelOptions = [
 ];
 
 const HeadingInternal: ComponentConfig<HeadingProps> = {
+  ai: {
+    instructions:
+      "Displays a heading (h1-h6 element). Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     text: {
       type: "textarea",
@@ -52,6 +56,11 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
       type: "select",
       label: "Level",
       options: levelOptions,
+      ai: {
+        required: true,
+        instructions:
+          "Choose an h1-h6 level that follows the page hierarchy. The empty value renders text without a heading tag.",
+      },
     },
     align: {
       type: "radio",

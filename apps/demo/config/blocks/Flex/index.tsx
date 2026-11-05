@@ -18,6 +18,10 @@ export type FlexProps = WithLayout<{
 }>;
 
 const FlexInternal: ComponentConfig<FlexProps> = {
+  ai: {
+    instructions:
+      "Lays out children in a flexible row or column. Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     direction: {
       label: "Direction",
@@ -35,6 +39,10 @@ const FlexInternal: ComponentConfig<FlexProps> = {
         { label: "Center", value: "center" },
         { label: "End", value: "end" },
       ],
+      ai: {
+        instructions:
+          "Controls how the flex container distributes space along the main axis (horizontal for row, vertical for column).",
+      },
     },
     alignItems: {
       label: "Align items",
@@ -44,15 +52,26 @@ const FlexInternal: ComponentConfig<FlexProps> = {
         { label: "Center", value: "center" },
         { label: "End", value: "end" },
       ],
+      ai: {
+        instructions:
+          "Controls how the flex container aligns items along the cross axis (vertical for row, horizontal for column).",
+      },
     },
     gap: {
       label: "Gap",
       type: "number",
       min: 0,
+      ai: {
+        instructions: "The gap between children, in pixels.",
+      },
     },
     wrap: {
       label: "Wrap",
       type: "radio",
+      ai: {
+        instructions:
+          "Use 'wrap' to move children onto new lines when needed, or 'nowrap' to keep them on one line.",
+      },
       options: [
         { label: "True", value: "wrap" },
         { label: "False", value: "nowrap" },

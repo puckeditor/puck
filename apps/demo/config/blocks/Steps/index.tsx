@@ -37,6 +37,10 @@ export type StepsProps = SectionHeaderProps & {
 };
 
 export const Steps: ComponentConfig<StepsProps> = {
+  ai: {
+    instructions:
+      "A page section of numbered steps the reader follows in order, such as how to book, order or get started, with its own optional header.",
+  },
   fields: {
     background: sectionBackgroundField,
     ...sectionHeaderFields,
@@ -45,6 +49,9 @@ export const Steps: ComponentConfig<StepsProps> = {
       label: "Steps",
       min: 2,
       max: 6,
+      ai: {
+        instructions: "Use 2 or 4 steps, in the order the reader follows them.",
+      },
       getItemSummary: (item, i = 0) => item.title || `Step ${i + 1}`,
       defaultItemProps: {
         title: "Step",
@@ -55,11 +62,18 @@ export const Steps: ComponentConfig<StepsProps> = {
           type: "text",
           label: "Title",
           contentEditable: true,
+          ai: {
+            instructions:
+              "The action for this step, 2 to 5 words, such as 'Book your seats'.",
+          },
         },
         description: {
           type: "textarea",
           label: "Description",
           contentEditable: true,
+          ai: {
+            instructions: "What happens in this step, in 1 or 2 sentences.",
+          },
         },
         image: {
           type: "object",
@@ -67,6 +81,12 @@ export const Steps: ComponentConfig<StepsProps> = {
           objectFields: {
             src: { type: "text", label: "URL" },
             alt: { type: "text", label: "Alt text" },
+          },
+          ai: {
+            bind: "puck:unsplash",
+            instructions:
+              "Optional photo for this step. Give every step a photo, or none of them.",
+            stream: false,
           },
         },
       },

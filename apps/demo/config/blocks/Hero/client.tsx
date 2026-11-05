@@ -15,12 +15,17 @@ import { FieldTabs } from "../../components/FieldTabs";
 import { verticalPaddingField } from "../../components/Layout";
 
 export const Hero: ComponentConfig<HeroProps> = {
+  ai: {
+    instructions:
+      "A page section for the page's hero. Its title renders as the page's h1.",
+  },
   fields: {
     quote: {
       type: "external",
       label: "Quote",
       placeholder: "Select a quote",
       showSearch: false,
+      ai: { exclude: true },
       renderFooter: ({ items }) => {
         return (
           <div>
@@ -91,6 +96,10 @@ export const Hero: ComponentConfig<HeroProps> = {
         { label: "Cinematic", value: "cinematic" },
         { label: "Browser", value: "browser" },
       ],
+      ai: {
+        instructions:
+          "Use 'split' by default. Use 'cinematic' for visual subjects such as cars, travel, food, fashion or events. Use 'centered' for bold statements. Use 'browser' only for software, apps or websites.",
+      },
     },
     eyebrow: sectionHeaderFields.eyebrow,
     title: {
@@ -103,6 +112,10 @@ export const Hero: ComponentConfig<HeroProps> = {
       ...heroRenderFields.description,
       label: "Description",
       contentEditable: true,
+      ai: {
+        instructions:
+          "Supporting rich text shown below the title, 30 words or fewer.",
+      },
       options: {
         heading: false,
         textAlign: false,
@@ -139,6 +152,14 @@ export const Hero: ComponentConfig<HeroProps> = {
         source: {
           type: "custom",
           label: "Source",
+          ai: {
+            bind: "puck:unsplash",
+            schema: {
+              type: "object",
+              properties: { src: { type: "string" }, alt: { type: "string" } },
+              stream: false,
+            },
+          },
           render: ({ value, field, name, onChange, readOnly }) => (
             <FieldLabel
               label={field.label || name}
@@ -157,6 +178,10 @@ export const Hero: ComponentConfig<HeroProps> = {
         mode: {
           type: "radio",
           label: "Mode",
+          ai: {
+            required: false,
+            instructions: "Use 'image'. Never use 'custom'.",
+          },
           options: [
             { label: "Image", value: "image" },
             { label: "Custom", value: "custom" },
@@ -166,6 +191,10 @@ export const Hero: ComponentConfig<HeroProps> = {
     },
     background: {
       ...sectionBackgroundField,
+      ai: {
+        instructions:
+          "Use 'default' unless the page calls for a dark, dramatic hero, then use 'inverse'. The cinematic layout ignores it.",
+      },
     },
     backdrop: sectionBackdropField,
     padding: verticalPaddingField,

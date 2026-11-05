@@ -45,6 +45,10 @@ export const sectionBackgroundField: RadioField = {
     { label: "Subtle", value: "subtle" },
     { label: "Inverse", value: "inverse" },
   ],
+  ai: {
+    instructions:
+      "Use 'default' for most sections. Use 'subtle' or 'inverse' to set a section apart, and 'inverse' at most twice per page.",
+  },
 };
 
 /** Field for the section backdrop options */
@@ -55,6 +59,10 @@ export const sectionBackdropField: RadioField = {
     { label: "None", value: "none" },
     { label: "Grid", value: "grid" },
   ],
+  ai: {
+    instructions:
+      "Use 'none' for most sections. Use 'grid' to give one or two standout sections, such as the hero, a faint grid behind the content.",
+  },
 };
 
 export const Section = forwardRef<HTMLDivElement, SectionProps>(

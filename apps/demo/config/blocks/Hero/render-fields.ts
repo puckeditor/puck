@@ -9,6 +9,7 @@ export const heroRenderFields = {
     type: "object",
     objectFields: {
       content: {
+        ai: { exclude: true },
         type: "slot",
       } satisfies SlotField,
     },

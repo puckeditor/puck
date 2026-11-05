@@ -16,4 +16,10 @@ module.exports = {
   // posthog-js posts to trailing-slash paths, and Next's trailing-slash
   // redirect runs before rewrites, so ingest would never reach /ev.
   skipTrailingSlashRedirect: true,
+  turbopack: {
+    // We need this to properly resolve cloud-client and plugin-ai imports to local package
+    resolveAlias: {
+      "@puckeditor/core": "../../packages/core/index.ts",
+    },
+  },
 };

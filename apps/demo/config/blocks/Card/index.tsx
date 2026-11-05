@@ -17,6 +17,9 @@ export type CardProps = WithLayout<{
 }>;
 
 const CardInner: ComponentConfig<CardProps> = {
+  ai: {
+    instructions: "Lists a feature or item. Use Cards inside a FeatureGrid.",
+  },
   fields: {
     title: {
       type: "text",
@@ -32,6 +35,11 @@ const CardInner: ComponentConfig<CardProps> = {
     },
     icon: iconField,
     mode: {
+      ai: {
+        instructions:
+          "Optional. Use 'flat' for a transparent, center-aligned appearance or 'card' for an elevated, left-aligned appearance. Inside a Feature Grid, set this for all cards in the grid's cardMode.",
+        required: false,
+      },
       type: "radio",
       label: "Mode",
       options: [

@@ -33,6 +33,10 @@ export type LogosProps = SectionHeaderProps & {
 };
 
 export const Logos: ComponentConfig<LogosProps> = {
+  ai: {
+    instructions:
+      "A page section with a strip of partner or customer logos that scrolls from right to left, and an optional header. Usually only needs an eyebrow such as 'Trusted by teams at'.",
+  },
   fields: {
     background: sectionBackgroundField,
     ...sectionHeaderFields,
@@ -41,6 +45,9 @@ export const Logos: ComponentConfig<LogosProps> = {
       label: "Logos",
       min: 3,
       max: 10,
+      ai: {
+        instructions: "Use 5 to 8 logos.",
+      },
       getItemSummary: (item, i) => item.alt || `Logo #${i}`,
       defaultItemProps: {
         alt: "",
@@ -50,10 +57,17 @@ export const Logos: ComponentConfig<LogosProps> = {
         alt: {
           type: "text",
           label: "Alt text",
+          ai: {
+            instructions: "The name of the organization the logo represents.",
+          },
         },
         imageUrl: {
           type: "text",
           label: "Image URL",
+          ai: {
+            instructions:
+              "Use a placehold.co wordmark for a fictional company, such as https://placehold.co/200x64/transparent/333333?text=Acme&font=montserrat. Change the text (use + for spaces) and optionally the font: montserrat, poppins, oswald, playfair-display, lora, or raleway. Keep the transparent background, since only the letters are shown, in the section's text color.",
+          },
         },
       },
     },

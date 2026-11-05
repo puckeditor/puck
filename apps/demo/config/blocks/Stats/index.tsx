@@ -36,6 +36,9 @@ export type StatsProps = SectionHeaderProps & {
 };
 
 export const Stats: ComponentConfig<StatsProps> = {
+  ai: {
+    instructions: "A page section of key numbers with its own optional header.",
+  },
   fields: {
     layout: {
       type: "select",
@@ -46,6 +49,10 @@ export const Stats: ComponentConfig<StatsProps> = {
         { label: "Bento", value: "bento" },
         { label: "Glass", value: "glass" },
       ],
+      ai: {
+        instructions:
+          "Use 'row' by default. Use 'split' when the numbers need a longer explanation beside them. Use 'bento' to feature one standout number. Use 'glass' over a photo for visual subjects such as cars, travel, food or events.",
+      },
     },
     background: sectionBackgroundField,
     ...sectionHeaderFields,
@@ -54,6 +61,10 @@ export const Stats: ComponentConfig<StatsProps> = {
       label: "Items",
       min: 2,
       max: 4,
+      ai: {
+        instructions:
+          "Prefer 3 or 4 statistics. If the user requests a specific count, use that count. In the bento layout, put the featured statistic first.",
+      },
       getItemSummary: (item) =>
         item.value && item.label ? (
           <>
@@ -71,11 +82,19 @@ export const Stats: ComponentConfig<StatsProps> = {
           type: "text",
           label: "Value",
           contentEditable: true,
+          ai: {
+            instructions:
+              "The number shown large, 3 words or fewer, such as 15K, 50%, $10,000 or 5M kg.",
+          },
         },
         label: {
           type: "text",
           label: "Label",
           contentEditable: true,
+          ai: {
+            instructions:
+              "A label of 3 words or fewer, such as Revenue, Users reached or Costs saved.",
+          },
         },
       },
     },
@@ -85,6 +104,12 @@ export const Stats: ComponentConfig<StatsProps> = {
       objectFields: {
         src: { type: "text", label: "URL" },
         alt: { type: "text", label: "Alt text" },
+      },
+      ai: {
+        bind: "puck:unsplash",
+        instructions:
+          "A photo for the featured tile in the bento layout and the background of the glass layout. Other layouts ignore it.",
+        stream: false,
       },
     },
     backdrop: sectionBackdropField,

@@ -59,6 +59,15 @@ importers:
 
   apps/demo:
     dependencies:
+      '@puckeditor/cloud-client':
+        specifier: 0.9.0-canary.4a0def09
+        version: 0.9.0-canary.4a0def09
+      '@puckeditor/plugin-ai':
+        specifier: 0.9.0-canary.4a0def09
+        version: 0.9.0-canary.4a0def09(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@3.25.76)
+      '@puckeditor/plugin-auth':
+        specifier: 0.9.0-canary.4a0def09
+        version: 0.9.0-canary.4a0def09(@puckeditor/core@packages+core)(react@19.2.6)
       classnames:
         specifier: ^2.3.2
         version: 2.5.1
@@ -2492,8 +2501,23 @@ packages:
   '@puckeditor/cloud-client@0.8.2':
     resolution: {integrity: sha512-AtJxciFsSeZk9Os1EmvG30OCX4im4NV5szmxoZwpzRuK1OIucwDcsZA3tlJdxbB9/GmMkgWmAODcDGl9dWteYQ==}
 
+  '@puckeditor/cloud-client@0.9.0-canary.4a0def09':
+    resolution: {integrity: sha512-cdi+UxT884EcoKR/lIfwdPcPXwI1xu3Jj+AgjQjDZom3ntQhSGw1PeqQqwDFC1OABnEb97jm+wA0H9HezFvZfQ==}
+
   '@puckeditor/plugin-ai@0.8.2':
     resolution: {integrity: sha512-nbf4l3YqeGNKbmnY+1Kih5svXOsyjM0UQelEQk67oBfOv83djjPh8lmXJMFMvqWC0WZqPbr9IIZTN60uJBRX3A==}
+    peerDependencies:
+      '@puckeditor/core': ^0
+      react: ^18.0.0 || ^19.0.0
+
+  '@puckeditor/plugin-ai@0.9.0-canary.4a0def09':
+    resolution: {integrity: sha512-YAIf7heYxn0dzWbcaHkCAauLuuY9Ke8UGhFOhv8Qex+0+hWQ2+CEB+80aRr/rZSslfI7+hN+WcqPJlTZszdb5A==}
+    peerDependencies:
+      '@puckeditor/core': ^0
+      react: ^18.0.0 || ^19.0.0
+
+  '@puckeditor/plugin-auth@0.9.0-canary.4a0def09':
+    resolution: {integrity: sha512-kfr7eQD1iIK4J3YQa05F0RhSdBc33xIa8RaW3xXHbZdoWTPYnWLhGRYqkoeL6juo0rT/X3El5Mn2XFYHlaYBbA==}
     peerDependencies:
       '@puckeditor/core': ^0
       react: ^18.0.0 || ^19.0.0
@@ -11008,6 +11032,8 @@ snapshots:
 
   '@puckeditor/cloud-client@0.8.2': {}
 
+  '@puckeditor/cloud-client@0.9.0-canary.4a0def09': {}
+
   '@puckeditor/plugin-ai@0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@3.25.76)':
     dependencies:
       '@puckeditor/core': link:packages/core
@@ -11027,6 +11053,31 @@ snapshots:
       - '@types/react'
       - supports-color
       - zod
+
+  '@puckeditor/plugin-ai@0.9.0-canary.4a0def09(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@3.25.76)':
+    dependencies:
+      '@puckeditor/core': link:packages/core
+      ai: 6.0.277(zod@3.25.76)
+      domhandler: 6.0.1
+      domutils: 4.0.2
+      html2canvas-pro: 2.4.2
+      htmlparser2: 12.0.0
+      qler: 0.6.2
+      react: 19.2.6
+      react-markdown: 10.1.0(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)
+      react-textarea-autosize: 8.5.9(@types/react@19.2.14)(react@19.2.6)
+      ulid: 3.0.2
+      use-debounce: 9.0.4(react@19.2.6)
+      use-stick-to-bottom: 1.1.4(react@19.2.6)
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
+      - zod
+
+  '@puckeditor/plugin-auth@0.9.0-canary.4a0def09(@puckeditor/core@packages+core)(react@19.2.6)':
+    dependencies:
+      '@puckeditor/core': link:packages/core
+      react: 19.2.6
 
   '@puppeteer/browsers@2.13.2(supports-color@7.2.0)':
     dependencies:

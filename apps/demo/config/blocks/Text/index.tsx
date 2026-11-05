@@ -16,6 +16,10 @@ export type TextProps = WithLayout<{
 }>;
 
 const TextInner: ComponentConfig<TextProps> = {
+  ai: {
+    instructions:
+      "Shows plain text. Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     text: {
       type: "textarea",
@@ -30,6 +34,10 @@ const TextInner: ComponentConfig<TextProps> = {
         { label: "S", value: "s" },
         { label: "M", value: "m" },
       ],
+      ai: {
+        required: false,
+        instructions: "Use 'm' for 20px text or 's' for 16px text.",
+      },
     },
     align: {
       type: "radio",
@@ -44,6 +52,10 @@ const TextInner: ComponentConfig<TextProps> = {
     color: {
       type: "radio",
       label: "Color",
+      ai: {
+        instructions:
+          "Use 'default' for regular text or 'muted' for grey supporting text.",
+      },
       options: [
         { label: "Default", value: "default" },
         { label: "Muted", value: "muted" },
@@ -52,6 +64,11 @@ const TextInner: ComponentConfig<TextProps> = {
     maxWidth: {
       type: "text",
       label: "Max width",
+      ai: {
+        required: false,
+        instructions:
+          "Set a CSS width, such as '916px', to constrain the text. Omit this field to use the 1280px default. An empty string removes the width limit.",
+      },
     },
   },
   renderFields: ({ fields }) => (

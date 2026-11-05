@@ -38,6 +38,10 @@ export type BentoProps = SectionHeaderProps & {
 };
 
 export const Bento: ComponentConfig<BentoProps> = {
+  ai: {
+    instructions:
+      "A page section with a grid of tiles in mixed sizes, led by one large tile, for showcasing highlights, products or places with photos.",
+  },
   fields: {
     background: sectionBackgroundField,
     ...sectionHeaderFields,
@@ -46,6 +50,10 @@ export const Bento: ComponentConfig<BentoProps> = {
       label: "Tiles",
       min: 3,
       max: 5,
+      ai: {
+        instructions:
+          "Use 4 or 5 tiles. The first tile is the largest, so give it a photo.",
+      },
       getItemSummary: (item, i = 0) => item.title || `Tile ${i + 1}`,
       defaultItemProps: {
         title: "Tile",
@@ -57,14 +65,23 @@ export const Bento: ComponentConfig<BentoProps> = {
           type: "text",
           label: "Title",
           contentEditable: true,
+          ai: {
+            instructions: "2 to 5 words.",
+          },
         },
         description: {
           type: "textarea",
           label: "Description",
           contentEditable: true,
+          ai: {
+            instructions: "One short sentence.",
+          },
         },
         icon: {
           ...iconField,
+          ai: {
+            instructions: "Shown only on tiles without a photo.",
+          },
         },
         image: {
           type: "object",
@@ -72,6 +89,11 @@ export const Bento: ComponentConfig<BentoProps> = {
           objectFields: {
             src: { type: "text", label: "URL" },
             alt: { type: "text", label: "Alt text" },
+          },
+          ai: {
+            bind: "puck:unsplash",
+            instructions: "Photo that fills the tile, with the text over it.",
+            stream: false,
           },
         },
       },

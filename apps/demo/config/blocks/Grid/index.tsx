@@ -19,6 +19,10 @@ const CustomSlot = (props: any) => {
 };
 
 export const GridInternal: ComponentConfig<GridProps> = {
+  ai: {
+    instructions:
+      "Lays out children in equal-width columns that stack below 768px. Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     numColumns: {
       type: "number",
@@ -30,6 +34,9 @@ export const GridInternal: ComponentConfig<GridProps> = {
       label: "Gap",
       type: "number",
       min: 0,
+      ai: {
+        instructions: "The gap between children, in pixels.",
+      },
     },
     items: {
       type: "slot",
