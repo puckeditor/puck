@@ -73,6 +73,7 @@ type AutoFieldInternalProps<
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 > = FieldPropsInternalOptional<ValueType, FieldType> & {
   Label?: React.FC<FieldLabelPropsInternal>;
+  trackFocus?: boolean;
 } & Pick<FieldPropsInternal<ValueType, FieldType>, "expanded" | "onToggle">;
 
 function AutoFieldInternal<
@@ -84,7 +85,7 @@ function AutoFieldInternal<
   const readOnly = useAppStore(useShallow((s) => s.selectedItem?.readOnly));
   const nestedFieldContext = useContext(NestedFieldContext);
 
-  const { id, Label = FieldLabelInternal } = props;
+  const { id, Label = FieldLabelInternal, trackFocus = true } = props;
 
   const field = props.field as Field<ValueType>;
   const label = field.label;
@@ -165,6 +166,7 @@ function AutoFieldInternal<
   const onFocus = useCallback(
     (e: React.FocusEvent) => {
       if (
+        trackFocus &&
         mergedProps.name &&
         (e.target.nodeName === "INPUT" || e.target.nodeName === "TEXTAREA")
       ) {
@@ -178,19 +180,22 @@ function AutoFieldInternal<
         });
       }
     },
-    [mergedProps.name]
+    [trackFocus, mergedProps.name]
   );
 
-  const onBlur = useCallback((e: React.FocusEvent) => {
-    if ("name" in e.target) {
-      dispatch({
-        type: "setUi",
-        ui: {
-          field: { focus: null },
-        },
-      });
-    }
-  }, []);
+  const onBlur = useCallback(
+    (e: React.FocusEvent) => {
+      if (trackFocus && "name" in e.target) {
+        dispatch({
+          type: "setUi",
+          ui: {
+            field: { focus: null },
+          },
+        });
+      }
+    },
+    [trackFocus]
+  );
 
   let Children = useMemo(() => {
     if (field.type !== "custom" && field.type !== "slot") {
@@ -293,8 +298,13 @@ function AutoFieldPublicInternal<
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >({
   value,
+  name,
   ...props
-}: FieldProps<FieldType, ValueType> & { value: any; id: string }) {
+}: FieldProps<FieldType, ValueType> & {
+  value: any;
+  id: string;
+  name: string;
+}) {
   const DefaultLabel = useMemo(() => {
     const DefaultLabel = (labelProps: any) => (
       <div
@@ -324,25 +334,27 @@ function AutoFieldPublicInternal<
 
   const onChange = useCallback(
     (value: any) => {
-      if (!props.id) return;
+      if (!name) return;
 
-      fieldStore.setState({ [props.id]: value });
+      fieldStore.setState({ [name]: value });
 
       props.onChange(value);
     },
-    [fieldStore, props.onChange, props.id]
+    [fieldStore, props.onChange, name]
   );
 
   useEffect(() => {
-    if (!props.id) return;
+    if (!name) return;
 
-    fieldStore.setState({ [props.id]: value });
-  }, [props.id, value, fieldStore]);
+    fieldStore.setState({ [name]: value });
+  }, [name, value, fieldStore]);
 
   const internalProps: AutoFieldInternalProps<ValueType, FieldType> = {
     ...props,
+    name,
     onChange,
     Label: DefaultLabel,
+    trackFocus: false,
   };
 
   if (props.field.type === "object") {
@@ -353,19 +365,75 @@ function AutoFieldPublicInternal<
   return <AutoFieldInternal<ValueType, FieldType> {...internalProps} />;
 }
 
+// This map keeps track of active field IDs and their corresponding internal keys to prevent ID collisions across different instances of AutoField components.
+const activeFieldIds = new Map<string, string>();
+
 export function AutoField<
   ValueType = any,
   FieldType extends FieldNoLabel<ValueType> = FieldNoLabel<ValueType>
 >(props: FieldProps<FieldType, ValueType> & { value: any }) {
-  const id = useSafeId();
+  const defaultId = useSafeId();
+  const internalKey = useSafeId();
+  const selectedItemId = useAppStore((s) => s.selectedItem?.props.id);
+
+  const isArray = props.field.type === "array";
+
+  const candidateId = useMemo(() => {
+    // If no ID is provided, use the default safe ID
+    if (!props.id) {
+      return defaultId;
+    }
+
+    // If the field is an array and a selected item ID exists, prefix the provided ID with the selected item ID to ensure uniqueness
+    if (isArray && selectedItemId) {
+      return `${selectedItemId}_${props.id}`;
+    }
+
+    // Otherwise, use the provided ID as is
+    return props.id;
+  }, [props.id, defaultId, isArray, selectedItemId]);
+
+  const currentOwner = props.id ? activeFieldIds.get(candidateId) : undefined;
+  const isColliding = props.id
+    ? currentOwner !== undefined && currentOwner !== internalKey
+    : false;
+
+  // If a collision is detected, fall back to the default safe ID; otherwise, use the candidate ID
+  const resolvedId = isColliding ? defaultId : candidateId;
+
+  // If this instance is the first to claim the candidateId, register it in the activeFieldIds map
+  if (props.id && !isColliding) {
+    activeFieldIds.set(candidateId, internalKey);
+  }
+
+  useEffect(() => {
+    if (isColliding) {
+      console.warn(
+        `Duplicate id "${props.id}" in AutoField. Falling back to generated ID.`
+      );
+    }
+  }, [isColliding, props.id]);
+
+  // Cleanup on unmount: if this instance owns the candidateId, remove it from the registry
+  useEffect(() => {
+    return () => {
+      if (props.id && activeFieldIds.get(candidateId) === internalKey) {
+        activeFieldIds.delete(candidateId);
+      }
+    };
+  }, [props.id, candidateId, internalKey]);
 
   if (props.field.type === "slot") {
     return null;
   }
 
   return (
-    <fieldContextStore.Provider value={{ [id]: props.value }}>
-      <AutoFieldPublicInternal<ValueType, FieldType> {...props} id={id} />
+    <fieldContextStore.Provider value={{ [internalKey]: props.value }}>
+      <AutoFieldPublicInternal<ValueType, FieldType>
+        {...props}
+        id={resolvedId}
+        name={internalKey}
+      />
     </fieldContextStore.Provider>
   );
 }
