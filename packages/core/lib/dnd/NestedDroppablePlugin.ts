@@ -63,6 +63,29 @@ const getZoneId = (candidate: Droppable | undefined) => {
   return id;
 };
 
+/**
+ * Resolve the element to use for a pointer event target.
+ *
+ * Firefox can target pointer events at the Document itself (e.g. the iframe
+ * document while dragging outside the canvas). A Document has no
+ * ownerDocument, so use its root element instead.
+ */
+export const getPointerTargetElement = (
+  target: EventTarget | null
+): HTMLElement | null => {
+  if (!target) return null;
+
+  const node = target as Node;
+
+  if (node.nodeType === Node.DOCUMENT_NODE) {
+    return (node as Document).documentElement;
+  }
+
+  if (!node.ownerDocument) return null;
+
+  return target as HTMLElement;
+};
+
 const BUFFER = 6;
 
 const getPointerCollisions = (
@@ -248,11 +271,13 @@ export const createNestedDroppablePlugin = (
 
       this.registerEffect(() => {
         const handleMove = (event: BubbledPointerEventType | PointerEvent) => {
-          const target = (
+          const target = getPointerTargetElement(
             event instanceof BubbledPointerEvent // Necessary for Firefox
               ? event.originalTarget || event.target
               : event.target
-          ) as HTMLElement;
+          );
+
+          if (!target) return;
 
           const position = new GlobalPosition(target, {
             x: event.clientX,
