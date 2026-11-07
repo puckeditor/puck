@@ -1,4 +1,4 @@
-import { ComponentData, Config } from "../../../types";
+import { ComponentData, Config, Slot } from "../../../types";
 import { mapFields, Mappers } from "../map-fields";
 
 type Props = {
@@ -115,5 +115,57 @@ describe("mapFields", () => {
     );
 
     expect(result.props.nested.title).toBe("mapped:nested.title:undefined");
+  });
+
+  it("correctly maps an array field and nested slot with the same name", () => {
+    type TestProps = {
+      Example: {
+        list: { list?: Slot }[];
+      };
+    };
+
+    const arraySlotConfig: Config<TestProps> = {
+      components: {
+        Example: {
+          fields: {
+            list: {
+              type: "array",
+              arrayFields: {
+                list: { type: "slot" },
+              },
+            },
+          },
+          render: () => <div />,
+        },
+      },
+    };
+
+    const slotMappers: Mappers = {
+      slot: ({ value, propPath }) => ({
+        mappedPath: propPath,
+        content: value,
+      }),
+    };
+
+    const result = mapFields(
+      {
+        type: "Example",
+        props: {
+          id: "abc",
+          list: [{ list: [] }],
+        },
+      },
+      slotMappers,
+      arraySlotConfig
+    );
+
+    expect(result.props.list).toEqual([
+      {
+        list: {
+          mappedPath: "list[0].list",
+          content: [],
+        },
+      },
+    ]);
   });
 });
