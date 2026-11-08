@@ -65,7 +65,7 @@ const getZoneId = (candidate: Droppable | undefined) => {
 
 const BUFFER = 6;
 
-const getPointerCollisions = (
+export const getPointerCollisions = (
   position: GlobalPosition,
   manager: DragDropManager
 ) => {

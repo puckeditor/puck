@@ -17,7 +17,11 @@ export type UseLinePlaceholderApi = {
    * @param manager The drag drop manager instance from dnd-kit.
    * @returns The index of the nearest gap within the zone, or null if not applicable.
    */
-  getTargetIndex: (zone: string, manager: DragDropManager) => number | null;
+  getTargetIndex: (
+    zone: string,
+    manager: DragDropManager,
+    position?: { x: number; y: number }
+  ) => number | null;
   /**
    * Sets the active state of the line placeholder in the editor.
    *
@@ -74,15 +78,16 @@ export const useLinePlaceholder = (
   );
 
   const getTargetIndexForZone = useCallback(
-    (zone: string, manager: DragDropManager) => {
+    (
+      zone: string,
+      manager: DragDropManager,
+      position = manager.dragOperation.position.current
+    ) => {
       const zoneEl = getFrame()?.querySelector(getZoneSelector(zone));
 
       if (!zoneEl) return null;
 
-      const pointerPosition = getFramePointer(
-        zoneEl,
-        manager.dragOperation.position.current
-      );
+      const pointerPosition = getFramePointer(zoneEl, position);
 
       const zoneContentIds = getZoneContentIds(appStore.getState().state, zone);
 
