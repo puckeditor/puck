@@ -5,6 +5,7 @@ import {
   ReactElement,
   ReactNode,
   Ref,
+  RefCallback,
   useContext,
   useMemo,
   useState,
@@ -31,12 +32,12 @@ export const DrawerItemInner = ({
   children?: (props: {
     children: ReactNode;
     name: string;
-    handleRef?: Ref<HTMLElement>;
+    handleRef?: RefCallback<HTMLElement>;
   }) => ReactElement;
   name: string;
   label?: string;
   dragRef?: Ref<any>;
-  handleRef?: Ref<HTMLElement>;
+  handleRef?: RefCallback<HTMLElement>;
   isDragDisabled?: boolean;
 }) => {
   const CustomInner = useMemo(
@@ -85,7 +86,7 @@ const DrawerItemDraggable = ({
   children?: (props: {
     children: ReactNode;
     name: string;
-    handleRef?: Ref<HTMLElement>;
+    handleRef?: RefCallback<HTMLElement>;
   }) => ReactElement;
   name: string;
   label?: string;
@@ -137,7 +138,7 @@ const DrawerItem = ({
   children?: (props: {
     children: ReactNode;
     name: string;
-    handleRef?: Ref<HTMLElement>;
+    handleRef?: RefCallback<HTMLElement>;
   }) => ReactElement;
   id?: string;
   label?: string;
