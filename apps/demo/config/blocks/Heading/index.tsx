@@ -1,17 +1,19 @@
 import React from "react";
 
 import { ComponentConfig } from "@/core/types";
-import { Heading as _Heading } from "@/core/components/Heading";
-import type { HeadingProps as _HeadingProps } from "@/core/components/Heading";
 import { Section } from "../../components/Section";
+import { getClassNameFactory } from "@/core/lib";
+import styles from "./styles.module.css";
 import { WithLayout, withLayout } from "../../components/Layout";
-import { HeadingFields } from "./HeadingFields";
+import { FieldTabs } from "../../components/FieldTabs";
+
+const getClassName = getClassNameFactory("Heading", styles);
 
 export type HeadingProps = WithLayout<{
   align: "left" | "center" | "right";
   text?: string;
-  level?: _HeadingProps["rank"];
-  size: _HeadingProps["size"];
+  level?: "1" | "2" | "3" | "4" | "5" | "6";
+  size: "xxxl" | "xxl" | "xl" | "l" | "m" | "s" | "xs";
 }>;
 
 const sizeOptions = [
@@ -35,21 +37,34 @@ const levelOptions = [
 ];
 
 const HeadingInternal: ComponentConfig<HeadingProps> = {
+  ai: {
+    instructions:
+      "Displays a heading (h1-h6 element). Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     text: {
       type: "textarea",
+      label: "Text",
       contentEditable: true,
     },
     size: {
       type: "select",
+      label: "Size",
       options: sizeOptions,
     },
     level: {
       type: "select",
+      label: "Level",
       options: levelOptions,
+      ai: {
+        required: true,
+        instructions:
+          "Choose an h1-h6 level that follows the page hierarchy. The empty value renders text without a heading tag.",
+      },
     },
     align: {
       type: "radio",
+      label: "Align",
       options: [
         { label: "Left", value: "left" },
         { label: "Center", value: "center" },
@@ -57,7 +72,12 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
       ],
     },
   },
-  renderFields: ({ fields }) => <HeadingFields fields={fields} />,
+  renderFields: ({ fields }) => (
+    <FieldTabs
+      content={[fields.text, fields.level]}
+      appearance={[fields.size, fields.align, fields.layout]}
+    />
+  ),
   defaultProps: {
     align: "left",
     text: "Heading",
@@ -67,13 +87,16 @@ const HeadingInternal: ComponentConfig<HeadingProps> = {
     },
   },
   render: ({ align, text, size, level }) => {
+    const Tag = level ? (`h${level}` as const) : "span";
+
     return (
       <Section>
-        <_Heading size={size} rank={level as any}>
-          <span style={{ display: "block", textAlign: align, width: "100%" }}>
-            {text}
-          </span>
-        </_Heading>
+        <Tag
+          className={getClassName({ [size]: true })}
+          style={{ textAlign: align }}
+        >
+          {text}
+        </Tag>
       </Section>
     );
   },

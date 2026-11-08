@@ -3,11 +3,12 @@ import {
   ComponentConfig,
   DefaultComponentProps,
   ObjectField,
+  SelectField,
 } from "@/core/types";
 import { spacingOptions } from "../../options";
 import { getClassNameFactory } from "@/core/lib";
 
-import LayoutFields from "./LayoutFields";
+import { FieldTabs } from "../FieldTabs";
 import styles from "./styles.module.css";
 
 const getClassName = getClassNameFactory("Layout", styles);
@@ -29,34 +30,66 @@ type LayoutProps = WithLayout<{
   style?: CSSProperties;
 }>;
 
+/** Renders nothing, so a field label can show without an icon */
+const NoIcon = () => null;
+
+/** Field for vertical padding, shared by every component that has one */
+export const verticalPaddingField: SelectField = {
+  type: "select",
+  label: "Vertical padding",
+  options: [{ label: "0px", value: "0px" }, ...spacingOptions],
+  ai: {
+    required: false,
+    instructions:
+      "Vertical padding inside this component. Avoid padding both a parent and its child.",
+  },
+};
+
 export const layoutField: ObjectField<LayoutFieldProps> = {
   type: "object",
+  label: "Layout",
+  // Object fields fall back to a default icon without one
+  labelIcon: <NoIcon />,
+  collapsible: true,
+  defaultExpanded: true,
+  variant: "flush",
   objectFields: {
     spanCol: {
-      label: "Grid Columns",
+      label: "Grid columns",
       type: "number",
       min: 1,
       max: 12,
+      ai: {
+        required: false,
+        instructions:
+          "Applies only when this component is a direct child of a Grid. Do not exceed that Grid's numColumns value.",
+      },
     },
     spanRow: {
-      label: "Grid Rows",
+      label: "Grid rows",
       type: "number",
       min: 1,
       max: 12,
+      ai: {
+        required: false,
+        instructions:
+          "Applies only when this component is a direct child of a Grid. Sets how many rows this component spans. The Grid creates rows automatically as its items wrap.",
+      },
     },
     grow: {
-      label: "Flex Grow",
+      label: "Flex grow",
       type: "radio",
       options: [
-        { label: "true", value: true },
-        { label: "false", value: false },
+        { label: "True", value: true },
+        { label: "False", value: false },
       ],
+      ai: {
+        required: false,
+        instructions:
+          "Applies only when this component is a direct child of a Flex. Use true to fill available space.",
+      },
     },
-    padding: {
-      type: "select",
-      label: "Vertical Padding",
-      options: [{ label: "0px", value: "0px" }, ...spacingOptions],
-    },
+    padding: verticalPaddingField,
   },
 };
 
@@ -108,17 +141,22 @@ export function withLayout<
         ...componentConfig.defaultProps?.layout,
       },
     },
-    // Augment the renderFields with a layout tab
-    renderFields: ({ fields }) => (
-      <LayoutFields
-        fields={fields}
-        AugmentedRenderFields={componentConfig.renderFields}
-      />
-    ),
-    resolveFields: (_, params) => {
+    // Components place the layout field in their own tabs. Otherwise, it goes
+    // under Appearance and the rest under Content
+    renderFields:
+      componentConfig.renderFields ??
+      (({ fields: { layout, ...otherFields } }) => (
+        <FieldTabs content={Object.values(otherFields)} appearance={layout} />
+      )),
+    resolveFields: async (data, params) => {
+      // Let the wrapped component adjust its own fields first
+      const fields = componentConfig.resolveFields
+        ? await componentConfig.resolveFields(data, params)
+        : componentConfig.fields;
+
       if (params.parent?.type === "Grid") {
         return {
-          ...componentConfig.fields,
+          ...fields,
           layout: {
             ...layoutField,
             objectFields: {
@@ -131,7 +169,7 @@ export function withLayout<
       }
       if (params.parent?.type === "Flex") {
         return {
-          ...componentConfig.fields,
+          ...fields,
           layout: {
             ...layoutField,
             objectFields: {
@@ -143,7 +181,7 @@ export function withLayout<
       }
 
       return {
-        ...componentConfig.fields,
+        ...fields,
         layout: {
           ...layoutField,
           objectFields: {

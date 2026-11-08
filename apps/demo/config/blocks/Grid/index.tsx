@@ -3,21 +3,26 @@ import { ComponentConfig, Slot } from "@/core/types";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "@/core/lib";
 import { Section } from "../../components/Section";
-import { withLayout } from "../../components/Layout";
+import { WithLayout, withLayout } from "../../components/Layout";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const getClassName = getClassNameFactory("Grid", styles);
 
-export type GridProps = {
+export type GridProps = WithLayout<{
   numColumns: number;
   gap: number;
   items: Slot;
-};
+}>;
 
 const CustomSlot = (props: any) => {
   return <span {...props} />;
 };
 
 export const GridInternal: ComponentConfig<GridProps> = {
+  ai: {
+    instructions:
+      "Lays out children in equal-width columns that stack below 768px. Don't use this unless asked by the user explicitly.",
+  },
   fields: {
     numColumns: {
       type: "number",
@@ -29,11 +34,28 @@ export const GridInternal: ComponentConfig<GridProps> = {
       label: "Gap",
       type: "number",
       min: 0,
+      ai: {
+        instructions: "The gap between children, in pixels.",
+      },
     },
     items: {
       type: "slot",
+      disallow: [
+        "Hero",
+        "Stats",
+        "Logos",
+        "FeatureGrid",
+        "CTA",
+        "FAQ",
+        "Steps",
+        "FeatureSplit",
+        "Bento",
+      ],
     },
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs appearance={[fields.numColumns, fields.gap, fields.layout]} />
+  ),
   defaultProps: {
     numColumns: 4,
     gap: 24,
@@ -44,7 +66,6 @@ export const GridInternal: ComponentConfig<GridProps> = {
       <Section>
         <Items
           as={CustomSlot}
-          disallow={["Hero", "Stats"]}
           className={getClassName()}
           style={{
             gap,
