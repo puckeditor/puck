@@ -25,12 +25,18 @@ export const DrawerItemInner = ({
   name,
   label,
   dragRef,
+  handleRef,
   isDragDisabled,
 }: {
-  children?: (props: { children: ReactNode; name: string }) => ReactElement;
+  children?: (props: {
+    children: ReactNode;
+    name: string;
+    handleRef?: Ref<HTMLElement>;
+  }) => ReactElement;
   name: string;
   label?: string;
   dragRef?: Ref<any>;
+  handleRef?: Ref<HTMLElement>;
   isDragDisabled?: boolean;
 }) => {
   const CustomInner = useMemo(
@@ -50,7 +56,7 @@ export const DrawerItemInner = ({
       data-testid={dragRef ? `drawer-item:${name}` : ""}
       data-puck-drawer-item
     >
-      <CustomInner name={name}>
+      <CustomInner name={name} handleRef={handleRef}>
         <div className={getClassNameItem("draggableWrapper")}>
           <div className={getClassNameItem("draggable")}>
             <div className={getClassNameItem("name")}>{label ?? name}</div>
@@ -76,7 +82,11 @@ const DrawerItemDraggable = ({
   id,
   isDragDisabled,
 }: {
-  children?: (props: { children: ReactNode; name: string }) => ReactElement;
+  children?: (props: {
+    children: ReactNode;
+    name: string;
+    handleRef?: Ref<HTMLElement>;
+  }) => ReactElement;
   name: string;
   label?: string;
   id: string;
@@ -85,7 +95,7 @@ const DrawerItemDraggable = ({
   const zoneStore = useContext(ZoneStoreContext);
   const dropAnimation = useDropAnimation(zoneStore);
 
-  const { ref } = useDraggable({
+  const { ref, handleRef } = useDraggable({
     id,
     data: { componentType: name },
     disabled: isDragDisabled,
@@ -105,6 +115,7 @@ const DrawerItemDraggable = ({
           name={name}
           label={label}
           dragRef={ref}
+          handleRef={handleRef}
           isDragDisabled={isDragDisabled}
         >
           {children}
@@ -123,7 +134,11 @@ const DrawerItem = ({
   isDragDisabled,
 }: {
   name: string;
-  children?: (props: { children: ReactNode; name: string }) => ReactElement;
+  children?: (props: {
+    children: ReactNode;
+    name: string;
+    handleRef?: Ref<HTMLElement>;
+  }) => ReactElement;
   id?: string;
   label?: string;
   index?: number; // TODO deprecate
