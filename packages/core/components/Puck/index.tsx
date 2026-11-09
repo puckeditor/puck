@@ -56,6 +56,7 @@ import { toComponent } from "../../lib/data/to-component";
 import { Layout } from "./components/Layout";
 import { useSafeId } from "../../lib/use-safe-id";
 import { normalizeIframeConfig } from "../../lib/style-config";
+import { logAgentMessage } from "../../lib/log-agent-message";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -373,6 +374,8 @@ export function Puck<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >(props: PuckProps<UserConfig>) {
+  logAgentMessage();
+
   return (
     <PropsProvider {...props}>
       <PuckProvider {...props}>

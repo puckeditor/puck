@@ -27,6 +27,9 @@
   "private": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "browser": {
+    "@vercel/detect-agent": false
+  },
   "exports": {
     ".": {
       "react-server": {
@@ -135,6 +138,7 @@
     "@tiptap/html": "^3.30.4",
     "@tiptap/pm": "^3.30.4",
     "@tiptap/react": "^3.30.4",
+    "@vercel/detect-agent": "^1.2.7",
     "deep-diff": "^1.0.2",
     "fast-equals": "5.2.2",
     "flat": "^5.0.2",
