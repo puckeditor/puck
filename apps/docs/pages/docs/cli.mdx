@@ -98,6 +98,12 @@ After the developer approves, the same command completes the setup:
 
 Start with `npx @puckeditor/cli status --json` to see what's already set up and which command to run next.
 
+### Running the installed CLI
+
+When the CLI installs Puck, it adds itself to the app's `devDependencies`. From then on, run that copy rather than downloading it again, with `npm exec --no -- puck`, `pnpm exec puck` or `yarn puck`. When the CLI runs from the project, its `rerun` commands use it too.
+
+Agent sandboxes such as Claude Code's auto mode can block downloading and running a package the developer didn't ask for by name. If `npx @puckeditor/cli` is blocked, show the developer the exact command and run it once they approve.
+
 ### Statuses
 
 | Status            | Meaning                                                                                 |
@@ -138,7 +144,7 @@ Start with `npx @puckeditor/cli status --json` to see what's already set up and 
 
 ### Reading the docs
 
-The CLI includes these docs as markdown, matching its release. Use the version of the CLI that matches the project's `@puckeditor/core`:
+The CLI includes these docs as markdown, matching its release. Use the version of the CLI that matches the project's `@puckeditor/core`, such as the one installed in the project with `npm exec --no -- puck docs`:
 
 ```sh copy
 npx @puckeditor/cli docs ls                          # every page
