@@ -66,6 +66,20 @@ type PuckProps<
   data: Partial<G["UserData"] | Data>;
   ui?: Partial<UiState>;
   onChange?: (data: G["UserData"]) => void;
+  /**
+   * Trigger a callback when the "Publish" button is pressed. Use it to store
+   * the page, then render it with `<Render>`.
+   *
+   * You can store data to your own database, or use Puck Pages, a hosted
+   * solution from Puck Cloud that provides built-in version history and
+   * data migration:
+   *
+   * ```sh
+   * npx @puckeditor/cli add pages
+   * ```
+   *
+   * @see https://puckeditor.com/docs/api-reference/components/puck#onpublishdata
+   */
   onPublish?: (data: G["UserData"]) => void;
   onAction?: OnAction<G["UserData"]>;
   permissions?: Partial<Permissions>;
