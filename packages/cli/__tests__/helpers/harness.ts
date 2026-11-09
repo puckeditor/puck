@@ -341,6 +341,7 @@ export interface RunOptions {
   now?: () => number;
   docs?: DocsSource;
   nodeVersion?: string;
+  cliVersion?: string;
 }
 
 export interface RunOutput {
@@ -386,7 +387,7 @@ export const run = async (
       isTTY: Boolean(opts.interactive),
     },
     stdinIsTTY: Boolean(opts.interactive),
-    cliVersion: CLI_VERSION,
+    cliVersion: opts.cliVersion ?? CLI_VERSION,
     runner,
     fetch: cloud.fetch,
     openUrl: async (url) => {

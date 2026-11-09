@@ -23,6 +23,11 @@ describe("add cloud", () => {
         args: ["install", "@puckeditor/cloud-client@^0"],
         cwd: root,
       },
+      {
+        command: "npm",
+        args: ["install", "-D", "@puckeditor/cli@^0.23.0"],
+        cwd: root,
+      },
     ]);
 
     const route = "app/api/puck/[...all]/route.ts";
@@ -112,6 +117,42 @@ describe("add cloud", () => {
     expect(again.runner.calls).toEqual([]);
   });
 
+  it("doesn't install the CLI again when the app already has it", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const pkg = JSON.parse(read(root, "package.json"));
+    pkg.devDependencies = {
+      ...pkg.devDependencies,
+      "@puckeditor/cli": "^0.23.0",
+    };
+    fs.writeFileSync(path.join(root, "package.json"), JSON.stringify(pkg));
+
+    const { json, runner } = await run(
+      ["add", "cloud", "--yes", "--json", "--api-key", KEY],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(runner.calls.map((c) => c.args)).toEqual([
+      ["install", "@puckeditor/cloud-client@^0"],
+    ]);
+  });
+
+  it("installs a prerelease CLI at its exact version", async () => {
+    const root = tmpProject({ recipe: "next" });
+
+    const { json, runner } = await run(
+      ["add", "cloud", "--yes", "--json", "--api-key", KEY],
+      { cwd: root, cliVersion: "0.24.0-canary.abc" }
+    );
+
+    expect(json.status).toBe("success");
+    expect(runner.calls[1].args).toEqual([
+      "install",
+      "-D",
+      "@puckeditor/cli@0.24.0-canary.abc",
+    ]);
+  });
+
   it("adds the editor first when Puck isn't installed", async () => {
     const root = tmpProject({ recipe: "next" });
     // Strip Puck from a copy of the recipe
@@ -127,7 +168,7 @@ describe("add cloud", () => {
     );
 
     expect(json.status).toBe("success");
-    expect(runner.calls).toHaveLength(1);
+    expect(runner.calls).toHaveLength(2);
     expect(runner.calls[0].args).toEqual([
       "install",
       "@puckeditor/core@^0.23.0",
