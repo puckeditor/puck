@@ -301,6 +301,18 @@ describe("init", () => {
 });
 
 describe("Puck Cloud login (connect flow)", () => {
+  it("re-runs the project's installed CLI when it's running from there", async () => {
+    const root = tmpProject({ recipe: "next" });
+
+    const { json } = await run(["init", "--yes", "--json", "--ai"], {
+      cwd: root,
+      env: { HOME: path.join(root, "..", "home") },
+      invocation: "pnpm exec puck",
+    });
+
+    expect(json.actions[0].rerun).toBe("pnpm exec puck init --yes --json --ai");
+  });
+
   it("returns a browser_login action, then completes on re-run after approval", async () => {
     const root = tmpProject({ recipe: "next" });
     const cloud = new FakeCloud();

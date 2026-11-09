@@ -17,6 +17,8 @@ export interface CliDeps {
   stderr: OutputStream;
   stdinIsTTY: boolean;
   cliVersion: string;
+  /** How to run the CLI from the project, when it's installed there, e.g. `pnpm exec puck` */
+  invocation?: string;
   runner: CommandRunner;
   fetch: typeof fetch;
   openUrl(url: string): Promise<boolean>;
