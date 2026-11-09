@@ -27,6 +27,9 @@
   "private": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "@puckeditor/core": "./bin/cli.mjs"
+  },
   "browser": {
     "@vercel/detect-agent": false
   },
@@ -79,6 +82,7 @@
     "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
+    "bin",
     "dist",
     "CHANGELOG.md",
     "CLAUDE.md"
@@ -119,6 +123,7 @@
     "@dnd-kit/helpers": "0.4.0",
     "@dnd-kit/react": "0.4.0",
     "@dnd-kit/state": "0.4.0",
+    "@puckeditor/cli": "0.24.0-canary.fd916921",
     "@radix-ui/react-popover": "^1.1.15",
     "@tanstack/react-virtual": "^3.13.9",
     "@tiptap/core": "^3.30.4",

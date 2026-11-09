@@ -75,7 +75,7 @@ type PuckProps<
    * data migration:
    *
    * ```sh
-   * npx @puckeditor/cli add pages
+   * npx @puckeditor/core add pages
    * ```
    *
    * @see https://puckeditor.com/docs/api-reference/components/puck#onpublishdata

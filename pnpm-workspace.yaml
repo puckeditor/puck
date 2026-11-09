@@ -46,3 +46,4 @@ minimumReleaseAgeExclude:
   - '@puckeditor/cloud-client@0.9.0-canary.3e73f35a || 0.9.0-canary.4a0def09'
   - '@puckeditor/plugin-ai@0.9.0-canary.3e73f35a || 0.9.0-canary.4a0def09'
   - '@puckeditor/plugin-auth@0.9.0-canary.3e73f35a || 0.9.0-canary.4a0def09'
+  - '@puckeditor/cli@0.24.0-canary.fd916921'
