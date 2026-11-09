@@ -71,7 +71,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts && cp CLAUDE.package.md dist/CLAUDE.md",
     "test": "jest",
     "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
     "prepack": "cp CLAUDE.package.md CLAUDE.md",
