@@ -34,7 +34,7 @@ Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-o
 Run the [Puck CLI](https://puckeditor.com/docs/cli):
 
 ```sh
-npx @puckeditor/cli init
+npx @puckeditor/cli@0.24.0-canary.fd916921 init
 ```
 
 <details>
@@ -72,7 +72,7 @@ const config = {
 // Describe the initial data
 const initialData = {};
 
-// Store pages in your own database, or run `npx @puckeditor/cli add pages`
+// Store pages in your own database, or run `npx @puckeditor/cli@0.24.0-canary.fd916921 add pages`
 // to store, version and publish them with Puck Pages
 const save = (data) => {};
 
@@ -111,7 +111,7 @@ Puck Cloud is free to start with, and scales with usage.
 [Puck Pages](#) is a hosted page store built for Puck, providing version history and data migrations.
 
 ```sh
-npx @puckeditor/cli add pages
+npx @puckeditor/cli@0.24.0-canary.fd916921 add pages
 ```
 
 Or [set it up manually](https://puckeditor.com/docs/…).
@@ -121,7 +121,7 @@ Or [set it up manually](https://puckeditor.com/docs/…).
 [Puck Auth](#) provides managed authentication for Puck, allowing users to sign-in with a Puck Cloud account.
 
 ```sh
-npx @puckeditor/cli add auth
+npx @puckeditor/cli@0.24.0-canary.fd916921 add auth
 ```
 
 Or [set it up manually](https://puckeditor.com/docs/…).
@@ -131,7 +131,7 @@ Or [set it up manually](https://puckeditor.com/docs/…).
 [Puck AI](https://puckeditor.com/docs/ai/overview) is an AI agent for Puck for generating interfaces directly from the editor.
 
 ```sh
-npx @puckeditor/cli add ai
+npx @puckeditor/cli@0.24.0-canary.fd916921 add ai
 ```
 
 Or [set it up manually](https://puckeditor.com/docs/…).
