@@ -74,11 +74,14 @@
     "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
     "test": "jest",
     "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
+    "prepack": "cp CLAUDE.package.md CLAUDE.md",
+    "postpack": "rm CLAUDE.md",
     "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
     "dist",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "CLAUDE.md"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
