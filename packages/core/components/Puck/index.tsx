@@ -56,7 +56,6 @@ import { toComponent } from "../../lib/data/to-component";
 import { Layout } from "./components/Layout";
 import { useSafeId } from "../../lib/use-safe-id";
 import { normalizeIframeConfig } from "../../lib/style-config";
-import { logAgentMessage } from "../../lib/log-agent-message";
 
 type PuckProps<
   UserConfig extends Config = Config,
@@ -370,12 +369,15 @@ function PuckProvider<
   );
 }
 
+/**
+ * Render the Puck editor for your `config` and `data`.
+ *
+ * @see https://puckeditor.com/docs/api-reference/components/puck
+ */
 export function Puck<
   UserConfig extends Config = Config,
   G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
 >(props: PuckProps<UserConfig>) {
-  logAgentMessage();
-
   return (
     <PropsProvider {...props}>
       <PuckProvider {...props}>

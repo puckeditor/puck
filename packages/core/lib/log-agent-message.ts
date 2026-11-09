@@ -1,7 +1,7 @@
 let hasLogged = false;
 
 /**
- * Point AI coding agents to the README when they render Puck. Agents are
+ * Point AI coding agents to the README when they import Puck. Agents are
  * detected by their environment variables, so this only runs on the server.
  */
 export const logAgentMessage = () => {
