@@ -71,14 +71,17 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts && cp AGENTS.package.md dist/CLAUDE.md && cp AGENTS.package.md dist/AGENTS.md",
     "test": "jest",
     "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
+    "prepack": "cp AGENTS.package.md CLAUDE.md",
+    "postpack": "rm CLAUDE.md",
     "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
     "dist",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "CLAUDE.md"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
