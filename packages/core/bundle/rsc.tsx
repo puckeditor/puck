@@ -1,3 +1,7 @@
+import { logAgentMessage } from "../lib/log-agent-message";
+
+logAgentMessage();
+
 export { Render } from "../components/ServerRender";
 
 export * from "../lib/resolve-all-data";

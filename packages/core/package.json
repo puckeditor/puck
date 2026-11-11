@@ -27,6 +27,12 @@
   "private": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "@puckeditor/core": "./bin/cli.mjs"
+  },
+  "browser": {
+    "@vercel/detect-agent": false
+  },
   "exports": {
     ".": {
       "react-server": {
@@ -68,14 +74,18 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts && cp AGENTS.package.md dist/CLAUDE.md && cp AGENTS.package.md dist/AGENTS.md",
     "test": "jest",
     "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
+    "prepack": "cp AGENTS.package.md CLAUDE.md",
+    "postpack": "rm CLAUDE.md",
     "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
+    "bin",
     "dist",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "CLAUDE.md"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
@@ -113,6 +123,7 @@
     "@dnd-kit/helpers": "0.4.0",
     "@dnd-kit/react": "0.4.0",
     "@dnd-kit/state": "0.4.0",
+    "@puckeditor/cli": "0.24.0-canary.fd916921",
     "@radix-ui/react-popover": "^1.1.15",
     "@tanstack/react-virtual": "^3.13.9",
     "@tiptap/core": "^3.30.4",
@@ -135,6 +146,7 @@
     "@tiptap/html": "^3.30.4",
     "@tiptap/pm": "^3.30.4",
     "@tiptap/react": "^3.30.4",
+    "@vercel/detect-agent": "^1.2.7",
     "deep-diff": "^1.0.2",
     "fast-equals": "5.2.2",
     "flat": "^5.0.2",
