@@ -6,7 +6,6 @@ settings:
 
 overrides:
   tar: 7.5.21
-  tmp: 0.2.7
   lerna>js-yaml: 4.3.1
   postcss: ^8.5.23
   axios: ^1.18.0
