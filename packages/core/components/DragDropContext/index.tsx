@@ -25,7 +25,13 @@ import { DragDropProvider } from "@dnd-kit/react";
 
 import { useAppStore, useAppStoreApi } from "../../store";
 import { getItem } from "../../lib/data/get-item";
-import { createNestedDroppablePlugin } from "../../lib/dnd/NestedDroppablePlugin";
+import {
+  createNestedDroppablePlugin,
+  findDeepestCandidate,
+  getPointerCollisions,
+} from "../../lib/dnd/NestedDroppablePlugin";
+import { GlobalPosition } from "../../lib/global-position";
+import type { BubbledPointerEventType } from "../../lib/bubble-pointer-event";
 import { prepareCommitFlip } from "../../lib/dnd/flip-commit";
 import { resolveDndMode } from "../../lib/dnd/resolve-dnd-mode";
 import { getZoneContentIds } from "../../lib/get-zone-content-ids";
@@ -375,6 +381,7 @@ const DragDropContextClient = ({
         plugins={plugins}
         sensors={sensors}
         onDragEnd={(event, manager) => {
+          cancelDb();
           stopLinePlaceholderScrollTracking();
 
           const entryEl = getFrame()?.querySelector("[data-puck-entry]");
@@ -400,18 +407,65 @@ const DragDropContextClient = ({
           // drags the source stays in its original zone, so the preview key
           // no longer matches the source's zone. Ghost previews only pin the
           // item visually and never describe the drop position.
-          const thisPreview: Preview | null =
+          let finalPreview: Preview | null =
             Object.values(previewIndex).find(
               (preview) => preview?.props.id === source.id && !preview.ghost
             ) ?? null;
+
+          let canceled = event.canceled || target?.type === "void";
+          if (
+            !event.canceled &&
+            event.nativeEvent &&
+            "clientX" in event.nativeEvent
+          ) {
+            const pointerEvent = event.nativeEvent as BubbledPointerEventType;
+            const position = new GlobalPosition(
+              (pointerEvent.originalTarget || pointerEvent.target) as Element,
+              { x: pointerEvent.clientX, y: pointerEvent.clientY }
+            );
+            const finalZone = findDeepestCandidate(position, manager).zone;
+            const isStatic =
+              finalPreview?.linePlaceholder ||
+              resolveDndMode(behavior, {
+                isNewComponent: dragMode.current === "new",
+                isDraggingBetweenSlots:
+                  initialSelector.current?.zone !== finalZone,
+                isDraggingFromHandle: zoneStore.getState().draggingFromHandle,
+              }) === "static";
+            if (isStatic) {
+              const finalIndex = finalZone
+                ? getLinePlaceholderTargetIndex(
+                    finalZone,
+                    manager,
+                    position.global
+                  )
+                : null;
+              canceled =
+                !getPointerCollisions(position, manager).length ||
+                !finalZone ||
+                finalZone === "void" ||
+                finalIndex === null;
+              if (!canceled && finalZone && finalIndex !== null) {
+                finalPreview = {
+                  ...finalPreview,
+                  componentType: source.data.componentType,
+                  type: dragMode.current === "new" ? "insert" : "move",
+                  props: finalPreview?.props || { id: source.id.toString() },
+                  element: finalPreview?.element,
+                  zone: finalZone,
+                  index: finalIndex,
+                  linePlaceholder: true,
+                };
+              }
+            }
+          }
+          const thisPreview = finalPreview;
 
           // Capture sibling positions now, before dnd-kit tears the drag
           // state down, so the slide animations measure from what's on
           // screen at the moment of drop
           const playCommitFlip =
-            !event.canceled &&
-            target?.type !== "void" &&
-            thisPreview?.linePlaceholder
+            !canceled && thisPreview?.linePlaceholder
               ? prepareCommitFlip({
                   zones: initialSelector.current
                     ? [initialSelector.current.zone, thisPreview.zone]
@@ -438,7 +492,7 @@ const DragDropContextClient = ({
             });
 
             // Tidy up cancellation
-            if (event.canceled || target?.type === "void") {
+            if (canceled) {
               zoneStore.setState({ previewIndex: {} });
 
               dragListeners.dragend?.forEach((fn) => {
@@ -512,14 +566,16 @@ const DragDropContextClient = ({
           };
 
           // Delay insert until animation has finished
-          let dispose: () => void | undefined;
-
-          dispose = effect(() => {
-            if (source.status === "idle") {
-              onAnimationEnd();
-              dispose?.();
-            }
-          });
+          if (source.status === "idle") {
+            onAnimationEnd();
+          } else {
+            const dispose = effect(() => {
+              if (source.status === "idle") {
+                dispose();
+                onAnimationEnd();
+              }
+            });
+          }
         }}
         onDragMove={(event, manager) => {
           // Keep the line in the gap nearest the pointer as it moves within
