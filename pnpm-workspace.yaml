@@ -20,7 +20,6 @@ allowBuilds:
 # Security pins for vulnerable transitive deps. Translated from main's yarn
 # `resolutions` (pnpm ignores `resolutions`); nested selectors use `>`.
 overrides:
-  ws: "^8.21.0" # GHSA-96hv-2xvq-fx4p (via happy-dom/@tiptap/html in @puckeditor/core runtime)
   yaml: ">=2.8.3"
   tar: "7.5.21"
   form-data: "4.0.6"
