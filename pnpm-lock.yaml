@@ -230,9 +230,6 @@ importers:
       '@tiptap/react':
         specifier: ^3.30.4
         version: 3.31.3(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.3(@tiptap/pm@3.31.3))(@tiptap/pm@3.31.3)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      deep-diff:
-        specifier: ^1.0.2
-        version: 1.0.2
       fast-equals:
         specifier: 5.2.2
         version: 5.2.2
@@ -270,9 +267,6 @@ importers:
       '@testing-library/react':
         specifier: ^16.1.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@types/deep-diff':
-        specifier: ^1.0.3
-        version: 1.0.5
       '@types/flat':
         specifier: ^5.0.5
         version: 5.0.5
@@ -3393,9 +3387,6 @@ packages:
   '@types/debug@4.1.13':
     resolution: {integrity: sha512-KSVgmQmzMwPlmtljOomayoR89W4FynCAi3E8PPs7vmDVPe84hT+vGPKkJfThkmXs0x0jAaa9U8uW8bbfyS2fWw==}
 
-  '@types/deep-diff@1.0.5':
-    resolution: {integrity: sha512-PQyNSy1YMZU1hgZA5tTYfHPpUAo9Dorn1PZho2/budQLfqLu3JIP37JAavnwYpR1S2yFZTXa3hxaE4ifGW5jaA==}
-
   '@types/estree-jsx@1.0.5':
     resolution: {integrity: sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==}
 
@@ -4759,10 +4750,6 @@ packages:
     peerDependenciesMeta:
       babel-plugin-macros:
         optional: true
-
-  deep-diff@1.0.2:
-    resolution: {integrity: sha512-aWS3UIVH+NPGCD1kki+DCU9Dua032iSsO43LqQpcs4R3+dVv7tX0qBGjiVHJHjplsoUM2XRO/KB92glqc68awg==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -11958,8 +11945,6 @@ snapshots:
     dependencies:
       '@types/ms': 2.1.0
 
-  '@types/deep-diff@1.0.5': {}
-
   '@types/estree-jsx@1.0.5':
     dependencies:
       '@types/estree': 1.0.9
@@ -13411,8 +13396,6 @@ snapshots:
   dedent@1.7.2(babel-plugin-macros@3.1.0):
     optionalDependencies:
       babel-plugin-macros: 3.1.0
-
-  deep-diff@1.0.2: {}
 
   deep-is@0.1.4: {}
 
