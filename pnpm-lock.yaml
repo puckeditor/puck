@@ -164,6 +164,9 @@ importers:
       '@dnd-kit/state':
         specifier: 0.4.0
         version: 0.4.0
+      '@puckeditor/cli':
+        specifier: 0.24.0-canary.fd916921
+        version: 0.24.0-canary.fd916921(@types/node@20.19.41)
       '@radix-ui/react-popover':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -2522,6 +2525,11 @@ packages:
 
   '@preact/signals-core@1.14.2':
     resolution: {integrity: sha512-RZHdBj9ZF4n40Rp4jS052EHHjBWf96P9oNdXPfhQTovCuWY9iQn3Gq+gOTJSgBO9A/JBuPfMOWsSX/lIU9Pc/A==}
+
+  '@puckeditor/cli@0.24.0-canary.fd916921':
+    resolution: {integrity: sha512-mYGN3XKYrGhQ6qBRPMmZaz/UklvbHn9obGbu9/YYqnILIrazi7gk4CTPJAm1vMytDQCSsxPdjL5zI7zFZrpxRQ==}
+    engines: {node: '>=20.0.0'}
+    hasBin: true
 
   '@puckeditor/cloud-client@0.8.2':
     resolution: {integrity: sha512-AtJxciFsSeZk9Os1EmvG30OCX4im4NV5szmxoZwpzRuK1OIucwDcsZA3tlJdxbB9/GmMkgWmAODcDGl9dWteYQ==}
@@ -11063,6 +11071,20 @@ snapshots:
   '@posthog/types@1.412.4': {}
 
   '@preact/signals-core@1.14.2': {}
+
+  '@puckeditor/cli@0.24.0-canary.fd916921(@types/node@20.19.41)':
+    dependencies:
+      '@babel/parser': 7.29.3
+      '@inquirer/checkbox': 4.3.2(@types/node@20.19.41)
+      '@inquirer/confirm': 5.1.21(@types/node@20.19.41)
+      '@inquirer/input': 4.3.1(@types/node@20.19.41)
+      '@inquirer/password': 4.0.23(@types/node@20.19.41)
+      '@inquirer/select': 4.4.2(@types/node@20.19.41)
+      picocolors: 1.1.1
+      tinyglobby: 0.2.16
+      yaml: 2.9.0
+    transitivePeerDependencies:
+      - '@types/node'
 
   '@puckeditor/cloud-client@0.8.2': {}
 
