@@ -11,7 +11,7 @@
 
 _The visual editor for React_
 
-[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=docs_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ) • [Contributing](https://github.com/puckeditor/puck/blob/main/CONTRIBUTING.md)
+[Documentation](https://puckeditor.com/docs?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=docs_link) • [Puck AI](https://puckeditor.com/docs/ai/overview?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=ai_link) • [Demo](https://demo.puckeditor.com/edit?utm_source=readme&utm_medium=code&utm_campaign=repo&utm_contents=demo_link) • [Discord](https://discord.gg/V9mDAhuxyZ)
 
 ⭐️ Enjoying Puck? Please [leave a star](https://github.com/puckeditor/puck)!
 
@@ -23,21 +23,21 @@ _The visual editor for React_
 
 ## What is Puck?
 
-Puck is a modular, open-source visual editor for React.js. You can use Puck to build custom drag-and-drop experiences with your own application and React components.
+Puck is an open-source visual editor for React. Build drag-and-drop interfaces with your own components.
 
-Because Puck is just a React component, it plays well with all React.js environments, including Next.js. You own your data and there’s no vendor lock-in.
+Embed Puck as a React component in your existing application. You own your components and data, with no vendor lock-in.
 
-Puck is also [licensed under MIT](https://github.com/puckeditor/puck?tab=MIT-1-ov-file#readme), making it suitable for both internal systems and commercial applications.
+Puck's [MIT license](https://github.com/puckeditor/puck?tab=MIT-1-ov-file#readme) permits internal and commercial use.
 
-## Quick start
+## Quick Start
 
-Install the package:
+### 1. Install the package
 
 ```sh
-npm i @puckeditor/core --save # or npx create-puck-app my-app
+npm i @puckeditor/core --save
 ```
 
-Render the editor:
+### 2. Render the editor
 
 ```jsx
 // Editor.jsx
@@ -62,7 +62,7 @@ const config = {
 // Describe the initial data
 const initialData = {};
 
-// Save the data to your database
+// Save pages to your backend (see step 4)
 const save = (data) => {};
 
 // Render Puck editor
@@ -71,7 +71,7 @@ export function Editor() {
 }
 ```
 
-Render the page:
+### 3. Render the page
 
 ```jsx
 // Page.jsx
@@ -82,18 +82,45 @@ export function Page() {
 }
 ```
 
-## Recipes
+### 4. Choose a backend (optional)
 
-Use `create-puck-app` to quickly spin up a a pre-configured app based on our provided [recipes](https://github.com/puckeditor/puck/tree/main/recipes):
+Puck is designed to integrate into your existing backend. If you don't already have one or are building a new app, consider Puck Cloud.
+
+## Puck Cloud
+
+Puck Cloud is our modular, hosted backend for Puck with a versioned page database, managed authentication, and much more. It's best for when you have no existing backend or database, and is free to start.
+
+To configure it, run the Puck CLI, and select the modules you require:
 
 ```sh
-npx create-puck-app my-app
+npx @puckeditor/core init
 ```
 
-Available recipes include:
+### Pages
 
-- [**next**](https://github.com/puckeditor/puck/tree/main/recipes/next): Next.js example, using App Router and static page generation
-- [**react-router**](https://github.com/puckeditor/puck/tree/main/recipes/react-router): React Router v7 app example, using dynamic routes to create pages at any level
+[Puck Pages](#) is a hosted page store built for Puck, providing version history and data migrations.
+
+```sh
+npx @puckeditor/core add pages
+```
+
+### Auth
+
+[Puck Auth](#) provides managed authentication for Puck, allowing users to sign-in with a Puck Cloud account.
+
+```sh
+npx @puckeditor/core add auth
+```
+
+### AI
+
+[Puck AI](https://puckeditor.com/docs/ai/overview) is an AI agent for Puck for generating interfaces directly from the editor.
+
+```sh
+npx @puckeditor/core add ai
+```
+
+Or [set it up manually](https://puckeditor.com/docs/…).
 
 ## Community
 
@@ -103,8 +130,6 @@ Available recipes include:
 ## Get support
 
 If you have any questions about Puck, please open a [GitHub issue](https://github.com/puckeditor/puck/issues) or join us on [Discord](https://discord.gg/D9e4E3MQVZ).
-
-Or [book a discovery call](https://app.cal.com/chrisvxd/puck-enquiry/) for hands-on support and consultancy.
 
 ## License
 
