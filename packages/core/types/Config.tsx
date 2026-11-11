@@ -63,14 +63,14 @@ type ComponentConfigInternal<
     data: DataShape,
     params: {
       changed: Partial<Record<keyof FieldProps, boolean> & { id: string }>;
-      fields: Fields<FieldProps>;
-      lastFields: Fields<FieldProps>;
+      fields: Fields<FieldProps, UserField>;
+      lastFields: Fields<FieldProps, UserField>;
       lastData: DataShape | null;
       metadata: ComponentMetadata;
       appState: AppState;
       parent: ComponentData | null;
     }
-  ) => Promise<Fields<FieldProps>> | Fields<FieldProps>;
+  ) => Promise<Fields<FieldProps, UserField>> | Fields<FieldProps, UserField>;
   resolveData?: (
     data: DataShape,
     params: {
