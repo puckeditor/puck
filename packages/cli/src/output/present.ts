@@ -36,6 +36,12 @@ const actionLines = (action: RequiredAction): string[] => {
         `    and confirm the code ${pc.bold(action.userCode)}`
       );
       break;
+    case "claim_project":
+      lines.push(
+        `    Open ${pc.cyan(action.url)}`,
+        `    before ${new Date(action.expiresAt).toLocaleString()}`
+      );
+      break;
     case "provide_api_key":
       lines.push(`    ${action.instructions}`);
       break;
