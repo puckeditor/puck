@@ -224,7 +224,7 @@ Each command sends one event to Puck Cloud with:
 - The framework and its major version, the package manager, the `--backend` choice, whether the project is in a monorepo, and whether the Puck editor, Puck Cloud and Puck AI are set up
 - A random ID, stored in `~/.config/puck/telemetry.json`
 
-It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys. When you log in to Puck Cloud with `connect`, the random ID is linked to your account.
+It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys. When you log in to Puck Cloud with `connect`, the random ID is linked to your account. Logging in isn't telemetry: `connect` also sends your project's name and your computer's hostname, so the approval page can show what's connecting and name a new Puck Cloud project after your app.
 
 To turn telemetry off, run:
 
@@ -233,3 +233,5 @@ npx @puckeditor/cli telemetry disable
 ```
 
 Or set `PUCK_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` in your environment. `telemetry status` shows whether it's on, and `PUCK_TELEMETRY_DEBUG=1` prints each event instead of sending it.
+
+Coding agents: leave this to the developer. Don't turn telemetry off unless they ask.
