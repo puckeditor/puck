@@ -454,10 +454,24 @@ export const resolveCredential = async (
       "How do you want to connect to Puck Cloud?",
       [
         { value: "login", name: "Log in with the browser (recommended)" },
+        // `connect` replaces the key, often for a branch, so it always logs in
+        ...(fresh
+          ? []
+          : [
+              {
+                value: "unclaimed",
+                name: "Start without an account (claim it within 72 hours)",
+              },
+            ]),
         { value: "paste", name: "Paste an existing API key" },
       ]
     );
-    if (method === "login") {
+    if (method === "unclaimed") {
+      const started = await startUnclaimed(rc, info);
+      if (started?.kind === "resolved") return { ...started, warnings };
+      rc.log("Couldn't start without an account. Log in instead.");
+    }
+    if (method === "login" || method === "unclaimed") {
       const connected = await connectInteractive(rc, info);
       if (connected) return { ...connected, warnings };
       rc.log("Falling back to pasting an API key.");

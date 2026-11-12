@@ -121,6 +121,49 @@ describe("interactive", () => {
     expect(read(root, ".env.local")).toBe("PUCK_API_KEY=sk-valid-key\n");
   });
 
+  it("starts without an account and shows the link to claim it", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    cloud.claimable = true;
+    const { prompter } = scripted([true, "unclaimed"]);
+
+    const { code, stdout, stderr } = await run(["add", "cloud"], {
+      cwd: root,
+      cloud,
+      interactive: true,
+      prompter,
+    });
+
+    expect(code).toBe(0);
+    expect(read(root, ".env.local")).toBe(
+      `PUCK_API_KEY=${cloud.claimableKey}\n`
+    );
+    expect(stdout + stderr).toContain("/claim#token=claim-token-SENTINEL");
+    expect(stdout + stderr).not.toContain(cloud.claimableKey);
+  });
+
+  it("logs in when Puck Cloud can't start without an account", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    const original = cloud.fetch;
+    cloud.fetch = async (input, init) => {
+      if (String(input).endsWith("/token")) cloud.approveAll();
+      return original(input, init);
+    };
+    const { prompter } = scripted([true, "unclaimed"]);
+
+    const { code, stderr } = await run(["add", "cloud"], {
+      cwd: root,
+      cloud,
+      interactive: true,
+      prompter,
+    });
+
+    expect(stderr).toContain("Couldn't start without an account");
+    expect(code).toBe(0);
+    expect(read(root, ".env.local")).toBe(`PUCK_API_KEY=${cloud.mintedKey}\n`);
+  });
+
   it("changes nothing when the plan is declined", async () => {
     const root = tmpProject({ recipe: "next" });
     const before = treeSnapshot(root);
