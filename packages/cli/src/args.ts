@@ -133,7 +133,8 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     if (!COMMANDS.includes(first as CommandName)) {
       throw new CliError(
         "PUCK-CLI-UNKNOWN-COMMAND",
-        `Unknown command "${first}". Run \`${CANONICAL_INVOCATION} --help\` to see available commands.`
+        `Unknown command "${first}". Run \`${CANONICAL_INVOCATION} --help\` to see available commands.`,
+        { command: first }
       );
     }
     command = first as CommandName;
