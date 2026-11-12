@@ -177,11 +177,15 @@ export const runConnect = async (rc: RunContext): Promise<CommandResult> => {
     .sort();
 
   const pm = verifiedCtx.packageManager.name;
-  const cdPrefix = root === base ? "" : `cd ${displayPath(base, root)} && `;
+  const devSteps = [
+    ...(root === base ? [] : [`cd ${displayPath(base, root)}`]),
+    `${pm} ${pm === "npm" ? "run " : ""}dev`,
+  ];
   result.nextSteps = cloudReady
     ? [
         "# Restart the dev server so it picks up the new key",
-        `${cdPrefix}${pm} ${pm === "npm" ? "run " : ""}dev`,
+        // Windows PowerShell 5.1 has no `&&`
+        ...(rc.deps.platform === "win32" ? devSteps : [devSteps.join(" && ")]),
       ]
     : [`${CANONICAL_INVOCATION} add cloud${where}`];
 

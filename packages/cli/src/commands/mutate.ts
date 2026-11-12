@@ -416,10 +416,14 @@ export const runMutation = async (
   const devCommand = `${verifiedCtx.packageManager.name} ${
     verifiedCtx.packageManager.name === "npm" ? "run " : ""
   }dev`;
-  const cdPrefix = root === base ? "" : `cd ${displayPath(base, root)} && `;
+  const devSteps = [
+    ...(root === base ? [] : [`cd ${displayPath(base, root)}`]),
+    devCommand,
+  ];
   result.nextSteps = [
     ...(input.notes ?? []).map((n) => `# ${n}`),
-    `${cdPrefix}${devCommand}`,
+    // Windows PowerShell 5.1 has no `&&`
+    ...(rc.deps.platform === "win32" ? devSteps : [devSteps.join(" && ")]),
     `# then open ${adapterFor(verifiedCtx.framework ?? ctx.framework!).devUrl}`,
   ];
 
