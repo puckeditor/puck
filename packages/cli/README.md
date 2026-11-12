@@ -11,8 +11,10 @@ npx @puckeditor/cli init
 For coding agents:
 
 ```sh
-npx @puckeditor/cli init --yes --json --ai --pages --auth  # or --editor-only
+npx @puckeditor/cli init --yes --json
 ```
+
+`init` returns a `choose_capabilities` action. Ask the developer which to include rather than choosing for them.
 
 Other commands:
 

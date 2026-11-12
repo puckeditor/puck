@@ -183,19 +183,22 @@ describe("init with Puck AI", () => {
     expect(cloud.networkCalls).toBe(0);
   });
 
-  it("rejects the rerun placeholder instead of asking again", async () => {
-    const root = tmpProject({ tree: nextMinimal() });
-    const before = treeSnapshot(root);
-    const { json, code } = await run(
-      ["init", "--yes", "--json", "<--ai|--no-ai>"],
-      { cwd: root }
-    );
+  it.each([[["[--ai]", "[--pages]", "[--auth]"]], [["<--ai|--no-ai>"]]])(
+    "rejects the rerun placeholder %j instead of asking again",
+    async (placeholder) => {
+      const root = tmpProject({ tree: nextMinimal() });
+      const before = treeSnapshot(root);
+      const { json, code } = await run(
+        ["init", "--yes", "--json", ...placeholder],
+        { cwd: root }
+      );
 
-    expect(code).toBe(2);
-    expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
-    expect(json.message).toContain("placeholder");
-    expect(treeSnapshot(root)).toEqual(before);
-  });
+      expect(code).toBe(2);
+      expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+      expect(json.message).toContain("placeholder");
+      expect(treeSnapshot(root)).toEqual(before);
+    }
+  );
 
   it("adds the AI editor to an existing Next.js app", async () => {
     const root = tmpProject({ tree: nextMinimal() });
