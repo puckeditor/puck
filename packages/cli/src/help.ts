@@ -85,7 +85,8 @@ Flags:
 For agents:
   Every command prints exactly one JSON document with --json. When "status" is
   "action_required", surface each entry in "actions" to the developer (e.g. a
-  browser_login URL and code), then run its "rerun" command. Exit codes:
+  browser_login URL and code), then run its "rerun" command. Show a
+  claim_project link to the developer even when "status" is "success". Exit codes:
   0 success, 2 usage, 3 unsupported project, 4 file conflict, 5 package manager,
   6 doctor found problems, 7 Puck Cloud unreachable, 10 action required, 11 partial.
 
