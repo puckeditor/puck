@@ -27,6 +27,15 @@ export interface ImportedPages {
   skipped: string[];
 }
 
+/** A project made without an account, which expires unless it's claimed */
+export interface ClaimableProject {
+  apiKey: string;
+  keyName: string;
+  project: { id: string; name: string };
+  claimUrl: string;
+  expiresAt: string;
+}
+
 export interface CloudApi {
   baseUrl: string;
   startConnect(client: {
@@ -39,6 +48,10 @@ export interface CloudApi {
     /** Lets Puck Cloud link this machine's telemetry to the approving account */
     anonymousId?: string;
   }): Promise<ConnectSession>;
+  /** Null when Puck Cloud doesn't offer one here, or not right now */
+  createClaimableProject(
+    client: Parameters<CloudApi["startConnect"]>[0]
+  ): Promise<ClaimableProject | null>;
   pollConnect(deviceCode: string): Promise<PollResult>;
   verifyKey(apiKey: string): Promise<KeyCheck>;
   /** Creates and publishes pages, keyed by route. Up to IMPORT_BATCH_SIZE at a time */
@@ -132,6 +145,27 @@ export const createCloudApi = (
         );
       }
       return body as unknown as ConnectSession;
+    },
+
+    async createClaimableProject(client) {
+      const res = await request("api/claimable-projects", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(client),
+      });
+      if (res.status === 404 || res.status === 429) return null;
+      const body = await json(res);
+      if (
+        !res.ok ||
+        typeof body.apiKey !== "string" ||
+        typeof body.claimUrl !== "string"
+      ) {
+        throw new CloudRequestError(
+          `Puck Cloud returned an unexpected response (${res.status})`,
+          "bad_response"
+        );
+      }
+      return body as unknown as ClaimableProject;
     },
 
     async pollConnect(deviceCode) {
