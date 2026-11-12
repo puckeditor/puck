@@ -11,8 +11,10 @@ npx @puckeditor/cli init
 For coding agents:
 
 ```sh
-npx @puckeditor/cli init --yes --json --ai     # or --no-ai for the editor only
+npx @puckeditor/cli init --yes --json
 ```
+
+`init` returns a `choose_ai` action. Ask the developer rather than choosing for them.
 
 Other commands:
 
