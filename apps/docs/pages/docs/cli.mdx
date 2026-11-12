@@ -15,7 +15,7 @@ npx @puckeditor/cli init
 
 With Puck AI, the only manual step is logging in to Puck Cloud and approving the connection in your browser. When it's done, the CLI starts your dev server and opens the editor.
 
-Puck AI, [Puck Pages](#puck-pages), [Puck Auth](#puck-auth) and [Puck Assets](#puck-assets) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all four selected. To choose up front, pass `--ai`, `--pages`, `--auth` or `--assets` to include only those, `--no-ai`, `--no-pages`, `--no-auth` or `--no-assets` to include all but those, or `--editor-only` for none.
+Puck AI, [Puck Pages](#puck-pages), [Puck Auth](#puck-auth) and [Puck Assets](#puck-assets) are optional. Each uses Puck Cloud, so choosing any of them sets up Puck Cloud too. `init` asks which to include, with all four selected, and gives coding agents a `choose_capabilities` action to ask the developer. When the developer has already chosen, such as in the command from the Puck Cloud setup page, pass `--ai`, `--pages`, `--auth` or `--assets` to include only those, `--no-ai`, `--no-pages`, `--no-auth` or `--no-assets` to include all but those, or `--editor-only` for none.
 
 ## Supported projects
 
@@ -98,6 +98,12 @@ After the developer approves, the same command completes the setup:
 
 Start with `npx @puckeditor/cli status --json` to see what's already set up and which command to run next.
 
+### Running the installed CLI
+
+When the CLI installs Puck, it adds itself to the app's `devDependencies`. From then on, run that copy rather than downloading it again, with `npm exec --no -- puck`, `pnpm exec puck` or `yarn puck`. When the CLI runs from the project, its `rerun` commands use it too.
+
+Agent sandboxes such as Claude Code's auto mode can block downloading and running a package the developer didn't ask for by name. If `npx @puckeditor/cli` is blocked, show the developer the exact command and run it once they approve.
+
 ### Statuses
 
 | Status            | Meaning                                                                                 |
@@ -139,7 +145,7 @@ Start with `npx @puckeditor/cli status --json` to see what's already set up and 
 
 ### Reading the docs
 
-The CLI includes these docs as markdown, matching its release. Use the version of the CLI that matches the project's `@puckeditor/core`:
+The CLI includes these docs as markdown, matching its release. Use the version of the CLI that matches the project's `@puckeditor/core`, such as the one installed in the project with `npm exec --no -- puck docs`:
 
 ```sh copy
 npx @puckeditor/cli docs ls                          # every page
@@ -302,13 +308,14 @@ The CLI collects anonymous usage data to help us improve it. The first time it r
 Each command sends one event to Puck Cloud with:
 
 - The command, what `add` was asked for, the result status, error and warning codes, the actions it returned, the exit code and how long it took
+- The word given in place of a command, when it isn't one and is a plain lowercase word, such as `create`
 - Whether it was a dry run, made changes, ran interactively, used `--json` or ran in CI
 - The CLI version, operating system, CPU architecture and Node.js version
 - The name of the coding agent running it, if it's a known one, such as `claude-code`
 - The framework and its major version, the package manager, the `--backend` choice, whether the project is in a monorepo, and whether the Puck editor, Puck Cloud and Puck AI are set up
 - A random ID, stored in `~/.config/puck/telemetry.json`
 
-It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys. When you log in to Puck Cloud with `connect`, the random ID is linked to your account.
+It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys, other than a word typed in place of a command. When you log in to Puck Cloud with `connect`, the random ID is linked to your account. Logging in isn't telemetry: `connect` also sends your project's name and your computer's hostname, so the approval page can show what's connecting and name a new Puck Cloud project after your app.
 
 To turn telemetry off, run:
 
@@ -317,3 +324,5 @@ npx @puckeditor/cli telemetry disable
 ```
 
 Or set `PUCK_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` in your environment. `telemetry status` shows whether it's on, and `PUCK_TELEMETRY_DEBUG=1` prints each event instead of sending it.
+
+Coding agents: leave this to the developer. Don't turn telemetry off unless they ask.

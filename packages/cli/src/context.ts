@@ -4,7 +4,8 @@ import type { Prompter } from "./io/prompter";
 import { nonInteractivePrompter } from "./io/prompter";
 import { SecretRegistry } from "./secret";
 import { CloudApi, createCloudApi } from "./auth/cloud-api";
-import { DEFAULT_CLOUD_URL } from "./constants";
+import path from "node:path";
+import { CANONICAL_INVOCATION, DEFAULT_CLOUD_URL } from "./constants";
 import { isTruthyEnv } from "./env/truthy";
 import type { Telemetry } from "./telemetry/consent";
 
@@ -77,5 +78,26 @@ export const rerunCommand = (rc: RunContext) => {
     if (arg.startsWith("--api-key=")) continue;
     args.push(shellArg(arg));
   }
-  return ["npx", "@puckeditor/cli", ...args].join(" ");
+  return [rc.deps.invocation ?? CANONICAL_INVOCATION, ...args].join(" ");
+};
+
+/**
+ * The command that runs the CLI installed in the project, when that's where
+ * it's running from, rather than npx's cache or a global install. Agents can
+ * run it without downloading anything.
+ */
+export const localInvocation = (
+  binPath: string,
+  cwd: string,
+  env: Record<string, string | undefined>
+) => {
+  for (let dir = cwd; ; dir = path.dirname(dir)) {
+    if (binPath.startsWith(path.join(dir, "node_modules") + path.sep)) break;
+    if (path.dirname(dir) === dir) return undefined;
+  }
+
+  const pm = env.npm_config_user_agent?.split("/")[0];
+  if (pm === "pnpm") return "pnpm exec puck";
+  if (pm === "yarn") return "yarn puck";
+  return "npm exec --no -- puck";
 };

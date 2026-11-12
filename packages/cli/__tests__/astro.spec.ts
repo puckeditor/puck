@@ -61,6 +61,11 @@ describe("Astro sites", () => {
         cwd: root,
       },
       {
+        command: "npm",
+        args: ["install", "-D", "@puckeditor/cli@^0.23.0"],
+        cwd: root,
+      },
+      {
         command: "npx",
         args: ["astro", "add", "react", "node", "--yes"],
         cwd: root,
@@ -86,7 +91,7 @@ describe("Astro sites", () => {
     );
 
     expect(json.status).toBe("success");
-    expect(runner.calls.map((c) => c.command)).toEqual(["npm"]);
+    expect(runner.calls.map((c) => c.command)).toEqual(["npm", "npm"]);
     for (const file of [...SERVER_FILES, "src/pages/api/puck/[...all].ts"]) {
       expect({ file, content: read(root, file) }).toEqual({
         file,
@@ -105,7 +110,7 @@ describe("Astro sites", () => {
     );
 
     expect(json.status).toBe("success");
-    expect(runner.calls[1].args).toEqual(["astro", "add", "react", "--yes"]);
+    expect(runner.calls[2].args).toEqual(["astro", "add", "react", "--yes"]);
     expect(read(root, "src/pages/edit.astro")).toBe(ASTRO_EDITOR_PAGE);
     expect(read(root, "src/puck/pages.ts")).toBe(LOCAL_PAGES_MODULE);
     expect(read(root, "src/puck/editor.tsx")).toBe(

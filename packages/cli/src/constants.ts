@@ -7,6 +7,7 @@ export const DOCS_URL = "https://puckeditor.com/docs/cli";
 export const MANUAL_INTEGRATION_DOCS_URL =
   "https://puckeditor.com/docs/getting-started";
 
+export const CLI_PACKAGE = "@puckeditor/cli";
 export const CORE_PACKAGE = "@puckeditor/core";
 export const LEGACY_CORE_PACKAGE = "@measured/puck";
 export const CLOUD_CLIENT_PACKAGE = "@puckeditor/cloud-client";

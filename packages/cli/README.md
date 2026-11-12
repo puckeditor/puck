@@ -11,8 +11,10 @@ npx @puckeditor/cli init
 For coding agents:
 
 ```sh
-npx @puckeditor/cli init --yes --json --ai --pages --auth --assets  # or --editor-only
+npx @puckeditor/cli init --yes --json
 ```
+
+`init` returns a `choose_capabilities` action. Ask the developer which to include rather than choosing for them.
 
 Other commands:
 
@@ -37,6 +39,8 @@ npx @puckeditor/cli telemetry    # show or change anonymous usage data collectio
 See the [CLI docs](https://puckeditor.com/docs/cli) for the full JSON contract, actions and exit codes.
 
 The CLI collects anonymous usage data. See [Telemetry](https://puckeditor.com/docs/cli#telemetry) for what's sent and how to turn it off.
+
+Coding agents: leave this to the developer. Don't turn telemetry off unless they ask.
 
 ## Development
 

@@ -146,6 +146,10 @@ const COMMANDS: CommandName[] = [
 ];
 const FRAMEWORKS: readonly string[] = FRAMEWORK_IDS;
 
+/** Commands that take no positionals, so one there is a pasted `rerun` placeholder */
+const NO_POSITIONALS: CommandName[] = ["init", "status", "doctor"];
+const PLACEHOLDER = /^(<.*>|\[.*\])$/;
+
 export const parseCliArgs = (argv: string[]): ParsedArgs => {
   let parsed;
   try {
@@ -168,10 +172,19 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
     if (!COMMANDS.includes(first as CommandName)) {
       throw new CliError(
         "PUCK-CLI-UNKNOWN-COMMAND",
-        `Unknown command "${first}". Run \`${CANONICAL_INVOCATION} --help\` to see available commands.`
+        `Unknown command "${first}". Run \`${CANONICAL_INVOCATION} --help\` to see available commands.`,
+        { command: first }
       );
     }
     command = first as CommandName;
+  }
+
+  const placeholder = positionals.find((p) => PLACEHOLDER.test(p));
+  if (command && NO_POSITIONALS.includes(command) && placeholder) {
+    throw new CliError(
+      "PUCK-CLI-INVALID-ARGS",
+      `"${placeholder}" is a placeholder. Ask the developer to pick one of the action's choices, then pass that flag instead.`
+    );
   }
 
   const values = parsed.values as Record<

@@ -9,6 +9,7 @@ import { runDevServer } from "./io/dev-server";
 import { createInquirerPrompter } from "./io/prompter";
 import { DirTemplateSource } from "./templates/source";
 import { DirDocsSource } from "./docs/source";
+import { localInvocation } from "./context";
 
 declare const __CLI_VERSION__: string;
 
@@ -32,6 +33,11 @@ runCli(process.argv.slice(2), {
   stderr: process.stderr,
   stdinIsTTY: Boolean(process.stdin.isTTY),
   cliVersion: __CLI_VERSION__,
+  invocation: localInvocation(
+    fs.realpathSync(fileURLToPath(import.meta.url)),
+    fs.realpathSync(process.cwd()),
+    env
+  ),
   runner: createRunner(env),
   fetch: globalThis.fetch,
   openUrl,

@@ -17,6 +17,7 @@ import { toPosix } from "../detect/scan";
 import { addCommand, formatCommand, installCommand } from "./install";
 import { addDependencies } from "../templates/transform";
 import { lineOf } from "../ast/splice";
+import { CLI_PACKAGE } from "../constants";
 
 const normalizeEol = (text: string) => text.replace(/\r\n/g, "\n");
 
@@ -176,6 +177,16 @@ export class Planner {
   /** Turns collected dependencies into one install, or folds them into a scaffolded or edited package.json */
   finalize() {
     if (this.#dependencies.length === 0) return;
+
+    // Later runs use this installed copy, which agents can run without downloading it
+    if (!(CLI_PACKAGE in this.ctx.deps)) {
+      const range = this.cliVersion.includes("-")
+        ? this.cliVersion
+        : `^${this.cliVersion}`;
+      this.addDependency(CLI_PACKAGE, range, this.#dependencies[0].capability, {
+        dev: true,
+      });
+    }
 
     const specs = this.#dependencies.map((d) => `${d.name}@${d.range}`);
     const pkgPath = this.abs("package.json");

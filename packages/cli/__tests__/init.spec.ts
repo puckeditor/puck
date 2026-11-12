@@ -130,6 +130,31 @@ describe("init", () => {
     }
   );
 
+  it("lists cd and the dev command separately on Windows, for PowerShell", async () => {
+    const root = tmpProject("empty");
+    fs.writeFileSync(path.join(root, "README.md"), "workspace");
+
+    const { json } = await run(
+      [
+        "init",
+        "--yes",
+        "--json",
+        "--editor-only",
+        "--framework",
+        "next",
+        "--name",
+        "site",
+      ],
+      { cwd: root, platform: "win32" }
+    );
+
+    expect(json.status).toBe("success");
+    expect(json.nextSteps).toEqual(
+      expect.arrayContaining(["cd site", "npm run dev"])
+    );
+    expect(json.nextSteps.join("\n")).not.toContain("&&");
+  });
+
   it.each([
     ["20.19.0", "^7.18.0", ">=20.0.0", true],
     ["22.21.1", "^7.18.0", ">=20.0.0", true],
@@ -306,6 +331,18 @@ describe("init", () => {
 });
 
 describe("Puck Cloud login (connect flow)", () => {
+  it("re-runs the project's installed CLI when it's running from there", async () => {
+    const root = tmpProject({ recipe: "next" });
+
+    const { json } = await run(["init", "--yes", "--json", "--ai"], {
+      cwd: root,
+      env: { HOME: path.join(root, "..", "home") },
+      invocation: "pnpm exec puck",
+    });
+
+    expect(json.actions[0].rerun).toBe("pnpm exec puck init --yes --json --ai");
+  });
+
   it("returns a browser_login action, then completes on re-run after approval", async () => {
     const root = tmpProject({ recipe: "next" });
     const cloud = new FakeCloud();
