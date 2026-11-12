@@ -75,6 +75,8 @@ Flags:
                           add one, use one elsewhere, or none (editor only)
   --backend-url <url>     The server for --backend external, e.g. http://localhost:3000
   --wait                  Wait for Puck Cloud login approval instead of returning
+  --login                 Log in to Puck Cloud instead of starting on a project
+                          without an account (init, add)
   --framework <name>      Framework for new apps (init), one of:
                           ${FRAMEWORK_IDS.join(", ")}
   --name <name>           Directory name for new apps (init)

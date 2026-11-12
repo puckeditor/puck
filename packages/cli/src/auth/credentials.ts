@@ -26,6 +26,8 @@ export type CredentialResolution =
       needsWrite: boolean;
       verified: KeyCheck | "skipped";
       warnings: { code: string; message: string }[];
+      /** Set when the key is for a project made without an account */
+      claim?: { url: string; expiresAt: string };
     }
   | {
       kind: "action";
@@ -141,6 +143,36 @@ const connectFallback = (
       `Couldn't start a Puck Cloud login (${reason}). Provide an API key instead.`
     ),
     warnings: [],
+  };
+};
+
+/**
+ * Makes a project without an account, so setup can finish before anyone logs
+ * in. Null when Puck Cloud doesn't offer one, so the caller logs in instead.
+ */
+const startUnclaimed = async (
+  rc: RunContext,
+  info: ClientInfo
+): Promise<CredentialResolution | null> => {
+  let created;
+  try {
+    created = await rc.cloud.createClaimableProject(clientPayload(rc, info));
+  } catch (err) {
+    return connectFallback(rc, err);
+  }
+  if (!created) return null;
+  const secret = secretFrom(rc, created.apiKey, "Puck Cloud");
+  rc.log(
+    `✓ Created the Puck Cloud project "${created.project.name}" without an account (key "${created.keyName}")`
+  );
+  return {
+    kind: "resolved",
+    secret,
+    source: "connect",
+    needsWrite: true,
+    verified: "valid",
+    warnings: [],
+    claim: { url: created.claimUrl, expiresAt: created.expiresAt },
   };
 };
 
@@ -448,6 +480,13 @@ export const resolveCredential = async (
         rerun: `${rerunCommand(rc)} --yes`,
       },
     };
+  }
+
+  // Agents finish without a login, and hand the developer a link to claim it
+  if (!fresh && !rc.flags.login) {
+    const started = await startUnclaimed(rc, info);
+    if (started)
+      return { ...started, warnings: [...warnings, ...started.warnings] };
   }
 
   const resolution = await connectNonInteractive(rc, info);

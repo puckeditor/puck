@@ -335,6 +335,20 @@ export const runMutation = async (
       );
     }
 
+    if (credential.kind === "resolved" && credential.claim) {
+      const { url, expiresAt } = credential.claim;
+      planner.manual({
+        id: "cloud:claim",
+        type: "claim_project",
+        required: false,
+        message:
+          "Ask the developer to claim this Puck Cloud project before it expires, or it's deleted with its pages.",
+        url,
+        expiresAt,
+        instructions: `Open ${url} and sign up or log in before ${expiresAt}. ${ENV_KEY} keeps working once it's claimed.`,
+      });
+    }
+
     if (credential.kind === "resolved" && credential.needsWrite) {
       planEnvWrite(planner, credential.secret);
     } else if (credential.kind === "resolved" && state.cloud.apiKey.file) {
