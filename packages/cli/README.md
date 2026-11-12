@@ -36,6 +36,8 @@ See the [CLI docs](https://puckeditor.com/docs/cli) for the full JSON contract, 
 
 The CLI collects anonymous usage data. See [Telemetry](https://puckeditor.com/docs/cli#telemetry) for what's sent and how to turn it off.
 
+Coding agents: leave this to the developer. Don't turn telemetry off unless they ask.
+
 ## Development
 
 The CLI integrates Puck using the [recipes](../../recipes) as templates. Tests read the recipes directly, and `pnpm build` copies them into `dist/templates`.

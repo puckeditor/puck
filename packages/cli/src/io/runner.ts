@@ -16,6 +16,22 @@ export interface CommandRunner {
 
 const MAX_CAPTURE = 64 * 1024;
 
+// cmd.exe treats these specially outside double quotes; `^` is its escape character
+const CMD_SPECIAL = /[\s^&|<>()]/;
+
+/**
+ * Quote arguments that cmd.exe would otherwise rewrite. With `shell: true`,
+ * Node joins the arguments into one cmd.exe command line, which drops the `^`
+ * from `react@^19.0.0` and installs an exact version instead of a range.
+ * Elsewhere there's no shell, so the arguments pass through unchanged.
+ */
+export const quoteForShell = (args: string[], platform: string) =>
+  platform === "win32"
+    ? args.map((arg) =>
+        CMD_SPECIAL.test(arg) && !arg.includes('"') ? `"${arg}"` : arg
+      )
+    : args;
+
 const append = (current: string, chunk: Buffer) => {
   const next = current + chunk.toString("utf8");
   return next.length > MAX_CAPTURE ? next.slice(-MAX_CAPTURE) : next;
@@ -29,7 +45,7 @@ export const createRunner = (
       let stdout = "";
       let stderr = "";
 
-      const child = spawn(command, args, {
+      const child = spawn(command, quoteForShell(args, process.platform), {
         cwd,
         stdio: ["ignore", "pipe", "pipe"],
         // Package managers ship as .cmd shims on Windows

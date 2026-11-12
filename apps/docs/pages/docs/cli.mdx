@@ -273,13 +273,14 @@ The CLI collects anonymous usage data to help us improve it. The first time it r
 Each command sends one event to Puck Cloud with:
 
 - The command, what `add` was asked for, the result status, error and warning codes, the actions it returned, the exit code and how long it took
+- The word given in place of a command, when it isn't one and is a plain lowercase word, such as `create`
 - Whether it was a dry run, made changes, ran interactively, used `--json` or ran in CI
 - The CLI version, operating system, CPU architecture and Node.js version
 - The name of the coding agent running it, if it's a known one, such as `claude-code`
 - The framework and its major version, the package manager, the `--backend` choice, whether the project is in a monorepo, and whether the Puck editor, Puck Cloud and Puck AI are set up
 - A random ID, stored in `~/.config/puck/telemetry.json`
 
-It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys. When you log in to Puck Cloud with `connect`, the random ID is linked to your account.
+It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys, other than a word typed in place of a command. When you log in to Puck Cloud with `connect`, the random ID is linked to your account. Logging in isn't telemetry: `connect` also sends your project's name and your computer's hostname, so the approval page can show what's connecting and name a new Puck Cloud project after your app.
 
 To turn telemetry off, run:
 
@@ -288,3 +289,5 @@ npx @puckeditor/cli telemetry disable
 ```
 
 Or set `PUCK_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` in your environment. `telemetry status` shows whether it's on, and `PUCK_TELEMETRY_DEBUG=1` prints each event instead of sending it.
+
+Coding agents: leave this to the developer. Don't turn telemetry off unless they ask.

@@ -343,6 +343,7 @@ export interface RunOptions {
   nodeVersion?: string;
   cliVersion?: string;
   invocation?: string;
+  platform?: string;
 }
 
 export interface RunOutput {
@@ -406,7 +407,7 @@ export const run = async (
     docs: opts.docs ?? testDocs,
     homedir: home,
     hostname: "test-host",
-    platform: "linux",
+    platform: opts.platform ?? "linux",
     arch: "x64",
     nodeVersion: opts.nodeVersion ?? "20.19.0",
     now: opts.now ?? (() => Date.now()),

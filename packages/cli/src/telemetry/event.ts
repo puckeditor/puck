@@ -19,6 +19,8 @@ export interface TelemetryEvent {
   capabilities: CapabilityId[];
   status: CommandResult["status"];
   errorCode: string | null;
+  /** The word given in place of a command, when it's a plain lowercase word */
+  unknownCommand: string | null;
   exitCode: number;
   durationMs: number;
   dryRun: boolean;
@@ -65,6 +67,12 @@ const id = (value: string | null | undefined) =>
 const ids = (values: string[]) =>
   values.map(id).filter((v): v is string => v !== null);
 
+// A word like `create`; never a path, placeholder or key
+const word = (value: unknown) =>
+  typeof value === "string" && /^[a-z][a-z0-9-]{0,31}$/.test(value)
+    ? value
+    : null;
+
 const major = (version: string | null | undefined) => {
   const match = version?.match(/\d+/);
   return match ? Number(match[0]) : null;
@@ -99,6 +107,10 @@ export const buildEvent = (input: EventInput): TelemetryEvent => {
         : [],
     status: result.status,
     errorCode: id(result.error?.code),
+    unknownCommand:
+      result.error?.code === "PUCK-CLI-UNKNOWN-COMMAND"
+        ? word(result.error.details?.command)
+        : null,
     exitCode: input.exitCode,
     durationMs: Math.max(0, Math.round(input.durationMs)),
     dryRun: Boolean(flags.dryRun),

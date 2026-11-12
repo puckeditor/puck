@@ -125,6 +125,31 @@ describe("init", () => {
     }
   );
 
+  it("lists cd and the dev command separately on Windows, for PowerShell", async () => {
+    const root = tmpProject("empty");
+    fs.writeFileSync(path.join(root, "README.md"), "workspace");
+
+    const { json } = await run(
+      [
+        "init",
+        "--yes",
+        "--json",
+        "--editor-only",
+        "--framework",
+        "next",
+        "--name",
+        "site",
+      ],
+      { cwd: root, platform: "win32" }
+    );
+
+    expect(json.status).toBe("success");
+    expect(json.nextSteps).toEqual(
+      expect.arrayContaining(["cd site", "npm run dev"])
+    );
+    expect(json.nextSteps.join("\n")).not.toContain("&&");
+  });
+
   it.each([
     ["20.19.0", "^7.18.0", ">=20.0.0", true],
     ["22.21.1", "^7.18.0", ">=20.0.0", true],

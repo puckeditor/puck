@@ -183,6 +183,20 @@ describe("init with Puck AI", () => {
     expect(cloud.networkCalls).toBe(0);
   });
 
+  it("rejects the rerun placeholder instead of asking again", async () => {
+    const root = tmpProject({ tree: nextMinimal() });
+    const before = treeSnapshot(root);
+    const { json, code } = await run(
+      ["init", "--yes", "--json", "<--ai|--no-ai>"],
+      { cwd: root }
+    );
+
+    expect(code).toBe(2);
+    expect(json.error?.code).toBe("PUCK-CLI-INVALID-ARGS");
+    expect(json.message).toContain("placeholder");
+    expect(treeSnapshot(root)).toEqual(before);
+  });
+
   it("adds the AI editor to an existing Next.js app", async () => {
     const root = tmpProject({ tree: nextMinimal() });
     const { json } = await run(["init", "--yes", "--json", "--ai", ...KEY], {

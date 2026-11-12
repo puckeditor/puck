@@ -31,6 +31,7 @@ describe("telemetry", () => {
         capabilities: [],
         status: "success",
         errorCode: null,
+        unknownCommand: null,
         exitCode: 0,
         durationMs: expect.any(Number),
         dryRun: false,
@@ -109,6 +110,34 @@ describe("telemetry", () => {
     });
     expect(JSON.stringify(cloud.telemetry)).not.toContain("bogus");
   });
+
+  it("records which unknown command was run", async () => {
+    const { root, env, cloud } = setup();
+
+    const { code } = await run(["create"], { cwd: root, cloud, env });
+
+    expect(code).toBe(2);
+    expect(cloud.telemetry[0].events[0]).toMatchObject({
+      command: null,
+      errorCode: "PUCK-CLI-UNKNOWN-COMMAND",
+      unknownCommand: "create",
+    });
+  });
+
+  it.each([["./my-app"], ["sk_live_ABC123"], ["<--ai|--no-ai>"], ["MyApp"]])(
+    "doesn't record %s as an unknown command",
+    async (arg) => {
+      const { root, env, cloud } = setup();
+
+      await run([arg], { cwd: root, cloud, env });
+
+      expect(cloud.telemetry[0].events[0]).toMatchObject({
+        errorCode: "PUCK-CLI-UNKNOWN-COMMAND",
+        unknownCommand: null,
+      });
+      expect(JSON.stringify(cloud.telemetry)).not.toContain(arg);
+    }
+  );
 
   it.each([["PUCK_TELEMETRY_DISABLED"], ["DO_NOT_TRACK"]])(
     "sends nothing and writes nothing with %s=1",
