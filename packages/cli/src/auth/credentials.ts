@@ -26,6 +26,8 @@ export type CredentialResolution =
       needsWrite: boolean;
       verified: KeyCheck | "skipped";
       warnings: { code: string; message: string }[];
+      /** Set when the key is for a project made without an account */
+      claim?: { url: string; expiresAt: string };
     }
   | {
       kind: "action";
@@ -141,6 +143,36 @@ const connectFallback = (
       `Couldn't start a Puck Cloud login (${reason}). Provide an API key instead.`
     ),
     warnings: [],
+  };
+};
+
+/**
+ * Makes a project without an account, so setup can finish before anyone logs
+ * in. Null when Puck Cloud doesn't offer one, so the caller logs in instead.
+ */
+const startUnclaimed = async (
+  rc: RunContext,
+  info: ClientInfo
+): Promise<CredentialResolution | null> => {
+  let created;
+  try {
+    created = await rc.cloud.createClaimableProject(clientPayload(rc, info));
+  } catch (err) {
+    return connectFallback(rc, err);
+  }
+  if (!created) return null;
+  const secret = secretFrom(rc, created.apiKey, "Puck Cloud");
+  rc.log(
+    `✓ Created the Puck Cloud project "${created.project.name}" without an account (key "${created.keyName}")`
+  );
+  return {
+    kind: "resolved",
+    secret,
+    source: "connect",
+    needsWrite: true,
+    verified: "valid",
+    warnings: [],
+    claim: { url: created.claimUrl, expiresAt: created.expiresAt },
   };
 };
 
@@ -422,10 +454,24 @@ export const resolveCredential = async (
       "How do you want to connect to Puck Cloud?",
       [
         { value: "login", name: "Log in with the browser (recommended)" },
+        // `connect` replaces the key, often for a branch, so it always logs in
+        ...(fresh
+          ? []
+          : [
+              {
+                value: "unclaimed",
+                name: "Start without an account (claim it within 72 hours)",
+              },
+            ]),
         { value: "paste", name: "Paste an existing API key" },
       ]
     );
-    if (method === "login") {
+    if (method === "unclaimed") {
+      const started = await startUnclaimed(rc, info);
+      if (started?.kind === "resolved") return { ...started, warnings };
+      rc.log("Couldn't start without an account. Log in instead.");
+    }
+    if (method === "login" || method === "unclaimed") {
       const connected = await connectInteractive(rc, info);
       if (connected) return { ...connected, warnings };
       rc.log("Falling back to pasting an API key.");
@@ -448,6 +494,13 @@ export const resolveCredential = async (
         rerun: `${rerunCommand(rc)} --yes`,
       },
     };
+  }
+
+  // Agents finish without a login, and hand the developer a link to claim it
+  if (!fresh && !rc.flags.login) {
+    const started = await startUnclaimed(rc, info);
+    if (started)
+      return { ...started, warnings: [...warnings, ...started.warnings] };
   }
 
   const resolution = await connectNonInteractive(rc, info);

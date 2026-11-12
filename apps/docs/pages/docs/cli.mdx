@@ -66,7 +66,28 @@ Run with `--yes --json`. The CLI never prompts, and prints exactly one JSON docu
 npx @puckeditor/cli init --yes --json
 ```
 
-When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. Without any of those flags, the first run returns a `choose_capabilities` action, so the developer can choose which of Puck AI, Puck Pages, Puck Auth and Puck Assets to add. With `--ai`, the first run asks the developer to log in:
+When `status` is `action_required`, nothing has been changed yet. Show each entry in `actions` to the developer, then run its `rerun` command. Without any of those flags, the first run returns a `choose_capabilities` action, so the developer can choose which of Puck AI, Puck Pages, Puck Auth and Puck Assets to add.
+
+Once they've chosen, the CLI sets up Puck Cloud on a new project that doesn't need an account yet, so the run completes the setup. It returns a `claim_project` action with a link for the developer:
+
+```json
+{
+  "status": "success",
+  "cloud": { "configured": true, "verified": "remote" },
+  "actions": [
+    {
+      "type": "claim_project",
+      "required": false,
+      "url": "https://cloud.puckeditor.com/claim#token=…",
+      "expiresAt": "2026-11-15T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+Show the link to the developer. The project and its key are deleted at `expiresAt`, 72 hours later, unless the developer signs up or logs in at the link to claim it. The key keeps working once it's claimed. Puck AI only works on claimed projects.
+
+To have the developer log in first instead, pass `--login`. The first run then asks them to approve the login:
 
 ```json
 {
@@ -77,7 +98,7 @@ When `status` is `action_required`, nothing has been changed yet. Show each entr
       "type": "browser_login",
       "url": "https://cloud.puckeditor.com/cli/connect#code=BCDF-GHJK",
       "userCode": "BCDF-GHJK",
-      "rerun": "npx @puckeditor/cli init --yes --json --ai"
+      "rerun": "npx @puckeditor/cli init --yes --json --ai --login"
     }
   ]
 }
@@ -118,6 +139,7 @@ Agent sandboxes such as Claude Code's auto mode can block downloading and runnin
 | Type                       | What to do                                                                                                                           |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `browser_login`            | Ask the developer to open `url`, confirm `userCode` and approve                                                                      |
+| `claim_project`            | Show `url` to the developer, who claims the project there before `expiresAt`, or it's deleted                                        |
 | `provide_api_key`          | Ask for a Puck API key, then re-run with `PUCK_API_KEY` set                                                                          |
 | `confirm_plan`             | Review `plan.steps`, then re-run with `--yes`                                                                                        |
 | `choose_capabilities`      | Ask the developer which of `choices` to add, then re-run `init` with each one's flag, or `none` (`--editor-only`) for none           |
@@ -198,6 +220,7 @@ npx skills add puckeditor/skills --skill puck
 | `--backend <choice>`                                | Where a Vite app's server comes from: `add`, `external` or `none`                                                                                                                                            |
 | `--backend-url <url>`                               | The server for `--backend external`                                                                                                                                                                          |
 | `--wait`                                            | Wait for login approval instead of returning `action_required`                                                                                                                                               |
+| `--login`                                           | Log in to Puck Cloud instead of starting on a project without an account (`init` and `add`)                                                                                                                  |
 | `--framework <name>`                                | Framework for a new app: `next`, `react-router`, `tanstack-start`, `vinext`, `vite`, `astro`, `hono` or `express`                                                                                            |
 | `--name <name>`                                     | Directory for a new app                                                                                                                                                                                      |
 | `--package-manager <name>`                          | Override the detected package manager                                                                                                                                                                        |
@@ -214,6 +237,8 @@ To use an existing key, prefer the environment over `--api-key`, which is visibl
 ```sh copy
 PUCK_API_KEY=your-key npx @puckeditor/cli add cloud --yes
 ```
+
+Coding agents start on a Puck Cloud project without an account, and get a link for the developer to claim it within 72 hours. When you run the CLI yourself, you can choose to do the same. To log in instead, pass `--login`.
 
 To log in again, for example to replace a revoked key, run `connect`. It always starts a new login and replaces the existing key, without changing any code:
 
@@ -315,7 +340,7 @@ Each command sends one event to Puck Cloud with:
 - The framework and its major version, the package manager, the `--backend` choice, whether the project is in a monorepo, and whether the Puck editor, Puck Cloud and Puck AI are set up
 - A random ID, stored in `~/.config/puck/telemetry.json`
 
-It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys, other than a word typed in place of a command. When you log in to Puck Cloud with `connect`, the random ID is linked to your account. Logging in isn't telemetry: `connect` also sends your project's name and your computer's hostname, so the approval page can show what's connecting and name a new Puck Cloud project after your app.
+It never sends code, file paths, project or package names, hostnames, error messages, flag values or API keys, other than a word typed in place of a command. When you log in to Puck Cloud with `connect`, the random ID is linked to your account. Logging in isn't telemetry: `connect` also sends your project's name and your computer's hostname, so the approval page can show what's connecting and name a new Puck Cloud project after your app. Starting a project without an account sends the same, and links the random ID to whoever claims it.
 
 To turn telemetry off, run:
 

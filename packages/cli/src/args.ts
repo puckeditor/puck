@@ -19,6 +19,8 @@ export interface Flags {
   config?: string;
   packageManager?: PackageManagerName;
   wait: boolean;
+  /** Log in rather than start on a project made without an account */
+  login: boolean;
   framework?: FrameworkId;
   name?: string;
   offline: boolean;
@@ -62,6 +64,7 @@ const OPTIONS = {
   config: { type: "string" },
   "package-manager": { type: "string" },
   wait: { type: "boolean" },
+  login: { type: "boolean" },
   framework: { type: "string" },
   name: { type: "string" },
   offline: { type: "boolean" },
@@ -98,6 +101,7 @@ const MUTATING: OptionName[] = [
   "config",
   "package-manager",
   "wait",
+  "login",
   "backend",
   "backend-url",
 ];
@@ -269,6 +273,7 @@ export const parseCliArgs = (argv: string[]): ParsedArgs => {
       config: values.config as string | undefined,
       packageManager: pm as PackageManagerName | undefined,
       wait: Boolean(values.wait),
+      login: Boolean(values.login),
       framework: framework as FrameworkId | undefined,
       name: values.name as string | undefined,
       offline: Boolean(values.offline),

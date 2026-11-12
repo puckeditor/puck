@@ -198,6 +198,9 @@ export class FakeCloud {
     headers: Record<string, string>;
   }[] = [];
   mintedKey = "sk-minted-SENTINEL-4242";
+  /** Whether Puck Cloud makes projects without an account; off is a 404 */
+  claimable: boolean | "rate_limited" = false;
+  claimableKey = "sk-claimable-SENTINEL-4343";
   counter = 0;
   offline = false;
   telemetryResponse: "ok" | "error" | "hang" = "ok";
@@ -295,6 +298,21 @@ export class FakeCloud {
       return this.validKeys.has(headers["x-api-key"])
         ? json(200, { body: "Ok!" })
         : json(404, {});
+    }
+
+    if (url.pathname === "/api/claimable-projects" && init?.method === "POST") {
+      if (!this.claimable) return json(404, { error: "not_found" });
+      if (this.claimable === "rate_limited")
+        return json(429, { error: "rate_limited" });
+      this.validKeys.add(this.claimableKey);
+      return json(200, {
+        apiKey: this.claimableKey,
+        keyId: "key_claimable",
+        keyName: "Puck CLI (project on test-host)",
+        project: { id: "proj_1", name: "my-app" },
+        claimUrl: `${url.origin}/claim#token=claim-token-SENTINEL`,
+        expiresAt: "2026-01-04T00:00:00.000Z",
+      });
     }
 
     if (url.pathname === "/api/cli/connect" && init?.method === "POST") {

@@ -521,3 +521,91 @@ describe("Puck Cloud login (connect flow)", () => {
     });
   });
 });
+
+describe("Puck Cloud projects without an account", () => {
+  it("finishes on a new project and returns a link to claim it", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    cloud.claimable = true;
+
+    const { json, code } = await run(["add", "cloud", "--yes", "--json"], {
+      cwd: root,
+      cloud,
+    });
+
+    expect(code).toBe(0);
+    expect(json.status).toBe("success");
+    expect(read(root, ".env.local")).toBe(
+      `PUCK_API_KEY=${cloud.claimableKey}\n`
+    );
+    expect(json.cloud).toMatchObject({ configured: true, verified: "remote" });
+    expect(json.actions).toContainEqual(
+      expect.objectContaining({
+        type: "claim_project",
+        required: false,
+        url: expect.stringContaining("/claim#token=claim-token-SENTINEL"),
+        expiresAt: "2026-01-04T00:00:00.000Z",
+      })
+    );
+    expect(
+      cloud.requests.find((r) => r.path === "/api/claimable-projects")
+    ).toMatchObject({ body: { cliVersion: "0.23.0", framework: "next" } });
+    expect(cloud.requests.some((r) => r.path === "/api/cli/connect")).toBe(
+      false
+    );
+  });
+
+  it("warns that Puck AI needs the project claimed", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    cloud.claimable = true;
+
+    const { json } = await run(["add", "ai", "--yes", "--json"], {
+      cwd: root,
+      cloud,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.warnings).toContainEqual(
+      expect.objectContaining({
+        code: "PUCK-CLI-W-AI-UNCLAIMED",
+        message: expect.stringContaining("/claim#token="),
+      })
+    );
+  });
+
+  it("logs in instead with --login", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    cloud.claimable = true;
+
+    const { json } = await run(["add", "cloud", "--yes", "--json", "--login"], {
+      cwd: root,
+      cloud,
+    });
+
+    expect(json.status).toBe("action_required");
+    expect(json.actions[0]).toMatchObject({
+      type: "browser_login",
+      rerun: "npx @puckeditor/cli add cloud --yes --json --login",
+    });
+    expect(
+      cloud.requests.some((r) => r.path === "/api/claimable-projects")
+    ).toBe(false);
+  });
+
+  it("logs in instead when Puck Cloud is rate limiting new projects", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    cloud.claimable = "rate_limited";
+
+    const { json } = await run(["add", "cloud", "--yes", "--json"], {
+      cwd: root,
+      cloud,
+    });
+
+    expect(json.status).toBe("action_required");
+    expect(json.actions[0].type).toBe("browser_login");
+    expect(exists(root, ".env.local")).toBe(false);
+  });
+});
