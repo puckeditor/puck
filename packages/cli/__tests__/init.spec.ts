@@ -550,6 +550,25 @@ describe("Puck Cloud projects without an account", () => {
     );
   });
 
+  it("warns that Puck AI needs the project claimed", async () => {
+    const root = tmpProject({ recipe: "next" });
+    const cloud = new FakeCloud();
+    cloud.claimable = true;
+
+    const { json } = await run(["add", "ai", "--yes", "--json"], {
+      cwd: root,
+      cloud,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.warnings).toContainEqual(
+      expect.objectContaining({
+        code: "PUCK-CLI-W-AI-UNCLAIMED",
+        message: expect.stringContaining("/claim#token="),
+      })
+    );
+  });
+
   it("logs in instead with --login", async () => {
     const root = tmpProject({ recipe: "next" });
     const cloud = new FakeCloud();

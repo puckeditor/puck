@@ -347,6 +347,12 @@ export const runMutation = async (
         expiresAt,
         instructions: `Open ${url} and sign up or log in before ${expiresAt}. ${ENV_KEY} keeps working once it's claimed.`,
       });
+      if (capabilities.includes("ai") || state.ai.installed) {
+        planner.warn(
+          "PUCK-CLI-W-AI-UNCLAIMED",
+          `Puck AI works once the project is claimed. Open ${url} to claim it.`
+        );
+      }
     }
 
     if (credential.kind === "resolved" && credential.needsWrite) {
