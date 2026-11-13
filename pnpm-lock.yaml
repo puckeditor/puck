@@ -6,7 +6,6 @@ settings:
 
 overrides:
   postcss: ^8.5.23
-  axios: ^1.18.0
   '@xmldom/xmldom': ^0.9.12
   nx>undici: ^7.30.1
 
