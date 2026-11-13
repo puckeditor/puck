@@ -20,7 +20,6 @@ allowBuilds:
 # Security pins for vulnerable transitive deps. Translated from main's yarn
 # `resolutions` (pnpm ignores `resolutions`); nested selectors use `>`.
 overrides:
-  tar: "7.5.21"
   postcss: "^8.5.23"
   axios: "^1.18.0"
   "nx>brace-expansion": "^5.0.10" # GHSA-6j4f-fj2g-mc7p (nx's minimatch otherwise resolves a stale 5.0.5)
