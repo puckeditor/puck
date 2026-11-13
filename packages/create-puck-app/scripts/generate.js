@@ -52,7 +52,7 @@ const run = async () => {
         console.log(`Copying ${filePath} -> ${targetPath}`);
       }
 
-      const data = await fs.readFileSync(filePath, "utf-8");
+      const data = await fs.readFileSync(filePath);
 
       const dir = path.dirname(targetPath);
 
