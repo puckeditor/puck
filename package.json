@@ -22,7 +22,7 @@
     "conventional-recommended-bump": "^11.2.0",
     "eslint": "^9.0.0",
     "eslint-config-custom": "workspace:*",
-    "lerna": "^9.0.7",
+    "lerna": "^10.1.2",
     "prettier": "^2.5.1",
     "puppeteer": "^25.17.0",
     "rimraf": "^6.1.3",
