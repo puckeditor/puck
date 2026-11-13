@@ -28,6 +28,7 @@ import { getDropZoneProps } from "../../lib/props/shared/get-drop-zone-props";
 import {
   ComponentData,
   Config,
+  Content,
   DragAxis,
   Metadata,
   Overrides,
@@ -536,10 +537,8 @@ const DropZoneRenderItem = ({
 }) => {
   const Component = config.components[item.type];
 
-  const renderProps = useRenderProps(
-    config,
-    item,
-    (slotProps) => (
+  const renderSlot = useCallback(
+    (slotProps: DropZoneProps & { content: Content }) => (
       <SlotRenderPure
         {...slotProps}
         config={config}
@@ -547,8 +546,10 @@ const DropZoneRenderItem = ({
         fieldTransforms={fieldTransforms}
       />
     ),
-    fieldTransforms
+    [config, metadata, fieldTransforms]
   );
+
+  const renderProps = useRenderProps(config, item, renderSlot, fieldTransforms);
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
