@@ -21,7 +21,6 @@ allowBuilds:
 # `resolutions` (pnpm ignores `resolutions`); nested selectors use `>`.
 overrides:
   postcss: "^8.5.23"
-  axios: "^1.18.0"
   "@xmldom/xmldom": "^0.9.12" # GHSA-6gmq-8vp8-gcm6 (via docs mathjax tooling)
   "nx>undici": "^7.30.1" # GHSA-2m5v-pch6-74hx and 17 others (nx 23.3.x pins 7.29.0; lerna 10 caps nx <24)
 
