@@ -6,7 +6,6 @@ settings:
 
 overrides:
   postcss: ^8.5.23
-  '@xmldom/xmldom': ^0.9.12
   nx>undici: ^7.30.1
 
 importers:
@@ -8167,8 +8166,8 @@ packages:
   spdx-license-ids@3.0.23:
     resolution: {integrity: sha512-CWLcCCH7VLu13TgOH+r8p1O/Znwhqv/dbb6lqWy67G+pT1kHmeD/+V36AVb/vq8QMIQwVShJ6Ssl5FPh0fuSdw==}
 
-  speech-rule-engine@4.1.4:
-    resolution: {integrity: sha512-i/VCLG1fvRc95pMHRqG4aQNscv+9aIsqA2oI7ZQS51sTdUcDHYX6cpT8/tqZ+enjs1tKVwbRBWgxut9SWn+f9g==}
+  speech-rule-engine@4.1.5:
+    resolution: {integrity: sha512-Nx4d44Ca0FQ4ve9WS8Ja6w2zkI9q7JvH1+3nI9zh4aU/vICXTZWzzYR4MyYRkk/5vcF7OMkwjYkX3qrfahfOgg==}
     hasBin: true
 
   split2@3.2.2:
@@ -15688,7 +15687,7 @@ snapshots:
       esm: 3.2.25
       mhchemparser: 4.2.1
       mj-context-menu: 0.6.1
-      speech-rule-engine: 4.1.4
+      speech-rule-engine: 4.1.5
 
   mdast-util-find-and-replace@3.0.2:
     dependencies:
@@ -18082,7 +18081,7 @@ snapshots:
 
   spdx-license-ids@3.0.23: {}
 
-  speech-rule-engine@4.1.4:
+  speech-rule-engine@4.1.5:
     dependencies:
       '@xmldom/xmldom': 0.9.12
       commander: 13.1.0
