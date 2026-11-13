@@ -31,6 +31,7 @@ const run = async () => {
     cwd: recipePath,
     nodir: true,
     dot: true,
+    ignore: "**/node_modules/**",
   });
 
   console.warn(
