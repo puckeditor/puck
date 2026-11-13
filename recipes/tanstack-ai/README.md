@@ -164,6 +164,7 @@ Before deploying this recipe, make sure to:
 - **Protect the editor and APIs.** The `/edit` routes, page server functions, and `/api/puck` route are public by default. Add authentication, authorization, and rate limits to protect page data and AI usage.
 - **Add your component library.** Replace the example `HeadingBlock` in `src/puck.config.tsx` with the components and fields your users need.
 - **Set your business context.** Replace the example Google context in `src/routes/api.puck.$.ts` with clear information about your product, audience, and content rules.
+- **Set your API key in production.** Only the development server reads `.env.local`, so `npm start` won't find it. Set `PUCK_API_KEY` as an environment variable on your server.
 - **Use a real database.** Replace `database.json` and the functions in `src/data/page.ts`. Local files are not reliable across server instances or serverless deployments.
 - **Choose a deployment strategy.** This recipe uses server-side rendering and server functions. Deploy it to a TanStack Start-compatible server runtime.
 
