@@ -216,14 +216,25 @@ export const useMonitorHotkeys = () => {
 };
 
 export const useHotkey = (combo: KeyMapStrict, cb: Function) => {
-  useEffect(
-    () =>
-      useHotkeyStore.setState((s) => ({
-        triggers: {
-          ...s.triggers,
-          [`${Object.keys(combo).join("+")}`]: { combo, cb },
-        },
-      })),
-    []
-  );
+  useEffect(() => {
+    const triggerId = Object.keys(combo).join("+");
+    const trigger = { combo, cb };
+
+    useHotkeyStore.setState((s) => ({
+      triggers: {
+        ...s.triggers,
+        [triggerId]: trigger,
+      },
+    }));
+
+    return () => {
+      useHotkeyStore.setState((s) => {
+        // Do not remove a newer registration for the same shortcut.
+        if (s.triggers[triggerId] !== trigger) return s;
+
+        const { [triggerId]: _removed, ...triggers } = s.triggers;
+        return { triggers };
+      });
+    };
+  }, []);
 };
