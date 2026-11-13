@@ -24,7 +24,18 @@ const isElementVisible = (element: HTMLElement): boolean => {
   return true;
 };
 
-const shouldBlockDeleteHotkey = (e?: KeyboardEvent): boolean => {
+// Elements inside the canvas iframe belong to the iframe's realm, so
+// `instanceof HTMLElement` is false for them. Check against the element's
+// own window instead.
+const isHTMLElement = (el: unknown): el is HTMLElement => {
+  if (el instanceof HTMLElement) return true;
+
+  const win = (el as Node | null | undefined)?.ownerDocument?.defaultView;
+
+  return !!win && el instanceof (win as typeof window).HTMLElement;
+};
+
+export const shouldBlockDeleteHotkey = (e?: KeyboardEvent): boolean => {
   if (e?.defaultPrevented) return true;
 
   const origin =
@@ -32,7 +43,7 @@ const shouldBlockDeleteHotkey = (e?: KeyboardEvent): boolean => {
     (e?.target as Element | undefined) ||
     (document.activeElement as Element | null);
 
-  if (origin instanceof HTMLElement) {
+  if (isHTMLElement(origin)) {
     const tag = origin.tagName.toLowerCase();
 
     if (tag === "input" || tag === "textarea" || tag === "select") return true;

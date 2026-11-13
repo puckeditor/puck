@@ -1,6 +1,7 @@
 import { SetUiAction } from "../..";
 import { defaultState, testSetup, UserData } from "../__helpers__";
 import { PrivateAppState } from "../../../types/Internal";
+import { rootDroppableId } from "../../../lib/root-droppable-id";
 
 describe("Reducer", () => {
   const { reducer, executeSequence } = testSetup();

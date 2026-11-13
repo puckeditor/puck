@@ -1,3 +1,39 @@
 .Heading {
+  display: block;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   margin: 0;
+  text-wrap: balance;
+}
+
+.Heading--xxxl {
+  font-size: var(--site-heading-1);
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.Heading--xxl {
+  font-size: var(--site-heading-2);
+  letter-spacing: -0.025em;
+}
+
+.Heading--xl {
+  font-size: clamp(24px, 2.6vw, 32px);
+}
+
+.Heading--l {
+  font-size: var(--site-heading-3);
+}
+
+.Heading--m {
+  font-size: 20px;
+}
+
+.Heading--s {
+  font-size: 18px;
+}
+
+.Heading--xs {
+  font-size: var(--site-text-body);
 }

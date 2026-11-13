@@ -1,6 +1,6 @@
 {
   "name": "@puckeditor/core",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
@@ -70,11 +70,12 @@
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
     "test": "jest",
-    "prepare": "cp ../../README.md . && pnpm build",
-    "postpublish": "rm README.md"
+    "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
+    "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
@@ -137,7 +138,7 @@
     "deep-diff": "^1.0.2",
     "fast-equals": "5.2.2",
     "flat": "^5.0.2",
-    "happy-dom": "^20.0.10",
+    "happy-dom": "^21.0.4",
     "object-hash": "^3.0.0",
     "react-hotkeys-hook": "^4.6.1",
     "use-debounce": "^9.0.4",

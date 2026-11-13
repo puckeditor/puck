@@ -4,7 +4,7 @@ title: Internal Puck API
 
 # Internal Puck API
 
-Puck exposes its internal API as [`PuckApi`](/docs/api-reference/puck-api) for extending Puck with custom functionality within [custom fields](/docs/extending-puck/custom-fields), [compositional interfaces](/docs/extending-puck/composition) or [UI overrides](/docs/extending-puck/ui-overrides).
+Puck exposes its internal API as [`PuckApi`](/docs/api-reference/puck-api) for extending Puck with custom functionality within [custom fields](/docs/extending-puck/custom-fields), [compositional interfaces](/docs/extending-puck/composition), [UI overrides](/docs/extending-puck/ui-overrides) or [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops).
 
 ## Accessing the internal API
 
@@ -57,7 +57,7 @@ See the [`useGetPuck`](/docs/api-reference/functions/use-get-puck) docs for a fu
 
 ## Usage in practice
 
-Generally, you'll want to combine this with composition, UI overrides or custom fields.
+Generally, you'll want to combine this with composition, UI overrides, custom fields or [`renderFields`](/docs/api-reference/configuration/component-config#renderfieldsprops).
 
 Here's an example using the internal API to log the page data as JSON while retaining the standard Puck UI:
 
@@ -98,3 +98,4 @@ export function Editor() {
 - [Composition](/docs/extending-puck/composition)
 - [Custom fields](/docs/extending-puck/custom-fields)
 - [UI overrides](/docs/extending-puck/ui-overrides)
+- [`renderFields` API reference](/docs/api-reference/configuration/component-config#renderfieldsprops)

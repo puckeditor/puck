@@ -39,7 +39,10 @@ export type UiState = {
     controlsVisible: boolean;
     options: Viewport[];
   };
+  expandedFieldGroups: Record<string, boolean>;
   field: { focus?: string | null; metadata?: Record<string, any> };
+  /** The selected field tab. Shows the first available tab when `null`. */
+  fieldTab?: string | number | null;
   plugin: {
     current: string | null;
   };
