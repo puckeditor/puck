@@ -221,8 +221,28 @@ export const Canvas = () => {
 
       let history = s.history;
 
+      // Carry the selected viewport into the initial history entry, so undoing
+      // back to it doesn't revert the viewport. Only the viewport: the entry's
+      // data must stay as loaded, or undo after the first change would restore
+      // the changed data.
       if (s.history.histories.length === 1) {
-        history = { ...history, histories: [appState] };
+        const [initial] = s.history.histories;
+
+        history = {
+          ...history,
+          histories: [
+            {
+              ...initial,
+              state: {
+                ...initial.state,
+                ui: {
+                  ...initial.state.ui,
+                  viewports: appState.state.ui.viewports,
+                },
+              },
+            },
+          ],
+        };
       }
 
       appStoreApi.setState({ ...appState, history });
@@ -230,7 +250,9 @@ export const Canvas = () => {
   }, [
     viewportOptions,
     frameRef.current,
-    iframe,
+    // Not `iframe`: hosts often pass the config inline, and a new object on
+    // every render must not re-run this and re-select the viewport.
+    iframe.enabled,
     appStoreApi,
     uiProp?.viewports?.current,
   ]);
