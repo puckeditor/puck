@@ -27,6 +27,8 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
+  // Undoes everything a drag sets up, so it can run on mouseup or on unmount
+  const endDrag = useRef<(() => void) | null>(null);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -48,18 +50,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   const handleMouseUp = useCallback(() => {
     if (!isDragging.current) return;
 
-    isDragging.current = false;
-    document.body.style.cursor = "";
-    document.body.style.userSelect = "";
-
-    const overlay = document.getElementById("resize-overlay");
-    if (overlay) {
-      document.body.removeChild(overlay);
-    }
-
-    // Remove event listeners when dragging ends
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
+    endDrag.current?.();
 
     const finalWidth = sidebarRef.current?.getBoundingClientRect().width || 0;
     onResizeEnd(finalWidth);
@@ -87,10 +78,26 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
 
+      endDrag.current = () => {
+        isDragging.current = false;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        overlay.remove();
+
+        // Remove event listeners when dragging ends
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+
+        endDrag.current = null;
+      };
+
       e.preventDefault();
     },
     [position, handleMouseMove, handleMouseUp]
   );
+
+  // Clean up if the handle unmounts mid-drag (e.g. the sidebar is hidden)
+  useEffect(() => () => endDrag.current?.(), []);
 
   return (
     <div
