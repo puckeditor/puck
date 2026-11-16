@@ -115,6 +115,7 @@ const nextRelocation = (p: Planner, info: NextLikeInfo): RelocateContext => {
       "puck.config": configModuleTarget(p),
     },
     config: configRelocation(p),
+    cacheComponents: info.cacheComponents,
   };
 };
 

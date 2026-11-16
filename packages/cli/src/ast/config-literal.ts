@@ -43,3 +43,29 @@ export const findStringProperty = (
 
   return result;
 };
+
+/** Whether `key: true` appears anywhere in a config module */
+export const hasTrueProperty = (
+  code: string,
+  filename: string,
+  key: string
+) => {
+  const ast = tryParseModule(code, filename);
+  let found = false;
+
+  if (ast) {
+    walk(ast.program, (node: Node) => {
+      if (node.type !== "ObjectProperty" || node.computed) return;
+      const name =
+        node.key.type === "Identifier"
+          ? node.key.name
+          : node.key.type === "StringLiteral"
+          ? node.key.value
+          : null;
+      if (name === key && node.value.type === "BooleanLiteral")
+        found ||= node.value.value;
+    });
+  }
+
+  return found;
+};

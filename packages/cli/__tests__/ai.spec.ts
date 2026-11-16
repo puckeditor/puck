@@ -8,7 +8,11 @@ import {
   tmpProject,
   treeSnapshot,
 } from "./helpers/harness";
-import { nextMinimal, rrMinimal } from "./helpers/fixtures";
+import {
+  CACHE_COMPONENTS_CONFIG,
+  nextMinimal,
+  rrMinimal,
+} from "./helpers/fixtures";
 
 const KEY = ["--api-key", "sk-valid-key"];
 
@@ -213,6 +217,23 @@ describe("init with Puck AI", () => {
     );
     expect(exists(root, "app/api/pages/route.ts")).toBe(true);
     expect(exists(root, "app/puck/api/route.ts")).toBe(false);
+  });
+
+  it("upgrades an editor set up with Cache Components", async () => {
+    const root = tmpProject({
+      tree: nextMinimal({ nextConfig: CACHE_COMPONENTS_CONFIG }),
+    });
+    await run(["add", "editor", "--yes", "--json"], { cwd: root });
+    const { json } = await run(["add", "ai", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
+    const page = read(root, "app/puck/[...puckPath]/page.tsx");
+    expect(page).toContain('import "@puckeditor/plugin-ai/styles.css";');
+    expect(page).toContain("export const instant = false;");
+    expect(page).not.toContain("export const dynamic");
   });
 
   it("aliases UserData when the project's config doesn't export it", async () => {

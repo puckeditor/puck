@@ -31,7 +31,7 @@ const home = `export default function Home() {
 
 /** What `create-next-app --app --ts` produces, minus assets */
 export const nextMinimal = (
-  overrides: { next?: string; name?: string } = {}
+  overrides: { next?: string; name?: string; nextConfig?: string } = {}
 ): Tree => ({
   "package.json": pkg({
     name: overrides.name ?? "next-minimal",
@@ -46,11 +46,21 @@ export const nextMinimal = (
   }),
   "package-lock.json": "{}\n",
   "tsconfig.json": nextTsconfig,
-  "next.config.ts": "export default {};\n",
+  "next.config.ts": overrides.nextConfig ?? "export default {};\n",
   ".gitignore": "/node_modules\n/.next/\n.env*\n",
   "app/layout.tsx": layout,
   "app/page.tsx": home,
 });
+
+/** next.config.ts as create-next-app 16 writes it, with Cache Components on */
+export const CACHE_COMPONENTS_CONFIG = `import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+};
+
+export default nextConfig;
+`;
 
 /** A vinext App Router app, as `vinext init` leaves a migrated create-next-app */
 export const vinextMinimal = (

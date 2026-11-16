@@ -1,4 +1,5 @@
 import path from "node:path";
+import type { File } from "@babel/types";
 import type { ExportShape } from "../ast/exports";
 import { getModuleReferences } from "../ast/imports";
 import { parseModule } from "../ast/parse";
@@ -20,6 +21,8 @@ export interface RelocateOptions {
   aliases?: Record<string, string>;
   /** The recipe module id of the Puck config, and the shape of the project's config */
   config?: { module: string; shape: ExportShape };
+  /** Next.js Cache Components is enabled, so pages can't use `dynamic` */
+  cacheComponents?: boolean;
 }
 
 export type RelocateResult =
@@ -40,6 +43,34 @@ const configImportClause = (
     return local === "config" ? "{ config }" : `{ config as ${local} }`;
   if (shape.named.length === 1) return `{ ${shape.named[0]} as ${local} }`;
   return null;
+};
+
+const INSTANT = `// Cache Components: allow rendering on request, outside <Suspense>
+export const instant = false;`;
+
+/**
+ * Cache Components rejects `export const dynamic` and blocks routes that read
+ * params outside <Suspense>, so pages opt into rendering on request instead.
+ */
+const cacheComponentsEdits = (ast: File, code: string): TextEdit[] => {
+  const dynamic = ast.program.body.find(
+    (s) =>
+      s.type === "ExportNamedDeclaration" &&
+      s.declaration?.type === "VariableDeclaration" &&
+      s.declaration.declarations.some(
+        (d) => d.id.type === "Identifier" && d.id.name === "dynamic"
+      )
+  );
+  if (!dynamic) {
+    return [{ start: code.length, end: code.length, text: `\n${INSTANT}\n` }];
+  }
+  return [
+    {
+      start: dynamic.leadingComments?.[0]?.start ?? dynamic.start!,
+      end: dynamic.end!,
+      text: INSTANT,
+    },
+  ];
 };
 
 const TYPE_FALLBACKS: Record<string, string> = {
@@ -173,6 +204,10 @@ export const relocateModule = (
         text: `${ref.quote}${specifier}${ref.quote}`,
       });
     }
+  }
+
+  if (opts.cacheComponents && /(^|\/)page\.[jt]sx?$/.test(opts.to)) {
+    edits.push(...cacheComponentsEdits(ast, code));
   }
 
   return { ok: true, code: applyEdits(code, edits) };
