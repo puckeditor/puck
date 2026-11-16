@@ -7,12 +7,11 @@ import { REPO_ROOT, tmpDir } from "./helpers/harness";
 // markdown fail here instead of leaking into `puck docs`
 const pagesDir = path.join(REPO_ROOT, "apps", "docs", "pages", "docs");
 const outDir = path.join(tmpDir(), "docs");
+const script = path.join(__dirname, "..", "scripts", "copy-docs.mjs");
 
-execFileSync(
-  process.execPath,
-  [path.join(__dirname, "..", "scripts", "copy-docs.mjs"), "--out", outDir],
-  { stdio: "pipe" }
-);
+execFileSync(process.execPath, [script, "--out", outDir, "--local"], {
+  stdio: "pipe",
+});
 
 const walk = (dir: string, ext: string): string[] =>
   fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
