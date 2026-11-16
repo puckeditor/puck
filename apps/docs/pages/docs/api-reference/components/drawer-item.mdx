@@ -72,10 +72,21 @@ export function Editor() {
 | Prop                      | Example             | Type   |
 | ------------------------- | ------------------- | ------ |
 | [`children`](#children-1) | `children: <div />` | String |
+| [`handleRef`](#handleref) | `ref={handleRef}`   | Ref    |
 
 ##### `children`
 
 The original node for the drawer item.
+
+##### `handleRef`
+
+An optional ref for registering a custom drag handle. Attach it to a native button to allow pointer dragging from that button. Without a handle, native interactive descendants such as buttons and inputs do not start drags. The background copy receives no handle ref.
+
+```tsx
+<Drawer.Item name="Orange">
+  {({ handleRef }) => <button ref={handleRef}>Orange 🍊</button>}
+</Drawer.Item>
+```
 
 ### `id`
 
