@@ -100,6 +100,10 @@ program
           name: "React Router",
           value: "react-router",
         },
+        {
+          name: "TanStack",
+          value: "tanstack",
+        },
       ],
     });
 
@@ -188,7 +192,7 @@ program
           puckVersion: `^${packageJson.version}`,
         });
       } else {
-        data = fs.readFileSync(filePath, "utf-8");
+        data = fs.readFileSync(filePath);
       }
 
       const dir = path.dirname(targetPath);
