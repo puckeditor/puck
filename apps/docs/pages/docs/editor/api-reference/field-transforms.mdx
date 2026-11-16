@@ -1,0 +1,55 @@
+---
+title: FieldTransforms
+---
+
+# FieldTransforms
+
+Transform the data for each [field type](/docs/editor/api-reference/fields) before rendering.
+
+```tsx copy
+const UppercaseText = ({ value }) => <p>{value.toUpperCase()}</p>;
+
+const fieldTransforms = {
+  text: (props) => <UppercaseText {...props} />,
+  // ...
+};
+```
+
+You can specify a custom render method for each known [field type](/docs/editor/api-reference/fields), or introduce completely new ones.
+
+## Render Props
+
+| Prop                          | Example              | Type                                       |
+| ----------------------------- | -------------------- | ------------------------------------------ |
+| [`componentId`](#componentid) | `"Heading-12345"`    | string                                     |
+| [`field`](#field)             | `{ type: "text" }`   | [Field](/docs/editor/api-reference/fields) |
+| [`isReadOnly`](#isreadonly)   | `false`              | boolean                                    |
+| [`propName`](#propname)       | `"title"`            | string                                     |
+| [`propPath`](#proppath)       | `"obj.arr[2].title"` | string                                     |
+| [`value`](#value)             | `"Value"`            | any                                        |
+
+### `componentId`
+
+The id of the component containing this prop
+
+### `field`
+
+The component's field definition for this prop.
+
+### `isReadOnly`
+
+Whether or not this field is currently set to read-only. Always `true` under [`<Render>`](/docs/editor/api-reference/components/render).
+
+### `propName`
+
+The name of this prop provided to the [component field](/docs/editor/api-reference/configuration/component-config#fields) config.
+
+### `propPath`
+
+The path of this prop within the props object.
+
+Use in conjunction with the [`setDeep`](/docs/editor/api-reference/functions/set-deep) utility to set data for a key deep within an object or array, normally [ComponentData](/docs/editor/api-reference/data-model/component-data).
+
+### `value`
+
+The value of the prop.
