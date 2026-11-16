@@ -1,0 +1,71 @@
+---
+title: Save and render pages
+---
+
+# Save and render pages
+
+Puck edits a [`Data`](/docs/editor/api-reference/data-model/data) object. Store it anywhere that holds JSON. Render it with [`<Render>`](/docs/editor/api-reference/components/render).
+
+## Save the data
+
+[`onPublish`](/docs/editor/api-reference/components/puck#onpublishdata) runs when the user clicks "Publish". Send the data to your server:
+
+```jsx showLineNumbers copy filename="Editor.jsx"
+import { Puck } from "@puckeditor/core";
+
+export function Editor({ path, data }) {
+  return (
+    <Puck
+      config={config}
+      data={data}
+      onPublish={async (newData) => {
+        // Store the data with the page's path as its key
+        await fetch(`/api/pages?path=${encodeURIComponent(path)}`, {
+          method: "post",
+          body: JSON.stringify({ data: newData }),
+        });
+      }}
+    />
+  );
+}
+```
+
+## Load the data
+
+To continue editing, pass the saved data to `<Puck>`:
+
+```tsx showLineNumbers copy
+const data = (await getPage(path)) ?? {}; // Read from your database, or start empty
+
+return <Editor path={path} data={data} />;
+```
+
+## Render the page
+
+Render the saved data with [`<Render>`](/docs/editor/api-reference/components/render) and the same config:
+
+```jsx showLineNumbers copy filename="Page.jsx"
+import { Render } from "@puckeditor/core";
+
+export function Page({ data }) {
+  return <Render config={config} data={data} />;
+}
+```
+
+If your components use [`resolveData`](/docs/editor/api-reference/configuration/component-config#resolvedatadata-params), run [`resolveAllData()`](/docs/editor/api-reference/functions/resolve-all-data) first. The page then renders with the resolved props:
+
+```tsx showLineNumbers copy
+import { resolveAllData } from "@puckeditor/core";
+
+const resolvedData = await resolveAllData(data, config);
+```
+
+## Store pages in Puck Cloud
+
+Use [Puck Pages](https://puckeditor.com/docs/cloud/pages/overview) to store your pages in Puck Cloud, with drafts, versions and publishing.
+
+## Further reading
+
+- [`<Puck>` API reference](/docs/editor/api-reference/components/puck)
+- [`<Render>` API reference](/docs/editor/api-reference/components/render)
+- [`resolveAllData()` API reference](/docs/editor/api-reference/functions/resolve-all-data)
