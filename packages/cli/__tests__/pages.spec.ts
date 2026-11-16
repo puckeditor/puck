@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { exists, read, readRecipe, run, tmpProject } from "./helpers/harness";
-import { astroMinimal, nextMinimal, viteMinimal } from "./helpers/fixtures";
+import {
+  astroMinimal,
+  CACHE_COMPONENTS_CONFIG,
+  nextMinimal,
+  viteMinimal,
+} from "./helpers/fixtures";
 import {
   ASTRO_PAGES_API,
   ASTRO_PAGES_CATCH_ALL,
@@ -68,6 +73,34 @@ describe("add pages", () => {
       });
       expect(again.json.changed).toBe(false);
     });
+  });
+
+  it("keeps the routes valid with Cache Components", async () => {
+    const root = tmpProject({
+      tree: nextMinimal({ nextConfig: CACHE_COMPONENTS_CONFIG }),
+    });
+    await run(["add", "editor", "--yes", "--json"], { cwd: root });
+    const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
+    for (const file of [
+      "app/puck/page.tsx",
+      "app/puck/[...puckPath]/page.tsx",
+      "app/[...puckPath]/page.tsx",
+    ]) {
+      const code = read(root, file);
+      expect({ file, dynamic: code.includes("export const dynamic") }).toEqual({
+        file,
+        dynamic: false,
+      });
+      expect(code).toContain("\nexport const instant = false;\n");
+    }
+    expect(read(root, "app/[...puckPath]/page.tsx")).toContain(
+      "getPublished(path)"
+    );
   });
 
   it("keeps Puck AI in the editor", async () => {

@@ -3,6 +3,7 @@ import { parseModule } from "../src/ast/parse";
 import { getModuleReferences } from "../src/ast/imports";
 import { exists, read, readRecipe, run, tmpProject } from "./helpers/harness";
 import {
+  CACHE_COMPONENTS_CONFIG,
   nextDynamicRoot,
   nextMinimal,
   nextPages,
@@ -239,6 +240,54 @@ describe("add editor (Next.js)", () => {
       )
     );
     expect(exists(root, "proxy.ts")).toBe(false);
+  });
+
+  it("swaps route segment config for instant with Cache Components", async () => {
+    const root = tmpProject({
+      tree: nextMinimal({ nextConfig: CACHE_COMPONENTS_CONFIG }),
+    });
+    const { json } = await run(["add", "editor", "--yes", "--json"], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    for (const file of EDITOR_FILES) {
+      const code = read(root, file);
+      if (!file.endsWith("page.tsx")) {
+        expect(normalizeModule(code, file)).toBe(
+          normalizeModule(readRecipe("next", file), file)
+        );
+        continue;
+      }
+      expect({ file, dynamic: code.includes("export const dynamic") }).toEqual({
+        file,
+        dynamic: false,
+      });
+      expect(code).toContain("\nexport const instant = false;\n");
+    }
+    expect(read(root, "app/[...puckPath]/page.tsx")).not.toContain(
+      "Force Next.js to produce static pages"
+    );
+  });
+
+  it.each([
+    ["is off", "export default { cacheComponents: false };\n", false],
+    [
+      "is set under experimental",
+      "export default { experimental: { cacheComponents: true } };\n",
+      true,
+    ],
+    [
+      "isn't a literal",
+      "export default { cacheComponents: process.env.CC === '1' };\n",
+      false,
+    ],
+  ])("detects Cache Components when it %s", async (_, nextConfig, on) => {
+    const root = tmpProject({ tree: nextMinimal({ nextConfig }) });
+    await run(["add", "editor", "--yes", "--json"], { cwd: root });
+    expect(read(root, "app/puck/page.tsx").includes("instant = false")).toBe(
+      on
+    );
   });
 
   it("leaves existing middleware alone and explains the rewrite", async () => {

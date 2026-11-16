@@ -81,6 +81,7 @@ ${
   ai ? `import "@puckeditor/plugin-ai/styles.css";\n` : ""
 }import "@puckeditor/plugin-pages/styles.css";
 import { Metadata } from "next";
+import { connection } from "next/server";
 import { Client } from "./client";${
   auth ? `\nimport { requirePuckSession } from "../../../lib/puck-auth";` : ""
 }
@@ -98,17 +99,20 @@ ${
 }: {
   searchParams: Promise<Record<string, string>>;
 }) {
+  // Puck renders in the browser, so the editor is rendered on every request
+  await connection();
   const query = new URLSearchParams(await searchParams).toString();
   await requirePuckSession(\`/puck\${query ? \`?\${query}\` : ""}\`);
 
   return <Client />;
 }`
     : `export default async function Page() {
+  // Puck renders in the browser, so the editor is rendered on every request
+  await connection();
+
   return <Client />;
 }`
 }
-
-export const dynamic = "force-dynamic";
 `;
 
 /** Next.js: app/[...puckPath]/page.tsx */
