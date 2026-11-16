@@ -2,7 +2,7 @@ import path from "node:path";
 import type { Vfs } from "../io/vfs";
 import type { CliErrorPayload } from "../errors";
 import { MANUAL_INTEGRATION_DOCS_URL } from "../constants";
-import { findStringProperty } from "../ast/config-literal";
+import { findStringProperty, hasTrueProperty } from "../ast/config-literal";
 import { majorOf, resolveInstalledVersion, versionOf } from "./package-json";
 import type { ServerRuntime } from "./server";
 import {
@@ -66,6 +66,8 @@ export interface NextInfo {
   /** Directory containing app/, where proxy/middleware must live ("" or "src") */
   baseDir: "" | "src";
   proxyKind: "proxy" | "middleware";
+  /** `cacheComponents` is enabled in next.config, which rejects segment config like `dynamic` */
+  cacheComponents: boolean;
 }
 
 export interface ReactRouterInfo {
@@ -206,6 +208,22 @@ const findViteConfig = (vfs: Vfs, root: string) =>
     CONFIG_EXTENSIONS.map((ext) => `vite.config.${ext}`)
   );
 
+/** Whether next.config enables Cache Components */
+const detectCacheComponents = (vfs: Vfs, root: string) => {
+  const config = firstExisting(
+    vfs,
+    root,
+    CONFIG_EXTENSIONS.map((ext) => `next.config.${ext}`)
+  );
+  return config
+    ? hasTrueProperty(
+        vfs.readText(path.join(root, config)) ?? "",
+        config,
+        "cacheComponents"
+      )
+    : false;
+};
+
 const normalizeDir = (dir: string) =>
   path.posix
     .normalize(dir)
@@ -295,6 +313,7 @@ const detectNext = (
       major,
       ...layout,
       proxyKind: major >= 16 ? "proxy" : "middleware",
+      cacheComponents: detectCacheComponents(vfs, root),
     },
   };
 };
@@ -325,6 +344,7 @@ const detectVinext = (
       major: majorOf(version) ?? majorOf(range),
       ...layout,
       proxyKind: hasMiddleware ? "middleware" : "proxy",
+      cacheComponents: false,
       viteConfig: findViteConfig(vfs, root),
     },
   };
