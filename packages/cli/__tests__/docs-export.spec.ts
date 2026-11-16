@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import http from "node:http";
+import { promisify } from "node:util";
+import { execFile, execFileSync } from "node:child_process";
 import { REPO_ROOT, tmpDir } from "./helpers/harness";
 
 // Exports the real docs site, so new MDX components that don't convert to
@@ -86,5 +88,111 @@ describe("docs export", () => {
   it("resolves relative links", () => {
     const page = pages.find((p) => p.path === "api-reference/fields/text");
     expect(page?.content).toContain("[Base](/docs/api-reference/fields/base)");
+  });
+});
+
+describe("platform docs", () => {
+  const llms = `# Puck
+
+## Docs
+
+- [Introduction](/docs/index.md)
+- [Getting Started](/docs/getting-started.md)
+
+### Puck AI
+- [Overview](/docs/ai/overview.md)
+- [chat](/docs/api-reference/ai/cloud-client/chat.md)
+
+### Integrating Puck
+- [Component Configuration](/docs/integrating-puck/component-configuration.md)
+
+## Blog
+
+- [A post](/blog/a-post.md)
+`;
+
+  const served: Record<string, string> = {
+    "/llms.txt": llms,
+    "/docs/ai/overview.md": "# Overview\n\nSee [tools](./tools).\n",
+    "/docs/api-reference/ai/cloud-client/chat.md": `# chat
+
+<Callout type="warning">
+  Deprecated.
+</Callout>
+
+\`\`\`tsx showLineNumbers copy {1,6-10}
+chat(body);
+\`\`\`
+`,
+  };
+
+  const requested: string[] = [];
+  let server: http.Server;
+  let baseUrl: string;
+
+  const run = (out: string, url = baseUrl) =>
+    promisify(execFile)(process.execPath, [script, "--out", out], {
+      env: { ...process.env, PUCK_DOCS_URL: url },
+    });
+
+  beforeAll(async () => {
+    server = http.createServer((req, res) => {
+      requested.push(req.url!);
+      const body = served[req.url!];
+      res.writeHead(body ? 200 : 404).end(body ?? "Not found");
+    });
+    await new Promise<void>((resolve) =>
+      server.listen(0, "127.0.0.1", resolve)
+    );
+    baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  });
+
+  afterAll(() => new Promise((resolve) => server.close(resolve)));
+
+  it("adds platform-only pages after their llms.txt predecessor", async () => {
+    const out = path.join(tmpDir(), "docs");
+    await run(out);
+
+    const merged: { path: string; title: string }[] = JSON.parse(
+      fs.readFileSync(path.join(out, "index.json"), "utf8")
+    );
+    const paths = merged.map((page) => page.path);
+
+    expect(paths.slice(0, 4)).toEqual([
+      "index",
+      "getting-started",
+      "ai/overview",
+      "api-reference/ai/cloud-client/chat",
+    ]);
+    expect(paths).toContain("cli");
+    expect(merged.length).toBe(index.length + 2);
+    expect(merged[3].title).toBe("chat");
+  });
+
+  it("keeps local pages and ignores the blog", () => {
+    expect(requested).not.toContain("/docs/getting-started.md");
+    expect(requested.some((url) => url.startsWith("/blog"))).toBe(false);
+  });
+
+  it("converts platform pages to plain markdown", async () => {
+    const out = path.join(tmpDir(), "docs");
+    await run(out);
+
+    const chat = fs.readFileSync(
+      path.join(out, "api-reference/ai/cloud-client/chat.md"),
+      "utf8"
+    );
+    expect(chat).toContain("> **Warning:** Deprecated.");
+    expect(chat).toContain("```tsx\nchat(body);");
+    expect(fs.readFileSync(path.join(out, "ai/overview.md"), "utf8")).toContain(
+      "[tools](/docs/ai/tools)"
+    );
+  });
+
+  it("fails when a listed page can't be fetched", async () => {
+    delete served["/docs/ai/overview.md"];
+    await expect(run(path.join(tmpDir(), "docs"))).rejects.toThrow(
+      /ai\/overview\.md failed: 404/
+    );
   });
 });
