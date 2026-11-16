@@ -42,7 +42,7 @@ export default withNextra({
         destination: "/docs/editor/customize/composition",
         permanent: true,
       },
-      // Pages moved under Puck Editor. Temporary while the structure is experimental.
+      // Pages moved under Puck Editor
       ...[
         ["editor", "editor/overview"],
         ["getting-started", "editor/getting-started"],
@@ -118,7 +118,7 @@ export default withNextra({
       ].map(([source, destination]) => ({
         source: `/docs/${source}`,
         destination: `/docs/${destination}`,
-        permanent: false,
+        permanent: true,
       })),
       // There's no docs index page while the structure is experimental.
       {
