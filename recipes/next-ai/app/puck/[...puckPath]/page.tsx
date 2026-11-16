@@ -15,6 +15,7 @@ import "@puckeditor/core/puck.css";
 import "@puckeditor/plugin-ai/styles.css";
 import type { Data } from "@puckeditor/core";
 import { Metadata } from "next";
+import { connection } from "next/server";
 import { Client } from "./client";
 import { getPage } from "../../../lib/get-page";
 
@@ -46,6 +47,8 @@ export default async function Page({
 }: {
   params: Promise<{ puckPath: string[] }>;
 }) {
+  // Load the latest saved data on every request
+  await connection();
   const { puckPath = [] } = await params;
   const path = `/${puckPath.join("/")}`;
 
@@ -53,5 +56,3 @@ export default async function Page({
 
   return <Client path={path} data={data || EMPTY_PAGE_DATA} />;
 }
-
-export const dynamic = "force-dynamic";
