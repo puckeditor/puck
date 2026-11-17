@@ -36,6 +36,7 @@ const createRow = (
   ({
     type: "Flex",
     props: {
+      alignItems: "start",
       direction: "row",
       gap: 16,
       id: `PerformanceRow-${pageNumber}-${sectionNumber}-${rowNumber}`,
@@ -55,6 +56,7 @@ const createSection = (pageNumber: number, sectionNumber: number) =>
   ({
     type: "Flex",
     props: {
+      alignItems: "start",
       direction: "column",
       gap: 16,
       id: `PerformanceSection-${pageNumber}-${sectionNumber}`,
@@ -89,6 +91,7 @@ const createPage = (pageNumber: number) =>
   ({
     type: "Flex",
     props: {
+      alignItems: "start",
       direction: "column",
       gap: 24,
       id: `PerformancePage-${pageNumber}`,

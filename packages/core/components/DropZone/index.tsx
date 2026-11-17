@@ -32,7 +32,6 @@ import {
   Metadata,
   Overrides,
   PuckContext,
-  WithPuckProps,
 } from "../../types";
 
 import { useDroppable, UseDroppableInput } from "@dnd-kit/react";
@@ -47,16 +46,12 @@ import { useDragAxis } from "./lib/use-drag-axis";
 import { useContextStore } from "../../lib/use-context-store";
 import { useShallow } from "zustand/react/shallow";
 import { renderContext } from "../Render";
-import { useSlots } from "../../lib/use-slots";
-import { ContextSlotRender, SlotRenderPure } from "../SlotRender";
+import { SlotRenderPure } from "../SlotRender";
 import { expandNode } from "../../lib/data/flatten-node";
-import { useFieldTransformsTracked } from "../../lib/field-transforms/use-field-transforms-tracked";
 import { useMessage } from "../../lib/use-message";
-import { getInlineTextTransform } from "../../lib/field-transforms/default-transforms/inline-text-transform";
-import { getSlotTransform } from "../../lib/field-transforms/default-transforms/slot-transform";
-import { getRichTextTransform } from "../../lib/field-transforms/default-transforms/rich-text-transform";
 import { FieldTransforms } from "../../types/API/FieldTransforms";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
+import useEditorProps from "../../lib/props/editor/use-editor-props";
+import useRenderProps from "../../lib/props/render/use-render-props";
 import { MemoizeComponent } from "../MemoizeComponent";
 import { VirtualizedDropZone } from "./VirtualizedDropZone";
 import { LinePlaceholder } from "./LinePlaceholder";
@@ -134,10 +129,6 @@ const DropZoneChild = ({
     (s) => s.state.indexes.nodes[componentId]?.data.type
   );
 
-  const nodeReadOnly = useAppStore(
-    useShallow((s) => s.state.indexes.nodes[componentId]?.data.readOnly)
-  );
-
   const appStore = useAppStoreApi();
 
   const item = useMemo(() => {
@@ -208,33 +199,7 @@ const DropZoneChild = ({
     [item?.type, nodeType, defaultsProps]
   );
 
-  const config = useAppStore((s) => s.config);
-
-  const plugins = useAppStore((s) => s.plugins);
-  const userFieldTransforms = useAppStore((s) => s.fieldTransforms);
-  const combinedFieldTransforms = useMemo(
-    () => ({
-      ...getSlotTransform(DropZoneEditPure, (slotProps) => (
-        <ContextSlotRender componentId={componentId} zone={slotProps.zone} />
-      )),
-      ...getInlineTextTransform(),
-      ...getRichTextTransform(),
-      ...plugins.reduce<FieldTransforms>(
-        (acc, plugin) => ({ ...acc, ...plugin.fieldTransforms }),
-        {}
-      ),
-      ...userFieldTransforms,
-    }),
-    [plugins, userFieldTransforms]
-  );
-
-  const transformedProps = useFieldTransformsTracked(
-    config,
-    defaultedNode,
-    combinedFieldTransforms,
-    nodeReadOnly,
-    isLoading
-  );
+  const transformedProps = useEditorProps({ component: defaultedNode });
 
   if (!item) return;
 
@@ -562,34 +527,43 @@ const DropZoneRenderItem = ({
   config,
   item,
   metadata,
+  fieldTransforms,
 }: {
   config: Config;
   item: ComponentData;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 }) => {
   const Component = config.components[item.type];
 
-  const props = useSlots(config, item, (slotProps) => (
-    <SlotRenderPure {...slotProps} config={config} metadata={metadata} />
-  )) as WithPuckProps<ComponentData["props"]>;
+  const renderProps = useRenderProps(
+    config,
+    item,
+    (slotProps) => (
+      <SlotRenderPure
+        {...slotProps}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
+  );
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
-      areaId: props.id,
+      areaId: renderProps.id,
       depth: 1,
     }),
-    [props]
+    [renderProps.id]
   );
 
-  const richtextProps = useRichtextProps(Component.fields, props);
-
   return (
-    <DropZoneProvider key={props.id} value={nextContextValue}>
+    <DropZoneProvider key={renderProps.id} value={nextContextValue}>
       <Component.render
-        {...props}
-        {...richtextProps}
+        {...renderProps}
         puck={{
-          ...props.puck,
+          ...renderProps.puck,
           renderDropZone: DropZoneRenderPure,
           metadata: { ...metadata, ...Component.metadata },
         }}
@@ -610,7 +584,8 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     } = getDropZoneProps(allProps);
     const ctx = useContext(dropZoneContext);
     const { areaId = "root" } = ctx || {};
-    const { config, data, metadata } = useContext(renderContext);
+    const { config, data, metadata, fieldTransforms } =
+      useContext(renderContext);
 
     let zoneCompound = `${areaId}:${zone}`;
     let content = data?.content || [];
@@ -645,6 +620,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
                 config={config}
                 item={item}
                 metadata={metadata}
+                fieldTransforms={fieldTransforms}
               />
             );
           }

@@ -8,6 +8,8 @@ export * from "../types/Fields";
 
 export * from "../components/ActionBar";
 export { AutoField, FieldLabel } from "../components/AutoField";
+export { FieldGroup } from "../components/FieldGroup";
+export { Tab as FieldTab } from "../components/Tabs";
 
 export * from "../components/Button";
 export { Drawer } from "../components/Drawer";

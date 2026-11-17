@@ -11,7 +11,7 @@ const FooterLink = ({ children, href }: { children: string; href: string }) => {
         style={{
           textDecoration: "none",
           fontSize: "14px",
-          color: "var(--puck-color-grey-05)",
+          color: "var(--site-color-text-muted)",
         }}
       >
         {children}
@@ -33,9 +33,9 @@ const FooterList = ({
         style={{
           margin: 0,
           padding: 0,
-          fontSize: "inherit",
+          fontSize: "14px",
           fontWeight: "600",
-          color: "var(--puck-color-text-muted)",
+          color: "var(--site-color-text)",
         }}
       >
         {title}
@@ -56,7 +56,12 @@ const FooterList = ({
 
 const Footer = ({ children }: { children: ReactNode }) => {
   return (
-    <footer style={{ background: "var(--puck-color-surface)" }}>
+    <footer
+      style={{
+        background: "var(--site-color-background)",
+        borderTop: "1px solid var(--site-color-border)",
+      }}
+    >
       <h2 style={{ visibility: "hidden", height: 0, margin: 0 }}>Footer</h2>
       <div style={{ padding: 32 }}>
         <Section>
@@ -77,8 +82,9 @@ const Footer = ({ children }: { children: ReactNode }) => {
         style={{
           padding: 64,
           textAlign: "center",
-          color: "var(--puck-color-text-muted)",
-          background: "var(--puck-color-surface-subtle)",
+          color: "var(--site-color-text-muted)",
+          fontSize: "14px",
+          background: "var(--site-color-background-subtle)",
         }}
       >
         Made by{" "}

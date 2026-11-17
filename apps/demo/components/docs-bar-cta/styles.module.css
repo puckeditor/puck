@@ -1,0 +1,63 @@
+/* A dark bar along the bottom of the editor */
+.DemoBar {
+  --demo-bar-color-text: var(--puck-color-text-inverse);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--puck-space-2) var(--puck-space-4);
+  padding: var(--puck-space-3) var(--puck-space-4);
+  background: var(--puck-color-surface-inverse);
+  color: var(--demo-bar-color-text);
+  font-size: var(--puck-font-size-xs);
+  font-weight: var(--puck-font-weight-semibold);
+}
+
+/* The links stay together when the bar wraps */
+.DemoBar-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--puck-space-2) var(--puck-space-4);
+}
+
+.DemoBar-link,
+.DemoBar-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--puck-space-1);
+  color: var(--demo-bar-color-text);
+  font-weight: var(--puck-font-weight-bold);
+  text-decoration: none;
+}
+
+/* The secondary link is quieter than the button */
+.DemoBar-link {
+  color: color-mix(in srgb, var(--demo-bar-color-text) 75%, transparent);
+  font-weight: var(--puck-font-weight-semibold);
+}
+
+.DemoBar-link:hover {
+  color: var(--demo-bar-color-text);
+  text-decoration: underline;
+}
+
+/* The main action is an inverted pill */
+.DemoBar-button {
+  padding: var(--puck-space-1) var(--puck-space-3);
+  border-radius: var(--puck-radius-pill);
+  background: var(--demo-bar-color-text);
+  color: var(--puck-color-surface-inverse);
+}
+
+.DemoBar-button:hover {
+  background: color-mix(in srgb, var(--demo-bar-color-text) 88%, transparent);
+}
+
+.DemoBar-link:focus-visible,
+.DemoBar-button:focus-visible {
+  outline: 2px solid var(--demo-bar-color-text);
+  outline-offset: 2px;
+}

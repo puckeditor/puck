@@ -103,8 +103,8 @@ const usage = (sub: Subcommand, arg: string) =>
     "PUCK-CLI-INVALID-ARGS",
     `Specify ${arg}. For example \`${CANONICAL_INVOCATION} docs ${sub} ${
       {
-        ls: "api-reference",
-        cat: "getting-started",
+        ls: "editor/api-reference",
+        cat: "editor/getting-started",
         find: "dynamic fields",
         grep: "resolveData",
       }[sub]

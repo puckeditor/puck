@@ -1,4 +1,5 @@
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import * as React from "react";
 import { Config, Data } from "../../../types";
 import "@testing-library/jest-dom";
 
@@ -267,5 +268,108 @@ describe("Puck - richtext programmatic updates", () => {
     await waitFor(() => {
       expect(screen.getByText("Plain text value")).toBeInTheDocument();
     });
+  });
+});
+
+// <Activity> is only available in React 19.2+
+const Activity:
+  | React.ComponentType<{
+      mode: "visible" | "hidden";
+      children: React.ReactNode;
+    }>
+  | undefined = (React as any).Activity;
+
+const describeIfActivity = Activity ? describe : describe.skip;
+
+describeIfActivity("Puck - richtext inside <Activity>", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  const wait = (ms: number) =>
+    act(() => new Promise((resolve) => setTimeout(resolve, ms)));
+
+  it("recovers the editor after being hidden and shown again", async () => {
+    if (!Activity) return;
+
+    const config: Config = {
+      components: {
+        Text: {
+          fields: {
+            body: { type: "richtext", contentEditable: true },
+          },
+          render: ({ body }) => <div data-testid="output">{body}</div>,
+        },
+      },
+    };
+
+    const data: Data = {
+      root: { props: {} },
+      content: [{ type: "Text", props: { id: "t", body: "<p>Hello</p>" } }],
+    };
+
+    let setVisible: (visible: boolean) => void = () => {};
+
+    const App = () => {
+      const [visible, _setVisible] = React.useState(true);
+      setVisible = _setVisible;
+
+      return (
+        <Activity mode={visible ? "visible" : "hidden"}>
+          <Puck config={config} data={data} iframe={{ enabled: false }} />
+        </Activity>
+      );
+    };
+
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+
+    try {
+      const { container } = render(<App />);
+      await flush();
+
+      const getEditor = () =>
+        container.querySelector<HTMLElement>(".ProseMirror");
+
+      await waitFor(() => {
+        expect(getEditor()).toHaveTextContent("Hello");
+      });
+
+      for (let i = 0; i < 3; i++) {
+        act(() => setVisible(false));
+        // Give Tiptap time to destroy the editor
+        await wait(20);
+        act(() => setVisible(true));
+        await flush();
+
+        await waitFor(() => {
+          expect(getEditor()).toHaveTextContent("Hello");
+        });
+        expect(getEditor()).toHaveAttribute("contenteditable", "true");
+      }
+
+      expect(errors).toEqual([]);
+
+      const { appStore } = getInternal();
+
+      act(() => {
+        dispatchReplace(appStore, "t", {
+          type: "Text",
+          props: { id: "t", body: "<p>Updated content</p>" },
+        });
+      });
+      await flush();
+
+      await waitFor(() => {
+        expect(getEditor()).toHaveTextContent("Updated content");
+      });
+      expect(errors).toEqual([]);
+    } finally {
+      window.removeEventListener("error", onError);
+    }
   });
 });

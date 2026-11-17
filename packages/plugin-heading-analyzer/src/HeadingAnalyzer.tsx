@@ -108,44 +108,61 @@ export const HeadingAnalyzer = () => {
 
   // Re-render when content changes
   useEffect(() => {
-    const frame = getFrame();
-
-    let entry = frame?.querySelector(`[data-puck-entry]`);
+    let frame: Document | undefined;
+    let entry: Element | null = null;
 
     const createHierarchy = () => {
-      setHierarchy(buildHierarchy(entry!));
+      setHierarchy(entry ? buildHierarchy(entry) : []);
     };
+
     const entryObserver = new MutationObserver(() => {
       createHierarchy();
     });
 
     const frameObserver = new MutationObserver(() => {
-      entry = frame?.querySelector(`[data-puck-entry]`);
-
-      if (entry) {
-        registerEntryObserver();
-        frameObserver.disconnect();
-      }
+      connect();
     });
 
-    const registerEntryObserver = () => {
-      if (!entry) return;
-      entryObserver.observe(entry, { subtree: true, childList: true });
-    };
+    // Bind the observers to the current preview document and entry. The iframe
+    // document is replaced once the srcDoc loads, so this may run several times.
+    const connect = () => {
+      const nextFrame = getFrame();
+      const nextEntry = nextFrame?.querySelector(`[data-puck-entry]`) ?? null;
 
-    const registerFrameObserver = () => {
-      if (!frame) return;
-      frameObserver.observe(frame, { subtree: true, childList: true });
-    };
+      if (nextFrame === frame && nextEntry === entry) return;
 
-    if (entry) {
+      frame = nextFrame;
+      entry = nextEntry;
+
+      entryObserver.disconnect();
+      frameObserver.disconnect();
+
       createHierarchy();
-      registerEntryObserver();
-    } else {
-      registerFrameObserver();
-    }
+
+      if (entry) {
+        entryObserver.observe(entry, {
+          subtree: true,
+          childList: true,
+          characterData: true,
+        });
+      } else if (frame) {
+        frameObserver.observe(frame, { subtree: true, childList: true });
+      }
+    };
+
+    // Load events don't bubble, but can be captured on the host document
+    const onLoad = (e: Event) => {
+      if ((e.target as Element | null)?.id === "preview-frame") {
+        connect();
+      }
+    };
+
+    document.addEventListener("load", onLoad, true);
+
+    connect();
 
     return () => {
+      document.removeEventListener("load", onLoad, true);
       entryObserver.disconnect();
       frameObserver.disconnect();
     };

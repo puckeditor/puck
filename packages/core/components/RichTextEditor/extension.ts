@@ -166,11 +166,17 @@ export const PuckRichText = Extension.create<PuckRichTextOptions>({
   addExtensions() {
     const extensions = [];
 
-    const options: Partial<PuckRichTextOptions> = {
-      ...this.options,
-      ...defaultPuckRichTextOptions,
-    };
+    const options: Partial<PuckRichTextOptions> = { ...this.options };
 
+    // Add puck default options merged with user-provided options
+    if (options.textAlign !== false) {
+      options.textAlign = {
+        ...defaultPuckRichTextOptions.textAlign,
+        ...options.textAlign,
+      };
+    }
+
+    // Return the configured extensions
     if (options.bold !== false) {
       extensions.push(Bold.configure(options.bold));
     }

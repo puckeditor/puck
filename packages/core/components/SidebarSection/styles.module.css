@@ -17,6 +17,11 @@
   overflow-x: auto;
 }
 
+.SidebarSection-title:has(+ * [data-puck-tablist]) {
+  border-bottom: none;
+  padding-bottom: var(--puck-space-2);
+}
+
 .SidebarSection--noBorderTop > .SidebarSection-title {
   border-top: 0px;
 }

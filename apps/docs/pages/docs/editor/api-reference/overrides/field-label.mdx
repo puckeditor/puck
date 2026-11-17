@@ -1,0 +1,22 @@
+---
+title: fieldLabel
+---
+
+# fieldLabel
+
+Override the label for all internal fields.
+
+```tsx copy
+const overrides = {
+  fieldLabel: ({ children, label }) => (
+    <label>
+      <div>{label}</div>
+      {children}
+    </label>
+  ),
+};
+```
+
+## Props
+
+See [FieldLabel](/docs/editor/api-reference/components/field-label) component.

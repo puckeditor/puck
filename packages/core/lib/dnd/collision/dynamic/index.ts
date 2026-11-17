@@ -11,6 +11,7 @@ import { getMidpointImpact } from "./get-midpoint-impact";
 import { trackMovementInterval } from "./track-movement-interval";
 import { collisionDebug } from "../collision-debug";
 import { closestCorners } from "@dnd-kit/collision";
+import { Rectangle } from "@dnd-kit/geometry";
 import { DragAxis, Direction } from "../../../../types";
 import { collisionStore } from "./store";
 
@@ -32,22 +33,40 @@ let flushNext: UniqueIdentifier = "";
  * @param dragAxis Restrict mid-point detection to a given axis, providing a traditional sortable list detection.
  * @param midpointOffset A percentage offset from the midpoint. Defaults to 5% (0.05) from the mid-point in the
  * direction of travel, helping to create "dead zone" in the center of the item.
+ * @param measureFromCursor Returns true if collisions should be measured from the cursor position rather than the dragged shape. Useful when
+ * the user expects the cursor to be the point of interaction instead of the dragged element.
  *
- * @returns
+ * @returns A collision detector function that can be used with the dnd-kit DragDropProvider.
  */
-export const createDynamicCollisionDetector = (
-  dragAxis: DragAxis,
-  midpointOffset: number = 0.05
-) =>
-  ((input) => {
+export const createDynamicCollisionDetector =
+  (
+    dragAxis: DragAxis,
+    midpointOffset: number = 0.05,
+    measureFromCursor: () => boolean = () => false
+  ): CollisionDetector =>
+  (input) => {
     const { dragOperation, droppable } = input;
 
     const { position } = dragOperation;
-    const dragShape = dragOperation.shape?.current;
+    let dragShape = dragOperation.shape?.current;
     const { shape: dropShape } = droppable;
 
     if (!dragShape || !dropShape) {
       return null;
+    }
+
+    // If we should measure from the cursor,
+    // move the original drag shape to the cursor position for measurement.
+    if (measureFromCursor() && position?.current) {
+      const { x: cx, y: cy } = dragShape.center;
+      const { left, top, width, height } = dragShape.boundingRectangle;
+
+      dragShape = new Rectangle(
+        left + (position.current.x - cx),
+        top + (position.current.y - cy),
+        width,
+        height
+      );
     }
 
     const { center: dragCenter } = dragShape;
@@ -181,4 +200,4 @@ export const createDynamicCollisionDetector = (
     collisionDebug(dragCenter, dropCenter, droppable.id.toString(), "hotpink");
 
     return null;
-  }) as CollisionDetector;
+  };
