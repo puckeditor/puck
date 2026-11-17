@@ -78,7 +78,7 @@ For agents:
   6 doctor found problems, 7 Puck Cloud unreachable, 10 action required, 11 partial.
 
   The docs for this version ship with the CLI. Start with:
-  ${CANONICAL_INVOCATION} docs cat getting-started
+  ${CANONICAL_INVOCATION} docs cat editor/getting-started
 
 Docs: ${DOCS_URL}
 `;

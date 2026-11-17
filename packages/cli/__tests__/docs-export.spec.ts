@@ -50,9 +50,9 @@ describe("docs export", () => {
 
   it("keeps the sidebar order", () => {
     expect(index.slice(0, 3).map((page) => page.path)).toEqual([
-      "index",
-      "getting-started",
-      "cli",
+      "editor/overview",
+      "editor/getting-started",
+      "editor/components-and-fields/component-configuration",
     ]);
   });
 
@@ -73,21 +73,25 @@ describe("docs export", () => {
 
   it("keeps the content of inline components", () => {
     const page = pages.find(
-      (p) => p.path === "api-reference/theming/computed-values"
+      (p) => p.path === "editor/api-reference/theming/computed-values"
     );
     expect(page?.content).toContain("| #181818 |");
   });
 
   it("turns callouts into blockquotes", () => {
-    const page = pages.find((p) => p.path === "extending-puck/ui-overrides");
+    const page = pages.find((p) => p.path === "editor/customize/ui-overrides");
     expect(page?.content).toContain(
       "> **Note:** The overrides API is highly experimental"
     );
   });
 
   it("resolves relative links", () => {
-    const page = pages.find((p) => p.path === "api-reference/fields/text");
-    expect(page?.content).toContain("[Base](/docs/api-reference/fields/base)");
+    const page = pages.find(
+      (p) => p.path === "editor/api-reference/fields/text"
+    );
+    expect(page?.content).toContain(
+      "[Base](/docs/editor/api-reference/fields/base)"
+    );
   });
 });
 
@@ -96,15 +100,15 @@ describe("platform docs", () => {
 
 ## Docs
 
-- [Introduction](/docs/index.md)
-- [Getting Started](/docs/getting-started.md)
+- [Puck Editor](/docs/editor/overview.md)
+- [Getting started](/docs/editor/getting-started.md)
 
 ### Puck AI
 - [Overview](/docs/ai/overview.md)
 - [chat](/docs/api-reference/ai/cloud-client/chat.md)
 
 ### Integrating Puck
-- [Component Configuration](/docs/integrating-puck/component-configuration.md)
+- [Component Configuration](/docs/editor/components-and-fields/component-configuration.md)
 
 ## Blog
 
@@ -159,8 +163,8 @@ chat(body);
     const paths = merged.map((page) => page.path);
 
     expect(paths.slice(0, 4)).toEqual([
-      "index",
-      "getting-started",
+      "editor/overview",
+      "editor/getting-started",
       "ai/overview",
       "api-reference/ai/cloud-client/chat",
     ]);
@@ -170,7 +174,7 @@ chat(body);
   });
 
   it("keeps local pages and ignores the blog", () => {
-    expect(requested).not.toContain("/docs/getting-started.md");
+    expect(requested).not.toContain("/docs/editor/getting-started.md");
     expect(requested.some((url) => url.startsWith("/blog"))).toBe(false);
   });
 
