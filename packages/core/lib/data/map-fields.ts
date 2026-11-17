@@ -69,6 +69,11 @@ export const walkField = ({
   const map = mappers[fieldType];
 
   if (map && fieldType === "slot") {
+    // Not slot content (e.g. an unrelated nested key sharing the slot's name)
+    if (value != null && !Array.isArray(value)) {
+      return value;
+    }
+
     const content = (value as Content) || [];
 
     const mappedContent = recurseSlots

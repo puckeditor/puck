@@ -116,4 +116,64 @@ describe("mapFields", () => {
 
     expect(result.props.nested.title).toBe("mapped:nested.title:undefined");
   });
+
+  describe("slot fields", () => {
+    const slotConfig: Config = {
+      components: {
+        WithSlot: {
+          fields: {
+            breadcrumb: { type: "slot" },
+            title: { type: "text" },
+          },
+          render: () => <div />,
+        },
+      },
+    };
+
+    const slotMappers: Mappers = {
+      slot: ({ value }) => ({ slot: value }),
+      text: ({ value }) => `mapped:${value}`,
+    };
+
+    it("maps an array value under a slot field", () => {
+      const result: any = mapFields(
+        { type: "WithSlot", props: { id: "abc", breadcrumb: [] } },
+        slotMappers,
+        slotConfig
+      );
+
+      expect(result.props.breadcrumb).toEqual({ slot: [] });
+    });
+
+    it("leaves a non-array value under a slot-named key unchanged", () => {
+      const result: any = mapFields(
+        {
+          type: "WithSlot",
+          props: {
+            id: "abc",
+            breadcrumb: [],
+            custom: { breadcrumb: "x", nested: { breadcrumb: {} } },
+          },
+        },
+        slotMappers,
+        slotConfig
+      );
+
+      expect(result.props.breadcrumb).toEqual({ slot: [] });
+      expect(result.props.custom).toEqual({
+        breadcrumb: "x",
+        nested: { breadcrumb: {} },
+      });
+    });
+
+    it("does not throw for a non-array slot value", () => {
+      const result: any = mapFields(
+        { type: "WithSlot", props: { id: "abc", breadcrumb: "x" } },
+        slotMappers,
+        slotConfig
+      );
+
+      expect(result.props.breadcrumb).toBe("x");
+    });
+  });
 });
