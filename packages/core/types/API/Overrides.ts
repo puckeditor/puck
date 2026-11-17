@@ -30,6 +30,8 @@ export type Overrides<UserConfig extends Config = Config> = OverridesGeneric<{
     label?: string;
     children: ReactNode;
     parentAction: ReactNode;
+    dragHandle?: ReactNode;
+    dragHandleRef?: (element: Element | null) => void;
   }>;
   headerActions: RenderFunc<{ children: ReactNode }>;
   preview: RenderFunc;
@@ -37,10 +39,12 @@ export type Overrides<UserConfig extends Config = Config> = OverridesGeneric<{
     children: ReactNode;
     isLoading: boolean;
     itemSelector?: ItemSelector | null;
+    fields: Partial<Record<string, ReactNode>>;
   }>;
   fieldLabel: RenderFunc<{
     children?: ReactNode;
     icon?: ReactNode;
+    endIcon?: ReactNode;
     label: string;
     el?: "label" | "div";
     readOnly?: boolean;

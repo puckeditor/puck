@@ -1,0 +1,63 @@
+.Button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--site-radius-s);
+  display: inline-flex;
+  font-family: inherit;
+  font-size: var(--site-text-small);
+  font-weight: 600;
+  gap: var(--site-space-2);
+  justify-content: center;
+  line-height: 1;
+  padding: 11px 18px;
+  text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+}
+
+.Button--large {
+  font-size: var(--site-text-body);
+  padding: 16px 26px;
+}
+
+.Button--primary {
+  background: var(--site-color-accent);
+  color: var(--site-color-on-accent);
+}
+
+/* Large primary buttons lead on with an arrow */
+.Button--primary.Button--large::after {
+  content: "→";
+  transition: transform 150ms ease;
+}
+
+.Button--secondary {
+  border-color: color-mix(in srgb, currentColor 22%, transparent);
+  color: inherit;
+}
+
+.Button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Button--primary:hover {
+    background: var(--site-color-accent-hover);
+  }
+
+  .Button--primary:hover::after {
+    transform: translateX(3px);
+  }
+
+  .Button--secondary:hover {
+    background: color-mix(in srgb, currentColor 6%, transparent);
+    border-color: color-mix(in srgb, currentColor 40%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Button--primary:hover::after {
+    transform: none;
+  }
+}

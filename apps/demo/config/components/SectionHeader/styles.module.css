@@ -1,0 +1,76 @@
+.SectionHeader {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--site-space-5);
+}
+
+.SectionHeader--center {
+  align-items: center;
+  text-align: center;
+}
+
+.SectionHeader-eyebrow {
+  color: color-mix(in srgb, currentColor 75%, transparent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* In the page hero, the eyebrow is a small badge with a status dot */
+.SectionHeader--display .SectionHeader-eyebrow {
+  align-items: center;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: var(--site-radius-full);
+  color: inherit;
+  display: inline-flex;
+  font-size: var(--site-text-small);
+  font-weight: 600;
+  gap: var(--site-space-2);
+  letter-spacing: normal;
+  padding: 6px 14px 6px 12px;
+  text-transform: none;
+}
+
+.SectionHeader--display .SectionHeader-eyebrow::before {
+  background: currentColor;
+  border-radius: var(--site-radius-full);
+  content: "";
+  height: 6px;
+  width: 6px;
+}
+
+.SectionHeader-title {
+  font-size: var(--site-heading-2);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.SectionHeader--display .SectionHeader-title {
+  font-size: var(--site-heading-1);
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.SectionHeader-description {
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  font-size: var(--site-text-lead);
+  line-height: 1.6;
+  max-width: 40rem;
+  text-wrap: pretty;
+}
+
+.SectionHeader-description p {
+  margin: 0;
+}
+
+.SectionHeader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--site-space-3);
+  margin-top: var(--site-space-3);
+}

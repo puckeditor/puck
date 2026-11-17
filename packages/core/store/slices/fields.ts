@@ -11,7 +11,7 @@ export type FieldsSlice = {
   fields: Fields | Partial<Fields>;
   loading: boolean;
   lastResolvedData: Partial<ComponentOrRootData>;
-  id: string | undefined;
+  id: string | undefined; // The item the fields belong to ("root" for root). Undefined until registered.
 };
 
 export const createFieldsSlice = (
@@ -30,12 +30,14 @@ export const useRegisterFieldsSlice = (
   appStore: ReturnType<typeof useAppStoreApi>,
   id?: string
 ) => {
+  const nodeId = id || "root";
+
   const resolveFields = useCallback(
     async (reset?: boolean) => {
       const { fields, lastResolvedData } = appStore.getState().fields;
       const metadata = appStore.getState().metadata;
       const nodes = appStore.getState().state.indexes.nodes;
-      const node = nodes[id || "root"];
+      const node = nodes[nodeId];
       const componentData = node?.data;
       const parentNode = node?.parentId ? nodes[node.parentId] : null;
       const parent = parentNode?.data || null;
@@ -52,7 +54,7 @@ export const useRegisterFieldsSlice = (
 
       if (reset) {
         appStore.setState((s) => ({
-          fields: { ...s.fields, fields: defaultFields, id },
+          fields: { ...s.fields, fields: defaultFields, id: nodeId },
         }));
 
         lastFields = defaultFields;
@@ -100,12 +102,12 @@ export const useRegisterFieldsSlice = (
             fields: newFields,
             loading: false,
             lastResolvedData: componentData,
-            id,
+            id: nodeId,
           },
         });
       } else {
         appStore.setState((s) => ({
-          fields: { ...s.fields, fields: defaultFields, id },
+          fields: { ...s.fields, fields: defaultFields, id: nodeId },
         }));
       }
     },
@@ -116,7 +118,7 @@ export const useRegisterFieldsSlice = (
     resolveFields(true);
 
     const unsubscribeData = appStore.subscribe(
-      (s) => s.state.indexes.nodes[id || "root"],
+      (s) => s.state.indexes.nodes[nodeId],
       () => resolveFields()
     );
 

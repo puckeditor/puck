@@ -8,6 +8,7 @@ import { componentKey } from "../../index";
 import { type Components } from "../../types";
 import TemplateComponent, { TemplateProps } from "./Template";
 import { templateRenderFields } from "./render-fields";
+import { FieldTabs } from "../../components/FieldTabs";
 
 const usePuck = createUsePuck();
 
@@ -29,10 +30,13 @@ async function createComponent<T extends keyof Components>(
 type TemplateData = Record<string, { label: string; data: Slot }>;
 
 export const TemplateInternal: ComponentConfig<TemplateProps> = {
+  ai: { exclude: true },
   fields: {
     template: {
       type: "custom",
-      render: ({ name, value, onChange }) => {
+      label: "Template",
+      ai: { exclude: true },
+      render: ({ field, name, value, onChange }) => {
         const templateKey = `puck-demo-templates:${componentKey}`;
 
         const props = usePuck((s) => s.selectedItem?.props) as
@@ -44,7 +48,7 @@ export const TemplateInternal: ComponentConfig<TemplateProps> = {
         );
 
         return (
-          <FieldLabel label={name}>
+          <FieldLabel label={field.label || name}>
             <AutoField
               value={value}
               onChange={onChange}
@@ -115,6 +119,9 @@ export const TemplateInternal: ComponentConfig<TemplateProps> = {
     },
     ...templateRenderFields,
   },
+  renderFields: ({ fields }) => (
+    <FieldTabs content={[fields.template]} appearance={[fields.layout]} />
+  ),
   defaultProps: {
     template: "example_1",
     children: [],

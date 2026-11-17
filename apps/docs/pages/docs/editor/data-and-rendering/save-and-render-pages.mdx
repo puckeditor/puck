@@ -1,0 +1,82 @@
+---
+title: Save and render pages
+---
+
+# Save and render pages
+
+Puck edits a [`Data`](/docs/editor/api-reference/data-model/data) object. Store it anywhere that holds JSON. Render it with [`<Render>`](/docs/editor/api-reference/components/render).
+
+## Save the data
+
+[`onPublish`](/docs/editor/api-reference/components/puck#onpublishdata) runs when the user clicks "Publish". Send the data to your server:
+
+```jsx showLineNumbers copy filename="Editor.jsx"
+import { Puck } from "@puckeditor/core";
+
+const saveData = () => {}; // Save to your backend
+
+export function Editor({ path, data }) {
+  return (
+    <Puck
+      config={config}
+      data={data}
+      onPublish={async (newData) => {
+        await saveData(path, newData);
+      }}
+    />
+  );
+}
+```
+
+Don't have a backend? Try [Puck Pages](/docs/cloud/pages/overview) to store your pages in [Puck Cloud](/docs/cloud/overview), with built-in drafts, versions and data migrations.
+
+## Load the data
+
+To continue editing, pass the saved data to `<Puck>`:
+
+```tsx showLineNumbers copy {3,4,6}
+import { Puck } from "@puckeditor/core";
+
+const getPage = () => {}; // Read from your database
+const data = await getPage(path);
+
+export function Editor() {
+  return <Puck config={config} data={data} />;
+}
+```
+
+## Render the page
+
+Render the saved data with [`<Render>`](/docs/editor/api-reference/components/render) and the same config:
+
+```jsx showLineNumbers copy filename="Page.jsx" {3,4,7}
+import { Render } from "@puckeditor/core";
+
+const getPage = () => {}; // Read from your database
+const data = await getPage(path);
+
+export function Page() {
+  return <Render config={config} data={data} />;
+}
+```
+
+If your components use [`resolveData`](/docs/editor/api-reference/configuration/component-config#resolvedatadata-params), run [`resolveAllData()`](/docs/editor/api-reference/functions/resolve-all-data) first. The page then renders with the resolved props:
+
+```tsx showLineNumbers copy {5}
+import { Render, resolveAllData } from "@puckeditor/core";
+
+const getPage = () => {}; // Read from your database
+const data = await getPage(path);
+const resolvedData = await resolveAllData(data, config);
+
+export function Page() {
+  return <Render config={config} data={resolvedData} />;
+}
+```
+
+## Further reading
+
+- [`<Puck>` API reference](/docs/editor/api-reference/components/puck)
+- [`<Render>` API reference](/docs/editor/api-reference/components/render)
+- [`resolveAllData()` API reference](/docs/editor/api-reference/functions/resolve-all-data)
+- [Pages overview](/docs/cloud/pages/overview)

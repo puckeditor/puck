@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
 cd packages/core && pnpm publish --access public --tag $1 --no-git-checks
 cd ../../
 
@@ -13,5 +16,5 @@ cd ../../
 cd packages/cli && pnpm publish --access public --tag $1 --no-git-checks
 cd ../../
 
-cd packages/create-puck-app && pnpm run removeGitignore && pnpm publish --access public --tag $1 --no-git-checks && pnpm run restoreGitignore
+cd packages/create-puck-app && pnpm run removeGitignore && pnpm publish --access public --tag $1 --no-git-checks && pnpm run restoreGitignore || exit 1
 cd ../../
