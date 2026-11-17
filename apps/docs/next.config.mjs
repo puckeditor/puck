@@ -111,6 +111,16 @@ export default withNextra({
           "editor/customize/internal-puck-api",
         ],
         ["integrating-puck/data-migration", "editor/migrations/data-migration"],
+        [
+          "api-reference/overrides/components",
+          "editor/api-reference/overrides/drawer",
+        ],
+        [
+          "api-reference/overrides/component-item",
+          "editor/api-reference/overrides/drawer-item",
+        ],
+        ["api-reference/theming", "editor/api-reference/theming/global"],
+        ["extending-puck/theming/:path*", "editor/customize/theming"],
         ["integrating-puck/:path*", "editor/overview"],
         ["extending-puck/:path*", "editor/overview"],
         ["guides/migrations/:path*", "editor/migrations/:path*"],
