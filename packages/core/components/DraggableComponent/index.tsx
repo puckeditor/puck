@@ -349,7 +349,10 @@ export const DraggableComponent = ({
         : componentRef.current?.closest<HTMLElement>("[data-puck-preview]") ??
             document.body
     );
-  }, [iframe.enabled]);
+  }, [
+    iframe.enabled,
+    componentRef.current, // Update the portal if the element mounts late or changes
+  ]);
 
   const [style, setStyle] = useState<CSSProperties>();
   const lastRectRef = useRef<DOMRectReadOnly | null>(null);
