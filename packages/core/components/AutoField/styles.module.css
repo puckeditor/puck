@@ -431,3 +431,22 @@ textarea.Input-input {
     var(--puck-space-1) * -1
   ); /* Remove strange bottom border */
 }
+
+.InputValidation {
+  color: var(--puck-color-text-secondary);
+  font-size: var(--puck-font-size-xxs);
+  line-height: 1.4;
+  padding-top: var(--puck-space-2);
+}
+
+.InputValidation--error {
+  color: var(--puck-color-red-04);
+}
+
+.InputValidation--warning {
+  color: var(--puck-color-yellow-04);
+}
+
+.InputValidation--success {
+  color: var(--puck-color-green-04);
+}

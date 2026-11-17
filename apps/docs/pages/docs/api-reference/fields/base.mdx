@@ -4,12 +4,13 @@ The base type shared by all fields.
 
 ## Params
 
-| Param                     | Example               | Type      | Status |
-| ------------------------- | --------------------- | --------- | ------ |
-| [`label`](#label)         | `label: "Title"`      | String    | -      |
-| [`labelIcon`](#labelicon) | `labelIcon: <Icon />` | ReactNode | -      |
-| [`metadata`](#metadata)   | `metadata: {}`        | Object    | -      |
-| [`visible`](#visible)     | `visible: false`      | Boolean   | -      |
+| Param                        | Example                       | Type      | Status |
+| ---------------------------- | ----------------------------- | --------- | ------ |
+| [`label`](#label)            | `label: "Title"`              | String    | -      |
+| [`labelIcon`](#labelicon)    | `labelIcon: <Icon />`         | ReactNode | -      |
+| [`metadata`](#metadata)      | `metadata: {}`                | Object    | -      |
+| [`validate`](#validatevalue) | `validate: (value) => "Oops"` | Function  | -      |
+| [`visible`](#visible)        | `visible: false`              | Boolean   | -      |
 
 ## Optional params
 
@@ -74,6 +75,56 @@ const config = {
   },
 };
 ```
+
+### `validate(value)`
+
+Validate the value of the field. The function receives the current value and runs whenever it changes. Puck shows the returned message beneath the field.
+
+Return a string to show an error:
+
+```tsx {6-9} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        title: {
+          validate: (value) =>
+            value.length > 30
+              ? `You've added ${value.length} characters but only 30 are allowed`
+              : null,
+          // ...
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+Or return an object to choose the message type. Available types are `"error"`, `"warning"`, `"info"` and `"success"`. Defaults to `"error"`.
+
+```tsx {6-9} copy
+const config = {
+  components: {
+    Example: {
+      fields: {
+        title: {
+          validate: (value) =>
+            value.length > 20
+              ? { type: "warning", message: "Shorter titles work best" }
+              : null,
+          // ...
+        },
+      },
+      // ...
+    },
+  },
+};
+```
+
+Return a falsy value when there is nothing to report.
+
+Validation is informative. It doesn't prevent the value from changing or the data from being published.
 
 ### `visible`
 

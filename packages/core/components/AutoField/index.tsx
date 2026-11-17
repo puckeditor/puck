@@ -33,6 +33,7 @@ import type {
   FieldPropsInternalOptional,
 } from "./FieldLabel";
 import { FieldLabelInternal } from "./FieldLabel";
+import { FieldValidationMessage } from "./FieldValidation";
 import { useFieldStoreApi, fieldContextStore } from "./store";
 import { useLocalValue } from "./lib/use-local-value";
 import { useExpandedFieldGroup } from "../FieldGroup";
@@ -247,6 +248,7 @@ function AutoFieldInternal<
         <FieldComponent {...mergedProps}>
           <Children {...(mergedProps as any)} />
         </FieldComponent>
+        <FieldValidationMessage field={field} path={fieldPath} />
       </div>
     </NestedFieldContext.Provider>
   );

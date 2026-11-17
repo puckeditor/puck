@@ -16,11 +16,38 @@ type FieldOption = {
 
 type FieldOptions = Array<FieldOption> | ReadonlyArray<FieldOption>;
 
+export type FieldValidationType = "error" | "warning" | "info" | "success";
+
+export type FieldValidation = {
+  type: FieldValidationType;
+  message: string;
+};
+
+/**
+ * The value returned by a field's `validate` function.
+ *
+ * - A string is shorthand for an `error` message.
+ * - An object lets you choose the message type.
+ * - Any falsy value means there is nothing to report.
+ */
+export type FieldValidationResult =
+  | string
+  | { type?: FieldValidationType; message: string }
+  | null
+  | undefined
+  | false
+  | void;
+
+export type FieldValidator<ValueType = any> = (
+  value: ValueType
+) => FieldValidationResult;
+
 export interface BaseField {
   label?: string;
   labelIcon?: ReactElement;
   metadata?: FieldMetadata;
   visible?: boolean;
+  validate?: FieldValidator;
 }
 
 export interface TextField extends BaseField {
