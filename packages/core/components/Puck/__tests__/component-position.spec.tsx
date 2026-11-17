@@ -135,15 +135,16 @@ describe("component positioning", () => {
     ],
   };
 
-  it("makes static components relative", async () => {
+  it("doesn't set an inline position on components", async () => {
     render(<Puck config={config} data={data} iframe={{ enabled: false }} />);
 
     await flush();
 
     const el = screen.getByTestId("static");
 
+    // The default position comes from the stylesheet, so it can be overridden
     expect(el).toHaveAttribute("data-puck-component", "Static-1");
-    expect(el.style.position).toBe("relative");
+    expect(el.style.position).toBe("");
   });
 
   it("preserves the position of positioned components", async () => {

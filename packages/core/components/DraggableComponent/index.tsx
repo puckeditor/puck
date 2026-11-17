@@ -557,17 +557,6 @@ export const DraggableComponent = ({
 
     el.setAttribute("data-puck-component", id);
     el.setAttribute("data-puck-dnd", id);
-
-    // Only position static elements. Elements that are already positioned
-    // (i.e. fixed, absolute or sticky) must keep their position, otherwise
-    // components like modals or sticky headers break when using `dragRef`.
-    const { position } = window.getComputedStyle(el);
-    const shouldSetPosition = !position || position === "static";
-
-    if (shouldSetPosition) {
-      el.style.position = "relative";
-    }
-
     el.addEventListener("click", onClick);
     el.addEventListener("mouseover", _onMouseOver);
     el.addEventListener("mouseout", _onMouseOut);
@@ -575,11 +564,6 @@ export const DraggableComponent = ({
     return () => {
       el.removeAttribute("data-puck-component");
       el.removeAttribute("data-puck-dnd");
-
-      if (shouldSetPosition) {
-        el.style.position = "";
-      }
-
       el.removeEventListener("click", onClick);
       el.removeEventListener("mouseover", _onMouseOver);
       el.removeEventListener("mouseout", _onMouseOut);

@@ -5,6 +5,15 @@
   -webkit-user-select: none;
 }
 
+/*
+ * Position components by default, without any specificity. This lets components
+ * that set their own position (i.e. fixed, absolute or sticky) keep it, no matter
+ * how or when their styles are applied.
+ */
+:where([data-puck-component]) {
+  position: relative;
+}
+
 [data-puck-component] {
   cursor: grab;
   pointer-events: auto !important;
