@@ -4,6 +4,7 @@ import { ComponentData, ResolveDataTrigger, UiState } from "../../types";
 import { getSelectorForId } from "../get-selector-for-id";
 
 import { toComponent } from "./to-component";
+import { toRoot } from "./to-root";
 
 /**
  * Resolves the data of a component and replaces it in the appStore state.
@@ -26,6 +27,19 @@ export async function resolveAndReplaceData(
     trigger
   );
   if (!resolvedResult.didChange && !writeThrough) return;
+
+  const isRoot =
+    resolvedResult.node.type === "root" ||
+    resolvedResult.node.props.id === "root";
+
+  if (isRoot) {
+    getState().dispatch({
+      type: "replaceRoot",
+      root: toRoot(resolvedResult.node),
+      ui,
+    });
+    return;
+  }
 
   const itemSelector = getSelectorForId(
     getState().state,

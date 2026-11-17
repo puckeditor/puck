@@ -1,0 +1,102 @@
+.Steps-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.Steps-list {
+  display: grid;
+  gap: var(--site-space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Steps-step {
+  background: var(--site-color-surface);
+  border: 1px solid var(--site-color-border);
+  border-radius: var(--site-radius-l);
+  box-shadow: var(--site-shadow);
+  display: grid;
+  gap: var(--site-space-5);
+  overflow: hidden;
+  padding: clamp(24px, 4vw, 48px);
+}
+
+.Steps--inverse .Steps-step {
+  background: color-mix(
+    in srgb,
+    var(--site-color-text-inverse) 6%,
+    var(--site-color-background-inverse)
+  );
+  border-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.Steps-content {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--site-space-3);
+  max-width: 32rem;
+}
+
+.Steps-label {
+  color: color-mix(in srgb, currentColor 65%, transparent);
+  font-size: var(--site-text-caption);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--site-space-1);
+  text-transform: uppercase;
+}
+
+.Steps-title {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.Steps-description {
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  font-size: var(--site-text-lead);
+  line-height: 1.6;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.Steps-image {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--site-radius-m);
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.Steps-number {
+  align-self: end;
+  color: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: clamp(96px, 14vw, 200px);
+  font-weight: 800;
+  justify-self: end;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+}
+
+@media (min-width: 1024px) {
+  .Steps-step {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 240px;
+  }
+}
+
+/* Each step sticks a little lower than the one before, so the steps pile up
+   like a stack of cards while scrolling. Only on screens tall enough to fit a whole
+   step, so none gets stuck half hidden. */
+@media (min-width: 1024px) and (min-height: 800px) {
+  .Steps-step {
+    position: sticky;
+    top: calc(96px + var(--step-index) * 24px);
+  }
+}

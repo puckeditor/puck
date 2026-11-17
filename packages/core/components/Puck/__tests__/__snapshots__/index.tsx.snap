@@ -28,7 +28,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
         "type": "text",
       },
     },
-    "id": undefined,
+    "id": "root",
     "lastResolvedData": {},
     "loading": false,
   },
@@ -80,6 +80,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
           "ui": {
             "arrayState": {},
             "componentList": {},
+            "expandedFieldGroups": {},
             "field": {
               "focus": null,
             },
@@ -143,6 +144,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
       "ui": {
         "arrayState": {},
         "componentList": {},
+        "expandedFieldGroups": {},
         "field": {
           "focus": null,
         },
@@ -176,7 +178,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
     "syncHostStyles": true,
     "waitForStyles": true,
   },
-  "instanceId": "_r_5_",
+  "instanceId": "_r_9_",
   "metadata": undefined,
   "nodes": {
     "registerNode": [Function],
@@ -249,6 +251,7 @@ exports[`Puck should generate the correct state on mount 1`] = `
     "ui": {
       "arrayState": {},
       "componentList": {},
+      "expandedFieldGroups": {},
       "field": {
         "focus": null,
       },

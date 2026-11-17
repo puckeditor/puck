@@ -1,22 +1,31 @@
 "use client";
 
+import React, { useMemo } from "react";
+
 import { rootZone } from "../../lib/root-droppable-id";
-import { useSlots } from "../../lib/use-slots";
-import { Config, Data, Metadata, UserGenerics } from "../../types";
+import useRenderProps from "../../lib/props/render/use-render-props";
+
+import {
+  Config,
+  Data,
+  Metadata,
+  UserGenerics,
+  FieldTransforms,
+} from "../../types";
+
 import {
   DropZonePure,
   DropZoneProvider,
   DropZoneRenderPure,
 } from "../DropZone";
-import React, { useMemo } from "react";
 import { SlotRender } from "../SlotRender";
 import { DropZoneContext } from "../DropZone/context";
-import { useRichtextProps } from "../RichTextEditor/lib/use-richtext-props";
 
 export const renderContext = React.createContext<{
   config: Config;
   data: Data;
   metadata: Metadata;
+  fieldTransforms?: FieldTransforms;
 }>({
   config: { components: {} },
   data: { root: {}, content: [] },
@@ -30,11 +39,17 @@ export function Render<
   config,
   data,
   metadata = {},
+  fieldTransforms: userFieldTransforms,
 }: {
   config: UserConfig;
   data: Partial<G["UserData"] | Data>;
   metadata?: Metadata;
+  fieldTransforms?: FieldTransforms<UserConfig>;
 }) {
+  // The generic only exists to type the user's transforms against their own
+  // field types. Everything downstream works off the unparameterised type.
+  const fieldTransforms = userFieldTransforms as FieldTransforms | undefined;
+
   const defaultedData = {
     ...data,
     root: data.root || {},
@@ -61,13 +76,19 @@ export function Render<
     id: "puck-root",
   };
 
-  const propsWithSlots = useSlots(
+  const renderProps = useRenderProps(
     config,
     { type: "root", props: pageProps },
-    (props) => <SlotRender {...props} config={config} metadata={metadata} />
+    (props) => (
+      <SlotRender
+        {...props}
+        config={config}
+        metadata={metadata}
+        fieldTransforms={fieldTransforms}
+      />
+    ),
+    fieldTransforms
   );
-
-  const richtextProps = useRichtextProps(config.root?.fields, pageProps);
 
   const nextContextValue = useMemo<DropZoneContext>(
     () => ({
@@ -79,9 +100,11 @@ export function Render<
 
   if (config.root?.render) {
     return (
-      <renderContext.Provider value={{ config, data: defaultedData, metadata }}>
+      <renderContext.Provider
+        value={{ config, data: defaultedData, metadata, fieldTransforms }}
+      >
         <DropZoneProvider value={nextContextValue}>
-          <config.root.render {...propsWithSlots} {...richtextProps}>
+          <config.root.render {...renderProps}>
             <DropZoneRenderPure zone={rootZone} />
           </config.root.render>
         </DropZoneProvider>
@@ -90,7 +113,9 @@ export function Render<
   }
 
   return (
-    <renderContext.Provider value={{ config, data: defaultedData, metadata }}>
+    <renderContext.Provider
+      value={{ config, data: defaultedData, metadata, fieldTransforms }}
+    >
       <DropZoneProvider value={nextContextValue}>
         <DropZoneRenderPure zone={rootZone} />
       </DropZoneProvider>

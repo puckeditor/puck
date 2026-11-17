@@ -7,6 +7,12 @@ import { HeadingProps } from "./blocks/Heading";
 import { FlexProps } from "./blocks/Flex";
 import { LogosProps } from "./blocks/Logos";
 import { StatsProps } from "./blocks/Stats";
+import { FeatureGridProps } from "./blocks/FeatureGrid";
+import { CTAProps } from "./blocks/CTA";
+import { FAQProps } from "./blocks/FAQ";
+import { StepsProps } from "./blocks/Steps";
+import { FeatureSplitProps } from "./blocks/FeatureSplit";
+import { BentoProps } from "./blocks/Bento";
 import { TemplateProps } from "./blocks/Template";
 import { TextProps } from "./blocks/Text";
 import { SpaceProps } from "./blocks/Space";
@@ -25,6 +31,12 @@ export type Components = {
   Flex: FlexProps;
   Logos: LogosProps;
   Stats: StatsProps;
+  FeatureGrid: FeatureGridProps;
+  CTA: CTAProps;
+  FAQ: FAQProps;
+  Steps: StepsProps;
+  FeatureSplit: FeatureSplitProps;
+  Bento: BentoProps;
   Template: TemplateProps;
   Text: TextProps;
   Space: SpaceProps;
@@ -34,7 +46,14 @@ export type Components = {
 export type UserConfig = Config<{
   components: Components;
   root: RootProps;
-  categories: ["layout", "typography", "interactive"];
+  categories: [
+    "layout",
+    "typography",
+    "interactive",
+    "introduction",
+    "content",
+    "socialProof"
+  ];
   fields: {
     userField: {
       type: "userField";
