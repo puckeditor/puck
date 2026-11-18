@@ -12,8 +12,6 @@ export interface PuckPlugin {
   source: string;
   /** The module-level constant holding the plugin, e.g. authPlugin */
   local: string;
-  /** Stylesheet imported alongside it */
-  css?: string;
 }
 
 const isPuckElement = (node: Node, puck: string): node is JSXOpeningElement =>
@@ -121,10 +119,7 @@ export const ensurePuckPlugin = (
   );
   const last = imports[imports.length - 1];
   const semi = !last || code[last.end! - 1] === ";" ? ";" : "";
-  const lines = [
-    `import { ${plugin.factory} } from ${q}${plugin.source}${q}${semi}`,
-    ...(plugin.css ? [`import ${q}${plugin.css}${q}${semi}`] : []),
-  ].join("\n");
+  const lines = `import { ${plugin.factory} } from ${q}${plugin.source}${q}${semi}`;
   const created = `const ${plugin.local} = ${plugin.factory}()${semi}`;
   edits.push(
     last

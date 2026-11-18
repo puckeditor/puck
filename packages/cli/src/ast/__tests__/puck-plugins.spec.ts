@@ -5,7 +5,6 @@ const AUTH = {
   factory: "createAuthPlugin",
   source: "@puckeditor/plugin-auth",
   local: "authPlugin",
-  css: "@puckeditor/plugin-auth/styles.css",
 };
 
 const codeOf = (result: { status: string; code?: string }) =>
@@ -31,7 +30,6 @@ export function Editor() {
 import { Puck } from "@puckeditor/core";
 import config from "./puck.config";
 import { createAuthPlugin } from "@puckeditor/plugin-auth";
-import "@puckeditor/plugin-auth/styles.css";
 
 const authPlugin = createAuthPlugin();
 
