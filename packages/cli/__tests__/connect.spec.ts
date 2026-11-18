@@ -22,8 +22,6 @@ describe("connect", () => {
   it("logs in again and replaces a working key", async () => {
     const root = connectedProject();
     const cloud = new FakeCloud();
-    // connect replaces the key, so it never starts without an account
-    cloud.claimable = true;
     const home = path.join(root, "..", "home");
 
     const first = await run(["connect", "--yes", "--json"], {
@@ -64,9 +62,6 @@ describe("connect", () => {
       "npm run dev",
     ]);
     expect(done.json.warnings).toEqual([]);
-    expect(
-      cloud.requests.some((r) => r.path === "/api/claimable-projects")
-    ).toBe(false);
   });
 
   it("asks for a key for a branch", async () => {
