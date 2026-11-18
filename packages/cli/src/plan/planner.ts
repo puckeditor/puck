@@ -40,6 +40,8 @@ export class Planner {
   }[] = [];
   /** Set when the app itself is being scaffolded in this run */
   scaffolded = false;
+  /** What this run sets up */
+  capabilities: CapabilityId[] = [];
   /** Where a client-only app gets its server, once resolved */
   backend?: ResolvedBackend;
   /** Puck Cloud API host for puckHandler, when not the default */

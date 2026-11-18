@@ -41,6 +41,8 @@ export interface FrameworkAdapter<I extends FrameworkInfo = FrameworkInfo> {
    */
   kind?: "server";
   recipe: (withAi: boolean) => RecipeName;
+  /** Recipe files that store pages locally, which new apps with Puck Pages leave out */
+  localPagesFiles?: string[];
   /** For new apps, when this Node can't run the recipe's framework version */
   legacyScaffold?: (nodeVersion: string) => LegacyScaffold | null;
   /** Recipe-relative path of the Puck Cloud route, pointed at PUCK_CLOUD_URL when scaffolding */

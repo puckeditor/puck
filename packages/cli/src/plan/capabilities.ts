@@ -65,6 +65,7 @@ const planPluginAiUpgrade = (p: Planner, capability: CapabilityId) => {
 };
 
 export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
+  p.capabilities = capabilities;
   const framework = p.ctx.framework!;
   const adapter = adapterFor(framework);
   const status = capabilityStatus(p.state);

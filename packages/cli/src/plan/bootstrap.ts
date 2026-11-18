@@ -34,6 +34,7 @@ export const scaffoldApp = (
     cloudHost,
     legacy,
     canary,
+    exclude,
   }: {
     recipe: RecipeName;
     dir: string;
@@ -42,9 +43,11 @@ export const scaffoldApp = (
     cloudHost?: string;
     legacy?: LegacyScaffold | null;
     canary?: Record<string, string>;
+    /** Recipe files to leave out */
+    exclude?: string[];
   }
 ) => {
-  const files = templates.list(recipe);
+  const files = templates.list(recipe).filter((rel) => !exclude?.includes(rel));
 
   for (const rel of files) {
     const target = path.join(dir, ...rel.split("/"));

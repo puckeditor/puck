@@ -83,6 +83,17 @@ export const NEXT_AI_EDITOR_EXCLUDED = [
   "tsconfig/nextjs.json",
 ];
 
+/**
+ * Recipe files that store pages locally. Puck Pages replaces what reads them,
+ * but not the routes that save to them.
+ */
+const NEXT_LOCAL_PAGES = [
+  "database.json",
+  "lib/get-page.ts",
+  "app/api/pages/route.ts",
+  "app/puck/api/route.ts",
+];
+
 export const NEXT_AI_EDITOR_MAPPED = [
   "app/[...puckPath]/client.tsx",
   "app/[...puckPath]/page.tsx",
@@ -234,7 +245,15 @@ export const planNextEditor = (
   }
 
   planPuckConfig(p, recipe);
-  copyTemplateFiles(p, recipe, files, nextRelocation(p, info));
+  copyTemplateFiles(
+    p,
+    recipe,
+    // Puck Pages, set up later in this run, saves to Puck Cloud instead
+    p.capabilities.includes("pages")
+      ? files.filter((f) => !NEXT_LOCAL_PAGES.includes(f.from))
+      : files,
+    nextRelocation(p, info)
+  );
 
   const existingProxy = findProxy(p);
   const proxyRel = proxyFile(info);
@@ -341,7 +360,10 @@ export const planNextAi = (p: Planner, info: NextLikeInfo) => {
     `Render AI-designed components in ${A}/[...puckPath]/client.tsx`
   );
 
-  const pages = p.state.scan.pagesPluginFiles.length > 0;
+  // Including Puck Pages set up later in this run, which saves to Puck Cloud
+  const pages =
+    p.state.scan.pagesPluginFiles.length > 0 ||
+    p.capabilities.includes("pages");
   if (pages && (editor === "upgraded" || editor === "already")) {
     // Pages are saved to Puck Cloud
   } else if (editor === "upgraded" || editor === "already") {
@@ -595,6 +617,7 @@ await requirePuckSession("/puck");
 
 export const nextAdapter: FrameworkAdapter<NextLikeInfo> = {
   recipe: (withAi) => (withAi ? "next-ai" : "next"),
+  localPagesFiles: NEXT_LOCAL_PAGES,
   recipeCloudRoute: NEXT_CLOUD_ROUTE_FILE("app"),
   appDir: (info) => info.appDir,
   configDirs: () => ["", "src"],

@@ -138,6 +138,61 @@ describe("add pages", () => {
     );
   });
 
+  describe("with Puck AI in the same run", () => {
+    const LOCAL = [
+      "database.json",
+      "lib/get-page.ts",
+      "app/api/pages/route.ts",
+      "app/puck/api/route.ts",
+    ];
+    const AI_AND_PAGES = ["--ai", "--pages", "--no-auth", "--yes", "--json"];
+    const localFiles = (root: string) =>
+      LOCAL.filter((file) => exists(root, file));
+    const codesOf = (json: { warnings: { code: string }[] }) =>
+      json.warnings.map((w) => w.code);
+
+    it("creates a new app without local page storage", async () => {
+      const root = tmpProject("empty");
+      const { json } = await run(
+        [
+          "init",
+          ...AI_AND_PAGES,
+          "--framework",
+          "next",
+          "--name",
+          "site",
+          ...KEY,
+        ],
+        { cwd: root }
+      );
+
+      expect(json.status).toBe("success");
+      expect(localFiles(path.join(root, "site"))).toEqual([]);
+      expect(codesOf(json)).not.toContain("PUCK-CLI-W-LOCAL-PAGES");
+    });
+
+    it("adds the editor without local page storage", async () => {
+      const root = tmpProject({ tree: nextMinimal() });
+      const { json } = await run(["init", ...AI_AND_PAGES, ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(localFiles(root)).toEqual([]);
+      expect(codesOf(json)).not.toContain("PUCK-CLI-W-LOCAL-PAGES");
+    });
+
+    it("doesn't add the AI editor's save route to an existing editor", async () => {
+      const root = tmpProject({ recipe: "next" });
+      const { json } = await run(["init", ...AI_AND_PAGES, ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(exists(root, "app/api/pages/route.ts")).toBe(false);
+    });
+  });
+
   it("recognises an AI editor that imports the plugin's stylesheet", async () => {
     const root = tmpProject({ recipe: "next-ai" });
     rewrite(

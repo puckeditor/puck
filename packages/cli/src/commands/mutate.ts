@@ -186,6 +186,9 @@ export const runMutation = async (
       cloudHost,
       legacy,
       canary: canary?.versions,
+      exclude: input.requested.includes("pages")
+        ? adapter.localPagesFiles
+        : undefined,
     });
     scaffoldStep = {
       id: "bootstrap:scaffold",
