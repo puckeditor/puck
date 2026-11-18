@@ -39,6 +39,7 @@ import {
   planRouteAuth,
   warnLocalPages,
   withAuthPlugin,
+  planAuthHelper,
 } from "./pages-auth";
 
 export const TANSTACK_START_CLOUD_ROUTE_FILE = (routesDir: string) =>
@@ -417,12 +418,7 @@ export const planTanStackStartPages = (p: Planner, info: TanStackStartInfo) => {
 export const planTanStackStartAuth = (p: Planner, info: TanStackStartInfo) => {
   const to = locate(info);
   const helper = to("src/lib/puck-auth.ts");
-  if (
-    p.createFile(helper, tanstackPuckAuth(p.cloudHost), {
-      capability: "auth",
-      summary: `Create ${helper} (requires Sign in with Puck)`,
-    }) === "conflict"
-  ) {
+  if (planAuthHelper(p, helper, tanstackPuckAuth(p.cloudHost)) === "conflict") {
     p.manual({
       id: "auth:helper",
       type: "manual_edit",

@@ -8,6 +8,28 @@ const SIGN_IN_IMPORT = `import { loginUrl, puckCloud } from "${CLOUD_CLIENT_PACK
 const puckClient = (host?: string) =>
   `const puck = puckCloud(${host ? `{ host: ${JSON.stringify(host)} }` : ""});`;
 
+/**
+ * A sign-in helper as the CLI wrote it before cloud-client 0.10, which
+ * removed getPuckIdentity in favour of puck.auth.getSession
+ */
+export const legacySignIn = (code: string) => {
+  const client = /\nconst puck = puckCloud\((.*)\);\n/;
+  const options = client.exec(code)?.[1];
+  return code
+    .replace(
+      SIGN_IN_IMPORT,
+      `import { getPuckIdentity, loginUrl } from "${CLOUD_CLIENT_PACKAGE}";`
+    )
+    .replace(client, "")
+    .replace(
+      /puck\.auth\.getSession\((await headers\(\)|\w+(?:\(\))?)\)/,
+      (_, from: string) =>
+        `getPuckIdentity(${
+          from === "await headers()" ? from : `${from}.headers`
+        }${options ? `, ${options}` : ""})`
+    );
+};
+
 /** Whether a Cloud route requires Sign in with Puck */
 export const requiresSignIn = (route: string) =>
   /\bprovider:\s*["']puck["']/.test(route);

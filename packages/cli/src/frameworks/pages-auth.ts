@@ -2,8 +2,27 @@ import type { Planner } from "../plan/planner";
 import type { CapabilityId } from "../result";
 import type { PuckPlugin } from "../ast/puck-plugins";
 import { ensurePuckPlugin } from "../ast/puck-plugins";
-import { withRouteAuth } from "../templates/auth";
+import { legacySignIn, withRouteAuth } from "../templates/auth";
 import { PLUGIN_AUTH_PACKAGE } from "../constants";
+
+/**
+ * Creates the sign-in helper, or brings one an older CLI wrote with
+ * getPuckIdentity up to date
+ */
+export const planAuthHelper = (p: Planner, helper: string, code: string) => {
+  const current = p.vfs.readText(p.abs(helper))?.replace(/\r\n/g, "\n");
+  if (current === legacySignIn(code)) {
+    p.modifyFile(helper, code, {
+      capability: "auth",
+      summary: `Check sessions with puck.auth.getSession in ${helper}`,
+    });
+    return "created";
+  }
+  return p.createFile(helper, code, {
+    capability: "auth",
+    summary: `Create ${helper} (requires Sign in with Puck)`,
+  });
+};
 
 export const AUTH_PLUGIN: PuckPlugin = {
   factory: "createAuthPlugin",

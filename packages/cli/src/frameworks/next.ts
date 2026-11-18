@@ -32,6 +32,7 @@ import {
   planRouteAuth,
   warnLocalPages,
   withAuthPlugin,
+  planAuthHelper,
 } from "./pages-auth";
 
 export const NEXT_CLOUD_ROUTE_FILE = (appDir: string) =>
@@ -549,10 +550,7 @@ export const planNextAuth = (p: Planner, info: NextLikeInfo) => {
   const lib = `${info.baseDir ? `${info.baseDir}/` : ""}lib`;
 
   const helper = `${lib}/puck-auth.ts`;
-  const created = p.createFile(helper, nextPuckAuth(p.cloudHost), {
-    capability: "auth",
-    summary: `Create ${helper} (requires Sign in with Puck)`,
-  });
+  const created = planAuthHelper(p, helper, nextPuckAuth(p.cloudHost));
   if (created === "conflict") {
     p.manual({
       id: "auth:helper",

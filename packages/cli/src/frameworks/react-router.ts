@@ -42,6 +42,7 @@ import {
   planRouteAuth,
   warnLocalPages,
   withAuthPlugin,
+  planAuthHelper,
 } from "./pages-auth";
 import { planOptimizeDeps } from "./vite";
 
@@ -502,10 +503,7 @@ export const planReactRouterAuth = (p: Planner, info: ReactRouterInfo) => {
   const A = info.appDir;
   const helper = `${A}/lib/puck-auth.server.ts`;
   if (
-    p.createFile(helper, reactRouterPuckAuth(p.cloudHost), {
-      capability: "auth",
-      summary: `Create ${helper} (requires Sign in with Puck)`,
-    }) === "conflict"
+    planAuthHelper(p, helper, reactRouterPuckAuth(p.cloudHost)) === "conflict"
   ) {
     p.manual({
       id: "auth:helper",

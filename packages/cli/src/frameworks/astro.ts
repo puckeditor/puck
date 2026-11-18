@@ -21,6 +21,7 @@ import {
   planRouteAuth,
   warnLocalPages,
   withAuthPlugin,
+  planAuthHelper,
 } from "./pages-auth";
 import {
   configModuleTarget,
@@ -493,12 +494,7 @@ export const planAstroAuth = (p: Planner, info: AstroInfo) => {
 
   if (onServer) {
     const helper = "src/lib/puck-auth.ts";
-    if (
-      p.createFile(helper, astroPuckAuth(p.cloudHost), {
-        capability: "auth",
-        summary: `Create ${helper} (requires Sign in with Puck)`,
-      }) === "conflict"
-    ) {
+    if (planAuthHelper(p, helper, astroPuckAuth(p.cloudHost)) === "conflict") {
       p.manual({
         id: "auth:helper",
         type: "manual_edit",

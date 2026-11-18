@@ -157,6 +157,21 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
       }
       adapter.planAuth(p, framework);
 
+      // Code the CLI didn't write, so couldn't bring up to date
+      for (const file of p.state.scan.legacySignInFiles) {
+        if (!p.vfs.readText(p.abs(file))?.includes("getPuckIdentity")) continue;
+        p.manual({
+          id: `auth:get-session:${file}`,
+          type: "manual_edit",
+          capability: "auth",
+          required: true,
+          file,
+          reason: "unsupported_shape",
+          message: `${file} calls getPuckIdentity, which ${CLOUD_CLIENT_PACKAGE} 0.10 removed.`,
+          instructions: `In ${file}, replace getPuckIdentity(headers) with puckCloud().auth.getSession(headers), importing puckCloud from ${CLOUD_CLIENT_PACKAGE}.`,
+        });
+      }
+
       if (!capabilities.includes("pages") && !status.pages.satisfied) {
         p.warn(
           "PUCK-CLI-W-LOCAL-SAVE-PUBLIC",

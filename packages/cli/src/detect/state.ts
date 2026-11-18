@@ -234,6 +234,10 @@ export const capabilityStatus = (
   }
   if (!state.cloud.external && !state.auth.routeAuthenticated)
     authMissing.push("The Puck Cloud API route doesn't use Sign in with Puck");
+  for (const file of state.scan.legacySignInFiles)
+    authMissing.push(
+      `${file} calls getPuckIdentity, which ${CLOUD_CLIENT_PACKAGE} 0.10 removed`
+    );
 
   return {
     editor: { satisfied: editorMissing.length === 0, missing: editorMissing },

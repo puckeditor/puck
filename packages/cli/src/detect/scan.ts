@@ -49,6 +49,8 @@ export interface SourceScan {
   cloudPageFiles: string[];
   /** Files that use Sign in with Puck */
   signInFiles: string[];
+  /** Files that call getPuckIdentity, which cloud-client 0.10 removed */
+  legacySignInFiles: string[];
   cssImported: boolean;
   truncated: boolean;
 }
@@ -98,6 +100,7 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
     authPluginFiles: [],
     cloudPageFiles: [],
     signInFiles: [],
+    legacySignInFiles: [],
     cssImported: false,
     truncated: false,
   };
@@ -162,6 +165,8 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
         imports("getPuckIdentity", "loginUrl")
       )
         scan.signInFiles.push(rel);
+      if (ref.source === CLOUD_CLIENT_PACKAGE && imports("getPuckIdentity"))
+        scan.legacySignInFiles.push(rel);
     }
   }
 
@@ -174,6 +179,7 @@ export const scanSources = (vfs: Vfs, root: string): SourceScan => {
   scan.authPluginFiles = unique(scan.authPluginFiles);
   scan.cloudPageFiles = unique(scan.cloudPageFiles);
   scan.signInFiles = unique(scan.signInFiles);
+  scan.legacySignInFiles = unique(scan.legacySignInFiles);
 
   return scan;
 };

@@ -19,6 +19,64 @@ const KEY = ["--api-key", "sk-valid-key"];
 
 const codes = (warnings: { code: string }[]) => warnings.map((w) => w.code);
 
+/** lib/puck-auth.ts as the CLI wrote it before cloud-client 0.10 */
+const GET_PUCK_IDENTITY_HELPER = `import { getPuckIdentity, loginUrl } from "@puckeditor/cloud-client";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+/** Sends anyone who isn't signed in with Puck to sign in, then back to returnTo */
+export async function requirePuckSession(returnTo: string) {
+  const session = await getPuckIdentity(await headers());
+
+  if (!session) {
+    redirect(loginUrl(returnTo));
+  }
+
+  return session;
+}
+`;
+
+describe("getPuckIdentity", () => {
+  it("brings a helper that calls it up to date", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "auth", "--yes", "--json", ...KEY], { cwd: root });
+    fs.writeFileSync(
+      path.join(root, "lib/puck-auth.ts"),
+      GET_PUCK_IDENTITY_HELPER
+    );
+
+    const { json } = await run(["add", "auth", "--yes", "--json"], {
+      cwd: root,
+    });
+    expect(json.status).toBe("success");
+    expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
+    expect(read(root, "lib/puck-auth.ts")).toBe(nextPuckAuth());
+  });
+
+  it("asks for other code that calls it to be updated", async () => {
+    const root = tmpProject({ recipe: "next" });
+    await run(["add", "auth", "--yes", "--json", ...KEY], { cwd: root });
+    fs.writeFileSync(
+      path.join(root, "lib/session.ts"),
+      `import { getPuckIdentity } from "@puckeditor/cloud-client";
+
+export const session = (headers: Headers) => getPuckIdentity(headers);
+`
+    );
+
+    const { json } = await run(["add", "auth", "--yes", "--json"], {
+      cwd: root,
+    });
+    expect(json.actions).toContainEqual(
+      expect.objectContaining({
+        type: "manual_edit",
+        file: "lib/session.ts",
+        instructions: expect.stringContaining("puckCloud().auth.getSession"),
+      })
+    );
+  });
+});
+
 describe("add auth", () => {
   describe.each(["next", "vinext"] as const)("%s", (recipe) => {
     it("requires Sign in with Puck for the editor and Cloud route", async () => {
