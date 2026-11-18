@@ -8,7 +8,7 @@ import path from "node:path";
 
 const require = createRequire(import.meta.url);
 const pkgPath = require.resolve("@puckeditor/cli/package.json");
-const { bin } = require(pkgPath);
+const { bin } = require("@puckeditor/cli/package.json");
 const binPath = path.join(
   path.dirname(pkgPath),
   typeof bin === "string" ? bin : bin.puck
