@@ -47,7 +47,7 @@ describe("add auth", () => {
 
       const client = read(root, "app/puck/[...puckPath]/client.tsx");
       expect(client).toContain(
-        'import { createAuthPlugin } from "@puckeditor/plugin-auth";\nimport "@puckeditor/plugin-auth/styles.css";'
+        'import { createAuthPlugin } from "@puckeditor/plugin-auth";\n\nconst authPlugin'
       );
       expect(client).toContain("plugins={[authPlugin]}");
 

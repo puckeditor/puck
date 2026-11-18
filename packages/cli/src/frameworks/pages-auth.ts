@@ -9,7 +9,6 @@ export const AUTH_PLUGIN: PuckPlugin = {
   factory: "createAuthPlugin",
   source: PLUGIN_AUTH_PACKAGE,
   local: "authPlugin",
-  css: `${PLUGIN_AUTH_PACKAGE}/styles.css`,
 };
 
 /** An editor with the Puck Auth plugin added, for upgradeVariant sources */
@@ -19,7 +18,6 @@ export const withAuthPlugin = (code: string, file: string) => {
 };
 
 export const AUTH_PLUGIN_SNIPPET = `import { createAuthPlugin } from "@puckeditor/plugin-auth";
-import "@puckeditor/plugin-auth/styles.css";
 
 const authPlugin = createAuthPlugin();
 

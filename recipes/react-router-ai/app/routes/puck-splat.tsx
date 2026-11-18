@@ -12,7 +12,6 @@ import { getPage, savePage } from "~/lib/pages.server";
 import { PuckRender } from "~/components/puck-render";
 
 import editorStyles from "@puckeditor/core/puck.css?url";
-import pluginStyles from "@puckeditor/plugin-ai/styles.css?url";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const pathname = params["*"] ?? "/";
@@ -86,7 +85,6 @@ function Editor() {
   return (
     <>
       <link rel="stylesheet" href={editorStyles} id="puck-css" />
-      <link rel="stylesheet" href={pluginStyles} id="puck-plugin-ai-css" />
       <Puck
         plugins={plugins}
         config={configWithDesignedComponents}

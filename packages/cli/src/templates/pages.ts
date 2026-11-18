@@ -77,9 +77,6 @@ export const nextPagesEditorPage = ({
  */
 
 import "@puckeditor/core/puck.css";
-${
-  ai ? `import "@puckeditor/plugin-ai/styles.css";\n` : ""
-}import "@puckeditor/plugin-pages/styles.css";
 import { Metadata } from "next";
 import { connection } from "next/server";
 import { Client } from "./client";${
@@ -284,12 +281,7 @@ import type { Route } from "./+types/puck";
 import { config } from "../../puck.config";${
   auth ? `\nimport { requirePuckSession } from "~/lib/puck-auth.server";` : ""
 }
-import editorStyles from "@puckeditor/core/puck.css?url";${
-  ai
-    ? `\nimport aiPluginStyles from "@puckeditor/plugin-ai/styles.css?url";`
-    : ""
-}
-import pagesPluginStyles from "@puckeditor/plugin-pages/styles.css?url";
+import editorStyles from "@puckeditor/core/puck.css?url";
 ${
   auth
     ? `
@@ -319,16 +311,7 @@ const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
 export default function PuckEditorRoute() {
   return (
     <>
-      <link rel="stylesheet" href={editorStyles} id="puck-css" />${
-        ai
-          ? `\n      <link rel="stylesheet" href={aiPluginStyles} id="puck-plugin-ai-css" />`
-          : ""
-      }
-      <link
-        rel="stylesheet"
-        href={pagesPluginStyles}
-        id="puck-plugin-pages-css"
-      />
+      <link rel="stylesheet" href={editorStyles} id="puck-css" />
       <Puck plugins={${
         ai ? "plugins" : "[pagesPlugin]"
       }} config={config} data={{}} />
@@ -406,12 +389,7 @@ import { config } from "../../puck.config";${
   auth ? `\nimport { requirePuckSession } from "../lib/puck-auth";` : ""
 }
 
-import editorStyles from "@puckeditor/core/puck.css?url";${
-  ai
-    ? `\nimport aiPluginStyles from "@puckeditor/plugin-ai/styles.css?url";`
-    : ""
-}
-import pagesPluginStyles from "@puckeditor/plugin-pages/styles.css?url";
+import editorStyles from "@puckeditor/core/puck.css?url";
 
 export const Route = createFileRoute("/puck")({${
   auth
@@ -422,10 +400,7 @@ export const Route = createFileRoute("/puck")({${
   head: () => ({
     meta: [{ title: "Puck" }],
     links: [
-      { rel: "stylesheet", href: editorStyles },${
-        ai ? `\n      { rel: "stylesheet", href: aiPluginStyles },` : ""
-      }
-      { rel: "stylesheet", href: pagesPluginStyles },
+      { rel: "stylesheet", href: editorStyles },
     ],
   }),
   component: PuckEditorRoute,
@@ -503,10 +478,7 @@ export const vitePagesEditor = ({ ai }: { ai: boolean }) => `import { Puck${
 ${
   ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
 }import { createPagesPlugin } from "@puckeditor/plugin-pages";
-import "@puckeditor/core/puck.css";${
-  ai ? `\nimport "@puckeditor/plugin-ai/styles.css";` : ""
-}
-import "@puckeditor/plugin-pages/styles.css";
+import "@puckeditor/core/puck.css";
 
 import { config } from "../puck.config";
 ${ai ? `\n${AI_PLUGIN}` : ""}

@@ -251,7 +251,7 @@ describe("init with Puck AI", () => {
     expect(json.status).toBe("success");
     expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
     const page = read(root, "app/puck/[...puckPath]/page.tsx");
-    expect(page).toContain('import "@puckeditor/plugin-ai/styles.css";');
+    expect(page).not.toContain("styles.css");
     expect(page).toContain("export const instant = false;");
     expect(page).not.toContain("export const dynamic");
   });

@@ -320,7 +320,7 @@ export const planAstroAi = (p: Planner) => {
     file,
     reason: "unsupported_shape",
     message: `${file} was customised, so the Puck AI plugin wasn't added automatically.`,
-    instructions: `Add the Puck AI plugin to the <Puck> editor in ${file}, import "@puckeditor/plugin-ai/styles.css", and wrap the config with withDynamicConfig wherever you <Render> Puck pages.`,
+    instructions: `Add the Puck AI plugin to the <Puck> editor in ${file}, and wrap the config with withDynamicConfig wherever you <Render> Puck pages.`,
     snippet: AI_SNIPPET,
   });
 };

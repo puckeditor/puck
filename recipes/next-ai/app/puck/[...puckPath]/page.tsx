@@ -12,7 +12,6 @@
  */
 
 import "@puckeditor/core/puck.css";
-import "@puckeditor/plugin-ai/styles.css";
 import type { Data } from "@puckeditor/core";
 import { Metadata } from "next";
 import { connection } from "next/server";

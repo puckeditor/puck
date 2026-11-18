@@ -28,6 +28,14 @@ import {
 
 const KEY = ["--api-key", "sk-valid-key"];
 
+/** Writes a file with a replacement applied, e.g. to recreate an older version */
+const rewrite = (root: string, file: string, from: string, to: string) => {
+  const full = path.join(root, file);
+  const code = fs.readFileSync(full, "utf8");
+  if (!code.includes(from)) throw new Error(`${from} isn't in ${file}`);
+  fs.writeFileSync(full, code.replace(from, to));
+};
+
 /** Sets a dependency's range in the project's package.json */
 const setDependency = (root: string, name: string, range: string) => {
   const file = path.join(root, "package.json");
@@ -127,6 +135,25 @@ describe("add pages", () => {
     // Keeps the route's AI options
     expect(read(root, "app/api/puck/[...all]/route.ts")).toBe(
       readRecipe("next-ai", "app/api/puck/[...all]/route.ts")
+    );
+  });
+
+  it("recognises an AI editor that imports the plugin's stylesheet", async () => {
+    const root = tmpProject({ recipe: "next-ai" });
+    rewrite(
+      root,
+      "app/puck/[...puckPath]/page.tsx",
+      'import "@puckeditor/core/puck.css";\n',
+      'import "@puckeditor/core/puck.css";\nimport "@puckeditor/plugin-ai/styles.css";\n'
+    );
+    const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
+    expect(read(root, "app/puck/[...puckPath]/page.tsx")).toBe(
+      nextPagesEditorPage({ ai: true, auth: false })
     );
   });
 
@@ -294,6 +321,32 @@ describe("add pages", () => {
         cwd: root,
       });
       expect(again.json.changed).toBe(false);
+    });
+
+    it("recognises an AI editor that loads the plugin's stylesheet", async () => {
+      const root = tmpProject({ recipe: "tanstack-start-ai" });
+      rewrite(
+        root,
+        "src/routes/$.tsx",
+        'import editorStyles from "@puckeditor/core/puck.css?url";\n',
+        'import editorStyles from "@puckeditor/core/puck.css?url";\nimport pluginStyles from "@puckeditor/plugin-ai/styles.css?url";\n'
+      );
+      rewrite(
+        root,
+        "src/routes/$.tsx",
+        '      ? [{ rel: "stylesheet", href: editorStyles }]\n',
+        '      ? [\n          { rel: "stylesheet", href: editorStyles },\n          { rel: "stylesheet", href: pluginStyles },\n        ]\n'
+      );
+      const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+        cwd: root,
+      });
+
+      expect(json.status).toBe("success");
+      expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
+      expect(read(root, "src/routes/$.tsx")).toBe(TANSTACK_PAGES_SPLAT);
+      expect(read(root, "src/routes/puck.tsx")).toBe(
+        tanstackPagesEditor({ ai: true, auth: false })
+      );
     });
 
     it("keeps Puck AI, before or after", async () => {

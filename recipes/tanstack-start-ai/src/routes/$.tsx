@@ -9,7 +9,6 @@ import { loadPuckPage, publishPuckPage } from "../lib/pages";
 import { PuckRender } from "../components/puck-render";
 
 import editorStyles from "@puckeditor/core/puck.css?url";
-import pluginStyles from "@puckeditor/plugin-ai/styles.css?url";
 
 export const Route = createFileRoute("/$")({
   loader: ({ params }) => loadPuckPage({ data: params._splat ?? "" }),
@@ -22,10 +21,7 @@ export const Route = createFileRoute("/$")({
       },
     ],
     links: loaderData?.isEditorRoute
-      ? [
-          { rel: "stylesheet", href: editorStyles },
-          { rel: "stylesheet", href: pluginStyles },
-        ]
+      ? [{ rel: "stylesheet", href: editorStyles }]
       : [],
   }),
   component: PuckSplatRoute,

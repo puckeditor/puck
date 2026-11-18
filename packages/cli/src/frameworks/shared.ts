@@ -99,6 +99,32 @@ const normalizeEol = (text: string) => text.replace(/\r\n/g, "\n");
 
 export type UpgradeOutcome = "upgraded" | "already" | "missing" | "customized";
 
+// The plugins' stylesheets, which earlier versions imported. The plugins
+// inject their own styles since 0.10.
+const PLUGIN_STYLES = [
+  /^import (?:\w+ from )?["']@puckeditor\/plugin-[\w-]+\/styles\.css(?:\?url)?["'];?\n/gm,
+  /^[ \t]*<link rel="stylesheet" href=\{\w*[pP]luginStyles\} id="puck-plugin-[\w-]+-css" \/>\n/gm,
+  /^[ \t]*<link\n[ \t]*rel="stylesheet"\n[ \t]*href=\{\w*[pP]luginStyles\}\n[ \t]*id="puck-plugin-[\w-]+-css"\n[ \t]*\/>\n/gm,
+  /^[ \t]*\{ rel: "stylesheet", href: \w*[pP]luginStyles \},?\n/gm,
+];
+
+/** The same code, or the same once its plugin stylesheets are dropped */
+const sameIgnoringPluginStyles = (current: string, code: string) => {
+  const a = normalizeEol(current);
+  const b = normalizeEol(code);
+  if (a === b) return true;
+  const dropped = PLUGIN_STYLES.reduce(
+    (text, pattern) => text.replace(pattern, ""),
+    a
+  )
+    // Prettier puts a links array with one stylesheet left on one line
+    .replace(
+      /\[\n[ \t]*(\{ rel: "stylesheet", href: \w+ \}),?\n[ \t]*\]/g,
+      "[$1]"
+    );
+  return dropped === b;
+};
+
 /**
  * Replaces a file with a newer recipe's version, but only if it's still
  * exactly what the older recipe generated. Customised files are left alone.
@@ -151,7 +177,7 @@ export const upgradeTemplateFile = (
 
   if (candidates.some((c) => same(current, c.next))) return "already";
   const match = candidates.find(
-    (c) => c.previous.ok && same(current, c.previous.code)
+    (c) => c.previous.ok && sameIgnoringPluginStyles(current, c.previous.code)
   );
   if (!match) return "customized";
 
@@ -205,7 +231,7 @@ export const upgradeVariant = <F extends object>(
     const known = forms(combo);
     if (!known) continue;
     const form = [known.relocated, known.verbatim].findIndex(
-      (code) => code !== null && same(current, code)
+      (code) => code !== null && sameIgnoringPluginStyles(current, code)
     );
     if (form === -1) continue;
     onMatch?.(combo);

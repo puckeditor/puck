@@ -3,7 +3,6 @@ import type { Data } from "@puckeditor/core";
 import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";
 import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 import "@puckeditor/core/puck.css";
-import "@puckeditor/plugin-ai/styles.css";
 
 import { config } from "../puck.config";
 import { loadPage, savePage } from "./pages";
