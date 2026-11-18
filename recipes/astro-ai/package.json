@@ -13,9 +13,9 @@
   "dependencies": {
     "@astrojs/node": "^11.1.6",
     "@astrojs/react": "^7.0.0",
-    "@puckeditor/cloud-client": "^0",
+    "@puckeditor/cloud-client": "^0.10.0",
     "@puckeditor/core": "workspace:*",
-    "@puckeditor/plugin-ai": "^0",
+    "@puckeditor/plugin-ai": "^0.10.0",
     "astro": "^7.3.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

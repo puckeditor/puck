@@ -20,7 +20,7 @@ describe("add cloud", () => {
     expect(runner.calls).toEqual([
       {
         command: "npm",
-        args: ["install", "@puckeditor/cloud-client@^0"],
+        args: ["install", "@puckeditor/cloud-client@^0.10.0"],
         cwd: root,
       },
       {
@@ -133,7 +133,7 @@ describe("add cloud", () => {
 
     expect(json.status).toBe("success");
     expect(runner.calls.map((c) => c.args)).toEqual([
-      ["install", "@puckeditor/cloud-client@^0"],
+      ["install", "@puckeditor/cloud-client@^0.10.0"],
     ]);
   });
 
@@ -172,7 +172,7 @@ describe("add cloud", () => {
     expect(runner.calls[0].args).toEqual([
       "install",
       "@puckeditor/core@^0.23.0",
-      "@puckeditor/cloud-client@^0",
+      "@puckeditor/cloud-client@^0.10.0",
     ]);
     const capabilities = json.plan!.steps.map((s) => s.capability);
     expect(capabilities.indexOf("editor")).toBeLessThan(

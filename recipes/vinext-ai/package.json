@@ -10,9 +10,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@puckeditor/cloud-client": "^0",
+    "@puckeditor/cloud-client": "^0.10.0",
     "@puckeditor/core": "workspace:*",
-    "@puckeditor/plugin-ai": "^0",
+    "@puckeditor/plugin-ai": "^0.10.0",
     "classnames": "^2.3.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

@@ -645,14 +645,14 @@ importers:
         specifier: ^7.0.0
         version: 7.1.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vite@8.3.8(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(stylus@0.62.0(supports-color@8.1.1))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       '@puckeditor/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@puckeditor/plugin-ai':
-        specifier: ^0
-        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
+        specifier: ^0.10.0
+        version: 0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
       astro:
         specifier: ^7.3.5
         version: 7.4.12(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(stylus@0.62.0(supports-color@8.1.1))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
@@ -692,8 +692,8 @@ importers:
   recipes/express-ai:
     dependencies:
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       express:
         specifier: ^5.2.1
         version: 5.3.0(supports-color@8.1.1)
@@ -739,8 +739,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.8(hono@4.13.19)
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       hono:
         specifier: ^4.13.9
         version: 4.13.19
@@ -795,14 +795,14 @@ importers:
   recipes/next-ai:
     dependencies:
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       '@puckeditor/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@puckeditor/plugin-ai':
-        specifier: ^0
-        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
+        specifier: ^0.10.0
+        version: 0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
       classnames:
         specifier: ^2.3.2
         version: 2.5.1
@@ -881,14 +881,14 @@ importers:
   recipes/react-router-ai:
     dependencies:
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       '@puckeditor/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@puckeditor/plugin-ai':
-        specifier: ^0
-        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.3.1)(supports-color@8.1.1)(zod@4.6.7)
+        specifier: ^0.10.0
+        version: 0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.3.1)(supports-color@8.1.1)(zod@4.6.7)
       '@react-router/node':
         specifier: ^8.4.0
         version: 8.5.1(react-router@8.5.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(typescript@5.9.3)
@@ -970,14 +970,14 @@ importers:
   recipes/tanstack-start-ai:
     dependencies:
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       '@puckeditor/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@puckeditor/plugin-ai':
-        specifier: ^0
-        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
+        specifier: ^0.10.0
+        version: 0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
       '@tanstack/react-router':
         specifier: ^1.168.0
         version: 1.170.46(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -1059,14 +1059,14 @@ importers:
   recipes/vinext-ai:
     dependencies:
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       '@puckeditor/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@puckeditor/plugin-ai':
-        specifier: ^0
-        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
+        specifier: ^0.10.0
+        version: 0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
       classnames:
         specifier: ^2.3.2
         version: 2.5.1
@@ -1157,14 +1157,14 @@ importers:
         specifier: ^2.1.1
         version: 2.1.8(hono@4.13.19)
       '@puckeditor/cloud-client':
-        specifier: ^0
-        version: 0.8.2
+        specifier: ^0.10.0
+        version: 0.10.0
       '@puckeditor/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@puckeditor/plugin-ai':
-        specifier: ^0
-        version: 0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
+        specifier: ^0.10.0
+        version: 0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)
       hono:
         specifier: ^4.13.9
         version: 4.13.19
@@ -3551,14 +3551,14 @@ packages:
   '@preact/signals-core@1.14.2':
     resolution: {integrity: sha512-RZHdBj9ZF4n40Rp4jS052EHHjBWf96P9oNdXPfhQTovCuWY9iQn3Gq+gOTJSgBO9A/JBuPfMOWsSX/lIU9Pc/A==}
 
-  '@puckeditor/cloud-client@0.8.2':
-    resolution: {integrity: sha512-AtJxciFsSeZk9Os1EmvG30OCX4im4NV5szmxoZwpzRuK1OIucwDcsZA3tlJdxbB9/GmMkgWmAODcDGl9dWteYQ==}
+  '@puckeditor/cloud-client@0.10.0':
+    resolution: {integrity: sha512-VfU6naRwWDy15TFultQd4YAKXUQh5HKaIlSu+m6P2R0YFxI74azZu6KrRGl6QKsZWh3QuyR5Fw6aiZZIke9qLA==}
 
   '@puckeditor/cloud-client@0.9.0-canary.4a0def09':
     resolution: {integrity: sha512-cdi+UxT884EcoKR/lIfwdPcPXwI1xu3Jj+AgjQjDZom3ntQhSGw1PeqQqwDFC1OABnEb97jm+wA0H9HezFvZfQ==}
 
-  '@puckeditor/plugin-ai@0.8.2':
-    resolution: {integrity: sha512-nbf4l3YqeGNKbmnY+1Kih5svXOsyjM0UQelEQk67oBfOv83djjPh8lmXJMFMvqWC0WZqPbr9IIZTN60uJBRX3A==}
+  '@puckeditor/plugin-ai@0.10.0':
+    resolution: {integrity: sha512-2GgxVhGjrpsWYb2664QprZxv2mGa389UJ7bRHypNbyJoGvmmQ9oukxd3O8Wr0fG++XGpYcB+EVOc8PFJMKyktA==}
     peerDependencies:
       '@puckeditor/core': ^0
       react: ^18.0.0 || ^19.0.0
@@ -13802,11 +13802,13 @@ snapshots:
 
   '@preact/signals-core@1.14.2': {}
 
-  '@puckeditor/cloud-client@0.8.2': {}
+  '@puckeditor/cloud-client@0.10.0':
+    dependencies:
+      zod: 4.6.7
 
   '@puckeditor/cloud-client@0.9.0-canary.4a0def09': {}
 
-  '@puckeditor/plugin-ai@0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)':
+  '@puckeditor/plugin-ai@0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.2.6)(supports-color@8.1.1)(zod@4.6.7)':
     dependencies:
       '@puckeditor/core': link:packages/core
       ai: 6.0.277(zod@4.6.7)
@@ -13826,7 +13828,7 @@ snapshots:
       - supports-color
       - zod
 
-  '@puckeditor/plugin-ai@0.8.2(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.3.1)(supports-color@8.1.1)(zod@4.6.7)':
+  '@puckeditor/plugin-ai@0.10.0(@puckeditor/core@packages+core)(@types/react@19.2.14)(react@19.3.1)(supports-color@8.1.1)(zod@4.6.7)':
     dependencies:
       '@puckeditor/core': link:packages/core
       ai: 6.0.277(zod@4.6.7)
@@ -18059,7 +18061,7 @@ snapshots:
 
   hast-util-from-dom@5.0.1:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       hastscript: 9.0.1
       web-namespaces: 2.0.1
 
@@ -18072,7 +18074,7 @@ snapshots:
 
   hast-util-from-html@2.0.3:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       devlop: 1.1.0
       hast-util-from-parse5: 8.0.3
       parse5: 7.3.0
@@ -18081,7 +18083,7 @@ snapshots:
 
   hast-util-from-parse5@8.0.3:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/unist': 3.0.3
       devlop: 1.1.0
       hastscript: 9.0.1
@@ -18092,11 +18094,11 @@ snapshots:
 
   hast-util-is-element@3.0.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
 
   hast-util-parse-selector@4.0.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
 
   hast-util-raw@9.1.0:
     dependencies:
@@ -18137,7 +18139,7 @@ snapshots:
 
   hast-util-to-html@9.0.5:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/unist': 3.0.3
       ccount: 2.0.1
       comma-separated-tokens: 2.0.3
@@ -18151,7 +18153,7 @@ snapshots:
 
   hast-util-to-html@9.0.6:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/unist': 3.0.3
       ccount: 2.0.1
       comma-separated-tokens: 2.0.3
@@ -18185,7 +18187,7 @@ snapshots:
 
   hast-util-to-parse5@8.0.1:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       comma-separated-tokens: 2.0.3
       devlop: 1.1.0
       property-information: 7.1.0
@@ -18210,7 +18212,7 @@ snapshots:
 
   hastscript@9.0.1:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       comma-separated-tokens: 2.0.3
       hast-util-parse-selector: 4.0.0
       property-information: 7.1.0

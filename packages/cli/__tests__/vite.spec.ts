@@ -98,8 +98,8 @@ describe("Vite apps", () => {
     expect(pkg.scripts.start).toBe("tsx server/prod.ts");
     expect(pkg.dependencies).toMatchObject({
       "@puckeditor/core": "^0.23.0",
-      "@puckeditor/plugin-ai": "^0",
-      "@puckeditor/cloud-client": "^0",
+      "@puckeditor/plugin-ai": "^0.10.0",
+      "@puckeditor/cloud-client": "^0.10.0",
       hono: "^4.13.9",
     });
     expect(pkg.devDependencies).toMatchObject({
@@ -175,7 +175,7 @@ describe("Vite apps", () => {
     expect(runner.calls[0].args).toEqual([
       "install",
       "@puckeditor/core@^0.23.0",
-      "@puckeditor/plugin-ai@^0",
+      "@puckeditor/plugin-ai@^0.10.0",
     ]);
     expect(json.warnings.map((w) => w.code)).toContain(
       "PUCK-CLI-W-EXTERNAL-BACKEND"

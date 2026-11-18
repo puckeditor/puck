@@ -84,8 +84,8 @@ describe("init", () => {
       const pkg = JSON.parse(read(app, "package.json"));
       expect(pkg.name).toBe("site");
       expect(pkg.dependencies["@puckeditor/core"]).toBe("^0.23.0");
-      expect(pkg.dependencies["@puckeditor/cloud-client"]).toBe("^0");
-      expect(pkg.dependencies["@puckeditor/plugin-ai"]).toBe("^0");
+      expect(pkg.dependencies["@puckeditor/cloud-client"]).toBe("^0.10.0");
+      expect(pkg.dependencies["@puckeditor/plugin-ai"]).toBe("^0.10.0");
       expect(pkg.devDependencies["eslint-config-custom"]).toBeUndefined();
       expect(json.ai).toEqual({ installed: true, configured: true });
       expect(JSON.stringify(pkg)).not.toContain("workspace:");

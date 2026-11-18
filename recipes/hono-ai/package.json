@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^2.1.1",
-    "@puckeditor/cloud-client": "^0",
+    "@puckeditor/cloud-client": "^0.10.0",
     "hono": "^4.13.9",
     "react": "^19.2.0"
   },

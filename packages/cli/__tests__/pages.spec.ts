@@ -28,6 +28,14 @@ import {
 
 const KEY = ["--api-key", "sk-valid-key"];
 
+/** Sets a dependency's range in the project's package.json */
+const setDependency = (root: string, name: string, range: string) => {
+  const file = path.join(root, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
+  pkg.dependencies[name] = range;
+  fs.writeFileSync(file, JSON.stringify(pkg, null, 2));
+};
+
 const codes = (warnings: { code: string }[]) => warnings.map((w) => w.code);
 
 describe("add pages", () => {
@@ -124,6 +132,7 @@ describe("add pages", () => {
 
   it("upgrades Puck AI to match the cloud-client", async () => {
     const root = tmpProject({ recipe: "next-ai" });
+    setDependency(root, "@puckeditor/plugin-ai", "^0.9.0");
     const { json, runner } = await run(
       ["add", "pages", "--yes", "--json", ...KEY],
       { cwd: root }

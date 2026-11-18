@@ -36,7 +36,7 @@ describe("servers (Hono and Express)", () => {
       "tsx watch --env-file-if-exists=.env.local src/index.ts"
     );
     expect(pkg.dependencies).toMatchObject({
-      "@puckeditor/cloud-client": "^0",
+      "@puckeditor/cloud-client": "^0.10.0",
       react: "^19.0.0",
     });
     expect(pkg.dependencies["@puckeditor/core"]).toBeUndefined();

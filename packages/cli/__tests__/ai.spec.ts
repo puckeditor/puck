@@ -31,8 +31,8 @@ describe("add ai", () => {
       expect(json.ai).toEqual({ installed: true, configured: true });
       expect(runner.calls[0].args).toEqual([
         "install",
-        "@puckeditor/cloud-client@^0",
-        "@puckeditor/plugin-ai@^0",
+        "@puckeditor/cloud-client@^0.10.0",
+        "@puckeditor/plugin-ai@^0.10.0",
       ]);
 
       for (const file of [
