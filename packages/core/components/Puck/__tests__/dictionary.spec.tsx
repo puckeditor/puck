@@ -254,4 +254,67 @@ describe("Puck dictionary prop", () => {
 
     expect(screen.getByTitle("Cerrar Typography")).toBeInTheDocument();
   });
+
+  it("names the icon-only add, detach and zoom controls", async () => {
+    const fieldsConfig: Config = {
+      root: {
+        render: ({ children }: any) => <div>{children}</div>,
+        fields: {
+          links: {
+            type: "array",
+            label: "Links",
+            arrayFields: { url: { type: "text" } },
+          },
+          source: {
+            type: "external",
+            fetchList: async () => [],
+          },
+        },
+      },
+      components: {},
+    };
+
+    const data = { root: { props: { links: [], source: { id: "1" } } } };
+
+    // These controls only render an icon, so their name comes from the dictionary.
+    const expectNamed = (role: string, name: string) => {
+      const matches = screen
+        .getAllByLabelText(name)
+        .filter((el) => el.matches(role));
+
+      expect(matches.length).toBeGreaterThan(0);
+
+      // They also get a tooltip, like the other icon buttons.
+      matches.forEach((el) => expect(el).toHaveAttribute("title", name));
+    };
+
+    const { rerender } = render(
+      <Puck config={fieldsConfig} data={data} iframe={{ enabled: true }} />
+    );
+
+    await flush();
+
+    expectNamed("button", "Add item to Links");
+    expectNamed("button", "Detach external item");
+    expectNamed("select", "Zoom level");
+
+    rerender(
+      <Puck
+        config={fieldsConfig}
+        data={data}
+        iframe={{ enabled: true }}
+        dictionary={{
+          "field-array-add": "Añadir elemento a {label}",
+          "field-external-detach": "Desvincular elemento externo",
+          "viewport-zoom-level": "Nivel de zoom",
+        }}
+      />
+    );
+
+    await flush();
+
+    expectNamed("button", "Añadir elemento a Links");
+    expectNamed("button", "Desvincular elemento externo");
+    expectNamed("select", "Nivel de zoom");
+  });
 });

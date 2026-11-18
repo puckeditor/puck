@@ -359,6 +359,7 @@ export const ArrayField = ({
 
   const duplicateLabel = useMessage("field-arrayitem-duplicate");
   const deleteLabel = useMessage("field-arrayitem-delete");
+  const addLabel = useMessage("field-array-add", { label: label || name });
 
   if (field.type !== "array" || !field.arrayFields) {
     return null;
@@ -534,6 +535,8 @@ export const ArrayField = ({
             <button
               type="button"
               className={getClassName("addButton")}
+              title={addLabel}
+              aria-label={addLabel}
               onClick={() => {
                 if (isDraggingAny) return;
 
