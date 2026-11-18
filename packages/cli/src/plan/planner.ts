@@ -46,6 +46,8 @@ export class Planner {
   cloudHost?: string;
   /** Exact versions to install instead, with --canary */
   canary: Record<string, string> = {};
+  /** The @puckeditor/core version to install, when it isn't installed */
+  coreVersion?: string;
 
   constructor(
     public vfs: Vfs,

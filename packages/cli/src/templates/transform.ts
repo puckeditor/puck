@@ -7,12 +7,12 @@ export const transformPackageJson = (
   text: string,
   {
     appName,
-    cliVersion,
+    coreVersion,
     legacy,
     canary = {},
   }: {
     appName: string;
-    cliVersion: string;
+    coreVersion: string;
     legacy?: LegacyScaffold | null;
     /** Exact versions to use instead, with --canary */
     canary?: Record<string, string>;
@@ -31,7 +31,7 @@ export const transformPackageJson = (
     for (const [name, range] of Object.entries(deps)) {
       if (legacy?.dependencies[name]) deps[name] = legacy.dependencies[name];
       if (WORKSPACE_PROTOCOL.test(range)) {
-        deps[name] = canary[name] ?? `^${cliVersion}`;
+        deps[name] = canary[name] ?? `^${coreVersion}`;
         pinned.push(name);
         prerelease ||= deps[name].includes("-");
       } else if (canary[name]) {

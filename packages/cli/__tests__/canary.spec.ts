@@ -108,9 +108,12 @@ describe("--canary", () => {
       cloud: registry(),
     });
 
-    expect(cloud.requests.some((r) => r.path.startsWith("/@puckeditor"))).toBe(
-      false
-    );
+    // Only @puckeditor/core's latest release, for the new editor
+    expect(
+      cloud.requests
+        .map((r) => r.path)
+        .filter((p) => p.startsWith("/@puckeditor"))
+    ).toEqual(["/@puckeditor%2fcore"]);
   });
 
   it("reads private packages with the npm token from .npmrc", async () => {

@@ -171,7 +171,7 @@ describe("add cloud", () => {
     expect(runner.calls).toHaveLength(2);
     expect(runner.calls[0].args).toEqual([
       "install",
-      "@puckeditor/core@^0.23.0",
+      "@puckeditor/core@^0.24.2",
       "@puckeditor/cloud-client@^0.10.0",
     ]);
     const capabilities = json.plan!.steps.map((s) => s.capability);

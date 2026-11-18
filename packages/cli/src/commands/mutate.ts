@@ -22,6 +22,7 @@ import {
   DEFAULT_REGISTRY,
   registryToken,
   resolveCanaries,
+  latestRelease,
 } from "../plan/canary";
 import { isTruthyEnv } from "../env/truthy";
 import { planCapabilities, resolveCapabilities } from "../plan/capabilities";
@@ -44,7 +45,11 @@ import {
 } from "../output/summary";
 import { baseDir } from "./target";
 import { rerunCommand } from "../context";
-import { ENV_KEY, MANUAL_INTEGRATION_DOCS_URL } from "../constants";
+import {
+  CORE_PACKAGE,
+  ENV_KEY,
+  MANUAL_INTEGRATION_DOCS_URL,
+} from "../constants";
 
 export interface MutationInput {
   command: "init" | "add";
@@ -149,20 +154,22 @@ export const runMutation = async (
 
   // --canary installs the latest canaries of Puck's packages
   const registry = deps.env.npm_config_registry || DEFAULT_REGISTRY;
+  const token = registryToken(
+    registry,
+    [base, deps.homedir].map((dir) => vfs.readText(path.join(dir, ".npmrc"))),
+    deps.env
+  );
   const canary =
     flags.canary || isTruthyEnv(deps.env.PUCK_CANARY)
-      ? await resolveCanaries(
-          deps.fetch,
-          registry,
-          registryToken(
-            registry,
-            [base, deps.homedir].map((dir) =>
-              vfs.readText(path.join(dir, ".npmrc"))
-            ),
-            deps.env
-          )
-        )
+      ? await resolveCanaries(deps.fetch, registry, token)
       : null;
+  // Otherwise @puckeditor/core is its latest release. It matches the CLI on
+  // a dry run, which uses no network, or when the registry can't be read
+  const latestCore = async () =>
+    (canary || flags.dryRun
+      ? null
+      : await latestRelease(deps.fetch, registry, CORE_PACKAGE, token)) ??
+    deps.cliVersion;
 
   let scaffoldStep: PlanStep | null = null;
   let legacy: LegacyScaffold | null = null;
@@ -175,7 +182,7 @@ export const runMutation = async (
       recipe,
       dir: bootstrap.dir,
       appName: bootstrap.appName,
-      cliVersion: deps.cliVersion,
+      coreVersion: await latestCore(),
       cloudHost,
       legacy,
       canary: canary?.versions,
@@ -207,6 +214,7 @@ export const runMutation = async (
   const capabilities = resolveCapabilities(input.requested);
   const planner = new Planner(vfs, ctx, state, deps.templates, deps.cliVersion);
   planner.scaffolded = Boolean(bootstrap);
+  if (!state.puck.installed) planner.coreVersion = await latestCore();
   planner.cloudHost = cloudHost;
   if (canary) {
     planner.canary = canary.versions;

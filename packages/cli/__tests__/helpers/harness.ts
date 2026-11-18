@@ -15,6 +15,8 @@ import templatesConfig from "../../templates.json";
 export const REPO_ROOT = path.resolve(__dirname, "../../../..");
 export const RECIPES = path.join(REPO_ROOT, "recipes");
 export const CLI_VERSION = "0.23.0";
+/** @puckeditor/core's latest release on the fake registry */
+export const LATEST_CORE = "0.24.2";
 
 export const testTemplates = new DirTemplateSource(RECIPES, {
   gitignoreName: ".gitignore",
@@ -207,7 +209,9 @@ export class FakeCloud {
   failImportAt?: number;
   imports = 0;
   /** npm registry packuments, by package name */
-  packuments: Record<string, object> = {};
+  packuments: Record<string, object> = {
+    "@puckeditor/core": { "dist-tags": { latest: LATEST_CORE } },
+  };
   /** Packuments only readable with npmToken, like unreleased plugins */
   privatePackuments: Record<string, object> = {};
   npmToken = "npm_SENTINEL_TOKEN";

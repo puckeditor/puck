@@ -97,7 +97,7 @@ describe("Vite apps", () => {
     const pkg = JSON.parse(read(root, "package.json"));
     expect(pkg.scripts.start).toBe("tsx server/prod.ts");
     expect(pkg.dependencies).toMatchObject({
-      "@puckeditor/core": "^0.23.0",
+      "@puckeditor/core": "^0.24.2",
       "@puckeditor/plugin-ai": "^0.10.0",
       "@puckeditor/cloud-client": "^0.10.0",
       hono: "^4.13.9",
@@ -139,7 +139,7 @@ describe("Vite apps", () => {
     );
     expect(runner.calls[0].args).toEqual([
       "install",
-      "@puckeditor/core@^0.23.0",
+      "@puckeditor/core@^0.24.2",
     ]);
   });
 
@@ -174,7 +174,7 @@ describe("Vite apps", () => {
     expect(exists(root, ".env.local")).toBe(false);
     expect(runner.calls[0].args).toEqual([
       "install",
-      "@puckeditor/core@^0.23.0",
+      "@puckeditor/core@^0.24.2",
       "@puckeditor/plugin-ai@^0.10.0",
     ]);
     expect(json.warnings.map((w) => w.code)).toContain(

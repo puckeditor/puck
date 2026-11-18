@@ -285,9 +285,10 @@ describe("init with Puck AI", () => {
     expect(json.message).toBe("Set up Puck Editor.");
     expect(runner.calls[0].args).toEqual([
       "install",
-      "@puckeditor/core@^0.23.0",
+      "@puckeditor/core@^0.24.2",
     ]);
-    expect(cloud.networkCalls).toBe(0);
+    // No Puck Cloud calls, only @puckeditor/core's latest release
+    expect(cloud.requests.map((r) => r.path)).toEqual(["/@puckeditor%2fcore"]);
     expect(read(root, "app/puck/[...puckPath]/client.tsx")).toBe(
       readRecipe("next", "app/puck/[...puckPath]/client.tsx")
     );

@@ -57,7 +57,7 @@ describe("Astro sites", () => {
     expect(runner.calls).toEqual([
       {
         command: "npm",
-        args: ["install", "@puckeditor/core@^0.23.0"],
+        args: ["install", "@puckeditor/core@^0.24.2"],
         cwd: root,
       },
       {

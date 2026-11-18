@@ -257,7 +257,11 @@ export const planPuckConfig = (
 
 export const planCoreDependency = (p: Planner) => {
   if (!p.state.puck.installed)
-    p.addDependency(CORE_PACKAGE, `^${p.cliVersion}`, "editor");
+    p.addDependency(
+      CORE_PACKAGE,
+      `^${p.coreVersion ?? p.cliVersion}`,
+      "editor"
+    );
 };
 
 /** Enables Puck AI in a Cloud route the CLI wrote, keeping its auth */

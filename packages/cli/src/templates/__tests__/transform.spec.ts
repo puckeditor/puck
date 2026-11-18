@@ -1,11 +1,11 @@
 import { transformPackageJson } from "../transform";
 import { readRecipe } from "../../../__tests__/helpers/harness";
 
-const transform = (cliVersion: string) =>
+const transform = (coreVersion: string) =>
   JSON.parse(
     transformPackageJson(readRecipe("react-router-ai", "package.json"), {
       appName: "site",
-      cliVersion,
+      coreVersion,
     })
   );
 

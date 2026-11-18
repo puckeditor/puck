@@ -7,6 +7,7 @@ import {
   run,
   tmpProject,
   treeSnapshot,
+  CLI_VERSION,
   FakeCloud,
 } from "./helpers/harness";
 
@@ -52,6 +53,29 @@ describe("init", () => {
     expect(cloud.networkCalls).toBe(0);
   });
 
+  it("matches @puckeditor/core to the CLI when the registry can't be read", async () => {
+    const root = tmpProject("empty");
+    const cloud = new FakeCloud();
+    cloud.packuments = {};
+    const { json } = await run(
+      [
+        "init",
+        "--yes",
+        "--json",
+        "--editor-only",
+        "--framework",
+        "next",
+        "--name",
+        "site",
+      ],
+      { cwd: root, cloud }
+    );
+
+    expect(json.status).toBe("success");
+    const pkg = JSON.parse(read(path.join(root, "site"), "package.json"));
+    expect(pkg.dependencies["@puckeditor/core"]).toBe(`^${CLI_VERSION}`);
+  });
+
   it.each(["next", "react-router", "tanstack-start", "vinext"] as const)(
     "bootstraps a %s app with Puck Cloud and Puck AI from the AI recipe",
     async (framework) => {
@@ -83,7 +107,7 @@ describe("init", () => {
       ]);
       const pkg = JSON.parse(read(app, "package.json"));
       expect(pkg.name).toBe("site");
-      expect(pkg.dependencies["@puckeditor/core"]).toBe("^0.23.0");
+      expect(pkg.dependencies["@puckeditor/core"]).toBe("^0.24.2");
       expect(pkg.dependencies["@puckeditor/cloud-client"]).toBe("^0.10.0");
       expect(pkg.dependencies["@puckeditor/plugin-ai"]).toBe("^0.10.0");
       expect(pkg.devDependencies["eslint-config-custom"]).toBeUndefined();

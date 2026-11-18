@@ -30,7 +30,7 @@ export const scaffoldApp = (
     recipe,
     dir,
     appName,
-    cliVersion,
+    coreVersion,
     cloudHost,
     legacy,
     canary,
@@ -38,7 +38,7 @@ export const scaffoldApp = (
     recipe: RecipeName;
     dir: string;
     appName: string;
-    cliVersion: string;
+    coreVersion: string;
     cloudHost?: string;
     legacy?: LegacyScaffold | null;
     canary?: Record<string, string>;
@@ -58,7 +58,7 @@ export const scaffoldApp = (
         target,
         transformPackageJson(raw.toString("utf8"), {
           appName,
-          cliVersion,
+          coreVersion,
           legacy,
           canary,
         })

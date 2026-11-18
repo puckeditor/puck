@@ -70,7 +70,7 @@ describe("add editor (TanStack Start)", () => {
     });
     expect(runner.calls[0].args).toEqual([
       "install",
-      "@puckeditor/core@^0.23.0",
+      "@puckeditor/core@^0.24.2",
     ]);
     for (const file of TANSTACK_EDITOR_FILES) {
       expect({ file, content: read(root, file) }).toEqual({
@@ -197,7 +197,7 @@ describe("add editor (Next.js)", () => {
     expect(json.status).toBe("success");
     expect(runner.calls[0].args).toEqual([
       "install",
-      "@puckeditor/core@^0.23.0",
+      "@puckeditor/core@^0.24.2",
     ]);
     for (const file of EDITOR_FILES) {
       expect(normalizeModule(read(root, file), file)).toBe(

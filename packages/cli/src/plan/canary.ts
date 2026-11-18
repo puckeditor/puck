@@ -24,17 +24,12 @@ interface Packument {
   time?: Record<string, string>;
 }
 
-/**
- * The package's `canary` dist-tag, or its most recently published
- * prerelease when it has none. Null when it has neither or can't be read.
- */
-const latestCanary = async (
+const fetchPackument = async (
   fetchImpl: typeof fetch,
   registry: string,
   name: string,
   token: string | null
-) => {
-  let packument: Packument;
+): Promise<Packument | null> => {
   try {
     const res = await fetchImpl(
       `${registry.replace(/\/+$/, "")}/${name.replace("/", "%2f")}`,
@@ -48,10 +43,34 @@ const latestCanary = async (
       }
     );
     if (!res.ok) return null;
-    packument = (await res.json()) as Packument;
+    return (await res.json()) as Packument;
   } catch {
     return null;
   }
+};
+
+/** The package's `latest` dist-tag. Null when it can't be read */
+export const latestRelease = async (
+  fetchImpl: typeof fetch,
+  registry: string,
+  name: string,
+  token: string | null = null
+) =>
+  (await fetchPackument(fetchImpl, registry, name, token))?.["dist-tags"]
+    ?.latest ?? null;
+
+/**
+ * The package's `canary` dist-tag, or its most recently published
+ * prerelease when it has none. Null when it has neither or can't be read.
+ */
+const latestCanary = async (
+  fetchImpl: typeof fetch,
+  registry: string,
+  name: string,
+  token: string | null
+) => {
+  const packument = await fetchPackument(fetchImpl, registry, name, token);
+  if (!packument) return null;
 
   const tagged = packument["dist-tags"]?.canary;
   if (tagged) return tagged;
