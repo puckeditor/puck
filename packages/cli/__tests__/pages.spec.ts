@@ -122,6 +122,17 @@ describe("add pages", () => {
     );
   });
 
+  it("upgrades Puck AI to match the cloud-client", async () => {
+    const root = tmpProject({ recipe: "next-ai" });
+    const { json, runner } = await run(
+      ["add", "pages", "--yes", "--json", ...KEY],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(runner.calls[0].args).toContain("@puckeditor/plugin-ai@^0.10.0");
+  });
+
   it("can add Puck AI to a Pages editor", async () => {
     const root = tmpProject({ recipe: "next" });
     await run(["add", "pages", "--yes", "--json", ...KEY], { cwd: root });
@@ -461,6 +472,7 @@ describe("init --pages --auth", () => {
     const pkg = JSON.parse(read(app, "package.json"));
     expect(pkg.dependencies).toMatchObject({
       "@puckeditor/cloud-client": "^0.10.0",
+      "@puckeditor/plugin-ai": "^0.10.0",
       "@puckeditor/plugin-pages": "^0.10.0",
       "@puckeditor/plugin-auth": "^0.10.0",
     });

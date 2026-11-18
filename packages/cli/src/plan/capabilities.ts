@@ -57,6 +57,13 @@ const planCloudClientUpgrade = (p: Planner, capability: CapabilityId) => {
   p.addDependency(CLOUD_CLIENT_PACKAGE, range, capability);
 };
 
+/** Puck AI has to match that cloud-client */
+const planPluginAiUpgrade = (p: Planner, capability: CapabilityId) => {
+  const range = p.templates.manifest().pluginAiPagesRange;
+  if (!p.state.ai.installed || atLeast(p.state.ai.declaredRange, range)) return;
+  p.addDependency(PLUGIN_AI_PACKAGE, range, capability);
+};
+
 export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
   const framework = p.ctx.framework!;
   const adapter = adapterFor(framework);
@@ -118,6 +125,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
     if (id === "pages") {
       if (status.pages.satisfied) continue;
       planCloudClientUpgrade(p, "pages");
+      planPluginAiUpgrade(p, "pages");
       if (adapter.kind !== "server" && !p.state.pages.pluginInstalled) {
         p.addDependency(
           PLUGIN_PAGES_PACKAGE,
@@ -138,6 +146,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
     if (id === "auth") {
       if (status.auth.satisfied) continue;
       planCloudClientUpgrade(p, "auth");
+      planPluginAiUpgrade(p, "auth");
       if (adapter.kind !== "server" && !p.state.auth.pluginInstalled) {
         p.addDependency(
           PLUGIN_AUTH_PACKAGE,

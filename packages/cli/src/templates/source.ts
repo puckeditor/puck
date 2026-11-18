@@ -27,6 +27,8 @@ export interface TemplateManifest {
   pluginAiRange: string;
   /** The first cloud-client with Puck Pages and Puck Auth */
   cloudClientPagesRange: string;
+  /** The plugin-ai that matches it */
+  pluginAiPagesRange: string;
   pluginPagesRange: string;
   pluginAuthRange: string;
 }

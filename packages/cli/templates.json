@@ -36,6 +36,7 @@
   "allowBuilds": ["esbuild"],
   "ranges": {
     "cloudClientPages": "^0.10.0",
+    "pluginAiPages": "^0.10.0",
     "pluginPages": "^0.10.0",
     "pluginAuth": "^0.10.0"
   }

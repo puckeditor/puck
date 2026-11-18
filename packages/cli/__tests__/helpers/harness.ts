@@ -26,6 +26,7 @@ export const testTemplates = new DirTemplateSource(RECIPES, {
       cloudClientRange: deps["@puckeditor/cloud-client"],
       pluginAiRange: deps["@puckeditor/plugin-ai"],
       cloudClientPagesRange: templatesConfig.ranges.cloudClientPages,
+      pluginAiPagesRange: templatesConfig.ranges.pluginAiPages,
       pluginPagesRange: templatesConfig.ranges.pluginPages,
       pluginAuthRange: templatesConfig.ranges.pluginAuth,
     };

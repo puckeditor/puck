@@ -64,8 +64,10 @@ const aiPkg = JSON.parse(
 const manifest = {
   cloudClientRange: aiPkg.dependencies["@puckeditor/cloud-client"],
   pluginAiRange: aiPkg.dependencies["@puckeditor/plugin-ai"],
-  // No recipe uses Puck Pages or Puck Auth yet
+  // No recipe uses Puck Pages or Puck Auth yet. They need cloud-client 0.10,
+  // and plugin-ai has to match it.
   cloudClientPagesRange: config.ranges.cloudClientPages,
+  pluginAiPagesRange: config.ranges.pluginAiPages,
   pluginPagesRange: config.ranges.pluginPages,
   pluginAuthRange: config.ranges.pluginAuth,
 };
