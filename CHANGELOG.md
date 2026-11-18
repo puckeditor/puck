@@ -2,6 +2,24 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.24.1](https://github.com/puckeditor/puck/compare/v0.24.0...v0.24.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* allow developers to add new field types via modules ([81566a7](https://github.com/puckeditor/puck/commit/81566a77c87e307ce7d015b0d9089ba928360edc))
+* clean up resize handle listeners on unmount ([caa28d2](https://github.com/puckeditor/puck/commit/caa28d2bafe0b028348d041efe552fa92be972dc))
+* don't crash richtext editor when revealed inside <Activity> ([2978ed6](https://github.com/puckeditor/puck/commit/2978ed6a1e1eeffd379f3e491835aa33184e47ef))
+* hide sidebar resize handle when sidebar is not visible ([7fabe52](https://github.com/puckeditor/puck/commit/7fabe52bc8e07892fa234182b08ce1452cb8687a))
+* respect user-defined Dictionary type extensions ([609983d](https://github.com/puckeditor/puck/commit/609983dba9293aa63bef2921a9b20759ff1a758e))
+* show headings in heading-analyzer on first load ([d05542f](https://github.com/puckeditor/puck/commit/d05542f4ddc3ade0275860cb91756dadd7ea791a))
+
+### Experimental
+
+* add agent-friendly Puck CLI to @puckeditor/core bin
+
+
+
 ## [0.24.0](https://github.com/measuredco/puck/compare/v0.23.0...v0.24.0) (2026-10-29)
 
 
