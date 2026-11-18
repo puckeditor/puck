@@ -16,7 +16,27 @@ import {
 
 const KEY = ["--api-key", "sk-valid-key"];
 
+/** Sets a dependency's range in the project's package.json */
+const setDependency = (root: string, name: string, range: string) => {
+  const file = path.join(root, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
+  pkg.dependencies[name] = range;
+  fs.writeFileSync(file, JSON.stringify(pkg, null, 2));
+};
+
 describe("add ai", () => {
+  it("upgrades the cloud-client to match Puck AI", async () => {
+    const root = tmpProject({ recipe: "next" });
+    setDependency(root, "@puckeditor/cloud-client", "^0.9.0");
+    const { json, runner } = await run(
+      ["add", "ai", "--yes", "--json", ...KEY],
+      { cwd: root }
+    );
+
+    expect(json.status).toBe("success");
+    expect(runner.calls[0].args).toContain("@puckeditor/cloud-client@^0.10.0");
+  });
+
   it.each(["next", "vinext"] as const)(
     "turns the %s recipe into the %s-ai recipe",
     async (recipe) => {

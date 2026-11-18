@@ -50,7 +50,7 @@ export const resolveCapabilities = (
   return CAPABILITY_IDS.filter((id) => resolved.has(id));
 };
 
-/** Pages and Sign in with Puck need a newer cloud-client than Puck AI */
+/** Pages, Sign in with Puck and plugin-ai 0.10 need cloud-client 0.10 */
 const planCloudClientUpgrade = (p: Planner, capability: CapabilityId) => {
   const range = p.templates.manifest().cloudClientPagesRange;
   if (atLeast(p.state.cloud.declaredRange, range)) return;
@@ -111,6 +111,7 @@ export const planCapabilities = (p: Planner, capabilities: CapabilityId[]) => {
 
     if (id === "ai") {
       if (adapter.kind === "server") continue;
+      if (p.state.cloud.clientInstalled) planCloudClientUpgrade(p, "ai");
       if (!p.state.ai.installed) {
         p.addDependency(
           PLUGIN_AI_PACKAGE,
