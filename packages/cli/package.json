@@ -1,7 +1,7 @@
 {
   "name": "@puckeditor/cli",
   "version": "0.23.0",
-  "description": "Set up Puck and Puck Cloud from the command line. Built for coding agents, friendly for humans.",
+  "description": "Set up Puck and Puck Cloud from the command line.",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
   "bugs": "https://github.com/puckeditor/puck/issues",

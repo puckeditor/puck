@@ -7,7 +7,7 @@ export const COMMANDS = [
   {
     name: "init",
     description:
-      "Set up Puck in this project or create a new app, optionally with Puck AI",
+      "Set up Puck in this project or create a new app, optionally with Puck Cloud",
   },
   {
     name: "add <editor|cloud|ai|pages|auth>",
