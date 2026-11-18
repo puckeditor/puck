@@ -2,11 +2,11 @@ import { CLOUD_CLIENT_PACKAGE } from "../constants";
 import { quoteOf } from "../ast/config-object";
 
 /** Sign in with Puck's server functions */
-const SIGN_IN_IMPORT = `import { getPuckIdentity, loginUrl } from "${CLOUD_CLIENT_PACKAGE}";`;
+const SIGN_IN_IMPORT = `import { loginUrl, puckCloud } from "${CLOUD_CLIENT_PACKAGE}";`;
 
-/** getPuckIdentity's options, pointed at PUCK_CLOUD_URL when set */
-const identityOptions = (host?: string) =>
-  host ? `, { host: ${JSON.stringify(host)} }` : "";
+/** The Puck Cloud client sessions are checked with, at PUCK_CLOUD_URL when set */
+const puckClient = (host?: string) =>
+  `const puck = puckCloud(${host ? `{ host: ${JSON.stringify(host)} }` : ""});`;
 
 /** Whether a Cloud route requires Sign in with Puck */
 export const requiresSignIn = (route: string) =>
@@ -54,11 +54,11 @@ export const nextPuckAuth = (host?: string) => {
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+${puckClient(host)}
+
 /** Sends anyone who isn't signed in with Puck to sign in, then back to returnTo */
 export async function requirePuckSession(returnTo: string) {
-  const session = await getPuckIdentity(await headers()${identityOptions(
-    host
-  )});
+  const session = await puck.auth.getSession(await headers());
 
   if (!session) {
     redirect(loginUrl(returnTo));
@@ -88,11 +88,11 @@ export const reactRouterPuckAuth = (host?: string) => {
   return `import { redirect } from "react-router";
 ${SIGN_IN_IMPORT}
 
+${puckClient(host)}
+
 /** Sends anyone who isn't signed in with Puck to sign in, then back here */
 export async function requirePuckSession(request: Request) {
-  const session = await getPuckIdentity(request.headers${identityOptions(
-    host
-  )});
+  const session = await puck.auth.getSession(request);
 
   if (!session) {
     const url = new URL(request.url);
@@ -111,13 +111,13 @@ import { getRequest } from "@tanstack/react-start/server";
 import { redirect } from "@tanstack/react-router";
 ${SIGN_IN_IMPORT}
 
+${puckClient(host)}
+
 /** Sends anyone who isn't signed in with Puck to sign in, then back to returnTo */
 export const requirePuckSession = createServerFn({ method: "GET" })
   .validator((returnTo: string) => returnTo)
   .handler(async ({ data: returnTo }) => {
-    const session = await getPuckIdentity(getRequest().headers${identityOptions(
-      host
-    )});
+    const session = await puck.auth.getSession(getRequest());
 
     if (!session) {
       throw redirect({ href: loginUrl(returnTo) });
@@ -165,11 +165,11 @@ ${SIGN_IN_IMPORT}
 if (import.meta.env.DEV && fs.existsSync(".env.local"))
   process.loadEnvFile(".env.local");
 
+${puckClient(host)}
+
 /** Where to send visitors who aren't signed in with Puck, or null if they are */
 export const puckSignInUrl = async (request: Request) => {
-  if (await getPuckIdentity(request.headers${identityOptions(
-    host
-  )})) return null;
+  if (await puck.auth.getSession(request)) return null;
 
   const url = new URL(request.url);
   return loginUrl(\`\${url.pathname}\${url.search}\`);
