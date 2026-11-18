@@ -96,7 +96,7 @@ describe("add assets", () => {
       expect(json.message).toBe("Set up Puck Cloud and Puck Assets.");
       expect(runner.calls[0].args).toEqual([
         "install",
-        "@puckeditor/cloud-client@^0.9.0-0",
+        "@puckeditor/cloud-client@^0.10.0-0",
         "@puckeditor/plugin-assets@^0.9.0-0",
       ]);
 
@@ -217,7 +217,7 @@ describe("add assets", () => {
       expect(json.message).toBe("Set up Puck Cloud and Puck Assets.");
       // The plugin goes in the editor's app
       const { dependencies } = JSON.parse(read(root, "package.json"));
-      expect(dependencies["@puckeditor/cloud-client"]).toBe("^0.9.0-0");
+      expect(dependencies["@puckeditor/cloud-client"]).toBe("^0.10.0-0");
       expect(dependencies).not.toHaveProperty("@puckeditor/plugin-assets");
       expect(read(root, "src/puck/cloud.ts")).toContain("puckHandler(");
       expect(codes(json.warnings)).toContain("PUCK-CLI-W-ASSETS-EDITOR");
@@ -282,7 +282,7 @@ describe("init --assets", () => {
     );
     const app = path.join(root, "site");
     expect(JSON.parse(read(app, "package.json")).dependencies).toMatchObject({
-      "@puckeditor/cloud-client": "^0.9.0-0",
+      "@puckeditor/cloud-client": "^0.10.0-0",
       "@puckeditor/plugin-assets": "^0.9.0-0",
     });
     expect(read(app, "app/puck/[...puckPath]/client.tsx")).toContain(
