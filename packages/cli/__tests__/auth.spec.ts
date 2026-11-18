@@ -32,8 +32,8 @@ describe("add auth", () => {
       expect(json.message).toBe("Set up Puck Cloud and Puck Auth.");
       expect(runner.calls[0].args).toEqual([
         "install",
-        "@puckeditor/cloud-client@^0.9.0-0",
-        "@puckeditor/plugin-auth@^0.9.0-0",
+        "@puckeditor/cloud-client@^0.10.0-0",
+        "@puckeditor/plugin-auth@^0.10.0-0",
       ]);
       expect(read(root, "lib/puck-auth.ts")).toBe(nextPuckAuth());
 
