@@ -467,6 +467,26 @@ export const runDoctor = async (rc: RunContext): Promise<CommandResult> => {
             )
       );
     }
+    // cloud-client 0.10 replaced getPuckIdentity with puck.auth.getSession
+    const legacy = state.scan.legacySignInFiles;
+    if (state.scan.signInFiles.length) {
+      findings.push(
+        legacy.length
+          ? finding(
+              "auth.sign_in_helper",
+              "fail",
+              `${legacy.join(", ")} ${
+                legacy.length === 1 ? "calls" : "call"
+              } getPuckIdentity, which ${CLOUD_CLIENT_PACKAGE} 0.10 removed`,
+              `${CANONICAL_INVOCATION} add auth${where}`
+            )
+          : finding(
+              "auth.sign_in_helper",
+              "ok",
+              state.scan.signInFiles.join(", ")
+            )
+      );
+    }
   }
 
   // Pages and Sign in with Puck arrived in a newer cloud-client

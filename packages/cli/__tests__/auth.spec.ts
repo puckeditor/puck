@@ -36,8 +36,11 @@ export async function requirePuckSession(returnTo: string) {
 }
 `;
 
+const signInFinding = (findings: { check: string }[] = []) =>
+  findings.find((f) => f.check === "auth.sign_in_helper");
+
 describe("getPuckIdentity", () => {
-  it("brings a helper that calls it up to date", async () => {
+  it("is flagged by doctor, and add auth brings the helper up to date", async () => {
     const root = tmpProject({ recipe: "next" });
     await run(["add", "auth", "--yes", "--json", ...KEY], { cwd: root });
     fs.writeFileSync(
@@ -45,12 +48,24 @@ describe("getPuckIdentity", () => {
       GET_PUCK_IDENTITY_HELPER
     );
 
+    const before = await run(["doctor", "--json", "--offline"], { cwd: root });
+    expect(signInFinding(before.json.findings)).toMatchObject({
+      status: "fail",
+      evidence: expect.stringContaining(
+        "lib/puck-auth.ts calls getPuckIdentity"
+      ),
+      fix: expect.stringContaining("add auth"),
+    });
+
     const { json } = await run(["add", "auth", "--yes", "--json"], {
       cwd: root,
     });
     expect(json.status).toBe("success");
     expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
     expect(read(root, "lib/puck-auth.ts")).toBe(nextPuckAuth());
+
+    const after = await run(["doctor", "--json", "--offline"], { cwd: root });
+    expect(signInFinding(after.json.findings)).toMatchObject({ status: "ok" });
   });
 
   it("asks for other code that calls it to be updated", async () => {
