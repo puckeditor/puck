@@ -1,6 +1,7 @@
 // Handles all requests for Puck AI
 // Learn more: https://puckeditor.com/docs/ai/getting-started
 import { Hono } from "hono";
+import { cloneRawRequest } from "hono/request";
 import type { PuckCloudOptions } from "@puckeditor/cloud-client";
 import { puckHandler } from "@puckeditor/cloud-client";
 
@@ -25,6 +26,7 @@ const options: PuckCloudOptions = {
   },
 };
 
-export const puckCloud = new Hono().all("/api/puck/*", (c) =>
-  puckHandler(c.req.raw, options)
+// cloneRawRequest keeps the body readable if middleware has already read it
+export const puckCloud = new Hono().all("/api/puck/*", async (c) =>
+  puckHandler(await cloneRawRequest(c.req), options)
 );
