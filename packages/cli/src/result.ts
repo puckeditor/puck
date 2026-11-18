@@ -49,13 +49,6 @@ export type RequiredAction = ActionBase &
         instructions: string;
       }
     | {
-        /** The project was made without an account; it's deleted unless claimed */
-        type: "claim_project";
-        url: string;
-        expiresAt: string;
-        instructions: string;
-      }
-    | {
         type: "provide_api_key";
         url: string;
         instructions: string;
