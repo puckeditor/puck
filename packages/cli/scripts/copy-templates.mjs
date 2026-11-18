@@ -65,11 +65,6 @@ const manifest = {
   cloudClientRange: aiPkg.dependencies["@puckeditor/cloud-client"],
   pluginAiRange: aiPkg.dependencies["@puckeditor/plugin-ai"],
   // No recipe uses Puck Pages or Puck Auth yet
-  // TODO: pin these to exact versions once Puck Cloud publishes cloud-client,
-  // plugin-pages and plugin-auth with puckCloud(), getPuckIdentity and
-  // puckHandler's auth option. ^0.10.0-0 matches canaries by their hash
-  // suffix, which semver sorts alphabetically, so it installs whichever hash
-  // sorts last rather than the newest build.
   cloudClientPagesRange: config.ranges.cloudClientPages,
   pluginPagesRange: config.ranges.pluginPages,
   pluginAuthRange: config.ranges.pluginAuth,

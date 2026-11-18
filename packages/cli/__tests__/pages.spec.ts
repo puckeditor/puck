@@ -43,8 +43,8 @@ describe("add pages", () => {
       expect(json.message).toBe("Set up Puck Cloud and Puck Pages.");
       expect(runner.calls[0].args).toEqual([
         "install",
-        "@puckeditor/cloud-client@^0.10.0-0",
-        "@puckeditor/plugin-pages@^0.10.0-0",
+        "@puckeditor/cloud-client@^0.10.0",
+        "@puckeditor/plugin-pages@^0.10.0",
       ]);
       expect(read(root, "app/puck/[...puckPath]/client.tsx")).toBe(
         nextPagesEditorClient({ ai: false })
@@ -460,9 +460,9 @@ describe("init --pages --auth", () => {
     ]);
     const pkg = JSON.parse(read(app, "package.json"));
     expect(pkg.dependencies).toMatchObject({
-      "@puckeditor/cloud-client": "^0.10.0-0",
-      "@puckeditor/plugin-pages": "^0.10.0-0",
-      "@puckeditor/plugin-auth": "^0.10.0-0",
+      "@puckeditor/cloud-client": "^0.10.0",
+      "@puckeditor/plugin-pages": "^0.10.0",
+      "@puckeditor/plugin-auth": "^0.10.0",
     });
     expect(read(app, "app/puck/[...puckPath]/page.tsx")).toBe(
       nextPagesEditorPage({ ai: true, auth: true })
