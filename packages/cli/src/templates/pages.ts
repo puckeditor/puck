@@ -26,7 +26,7 @@ export const nextPagesEditorClient = ({ ai }: { ai: boolean }) =>
   ai
     ? `"use client";
 
-import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";
+import { Puck } from "@puckeditor/core";
 import { createAiPlugin } from "@puckeditor/plugin-ai";
 import { createPagesPlugin } from "@puckeditor/plugin-pages";
 
@@ -36,8 +36,7 @@ ${AI_PLUGIN}
 // Loads, saves and publishes pages in Puck Cloud
 const pagesPlugin = createPagesPlugin();
 
-// Place the ai plugin in the first position in the side nav.
-const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin, pagesPlugin];
 
 export function Client() {
   return <Puck plugins={plugins} data={{}} config={config} />;
@@ -270,9 +269,7 @@ export const reactRouterPagesEditor = ({
 }: {
   ai: boolean;
   auth: boolean;
-}) => `import { Puck${
-  ai ? ", blocksPlugin, outlinePlugin" : ""
-} } from "@puckeditor/core";
+}) => `import { Puck } from "@puckeditor/core";
 ${
   ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
 }import { createPagesPlugin } from "@puckeditor/plugin-pages";
@@ -303,8 +300,7 @@ const pagesPlugin = createPagesPlugin();
 ${
   ai
     ? `
-// Place the ai plugin in the first position in the side nav.
-const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin, pagesPlugin];
 `
     : ""
 }
@@ -378,9 +374,7 @@ export const tanstackPagesEditor = ({
   ai: boolean;
   auth: boolean;
 }) => `import { createFileRoute } from "@tanstack/react-router";
-import { Puck${
-  ai ? ", blocksPlugin, outlinePlugin" : ""
-} } from "@puckeditor/core";
+import { Puck } from "@puckeditor/core";
 ${
   ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
 }import { createPagesPlugin } from "@puckeditor/plugin-pages";
@@ -412,8 +406,7 @@ const pagesPlugin = createPagesPlugin();
 ${
   ai
     ? `
-// Place the ai plugin in the first position in the side nav.
-const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin, pagesPlugin];
 `
     : ""
 }
@@ -472,9 +465,11 @@ export function PuckRoot({ children }: { children: ReactNode }) {
 `;
 
 /** Vite and Astro: src/puck/editor.tsx */
-export const vitePagesEditor = ({ ai }: { ai: boolean }) => `import { Puck${
-  ai ? ", blocksPlugin, outlinePlugin" : ""
-} } from "@puckeditor/core";
+export const vitePagesEditor = ({
+  ai,
+}: {
+  ai: boolean;
+}) => `import { Puck } from "@puckeditor/core";
 ${
   ai ? `import { createAiPlugin } from "@puckeditor/plugin-ai";\n` : ""
 }import { createPagesPlugin } from "@puckeditor/plugin-pages";
@@ -488,8 +483,7 @@ const pagesPlugin = createPagesPlugin();
 ${
   ai
     ? `
-// Place the ai plugin in the first position in the side nav.
-const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin, pagesPlugin];
 `
     : ""
 }

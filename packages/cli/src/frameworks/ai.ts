@@ -1,5 +1,5 @@
 /** Shown when an existing editor can't be upgraded automatically */
-export const AI_SNIPPET = `import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";
+export const AI_SNIPPET = `import { Puck } from "@puckeditor/core";
 import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 
 const aiPlugin = createAiPlugin({
@@ -7,7 +7,7 @@ const aiPlugin = createAiPlugin({
   defaultMode: "design",
 });
 
-const plugins = [aiPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin];
 
 // In your editor component:
 <Puck

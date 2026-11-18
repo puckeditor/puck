@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { Data } from "@puckeditor/core";
-import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";
+import { Puck } from "@puckeditor/core";
 import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 
 import { config } from "../../puck.config";
@@ -37,8 +37,7 @@ const aiPlugin = createAiPlugin({
   defaultMode: "design",
 });
 
-// Place the ai plugin in the first position in the side nav.
-const plugins = [aiPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin];
 
 function Editor({ path, data }: { path: string; data: Data }) {
   const configWithDesignedComponents = useMemo(

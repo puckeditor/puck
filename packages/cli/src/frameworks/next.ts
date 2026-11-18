@@ -334,7 +334,7 @@ export const planNextAi = (p: Planner, info: NextLikeInfo) => {
   upgradeEditor(p, info, EDITOR_PAGE, {
     want: { ai: true },
     capability: "ai",
-    summary: `Load Puck AI styles in ${A}/puck/[...puckPath]/page.tsx`,
+    summary: `Update ${A}/puck/[...puckPath]/page.tsx for Puck AI`,
   });
   const render = upgrade(
     "app/[...puckPath]/client.tsx",

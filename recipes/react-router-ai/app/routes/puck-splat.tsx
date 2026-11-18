@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import type { Data } from "@puckeditor/core";
-import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";
+import { Puck } from "@puckeditor/core";
 import { createAiPlugin, withDynamicConfig } from "@puckeditor/plugin-ai";
 
 import type { Route } from "./+types/puck-splat";
@@ -70,8 +70,7 @@ const aiPlugin = createAiPlugin({
   defaultMode: "design",
 });
 
-// Place the ai plugin in the first position in the side nav.
-const plugins = [aiPlugin, blocksPlugin(), outlinePlugin()];
+const plugins = [aiPlugin];
 
 function Editor() {
   const loaderData = useLoaderData<typeof loader>();

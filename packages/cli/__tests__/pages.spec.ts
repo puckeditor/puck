@@ -157,6 +157,30 @@ describe("add pages", () => {
     );
   });
 
+  it("recognises an AI editor that lists Puck's own plugins", async () => {
+    const root = tmpProject({ recipe: "next-ai" });
+    const client = "app/puck/[...puckPath]/client.tsx";
+    rewrite(
+      root,
+      client,
+      'import { Puck } from "@puckeditor/core";',
+      'import { Puck, blocksPlugin, outlinePlugin } from "@puckeditor/core";'
+    );
+    rewrite(
+      root,
+      client,
+      "const plugins = [aiPlugin];",
+      "// Place the ai plugin in the first position in the side nav.\nconst plugins = [aiPlugin, blocksPlugin(), outlinePlugin()];"
+    );
+    const { json } = await run(["add", "pages", "--yes", "--json", ...KEY], {
+      cwd: root,
+    });
+
+    expect(json.status).toBe("success");
+    expect(json.actions.filter((a) => a.type === "manual_edit")).toEqual([]);
+    expect(read(root, client)).toBe(nextPagesEditorClient({ ai: true }));
+  });
+
   it("upgrades Puck AI to match the cloud-client", async () => {
     const root = tmpProject({ recipe: "next-ai" });
     setDependency(root, "@puckeditor/plugin-ai", "^0.9.0");
@@ -297,7 +321,7 @@ describe("add pages", () => {
         });
       }
       expect(read(aiFirst, "app/routes/puck.tsx")).toContain(
-        "const plugins = [aiPlugin, pagesPlugin, blocksPlugin(), outlinePlugin()];"
+        "const plugins = [aiPlugin, pagesPlugin];"
       );
     });
   });

@@ -99,30 +99,41 @@ const normalizeEol = (text: string) => text.replace(/\r\n/g, "\n");
 
 export type UpgradeOutcome = "upgraded" | "already" | "missing" | "customized";
 
-// The plugins' stylesheets, which earlier versions imported. The plugins
-// inject their own styles since 0.10.
-const PLUGIN_STYLES = [
-  /^import (?:\w+ from )?["']@puckeditor\/plugin-[\w-]+\/styles\.css(?:\?url)?["'];?\n/gm,
-  /^[ \t]*<link rel="stylesheet" href=\{\w*[pP]luginStyles\} id="puck-plugin-[\w-]+-css" \/>\n/gm,
-  /^[ \t]*<link\n[ \t]*rel="stylesheet"\n[ \t]*href=\{\w*[pP]luginStyles\}\n[ \t]*id="puck-plugin-[\w-]+-css"\n[ \t]*\/>\n/gm,
-  /^[ \t]*\{ rel: "stylesheet", href: \w*[pP]luginStyles \},?\n/gm,
+// How files the CLI wrote earlier differ from what it writes now. The plugins
+// inject their own styles since 0.10, and Puck's own plugins now come first in
+// the rail, so the editor no longer lists blocksPlugin and outlinePlugin.
+const OLDER_VERSIONS: [RegExp, string][] = [
+  [
+    /^import (?:\w+ from )?["']@puckeditor\/plugin-[\w-]+\/styles\.css(?:\?url)?["'];?\n/gm,
+    "",
+  ],
+  [
+    /^[ \t]*<link rel="stylesheet" href=\{\w*[pP]luginStyles\} id="puck-plugin-[\w-]+-css" \/>\n/gm,
+    "",
+  ],
+  [
+    /^[ \t]*<link\n[ \t]*rel="stylesheet"\n[ \t]*href=\{\w*[pP]luginStyles\}\n[ \t]*id="puck-plugin-[\w-]+-css"\n[ \t]*\/>\n/gm,
+    "",
+  ],
+  [/^[ \t]*\{ rel: "stylesheet", href: \w*[pP]luginStyles \},?\n/gm, ""],
+  // Prettier puts a links array with one stylesheet left on one line
+  [/\[\n[ \t]*(\{ rel: "stylesheet", href: \w+ \}),?\n[ \t]*\]/g, "[$1]"],
+  [/^\/\/ Place the ai plugin in the first position in the side nav\.\n/gm, ""],
+  [
+    /^import \{ Puck, blocksPlugin, outlinePlugin \} from/gm,
+    "import { Puck } from",
+  ],
+  [/, blocksPlugin\(\), outlinePlugin\(\)\]/g, "]"],
 ];
 
-/** The same code, or the same once its plugin stylesheets are dropped */
-const sameIgnoringPluginStyles = (current: string, code: string) => {
+/** The same code, or the same as an earlier version of it */
+const sameOrOlder = (current: string, code: string) => {
   const a = normalizeEol(current);
   const b = normalizeEol(code);
-  if (a === b) return true;
-  const dropped = PLUGIN_STYLES.reduce(
-    (text, pattern) => text.replace(pattern, ""),
-    a
-  )
-    // Prettier puts a links array with one stylesheet left on one line
-    .replace(
-      /\[\n[ \t]*(\{ rel: "stylesheet", href: \w+ \}),?\n[ \t]*\]/g,
-      "[$1]"
-    );
-  return dropped === b;
+  return (
+    a === b ||
+    OLDER_VERSIONS.reduce((text, [from, to]) => text.replace(from, to), a) === b
+  );
 };
 
 /**
@@ -177,7 +188,7 @@ export const upgradeTemplateFile = (
 
   if (candidates.some((c) => same(current, c.next))) return "already";
   const match = candidates.find(
-    (c) => c.previous.ok && sameIgnoringPluginStyles(current, c.previous.code)
+    (c) => c.previous.ok && sameOrOlder(current, c.previous.code)
   );
   if (!match) return "customized";
 
@@ -231,7 +242,7 @@ export const upgradeVariant = <F extends object>(
     const known = forms(combo);
     if (!known) continue;
     const form = [known.relocated, known.verbatim].findIndex(
-      (code) => code !== null && sameIgnoringPluginStyles(current, code)
+      (code) => code !== null && sameOrOlder(current, code)
     );
     if (form === -1) continue;
     onMatch?.(combo);

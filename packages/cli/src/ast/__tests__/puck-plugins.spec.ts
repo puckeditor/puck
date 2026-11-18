@@ -50,9 +50,7 @@ export function Editor() {
     const code = add(
       readRecipe("next-ai", "app/puck/[...puckPath]/client.tsx")
     );
-    expect(code).toContain(
-      "const plugins = [aiPlugin, blocksPlugin(), outlinePlugin(), authPlugin];"
-    );
+    expect(code).toContain("const plugins = [aiPlugin, authPlugin];");
     // Created before the array that uses it
     expect(code!.indexOf("const authPlugin")).toBeLessThan(
       code!.indexOf("const plugins")
