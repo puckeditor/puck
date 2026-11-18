@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@puckeditor/cloud-client": "^0.10.0",
-    "express": "^5.2.1",
-    "react": "^19.2.0"
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

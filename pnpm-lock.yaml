@@ -697,9 +697,6 @@ importers:
       express:
         specifier: ^5.2.1
         version: 5.3.0(supports-color@8.1.1)
-      react:
-        specifier: ^19.2.0
-        version: 19.2.6
     devDependencies:
       '@types/express':
         specifier: ^5.0.3
@@ -744,9 +741,6 @@ importers:
       hono:
         specifier: ^4.13.9
         version: 4.13.19
-      react:
-        specifier: ^19.2.0
-        version: 19.2.6
     devDependencies:
       '@types/node':
         specifier: ^22.10.2

@@ -33,9 +33,6 @@ export const SERVER_AI_MAPPED = [...SERVER_MAPPED, "src/puck/cloud.ts"];
 const PAGES = { from: "src/puck/pages.ts", name: "puckPages" };
 const CLOUD = { from: "src/puck/cloud.ts", name: "puckCloud" };
 
-/** @puckeditor/cloud-client's build imports react, even on the server */
-const CLOUD_CLIENT_PEER = { name: "react", range: "^19.0.0" };
-
 /** Puck's server modules go next to the entry, e.g. src/puck/ */
 const puckDir = (vfs: Vfs, root: string, info: ServerInfo) => {
   if (info.entry)
@@ -194,10 +191,6 @@ const serverPlanner = (id: "hono" | "express") => {
     const route = withAi ? aiRoute : cloudRoute;
     const existing = p.state.cloud.routeFile;
     const file = existing ?? `${puckDir(p.vfs, p.ctx.root, info)}/cloud.ts`;
-
-    if (!(CLOUD_CLIENT_PEER.name in p.ctx.deps)) {
-      p.addDependency(CLOUD_CLIENT_PEER.name, CLOUD_CLIENT_PEER.range, "cloud");
-    }
 
     if (existing) {
       if (withAi) planAiRoute(p, existing, cloudRoute, route);

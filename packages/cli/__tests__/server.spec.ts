@@ -37,8 +37,8 @@ describe("servers (Hono and Express)", () => {
     );
     expect(pkg.dependencies).toMatchObject({
       "@puckeditor/cloud-client": "^0.10.0",
-      react: "^19.0.0",
     });
+    expect(pkg.dependencies.react).toBeUndefined();
     expect(pkg.dependencies["@puckeditor/core"]).toBeUndefined();
     expect(pkg.dependencies["@puckeditor/plugin-ai"]).toBeUndefined();
     expect(runner.calls).toEqual([
