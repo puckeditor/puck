@@ -28,6 +28,7 @@ describe("telemetry", () => {
         event: "cli_command",
         timestamp: expect.any(String),
         command: "status",
+        commandLine: "puck status --json",
         capabilities: [],
         status: "success",
         errorCode: null,
@@ -86,6 +87,9 @@ describe("telemetry", () => {
     const sent = JSON.stringify(cloud.telemetry);
     expect(sent).toContain('"command":"add"');
     expect(sent).toContain('"capabilities":["cloud"]');
+    expect(sent).toContain(
+      '"commandLine":"puck add cloud --yes --json --api-key <value>"'
+    );
     expect(sent).not.toContain(root);
     expect(sent).not.toContain(path.basename(root));
     expect(sent).not.toContain(KEY);
@@ -104,6 +108,7 @@ describe("telemetry", () => {
     expect(code).toBe(2);
     expect(cloud.telemetry[0].events[0]).toMatchObject({
       command: null,
+      commandLine: "puck status --json --<unknown>",
       status: "error",
       errorCode: "PUCK-CLI-INVALID-ARGS",
       exitCode: 2,
@@ -119,6 +124,7 @@ describe("telemetry", () => {
     expect(code).toBe(2);
     expect(cloud.telemetry[0].events[0]).toMatchObject({
       command: null,
+      commandLine: "puck create",
       errorCode: "PUCK-CLI-UNKNOWN-COMMAND",
       unknownCommand: "create",
     });

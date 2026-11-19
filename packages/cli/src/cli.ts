@@ -103,6 +103,7 @@ export const runCli = async (
     // Even a mistyped `telemetry disable` shouldn't send anything
     if (argv[0] !== "telemetry") {
       await recordRun(deps, loadTelemetry(deps), startedAt, {
+        argv,
         command: null,
         positionals: [],
         flags: { json },
@@ -167,6 +168,7 @@ export const runCli = async (
   // Before afterOutput, which can start a dev server that runs until exit
   if (telemetry) {
     await recordRun(deps, telemetry, startedAt, {
+      argv,
       command,
       positionals,
       flags,

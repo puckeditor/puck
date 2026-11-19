@@ -45,7 +45,7 @@ export interface ParsedArgs {
   flags: Flags;
 }
 
-const OPTIONS = {
+export const OPTIONS = {
   json: { type: "boolean" },
   yes: { type: "boolean", short: "y" },
   "dry-run": { type: "boolean" },
@@ -120,7 +120,7 @@ export const COMMAND_OPTIONS: Record<CommandName, OptionName[]> = {
   help: GLOBAL,
 };
 
-const COMMANDS: CommandName[] = [
+export const COMMANDS: CommandName[] = [
   "init",
   "add",
   "connect",
