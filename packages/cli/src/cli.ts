@@ -57,7 +57,7 @@ const errorResult = (
   return result;
 };
 
-const recordRun = (
+const recordRun = async (
   deps: CliDeps,
   telemetry: Telemetry,
   startedAt: number,
@@ -69,12 +69,15 @@ const recordRun = (
     | "platform"
     | "arch"
     | "nodeVersion"
+    | "agent"
     | "now"
   >
 ) => {
+  const agent = await deps.detectAgent();
   const now = deps.now();
   const event = buildEvent({
     ...input,
+    agent,
     durationMs: now - startedAt,
     env: deps.env,
     cliVersion: deps.cliVersion,

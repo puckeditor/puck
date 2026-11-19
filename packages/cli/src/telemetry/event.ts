@@ -50,20 +50,6 @@ export interface TelemetryEvent {
   backend: BackendChoice | null;
 }
 
-/** Environment markers set by coding agents, mapped to a stable name */
-const AGENTS: [env: string, name: string][] = [
-  ["CLAUDECODE", "claude-code"],
-  ["CURSOR_AGENT", "cursor"],
-  ["CODEX_SANDBOX", "codex"],
-  ["CODEX_SANDBOX_NETWORK_DISABLED", "codex"],
-  ["GEMINI_CLI", "gemini-cli"],
-  ["OPENCODE", "opencode"],
-];
-
-export const detectAgent = (env: Record<string, string | undefined>) =>
-  AGENTS.find(([key]) => env[key] !== undefined && env[key] !== "")?.[1] ??
-  null;
-
 /** Drops anything that isn't a short identifier, as a last line of defence */
 const id = (value: string | null | undefined) =>
   value && /^[A-Za-z0-9._@:-]{1,64}$/.test(value) ? value : null;
@@ -85,6 +71,8 @@ export interface EventInput {
   durationMs: number;
   interactive: boolean;
   env: Record<string, string | undefined>;
+  /** From @vercel/detect-agent, which also reports any AI_AGENT value */
+  agent: string | null;
   cliVersion: string;
   platform: string;
   arch: string;
@@ -124,7 +112,7 @@ export const buildEvent = (input: EventInput): TelemetryEvent => {
     ci: isCI(input.env),
     interactive: input.interactive,
     json: Boolean(flags.json),
-    agent: detectAgent(input.env),
+    agent: id(input.agent),
     framework: project?.framework ?? flags.framework ?? null,
     frameworkMajor: major(project?.frameworkVersion),
     monorepo: Boolean(project?.workspace),
