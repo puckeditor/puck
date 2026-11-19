@@ -31,6 +31,8 @@ export interface CliDeps {
   platform: string;
   arch: string;
   nodeVersion: string;
+  /** The coding agent running the CLI, e.g. `claude`, or null. Never throws */
+  detectAgent(): Promise<string | null>;
   now(): number;
   sleep(ms: number): Promise<void>;
 }

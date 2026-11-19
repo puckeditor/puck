@@ -186,18 +186,18 @@ describe("telemetry", () => {
     expect(stderr).toMatch(/^\[telemetry\] \{"anonymousId":/m);
   });
 
-  it("detects coding agents by name only", async () => {
+  it.each([
+    ["claude", "claude"],
+    ["my-agent@2.0", "my-agent@2.0"],
+    // AI_AGENT is free text
+    ["/home/me/agent", null],
+    ["my agent", null],
+  ])("records the coding agent %s as %s", async (agent, expected) => {
     const { root, env, cloud } = setup();
 
-    await run(["status", "--json"], {
-      cwd: root,
-      cloud,
-      env: { ...env, CLAUDECODE: "1" },
-    });
+    await run(["status", "--json"], { cwd: root, cloud, env, agent });
 
-    expect(cloud.telemetry[0].events[0]).toMatchObject({
-      agent: "claude-code",
-    });
+    expect(cloud.telemetry[0].events[0]).toMatchObject({ agent: expected });
   });
 
   it.each([["error"], ["hang"]] as const)(

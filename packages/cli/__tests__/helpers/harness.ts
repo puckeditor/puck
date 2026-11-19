@@ -349,6 +349,8 @@ export interface RunOptions {
   cliVersion?: string;
   invocation?: string;
   platform?: string;
+  /** What @vercel/detect-agent reports */
+  agent?: string;
 }
 
 export interface RunOutput {
@@ -415,6 +417,7 @@ export const run = async (
     platform: opts.platform ?? "linux",
     arch: "x64",
     nodeVersion: opts.nodeVersion ?? "20.19.0",
+    detectAgent: async () => opts.agent ?? null,
     now: opts.now ?? (() => Date.now()),
     sleep: async () => undefined,
   };

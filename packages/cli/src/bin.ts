@@ -2,6 +2,7 @@ import os from "node:os";
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
+import { determineAgent } from "@vercel/detect-agent";
 import { runCli } from "./cli";
 import { createRunner } from "./io/runner";
 import { openUrl } from "./io/open-url";
@@ -50,6 +51,11 @@ runCli(process.argv.slice(2), {
   platform: process.platform,
   arch: process.arch,
   nodeVersion: process.versions.node,
+  detectAgent: () =>
+    determineAgent().then(
+      (result) => result.agent?.name ?? null,
+      () => null
+    ),
   now: () => Date.now(),
   sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 }).then(

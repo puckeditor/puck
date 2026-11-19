@@ -173,6 +173,9 @@ importers:
       '@inquirer/select':
         specifier: ^4.4.2
         version: 4.4.2(@types/node@20.19.41)
+      '@vercel/detect-agent':
+        specifier: ^1.2.7
+        version: 1.2.7
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -5076,6 +5079,10 @@ packages:
 
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
+
+  '@vercel/detect-agent@1.2.7':
+    resolution: {integrity: sha512-5tWaC9V+u4SHcSMKBz9FQb3Dhl/1A2lQ6QqHovu8uQeb8dTyjEevpJMANm/uQEn/usYB63fpdjWYjkJ8/bGtjA==}
+    engines: {node: '>=14'}
 
   '@vercel/og@1.0.3':
     resolution: {integrity: sha512-/iYJ34PDu4lty1TXdL86qHEw8viveHTllG1PWLuJX8tSFfqKL7kyVJeUORJmQ250bHB0h+alcalXUlza3c/NSA==}
@@ -15375,6 +15382,8 @@ snapshots:
     optionalDependencies:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
+
+  '@vercel/detect-agent@1.2.7': {}
 
   '@vercel/og@1.0.3(@types/node@22.20.5)':
     dependencies:

@@ -30,6 +30,7 @@
     "@inquirer/input": "^4.3.1",
     "@inquirer/password": "^4.0.23",
     "@inquirer/select": "^4.4.2",
+    "@vercel/detect-agent": "^1.2.7",
     "picocolors": "^1.1.1",
     "tinyglobby": "^0.2.16",
     "yaml": "^2.9.0"
