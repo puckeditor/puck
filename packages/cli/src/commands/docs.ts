@@ -5,7 +5,7 @@ import { emptyResult } from "../result";
 import { CliError } from "../errors";
 import { CANONICAL_INVOCATION } from "../constants";
 
-const SUBCOMMANDS = ["ls", "cat", "find", "grep"] as const;
+export const SUBCOMMANDS = ["ls", "cat", "find", "grep"] as const;
 type Subcommand = (typeof SUBCOMMANDS)[number];
 
 const FIND_LIMIT = 20;

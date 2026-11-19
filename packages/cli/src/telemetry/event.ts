@@ -4,6 +4,7 @@ import type { FrameworkId } from "../detect/framework";
 import type { PackageManagerName } from "../detect/package-manager";
 import { CAPABILITY_IDS } from "../plan/capabilities";
 import { isCI } from "../context";
+import { describeCommand, word } from "./command-line";
 
 /**
  * One CLI run. Every field is an enum, boolean, number or version, never a
@@ -15,6 +16,8 @@ export interface TelemetryEvent {
   timestamp: string;
   /** null when the arguments didn't parse */
   command: CommandName | null;
+  /** The command as typed, with flag values and free-text arguments as placeholders */
+  commandLine: string;
   /** What `add` was asked for */
   capabilities: CapabilityId[];
   status: CommandResult["status"];
@@ -67,18 +70,13 @@ const id = (value: string | null | undefined) =>
 const ids = (values: string[]) =>
   values.map(id).filter((v): v is string => v !== null);
 
-// A word like `create`; never a path, placeholder or key
-const word = (value: unknown) =>
-  typeof value === "string" && /^[a-z][a-z0-9-]{0,31}$/.test(value)
-    ? value
-    : null;
-
 const major = (version: string | null | undefined) => {
   const match = version?.match(/\d+/);
   return match ? Number(match[0]) : null;
 };
 
 export interface EventInput {
+  argv: string[];
   command: CommandName | null;
   positionals: string[];
   flags: Partial<Flags>;
@@ -101,6 +99,7 @@ export const buildEvent = (input: EventInput): TelemetryEvent => {
     event: "cli_command",
     timestamp: new Date(input.now).toISOString(),
     command: input.command,
+    commandLine: describeCommand(input.argv),
     capabilities:
       input.command === "add"
         ? CAPABILITY_IDS.filter((c) => input.positionals.includes(c))
