@@ -1,5 +1,5 @@
 // This file should avoid importing any non RSC friendly code (state, effects, context, etc.), as it is used in both RSC and CSR contexts.
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 
 import {
   ComponentData,
@@ -21,7 +21,7 @@ const EMPTY_FIELD_CONFIG = {} as const;
  *
  * @param config The Puck config used to build the item.
  * @param component The component or root data to resolve props for as it comes from the JSON data.
- * @param renderSlot A function that converts slot props to a ReactNode.
+ * @param renderSlot A function that converts slot props to a ReactNode. Keep it referentially stable: a new function on every render remounts the slot's subtree.
  * @param fieldTransforms User or additional field transforms to apply while rendering the final page props.
  * @returns The props for the item, with slot props converted to ReactNodes and any field transforms applied.
  */
@@ -34,11 +34,17 @@ function useRenderProps<
   renderSlot: (dzProps: DropZoneProps & { content: Content }) => ReactNode,
   fieldTransforms?: FieldTransforms
 ): T["props"] {
+  // Keep the transforms stable so slot components keep their identity across renders
+  const transforms = useMemo(
+    () => ({ ...getSlotTransform(renderSlot), ...fieldTransforms }),
+    [renderSlot, fieldTransforms]
+  );
+
   // Apply all transforms
   const transformedProps: T["props"] = useFieldTransforms(
     config,
     component as ComponentData,
-    { ...getSlotTransform(renderSlot), ...fieldTransforms },
+    transforms,
     undefined,
     true
   );
