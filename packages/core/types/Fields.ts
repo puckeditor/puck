@@ -183,6 +183,18 @@ export interface SlotField extends BaseField {
   disallow?: string[];
 }
 
+/**
+ * Register your own field types by augmenting this interface.
+ *
+ * @example
+ * declare module "@puckeditor/core" {
+ *   interface FieldTypes {
+ *     switch: { type: "switch"; options: string[] };
+ *   }
+ * }
+ */
+export interface FieldTypes {}
+
 export type Field<ValueType = any, UserField extends {} = {}> =
   | TextField
   | RichtextField
@@ -199,7 +211,8 @@ export type Field<ValueType = any, UserField extends {} = {}> =
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>
   | CustomField<ValueType>
-  | SlotField;
+  | SlotField
+  | (FieldTypes[keyof FieldTypes] & BaseField);
 
 export type Fields<
   ComponentProps extends DefaultComponentProps = DefaultComponentProps,

@@ -1,6 +1,6 @@
 {
   "name": "@puckeditor/core",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "description": "The open-source visual editor for React",
   "author": "Chris Villa <chris@puckeditor.com>",
   "repository": "puckeditor/puck",
@@ -27,6 +27,12 @@
   "private": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "@puckeditor/core": "./bin/cli.mjs"
+  },
+  "browser": {
+    "@vercel/detect-agent": false
+  },
   "exports": {
     ".": {
       "react-server": {
@@ -68,21 +74,24 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
+    "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts && cp AGENTS.package.md dist/CLAUDE.md && cp AGENTS.package.md dist/AGENTS.md",
     "test": "jest",
     "prepare": "cp ../../README.md ../../CHANGELOG.md . && pnpm build",
+    "prepack": "cp AGENTS.package.md CLAUDE.md",
+    "postpack": "rm CLAUDE.md",
     "postpublish": "rm README.md CHANGELOG.md"
   },
   "files": [
+    "bin",
     "dist",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "CLAUDE.md"
   ],
   "devDependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
-    "@types/deep-diff": "^1.0.3",
     "@types/flat": "^5.0.5",
     "@types/jest": "^29.5.14",
     "@types/object-hash": "^3.0.6",
@@ -113,6 +122,7 @@
     "@dnd-kit/helpers": "0.4.0",
     "@dnd-kit/react": "0.4.0",
     "@dnd-kit/state": "0.4.0",
+    "@puckeditor/cli": "latest",
     "@radix-ui/react-popover": "^1.1.15",
     "@tanstack/react-virtual": "^3.13.9",
     "@tiptap/core": "^3.30.4",
@@ -135,7 +145,7 @@
     "@tiptap/html": "^3.30.4",
     "@tiptap/pm": "^3.30.4",
     "@tiptap/react": "^3.30.4",
-    "deep-diff": "^1.0.2",
+    "@vercel/detect-agent": "^1.2.7",
     "fast-equals": "5.2.2",
     "flat": "^5.0.2",
     "happy-dom": "^21.0.4",

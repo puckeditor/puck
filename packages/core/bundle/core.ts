@@ -1,3 +1,7 @@
+import { logAgentMessage } from "../lib/log-agent-message";
+
+logAgentMessage();
+
 export type { PuckAction } from "../reducer/actions";
 
 export * from "../types/API";

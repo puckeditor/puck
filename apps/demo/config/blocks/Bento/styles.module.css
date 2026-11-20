@@ -1,0 +1,160 @@
+.Bento-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.Bento-tiles {
+  display: grid;
+  gap: var(--site-space-4);
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.BentoTile {
+  background: var(--site-color-surface);
+  border: 1px solid var(--site-color-border);
+  border-radius: var(--site-radius-l);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--site-space-5);
+  isolation: isolate;
+  min-height: 200px;
+  overflow: hidden;
+  padding: clamp(24px, 3vw, 32px);
+  position: relative;
+}
+
+.BentoTile:first-child {
+  min-height: 360px;
+}
+
+/* Tiles without a photo sit on the page surface, so they keep the page's
+   colors even on inverse bands */
+.BentoTile:not(.BentoTile--photo) {
+  --site-color-accent: var(--site-page-accent);
+  --site-color-accent-hover: var(--site-page-accent-hover);
+  --site-color-on-accent: var(--site-page-on-accent);
+
+  color: var(--site-color-text);
+}
+
+/* Photo tiles: the photo fills the tile, with the text over a dark
+   gradient. The tile is dark behind the photo, so no surface color shows at
+   the rounded edges */
+.BentoTile--photo {
+  background: #000000;
+  border-color: transparent;
+  color: #ffffff;
+  min-height: 280px;
+}
+
+.BentoTile--photo::after {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 80%),
+    rgb(0 0 0 / 25%) 60%,
+    transparent
+  );
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.BentoTile-image {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+
+.BentoTile-icon {
+  align-items: center;
+  align-self: flex-start;
+  background: var(--site-color-accent);
+  border-radius: var(--site-radius-m);
+  color: var(--site-color-on-accent);
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+/* The text always sits at the bottom, below the icon or over the photo */
+.BentoTile-text {
+  margin-top: auto;
+}
+
+.BentoTile-title {
+  font-size: var(--site-heading-3);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.BentoTile-description {
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  font-size: var(--site-text-body);
+  line-height: 1.6;
+  margin: var(--site-space-1) 0 0;
+  text-wrap: pretty;
+}
+
+.BentoTile--photo .BentoTile-description {
+  color: color-mix(in srgb, currentColor 80%, transparent);
+}
+
+@media (min-width: 768px) {
+  .Bento-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .BentoTile {
+    min-height: 280px;
+  }
+
+  .BentoTile:first-child {
+    grid-column: span 2;
+  }
+
+  /* With 3 or 4 tiles, the tiles after the first widen so the grid has no gaps */
+  .BentoTile:first-child:nth-last-child(3) ~ .BentoTile,
+  .BentoTile:first-child:nth-last-child(4) ~ .BentoTile:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .Bento-tiles {
+    grid-auto-rows: minmax(280px, auto);
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .BentoTile:first-child {
+    grid-row: span 2;
+  }
+
+  .BentoTile:first-child .BentoTile-title {
+    font-size: clamp(32px, 3.4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .BentoTile-image {
+    transition: transform 600ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .BentoTile--photo:hover .BentoTile-image {
+    transform: scale(1.04);
+  }
+}

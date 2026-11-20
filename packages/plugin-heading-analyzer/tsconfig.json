@@ -6,6 +6,7 @@
     "paths": {
       "@/core": ["../core"],
       "@/core/*": ["../core/*"]
-    }
+    },
+    "types": ["node", "jest"]
   }
 }
