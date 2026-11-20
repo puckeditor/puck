@@ -414,4 +414,62 @@ describe("fields slice", () => {
       expect(mockResolveFields).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe("when resetting with unchanged data", () => {
+    // The documented pattern: only resolve again when the data changed
+    const createConfig = (): Config => ({
+      components: {
+        Heading: {
+          fields: { title: { type: "text" } },
+          render: () => <div />,
+          resolveFields: (_data, { changed, lastFields }) => {
+            if (!changed.title) return lastFields;
+
+            return { ...lastFields, body: { type: "textarea" } };
+          },
+        },
+      },
+    });
+
+    const resolvedFields = {
+      title: { type: "text" },
+      body: { type: "textarea" },
+    };
+
+    it("resolves the fields again after remounting", async () => {
+      selectFirst(createConfig());
+
+      const { unmount } = renderHook(() =>
+        useRegisterFieldsSlice(appStore, "heading-1")
+      );
+
+      await waitFor(() => {
+        expect(appStore.getState().fields.fields).toEqual(resolvedFields);
+      });
+
+      unmount();
+
+      renderHook(() => useRegisterFieldsSlice(appStore, "heading-1"));
+
+      await act(async () => {});
+
+      expect(appStore.getState().fields.fields).toEqual(resolvedFields);
+    });
+
+    it("resolves the fields again after the config changes", async () => {
+      selectFirst(createConfig());
+
+      renderHook(() => useRegisterFieldsSlice(appStore, "heading-1"));
+
+      await waitFor(() => {
+        expect(appStore.getState().fields.fields).toEqual(resolvedFields);
+      });
+
+      await act(async () => {
+        appStore.setState({ config: createConfig() });
+      });
+
+      expect(appStore.getState().fields.fields).toEqual(resolvedFields);
+    });
+  });
 });

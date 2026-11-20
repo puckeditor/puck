@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { getClassNameFactory } from "../../../../lib";
 import { IframeConfig, UiState } from "../../../../types";
@@ -40,6 +41,25 @@ const getLayoutClassName = getClassNameFactory("PuckLayout", styles);
 const getPluginTabClassName = getClassNameFactory("PuckPluginTab", styles);
 const useBrowserLayoutEffect =
   typeof window === "undefined" ? useEffect : useLayoutEffect;
+
+const desktopQuery = "(min-width: 638px)";
+
+const subscribeToResize = (onResize: () => void) => {
+  window.addEventListener("resize", onResize);
+
+  return () => {
+    window.removeEventListener("resize", onResize);
+  };
+};
+
+// Matches the breakpoint where the layout CSS switches between the mobile
+// panel and the desktop sidebars. Assumes desktop on the server.
+const useIsDesktop = () =>
+  useSyncExternalStore(
+    subscribeToResize,
+    () => window.matchMedia(desktopQuery).matches,
+    () => true
+  );
 
 const FieldSideBar = () => {
   const pageLabel = useMessage("label-page");
@@ -113,7 +133,9 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
   } = useSidebarResize("right", dispatch);
 
   useEffect(() => {
-    if (!window.matchMedia("(min-width: 638px)").matches) {
+    let wasDesktop = window.matchMedia(desktopQuery).matches;
+
+    if (!wasDesktop) {
       dispatch({
         type: "setUi",
         ui: {
@@ -124,7 +146,9 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
     }
 
     const handleResize = () => {
-      if (!window.matchMedia("(min-width: 638px)").matches) {
+      const isDesktop = window.matchMedia(desktopQuery).matches;
+
+      if (!isDesktop) {
         dispatch({
           type: "setUi",
           ui: (ui: UiState) => ({
@@ -132,7 +156,21 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
             ...(ui.rightSideBarVisible ? { leftSideBarVisible: false } : {}),
           }),
         });
+      } else if (!wasDesktop) {
+        // The fields move from the fields plugin to the right sidebar when
+        // entering desktop, so keep them open if they were
+        dispatch({
+          type: "setUi",
+          ui: (ui: UiState) => ({
+            ...ui,
+            ...(ui.leftSideBarVisible && ui.plugin?.current === "fields"
+              ? { rightSideBarVisible: true }
+              : {}),
+          }),
+        });
       }
+
+      wasDesktop = isDesktop;
     };
 
     window.addEventListener("resize", handleResize);
@@ -234,23 +272,6 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
         details[plugin.name] = {
           label: plugin.label ?? plugin.name,
           icon: plugin.icon ?? <ToyBrick />,
-          onClick: () => {
-            if (plugin.name === currentPlugin) {
-              if (leftSideBarVisible) {
-                setUi({ leftSideBarVisible: false });
-              } else {
-                setUi({ leftSideBarVisible: true });
-              }
-            } else {
-              if (plugin.name) {
-                setUi({
-                  plugin: { current: plugin.name },
-                  leftSideBarVisible: true,
-                });
-              }
-            }
-          },
-          isActive: leftSideBarVisible && currentPlugin === plugin.name,
           render: plugin.render,
           mobilePanelHeight: plugin.mobilePanelHeight ?? "toggle",
           mobileOnly: hasLegacySideBarPlugin || plugin.mobileOnly,
@@ -260,17 +281,38 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
     });
 
     return details;
-  }, [
-    plugins,
-    currentPlugin,
-    appStoreApi,
-    leftSideBarVisible,
-    blocksLabel,
-    outlineLabel,
-    fieldsLabel,
-  ]);
+  }, [plugins, appStoreApi, blocksLabel, outlineLabel, fieldsLabel]);
 
-  const activePlugin = currentPlugin ?? Object.keys(pluginItems)[0];
+  const isDesktop = useIsDesktop();
+
+  // A mobile-only plugin has no nav item on desktop, so it's only rendered on
+  // mobile. This also keeps the fields in one place: the fields plugin on
+  // mobile, and the right sidebar on desktop.
+  const pluginNames = Object.keys(pluginItems).filter(
+    (name) => !(isDesktop && pluginItems[name].mobileOnly)
+  );
+
+  const activePlugin =
+    currentPlugin && pluginNames.includes(currentPlugin)
+      ? currentPlugin
+      : pluginNames[0];
+
+  const navItems: Record<string, MenuItem> = {};
+
+  Object.keys(pluginItems).forEach((name) => {
+    navItems[name] = {
+      ...pluginItems[name],
+      onClick: () => {
+        if (name === activePlugin) {
+          setUi({ leftSideBarVisible: !leftSideBarVisible });
+        } else {
+          setUi({ plugin: { current: name }, leftSideBarVisible: true });
+        }
+      },
+      isActive: leftSideBarVisible && activePlugin === name,
+    };
+  });
+
   const mobilePanelHeightMode =
     pluginItems[activePlugin]?.mobilePanelHeight ?? "toggle";
 
@@ -284,33 +326,6 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
   const hasDesktopFieldsPlugin =
     pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;
-
-  // Render the fields in one place only. The right sidebar is hidden on mobile,
-  // where the fields plugin tab is used instead.
-  const showFieldsPlugin = hasDesktopFieldsPlugin || currentPlugin === "fields";
-
-  useEffect(() => {
-    if (hasDesktopFieldsPlugin) return;
-
-    // The fields plugin is mobile-only. Deselect it on desktop, where the right
-    // sidebar shows the fields.
-    const deselectFieldsPlugin = () => {
-      if (
-        window.matchMedia("(min-width: 638px)").matches &&
-        appStoreApi.getState().state.ui.plugin?.current === "fields"
-      ) {
-        setUi({ plugin: { current: null } });
-      }
-    };
-
-    deselectFieldsPlugin();
-
-    window.addEventListener("resize", deselectFieldsPlugin);
-
-    return () => {
-      window.removeEventListener("resize", deselectFieldsPlugin);
-    };
-  }, [hasDesktopFieldsPlugin]);
 
   const mobilePanelExpanded = useAppStore(
     (s) => s.state.ui.mobilePanelExpanded ?? false
@@ -342,7 +357,8 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                 className={getLayoutClassName({
                   leftSideBarVisible,
                   mounted,
-                  rightSideBarVisible: !showFieldsPlugin && rightSideBarVisible,
+                  rightSideBarVisible:
+                    !hasDesktopFieldsPlugin && rightSideBarVisible,
                   isExpanded: mobilePanelExpanded,
                   mobilePanelHeightToggle: mobilePanelHeightMode === "toggle",
                   mobilePanelHeightMinContent:
@@ -359,7 +375,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                   </div>
                   <div className={getLayoutClassName("nav")}>
                     <Nav
-                      items={pluginItems}
+                      items={navItems}
                       mobileActions={
                         leftSideBarVisible &&
                         mobilePanelHeightMode === "toggle" && (
@@ -393,20 +409,22 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
                     onResize={setLeftWidth}
                     onResizeEnd={handleLeftSidebarResizeEnd}
                   >
-                    {Object.entries(pluginItems).map(
-                      ([id, { mobileOnly, render: Render, label }]) => (
+                    {pluginNames.map((id) => {
+                      const { mobileOnly, render: Render } = pluginItems[id];
+
+                      return (
                         <PluginTab
                           key={id}
-                          visible={currentPlugin === id}
+                          visible={activePlugin === id}
                           mobileOnly={mobileOnly}
                         >
-                          {(id !== "fields" || showFieldsPlugin) && <Render />}
+                          <Render />
                         </PluginTab>
-                      )
-                    )}
+                      );
+                    })}
                   </Sidebar>
                   <Canvas />
-                  {!showFieldsPlugin && (
+                  {isDesktop && !hasDesktopFieldsPlugin && (
                     <Sidebar
                       position="right"
                       sidebarRef={rightSidebarRef}
