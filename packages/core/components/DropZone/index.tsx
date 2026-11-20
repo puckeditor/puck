@@ -188,10 +188,8 @@ const DropZoneChild = ({
     () => ({
       ...componentConfig?.defaultProps,
       ...item?.props,
-      puck: puckProps,
-      editMode: true, // DEPRECATED
     }),
-    [componentConfig?.defaultProps, item?.props, puckProps]
+    [componentConfig?.defaultProps, item?.props]
   );
 
   const defaultedNode = useMemo(
@@ -199,7 +197,18 @@ const DropZoneChild = ({
     [item?.type, nodeType, defaultsProps]
   );
 
-  const transformedProps = useEditorProps({ component: defaultedNode });
+  const mappedProps = useEditorProps({ component: defaultedNode });
+
+  // Attach `puck` after field mapping, so metadata isn't walked as if it were
+  // the component's own fields (matches the <Render> path)
+  const transformedProps = useMemo(
+    () => ({
+      ...mappedProps,
+      puck: puckProps,
+      editMode: true, // DEPRECATED
+    }),
+    [mappedProps, puckProps]
+  );
 
   if (!item) return;
 
