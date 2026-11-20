@@ -98,6 +98,8 @@ type ComponentConfigInternal<
   metadata?: ComponentMetadata;
 } & ComponentConfigExtensions;
 
+type IsAny<T> = 0 extends 1 & T ? true : false;
+
 // DEPRECATED - remove old generics in favour of Params
 export type ComponentConfig<
   RenderPropsOrParams extends LeftOrExactRight<
@@ -111,10 +113,12 @@ export type ComponentConfig<
     ? RenderPropsOrParams["props"]
     : RenderPropsOrParams,
   DataShape = Omit<ComponentData<FieldProps>, "type"> // NB this doesn't include AllProps, so types will not contain deep slot types. To fix, we require a breaking change.
-> = RenderPropsOrParams extends ComponentConfigParams<
-  infer ParamsRenderProps,
-  never
->
+> = IsAny<RenderPropsOrParams> extends true
+  ? ComponentConfigInternal<any, any, DataShape, any>
+  : RenderPropsOrParams extends ComponentConfigParams<
+      infer ParamsRenderProps,
+      never
+    >
   ? ComponentConfigInternal<ParamsRenderProps, FieldProps, DataShape, {}>
   : RenderPropsOrParams extends ComponentConfigParams<
       infer ParamsRenderProps,
