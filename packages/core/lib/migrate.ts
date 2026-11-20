@@ -177,13 +177,16 @@ const migrations: Migration[] = [
   },
 ];
 
-export function migrate<UserConfig extends Config = Config>(
-  data: Data,
+export function migrate<
+  UserConfig extends Config = Config,
+  UserData extends Data<any, any> = Data
+>(
+  data: UserData,
   config?: UserConfig,
   migrationOptions?: MigrationOptions<UserConfig>
-): Data {
+): UserData {
   return migrations?.reduce(
     (acc, migration) => migration(acc, config, migrationOptions),
-    data
-  ) as Data;
+    data as Data
+  ) as UserData;
 }
