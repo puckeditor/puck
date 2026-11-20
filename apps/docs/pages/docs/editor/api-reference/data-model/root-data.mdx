@@ -6,7 +6,7 @@ import { Callout } from "nextra/components";
 
 # `RootData`
 
-An object representing the data for the [`root` config](/docs/editor/api-reference/configuration/config#root). Similar to [`ComponentData`](/docs/editor/api-reference/data-model/component-data), but without a `type`, and without an `id` in `props`.
+An object representing the root data. Similar to [`ComponentData`](/docs/editor/api-reference/data-model/component-data).
 
 ```json
 {
@@ -18,16 +18,16 @@ An object representing the data for the [`root` config](/docs/editor/api-referen
 
 ## Params
 
-| Param                   | Example                            | Type   | Status |
-| ----------------------- | ---------------------------------- | ------ | ------ |
-| [`props`](#props)       | `props: { title: "Hello, world" }` | Object | -      |
-| [`readOnly`](#readonly) | `readOnly: { title: true }`        | Object | -      |
+| Param                   | Example                            | Type   | Status   |
+| ----------------------- | ---------------------------------- | ------ | -------- |
+| [`props`](#props)       | `props: { title: "Hello, world" }` | Object | Required |
+| [`readOnly`](#readonly) | `readOnly: { title: true }`        | Object | -        |
 
-### Optional params
+### Required params
 
 #### `props`
 
-The props stored based on the fields of the [`root` config](/docs/editor/api-reference/configuration/config#root), which Puck will pass to the root [`render()`](/docs/editor/api-reference/configuration/component-config#renderprops) method.
+The props stored based on the [`root` config](/docs/editor/api-reference/configuration/config#root) that Puck will pass to the [`render()`](/docs/editor/api-reference/configuration/component-config#renderprops) method.
 
 ```json {2-4} copy
 {
@@ -37,11 +37,17 @@ The props stored based on the fields of the [`root` config](/docs/editor/api-ref
 }
 ```
 
-Unlike [`ComponentData`](/docs/editor/api-reference/data-model/component-data), root props don't have an `id`. Defaults to `{}` if not provided.
+<Callout type="warning">
+  Storing props directly on `root`, without the `props` key, is deprecated. Use
+  [`migrate`](/docs/editor/api-reference/functions/migrate) to move them to
+  `root.props`.
+</Callout>
+
+### Optional params
 
 #### `readOnly`
 
-An object describing which root fields are set to [read-only](/docs/editor/api-reference/configuration/component-config#datareadonly-1).
+An object describing which fields are set to [read-only](/docs/editor/api-reference/configuration/component-config#datareadonly-1).
 
 ```json {5-7} copy
 {
@@ -51,19 +57,5 @@ An object describing which root fields are set to [read-only](/docs/editor/api-r
   "readOnly": {
     "title": true
   }
-}
-```
-
-## Deprecated root props
-
-<Callout type="warning">
-  Storing props directly on `root`, without the `props` key, is deprecated. Use
-  [`migrate`](/docs/editor/api-reference/functions/migrate) to move them to
-  `root.props`.
-</Callout>
-
-```json
-{
-  "title": "Hello, world"
 }
 ```
