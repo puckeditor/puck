@@ -110,7 +110,12 @@ export const walkField = ({
       if (!arrayFields) return value;
 
       const newValue = value.map((el, idx) => {
-        if (!el || typeof el !== "object" || "$$typeof" in el) {
+        if (
+          !el ||
+          typeof el !== "object" ||
+          Array.isArray(el) ||
+          "$$typeof" in el
+        ) {
           return el;
         }
 
@@ -119,7 +124,7 @@ export const walkField = ({
           fields: arrayFields,
           mappers,
           getPropPath: (k) => `${propPath}[${idx}].${k}`,
-          ownedFields: true,
+          ownedFields: false,
           id,
           config,
           recurseSlots,
