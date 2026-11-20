@@ -109,18 +109,27 @@ export const walkField = ({
 
       if (!arrayFields) return value;
 
-      const newValue = value.map((el, idx) =>
-        walkField({
+      const newValue = value.map((el, idx) => {
+        if (
+          !el ||
+          typeof el !== "object" ||
+          Array.isArray(el) ||
+          "$$typeof" in el
+        ) {
+          return el;
+        }
+
+        return walkObject({
           value: el,
           fields: arrayFields,
           mappers,
-          propKey,
-          propPath: `${propPath}[${idx}]`,
+          getPropPath: (k) => `${propPath}[${idx}].${k}`,
+          ownedFields: false,
           id,
           config,
           recurseSlots,
-        })
-      );
+        });
+      });
 
       if (containsPromise(newValue)) {
         return Promise.all(newValue);
