@@ -287,10 +287,13 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
   // A mobile-only plugin has no nav item on desktop, so it's only rendered on
   // mobile. This also keeps the fields in one place: the fields plugin on
-  // mobile, and the right sidebar on desktop.
-  const pluginNames = Object.keys(pluginItems).filter(
-    (name) => !(isDesktop && pluginItems[name].mobileOnly)
-  );
+  // mobile, and the right sidebar on desktop. As in the nav, `desktopOnly`
+  // takes precedence, which keeps the legacy sidebar on desktop.
+  const pluginNames = Object.keys(pluginItems).filter((name) => {
+    const { mobileOnly, desktopOnly } = pluginItems[name];
+
+    return !(isDesktop && mobileOnly && !desktopOnly);
+  });
 
   const activePlugin =
     currentPlugin && pluginNames.includes(currentPlugin)

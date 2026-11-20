@@ -189,6 +189,34 @@ describe("fields layout", () => {
     expect(queryFields(container).right).toHaveLength(1);
   });
 
+  it("keeps the legacy sidebar on desktop", async () => {
+    viewport = "desktop";
+
+    const { container } = render(
+      <Puck
+        config={config}
+        data={{}}
+        iframe={{ enabled: false }}
+        plugins={[
+          {
+            name: "legacy-side-bar",
+            render: () => <div data-testid="legacy-side-bar" />,
+          },
+        ]}
+      />
+    );
+
+    await flush();
+
+    expect(
+      container.querySelectorAll(
+        '[data-sidebar="left"] [data-testid="legacy-side-bar"]'
+      )
+    ).toHaveLength(1);
+    expect(queryFields(container).all).toHaveLength(1);
+    expect(queryFields(container).right).toHaveLength(1);
+  });
+
   it("keeps the fields open when resizing from mobile to desktop", async () => {
     viewport = "mobile";
 
