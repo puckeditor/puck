@@ -414,4 +414,120 @@ describe("fields slice", () => {
       expect(mockResolveFields).toHaveBeenCalledTimes(2);
     });
   });
+
+  it("provides correct nested keys in changed record to resolveFields when nested properties change", async () => {
+    const mockResolveFields = jest.fn().mockResolvedValue({
+      FirstLevel: {
+        type: "object",
+        objectFields: {
+          SecondLevel: {
+            type: "object",
+            objectFields: {
+              ThirdLevel: {
+                type: "object",
+                objectFields: {
+                  SomeString: { type: "text" },
+                  UnchangedString: { type: "text" },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const config: Config = {
+      components: {
+        TestChanged: {
+          fields: {},
+          render: () => <div />,
+          resolveFields: mockResolveFields,
+        },
+      },
+    };
+
+    const initialItem: ComponentData = {
+      type: "TestChanged",
+      props: {
+        id: "test-nested-1",
+        FirstLevel: {
+          SecondLevel: {
+            ThirdLevel: {
+              SomeString: "original",
+              UnchangedString: "constant",
+            },
+          },
+        },
+      },
+    };
+
+    appStore.setState({
+      ...appStore.getState(),
+      config,
+      selectedItem: initialItem,
+      state: walkAppState(
+        {
+          ...defaultAppState,
+          data: {
+            content: [initialItem],
+            root: {},
+            zones: {},
+          },
+          ui: {
+            ...defaultAppState.ui,
+            itemSelector: { index: 0 },
+          },
+        },
+        config
+      ),
+    });
+
+    renderHook(() => useRegisterFieldsSlice(appStore, "test-nested-1"));
+
+    await waitFor(() => {
+      expect(mockResolveFields).toHaveBeenCalledTimes(1);
+    });
+
+    const updatedItem: ComponentData = {
+      ...initialItem,
+      props: {
+        ...initialItem.props,
+        FirstLevel: {
+          SecondLevel: {
+            ThirdLevel: {
+              SomeString: "modified",
+              UnchangedString: "constant",
+            },
+          },
+        },
+      },
+    };
+
+    act(() => {
+      appStore.getState().dispatch({
+        type: "replace",
+        data: updatedItem,
+        destinationIndex: 0,
+        destinationZone: "root:default-zone",
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockResolveFields).toHaveBeenCalledTimes(2);
+    });
+
+    expect(mockResolveFields).toHaveBeenLastCalledWith(
+      updatedItem,
+      expect.objectContaining({
+        changed: {
+          id: false,
+          FirstLevel: true,
+          "FirstLevel.SecondLevel": true,
+          "FirstLevel.SecondLevel.ThirdLevel": true,
+          "FirstLevel.SecondLevel.ThirdLevel.SomeString": true,
+          "FirstLevel.SecondLevel.ThirdLevel.UnchangedString": false,
+        },
+      })
+    );
+  });
 });
