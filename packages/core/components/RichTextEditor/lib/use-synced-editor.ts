@@ -74,7 +74,7 @@ export function useSyncedEditor({
   });
 
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
 
     const handleFocus = () => {
       onFocusChange?.(editor);
@@ -101,12 +101,14 @@ export function useSyncedEditor({
   }, [editor, debouncedState, onChange, appStoreApi, name]);
 
   useEffect(() => {
-    editor?.setEditable(editable);
+    if (!editor || editor.isDestroyed) return;
+
+    editor.setEditable(editable);
   }, [editor, editable]);
 
   // Bring in external content changes without causing flicker on blur
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
 
     // If the editor currently has pending changes, don't stomp what the user is typing
     if (isPending) {

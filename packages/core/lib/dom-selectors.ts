@@ -23,3 +23,9 @@ export const getComponentSelector = (id: string) =>
  */
 export const getZoneSelector = (zone: string) =>
   `[data-puck-dropzone="${escapeId(zone)}"]`;
+
+/** Marks an element as a component's drag handle. */
+export const DRAG_HANDLE_ATTRIBUTE = "data-puck-drag-handle";
+
+/** Selector for any registered drag handle. */
+export const dragHandleSelector = `[${DRAG_HANDLE_ATTRIBUTE}]`;

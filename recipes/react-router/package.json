@@ -10,7 +10,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@puckeditor/core": "*",
+    "@puckeditor/core": "workspace:*",
     "@react-router/node": "^7.18.0",
     "@react-router/serve": "^7.18.0",
     "isbot": "^5",
@@ -24,7 +24,7 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "typescript": "^5.8.3",
-    "vite": "^7.3.2",
+    "vite": "^7.3.7",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {

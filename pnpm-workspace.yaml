@@ -1,0 +1,27 @@
+packages:
+  - "apps/*"
+  - "recipes/*"
+  - "packages/*"
+
+shamefullyHoist: true
+autoInstallPeers: true
+
+# Supply-chain mitigation (PUCK-541): pnpm 10+ does not run dependency
+# lifecycle scripts unless explicitly allowed here. Keep this list minimal.
+allowBuilds:
+  esbuild: true # bundler binary for tsup (core/plugin builds)
+  puppeteer: true # downloads Chromium for the e2e smoke test
+  sharp: true # native image optimisation used by Next.js
+  "@parcel/watcher": true # native file watcher used in dev
+  unrs-resolver: true # native binding for the eslint import resolver
+  nx: false # transitive (via lerna); native daemon not needed
+  core-js: false # transitive (via posthog-js in demo); postinstall only prints a funding banner
+
+# Security pins for vulnerable transitive deps. Translated from main's yarn
+# `resolutions` (pnpm ignores `resolutions`); nested selectors use `>`.
+overrides:
+  postcss: "^8.5.23"
+  "nx>undici": "^7.30.1" # GHSA-2m5v-pch6-74hx and 17 others (nx 23.3.x pins 7.29.0; lerna 10 caps nx <24)
+
+minimumReleaseAgeExclude:
+  - "@puckeditor/*"

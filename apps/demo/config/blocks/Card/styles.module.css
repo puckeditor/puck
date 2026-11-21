@@ -2,59 +2,68 @@
   height: 100%;
 }
 
-.Card--card {
-  background: var(--puck-color-surface);
-  box-shadow: rgba(140, 152, 164, 0.25) 0px 3px 6px 0px;
-  border-radius: var(--puck-radius-l);
-  max-width: 100%;
-}
-
-@media (prefers-color-scheme: dark) {
-  .Card--card {
-    box-shadow: rgba(24, 31, 41, 0.25) 0px 3px 6px 0px;
-  }
-}
-
 .Card-inner {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
-  gap: var(--puck-space-4);
   flex-direction: column;
+  gap: var(--site-space-2);
+}
+
+/* Card: a bordered surface, in the page's colors even on inverse bands */
+.Card--card {
+  --site-color-accent: var(--site-page-accent);
+  --site-color-accent-hover: var(--site-page-accent-hover);
+  --site-color-on-accent: var(--site-page-on-accent);
+
+  background: var(--site-color-surface);
+  border: 1px solid var(--site-color-border);
+  border-radius: var(--site-radius-l);
+  color: var(--site-color-text);
+  max-width: 100%;
+  transition: border-color 200ms ease, box-shadow 200ms ease,
+    transform 200ms ease;
 }
 
 .Card--card .Card-inner {
-  align-items: flex-start;
-  padding: var(--puck-space-5);
+  padding: var(--site-space-6);
+}
+
+/* Bordered cards lift on hover */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .Card--card:hover {
+    border-color: color-mix(in srgb, currentColor 25%, transparent);
+    box-shadow: var(--site-shadow-l);
+    transform: translateY(-4px);
+  }
+}
+
+/* Flat: no surface, centered, and takes the section's text color */
+.Card--flat .Card-inner {
+  align-items: center;
+  text-align: center;
 }
 
 .Card-icon {
-  border-radius: 256px;
-  background: var(--puck-color-azure-09);
-  color: var(--puck-color-azure-06);
-  display: flex;
-  justify-content: center;
   align-items: center;
-  width: 64px;
-  height: 64px;
+  background: var(--site-color-accent);
+  border-radius: var(--site-radius-m);
+  color: var(--site-color-on-accent);
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  margin-bottom: var(--site-space-4);
+  width: 48px;
 }
 
 .Card-title {
-  font-size: 22px;
-  text-align: center;
-}
-
-.Card--card .Card-title {
-  text-align: left;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
 .Card-description {
-  font-size: var(--puck-font-size-xs);
-  line-height: 1.5;
-  color: var(--puck-color-text-muted);
-  text-align: center;
-  font-weight: 300;
-}
-
-.Card--card .Card-description {
-  text-align: left;
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  font-size: var(--site-text-body);
+  line-height: 1.6;
 }

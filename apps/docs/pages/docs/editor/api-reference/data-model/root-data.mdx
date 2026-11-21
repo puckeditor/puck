@@ -1,0 +1,61 @@
+---
+title: RootData
+---
+
+import { Callout } from "nextra/components";
+
+# `RootData`
+
+An object representing the root data. Similar to [`ComponentData`](/docs/editor/api-reference/data-model/component-data).
+
+```json
+{
+  "props": {
+    "title": "Hello, world"
+  }
+}
+```
+
+## Params
+
+| Param                   | Example                            | Type   | Status   |
+| ----------------------- | ---------------------------------- | ------ | -------- |
+| [`props`](#props)       | `props: { title: "Hello, world" }` | Object | Required |
+| [`readOnly`](#readonly) | `readOnly: { title: true }`        | Object | -        |
+
+### Required params
+
+#### `props`
+
+The props stored based on the [`root` config](/docs/editor/api-reference/configuration/config#root) that Puck will pass to the [`render()`](/docs/editor/api-reference/configuration/component-config#renderprops) method.
+
+```json {2-4} copy
+{
+  "props": {
+    "title": "Hello, world"
+  }
+}
+```
+
+<Callout type="warning">
+  Storing props directly on `root`, without the `props` key, is deprecated. Use
+  [`migrate`](/docs/editor/api-reference/functions/migrate) to move them to
+  `root.props`.
+</Callout>
+
+### Optional params
+
+#### `readOnly`
+
+An object describing which fields are set to [read-only](/docs/editor/api-reference/configuration/component-config#datareadonly-1).
+
+```json {5-7} copy
+{
+  "props": {
+    "title": "Hello, world"
+  },
+  "readOnly": {
+    "title": true
+  }
+}
+```

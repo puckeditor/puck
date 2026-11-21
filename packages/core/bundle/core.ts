@@ -1,3 +1,7 @@
+import { logAgentMessage } from "../lib/log-agent-message";
+
+logAgentMessage();
+
 export type { PuckAction } from "../reducer/actions";
 
 export * from "../types/API";
@@ -8,6 +12,8 @@ export * from "../types/Fields";
 
 export * from "../components/ActionBar";
 export { AutoField, FieldLabel } from "../components/AutoField";
+export { FieldGroup } from "../components/FieldGroup";
+export { Tab as FieldTab } from "../components/Tabs";
 
 export * from "../components/Button";
 export { Drawer } from "../components/Drawer";

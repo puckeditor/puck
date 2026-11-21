@@ -7,6 +7,8 @@ import {
 } from "../components/RichTextEditor/types";
 import { PuckRichTextOptions } from "../components/RichTextEditor/extension";
 
+export type FieldGroupVariant = "flush" | "card";
+
 type FieldOption = {
   label: string;
   value: string | number | boolean | undefined | null | object;
@@ -48,6 +50,11 @@ export interface SelectField extends BaseField {
 
 export interface RadioField extends BaseField {
   type: "radio";
+  options: FieldOptions;
+}
+
+export interface CheckboxField extends BaseField {
+  type: "checkbox";
   options: FieldOptions;
 }
 
@@ -97,6 +104,9 @@ export interface ObjectField<
   UserField extends {} = {}
 > extends BaseField {
   type: "object";
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
+  variant?: FieldGroupVariant;
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
       ? Field<Props[SubPropName]> | UserField
@@ -173,6 +183,18 @@ export interface SlotField extends BaseField {
   disallow?: string[];
 }
 
+/**
+ * Register your own field types by augmenting this interface.
+ *
+ * @example
+ * declare module "@puckeditor/core" {
+ *   interface FieldTypes {
+ *     switch: { type: "switch"; options: string[] };
+ *   }
+ * }
+ */
+export interface FieldTypes {}
+
 export type Field<ValueType = any, UserField extends {} = {}> =
   | TextField
   | RichtextField
@@ -180,6 +202,7 @@ export type Field<ValueType = any, UserField extends {} = {}> =
   | TextareaField
   | SelectField
   | RadioField
+  | CheckboxField
   | ArrayField<
       ValueType extends { [key: string]: any }[] ? ValueType : never,
       UserField
@@ -188,7 +211,8 @@ export type Field<ValueType = any, UserField extends {} = {}> =
   | ExternalField<ValueType>
   | ExternalFieldWithAdaptor<ValueType>
   | CustomField<ValueType>
-  | SlotField;
+  | SlotField
+  | (FieldTypes[keyof FieldTypes] & BaseField);
 
 export type Fields<
   ComponentProps extends DefaultComponentProps = DefaultComponentProps,
