@@ -2,6 +2,22 @@
 
 <!--__CHANGELOG_ENTRY__-->
 
+## [0.24.2](https://github.com/puckeditor/puck/compare/v0.24.1...v0.24.2) (2026-11-23)
+
+
+### Bug Fixes
+
+* correctly handle array fields with nested slots sharing the same name ([292bd23](https://github.com/puckeditor/puck/commit/292bd2304dd638b059232268333bdaebc25f86ba))
+* handle document pointer targets while dragging in Firefox ([1153e35](https://github.com/puckeditor/puck/commit/1153e358c79bd61da44ceb289b6dfaa86f49a673)), closes [#1889](https://github.com/puckeditor/puck/issues/1889)
+* retain selected item when switching viewports ([2a94753](https://github.com/puckeditor/puck/commit/2a9475365b2cc5e313d76c04b827e20fca040fdc))
+
+### Other
+
+* load the Inter font from the Puck-hosted CDN (cdn.puck.run) instead of rsms.me ([c290d2e](https://github.com/puckeditor/puck/commit/c290d2e253b2eb43141561298e1c4c4f6d38f6bc))
+
+
+
+
 ## [0.24.1](https://github.com/puckeditor/puck/compare/v0.24.0...v0.24.1) (2026-11-18)
 
 
