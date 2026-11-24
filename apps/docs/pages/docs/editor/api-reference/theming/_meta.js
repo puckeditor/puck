@@ -5,13 +5,13 @@ const menu = {
   canvas: {},
   drawer: {},
   "field-tabs": {},
-  fields: {},
+  fields: { title: "Fields" },
   header: {},
   "icon-button": {},
   outline: {},
   "plugin-bar": {},
   sidebar: {},
-  slot: {},
+  slot: { title: "Slot" },
   "computed-values": {},
 };
 
