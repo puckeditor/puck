@@ -470,4 +470,162 @@ describe("resolveComponentData", () => {
     expect(movedResolution.node).toStrictEqual({});
     expect(movedResolution.didChange).toBe(false);
   });
+
+  it("should pass nested keys in changed record to resolveData when nested object properties change", async () => {
+    const customResolveData = jest.fn((data) => data);
+    const customConfig: Config = {
+      components: {
+        TestChanged: {
+          fields: {},
+          resolveData: customResolveData,
+          render: () => <div />,
+        },
+      },
+    };
+
+    const initialItem = toComponent({
+      type: "TestChanged",
+      props: {
+        id: "test-changed-1",
+        FirstLevel: {
+          SecondLevel: {
+            ThirdLevel: {
+              SomeString: "original",
+              UnchangedString: "constant",
+            },
+          },
+        },
+      },
+    });
+
+    // First resolution (initial)
+    await resolveComponentData(initialItem, customConfig);
+    expect(customResolveData).toHaveBeenCalledTimes(1);
+
+    // Second resolution: update nested property SomeString
+    const updatedItem = {
+      ...initialItem,
+      props: {
+        ...initialItem.props,
+        FirstLevel: {
+          SecondLevel: {
+            ThirdLevel: {
+              SomeString: "modified",
+              UnchangedString: "constant",
+            },
+          },
+        },
+      },
+    };
+
+    await resolveComponentData(updatedItem, customConfig);
+    expect(customResolveData).toHaveBeenCalledTimes(2);
+    expect(customResolveData.mock.calls[1][1].changed).toEqual({
+      id: false,
+      FirstLevel: true,
+      "FirstLevel.SecondLevel": true,
+      "FirstLevel.SecondLevel.ThirdLevel": true,
+      "FirstLevel.SecondLevel.ThirdLevel.SomeString": true,
+      "FirstLevel.SecondLevel.ThirdLevel.UnchangedString": false,
+    });
+  });
+
+  it("should pass nested keys in changed record to resolveData when array items change", async () => {
+    const customResolveData = jest.fn((data) => data);
+    const customConfig: Config = {
+      components: {
+        TestChanged: {
+          fields: {},
+          resolveData: customResolveData,
+          render: () => <div />,
+        },
+      },
+    };
+
+    const initialItem = toComponent({
+      type: "TestChanged",
+      props: {
+        id: "test-changed-arr",
+        items: [
+          { id: "item-1", text: "original" },
+          { id: "item-2", text: "same" },
+        ],
+      },
+    });
+
+    await resolveComponentData(initialItem, customConfig);
+    expect(customResolveData).toHaveBeenCalledTimes(1);
+
+    const updatedItem = {
+      ...initialItem,
+      props: {
+        ...initialItem.props,
+        items: [
+          { id: "item-1", text: "updated" },
+          { id: "item-2", text: "same" },
+        ],
+      },
+    };
+
+    await resolveComponentData(updatedItem, customConfig);
+    expect(customResolveData).toHaveBeenCalledTimes(2);
+    expect(customResolveData.mock.calls[1][1].changed).toEqual({
+      id: false,
+      items: true,
+      "items.[0]": true,
+      "items.[0].id": false,
+      "items.[0].text": true,
+      "items.[1]": false,
+    });
+  });
+
+  it("should pass nested keys in changed record to root resolveData when nested root props change", async () => {
+    const rootResolve = jest.fn((rootData) => rootData);
+    const customConfig: Config = {
+      root: {
+        resolveData: rootResolve,
+        render: ({ children }) => <div>{children}</div>,
+      },
+      components: {},
+    };
+
+    const initialRoot = toComponent({
+      type: "root",
+      props: {
+        title: "Site",
+        header: {
+          navigation: {
+            links: "home",
+            stay: "same",
+          },
+        },
+      },
+    });
+
+    await resolveComponentData(initialRoot, customConfig);
+    expect(rootResolve).toHaveBeenCalledTimes(1);
+
+    const updatedRoot = {
+      ...initialRoot,
+      props: {
+        ...initialRoot.props,
+        header: {
+          navigation: {
+            links: "about",
+            stay: "same",
+          },
+        },
+      },
+    };
+
+    await resolveComponentData(updatedRoot, customConfig);
+    expect(rootResolve).toHaveBeenCalledTimes(2);
+    expect(rootResolve.mock.calls[1][1].changed).toEqual({
+      title: false,
+      header: true,
+      "header.navigation": true,
+      "header.navigation.links": true,
+      "header.navigation.stay": false,
+    });
+  });
 });
