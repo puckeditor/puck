@@ -70,7 +70,10 @@ export const useRegisterFieldsSlice = (
         const lastData =
           lastResolvedData.props?.id === id ? lastResolvedData : null;
 
-        const changed = getChanged(componentData, lastData);
+        // A reset starts over from the default fields, so treat all the data
+        // as changed. Otherwise a resolver that returns `lastFields` for
+        // unchanged data would drop the fields it resolved before.
+        const changed = getChanged(componentData, reset ? null : lastData);
 
         const newFields = await resolver(componentData, {
           changed,
