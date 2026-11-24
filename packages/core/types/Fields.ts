@@ -6,6 +6,7 @@ import {
   RichTextSelector,
 } from "../components/RichTextEditor/types";
 import { PuckRichTextOptions } from "../components/RichTextEditor/extension";
+import { DeclaredUserField } from "./Internal";
 
 export type FieldGroupVariant = "flush" | "card";
 
@@ -109,7 +110,7 @@ export interface ObjectField<
   variant?: FieldGroupVariant;
   objectFields: {
     [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
-      ? Field<Props[SubPropName], UserField> | UserField
+      ? Field<Props[SubPropName], DeclaredUserField<UserField>> | UserField
       : Field<Props[SubPropName]>;
   };
 }

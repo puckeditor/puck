@@ -74,6 +74,16 @@ export type ConfigParams<
 
 export type FieldsExtension = { [Type in string]: { type: Type } };
 
+// A plain `Config` falls back to `FieldsExtension`, accepting any `{ type: string }`
+// as a user field. Only carry user fields that were actually declared.
+export type DeclaredUserField<UserField> = UserField extends {
+  type: infer Type;
+}
+  ? string extends Type
+    ? {}
+    : UserField
+  : UserField;
+
 export type ComponentConfigParams<
   Props extends DefaultComponentProps = DefaultComponentProps,
   UserFields extends FieldsExtension = never

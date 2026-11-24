@@ -10,6 +10,7 @@ import { DefaultComponentProps, WithDefaultRootFieldProps } from "./Props";
 import { Permissions } from "./API";
 import {
   AssertHasValue,
+  DeclaredUserField,
   FieldsExtension,
   LeftOrExactRight,
   RenderFunc,
@@ -70,7 +71,9 @@ type ComponentConfigInternal<
       appState: AppState;
       parent: ComponentData | null;
     }
-  ) => Promise<Fields<FieldProps, UserField>> | Fields<FieldProps, UserField>;
+  ) =>
+    | Promise<Fields<FieldProps, DeclaredUserField<UserField>>>
+    | Fields<FieldProps, DeclaredUserField<UserField>>;
   resolveData?: (
     data: DataShape,
     params: {
