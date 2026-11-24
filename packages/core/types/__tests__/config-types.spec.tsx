@@ -263,6 +263,65 @@ export const caseK: UserConfig = {
   },
 };
 
+// L: a plain `Config` still rejects typos deep in object fields
+export const caseL: Config = {
+  components: {
+    Card: {
+      render: () => <div />,
+      fields: {
+        // @ts-expect-error "txet" is not a field type
+        layout: {
+          type: "object",
+          objectFields: {
+            spacing: {
+              type: "object",
+              objectFields: { top: { type: "txet" } },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+// M: a plain `Config` still rejects invalid fields returned from `resolveFields`
+export const caseM: Config = {
+  components: {
+    Typo: {
+      render: () => <div />,
+      // @ts-expect-error "txet" is not a field type
+      resolveFields: () => ({ title: { type: "txet" } }),
+    },
+    MissingOptions: {
+      render: () => <div />,
+      // @ts-expect-error select fields require options
+      resolveFields: () => ({ title: { type: "select" } }),
+    },
+    Spread: {
+      render: () => <div />,
+      // @ts-expect-error "txet" is not a field type
+      resolveFields: (_, { fields }) => ({ ...fields, x: { type: "txet" } }),
+    },
+  },
+  root: {
+    // @ts-expect-error "txet" is not a field type
+    resolveFields: () => ({ title: { type: "txet" } }),
+  },
+};
+
+// N: declared user fields can be returned from `resolveFields`
+export const caseN: UserConfig = {
+  components: {
+    Hero: {
+      resolveFields: (_, { fields }) => ({
+        ...fields,
+        title: { type: "userField", option: true },
+      }),
+      render: () => <div />,
+    },
+  },
+};
+
 describe("Config types", () => {
   it("compiles", () => {
     expect("no compilation error").toBeTruthy();
