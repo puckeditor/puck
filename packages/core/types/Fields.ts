@@ -90,7 +90,7 @@ export interface ArrayField<
 > extends BaseField {
   type: "array";
   arrayFields: {
-    [SubPropName in keyof Props[0]]: UserField extends { type: PropertyKey }
+    [SubPropName in keyof Props[0]]: [UserField] extends [{ type: PropertyKey }]
       ? Field<Props[0][SubPropName], UserField> | UserField
       : Field<Props[0][SubPropName]>;
   };
@@ -109,7 +109,7 @@ export interface ObjectField<
   defaultExpanded?: boolean;
   variant?: FieldGroupVariant;
   objectFields: {
-    [SubPropName in keyof Props]: UserField extends { type: PropertyKey }
+    [SubPropName in keyof Props]: [UserField] extends [{ type: PropertyKey }]
       ? Field<Props[SubPropName], DeclaredUserField<UserField>> | UserField
       : Field<Props[SubPropName]>;
   };
@@ -219,9 +219,11 @@ export type Fields<
   ComponentProps extends DefaultComponentProps = DefaultComponentProps,
   UserField extends {} = {}
 > = {
-  [PropName in keyof Omit<ComponentProps, "editMode">]: UserField extends {
-    type: PropertyKey;
-  }
+  [PropName in keyof Omit<ComponentProps, "editMode">]: [UserField] extends [
+    {
+      type: PropertyKey;
+    }
+  ]
     ? Field<ComponentProps[PropName], UserField> | UserField
     : Field<ComponentProps[PropName]>;
 };

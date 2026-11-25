@@ -80,7 +80,7 @@ export type DeclaredUserField<UserField> = UserField extends {
   type: infer Type;
 }
   ? string extends Type
-    ? {}
+    ? never
     : UserField
   : UserField;
 
