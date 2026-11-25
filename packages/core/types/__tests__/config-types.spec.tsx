@@ -1,4 +1,4 @@
-import type { ComponentConfig, Config } from "..";
+import type { ComponentConfig, Config, Field, Fields } from "..";
 
 /**
  * Compile-time checks for Config / ComponentConfig. These are verified by
@@ -321,6 +321,30 @@ export const caseN: UserConfig = {
     },
   },
 };
+
+// O: utilities generic over user fields can recurse into nested fields
+export function walkField<UserField extends {}>(
+  field: Field<any, UserField> | UserField,
+  cb: (field: Field<any, UserField> | UserField) => void
+) {
+  cb(field);
+  const f = field as Field<any, UserField>;
+
+  if (f.type === "object") {
+    for (const key in f.objectFields) walkField(f.objectFields[key], cb);
+  }
+
+  if (f.type === "array") {
+    for (const key in f.arrayFields) walkField(f.arrayFields[key], cb);
+  }
+}
+
+export function walkFields<UserField extends {}>(
+  fields: Fields<any, UserField>,
+  cb: (field: Field<any, UserField> | UserField) => void
+) {
+  for (const key in fields) walkField(fields[key], cb);
+}
 
 describe("Config types", () => {
   it("compiles", () => {
