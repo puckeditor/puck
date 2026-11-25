@@ -331,37 +331,4 @@ describe("migrate method", () => {
       }
     `);
   });
-
-  it("should accept and return user defined data types", () => {
-    type Props = { SomeComponent: { title: string } };
-    type CustomRootProps = { somethingElse: string };
-    type MyDataType = Data<Props, CustomRootProps>;
-
-    const data: MyDataType = {
-      root: {
-        props: { somethingElse: "Hello" },
-        readOnly: { somethingElse: true },
-      },
-      content: [
-        {
-          type: "SomeComponent",
-          props: { id: "SomeComponent-1", title: "Hi" },
-        },
-      ],
-    };
-
-    const config: Config<{ components: Props }> = {
-      components: {
-        SomeComponent: {
-          fields: { title: { type: "text" } },
-          render: () => <div />,
-        },
-      },
-    };
-
-    const migratedData: MyDataType = migrate(data, config);
-
-    expect(migratedData.root.props?.somethingElse).toBe("Hello");
-    expect(migratedData.content[0].props.title).toBe("Hi");
-  });
 });

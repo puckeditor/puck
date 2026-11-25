@@ -185,8 +185,8 @@ export function migrate<
   config?: UserConfig,
   migrationOptions?: MigrationOptions<UserConfig>
 ): UserData {
-  return migrations?.reduce(
+  return migrations?.reduce<Data>(
     (acc, migration) => migration(acc, config, migrationOptions),
-    data as Data
+    data
   ) as UserData;
 }
