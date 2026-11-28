@@ -218,11 +218,9 @@ export type Fields<
   ComponentProps extends DefaultComponentProps = DefaultComponentProps,
   UserField extends {} = {}
 > = {
-  [PropName in keyof Omit<ComponentProps, "editMode">]: UserField extends {
-    type: PropertyKey;
-  }
-    ? Field<ComponentProps[PropName], UserField> | UserField
-    : Field<ComponentProps[PropName]>;
+  [PropName in keyof Omit<ComponentProps, "editMode">]:
+    | Field<ComponentProps[PropName], UserField>
+    | Extract<UserField, { type: PropertyKey }>;
 };
 
 export type FieldProps<F = Field<any>, ValueType = any> = {
